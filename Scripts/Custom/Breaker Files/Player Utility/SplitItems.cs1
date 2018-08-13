@@ -1,0 +1,310 @@
+// Script: SplitItems.cs
+// Version: 1.0
+// Author: Burner
+// Date: 7/2/2014
+// Purpose: 
+// Player Command. [Split (#)
+// History: Written to split stacks of items on the Akara Essex shard, Including stat balls, and skulls.
+
+using System;
+using Server;
+using Server.Multis;
+using Server.Items;
+using Server.Targeting;
+using Server.Mobiles;
+using Server.Accounting; 
+using System.Collections; 
+using Server.Network;
+using Server.Engines.CannedEvil;
+
+namespace Server.Commands 
+{ 
+  public class SplitItems
+  { 
+	 private static int m_amt = 1;
+	  private Type SplitItemType;
+	  
+    public static void Initialize() 
+    { 
+      CommandSystem.Register( "Split", AccessLevel.Player, new CommandEventHandler( SplitItems_OnCommand ) ); 
+    } 
+    public static void SplitItems_OnCommand( CommandEventArgs e ) 
+    { 
+
+		Mobile from = e.Mobile; 
+
+ 		// if we have a command after just the word "SplitItems"...
+		if ( e.Length != 0 )
+		{
+		if ( e.Length == 1 )
+			{
+				double testit = e.GetInt32(0);
+				
+				
+				if ( testit < 1 || testit > 59999)
+				{
+				e.Mobile.SendMessage( "Please Choose a number between 1 and 59999." );
+				return;
+				}
+				m_amt = (int)testit;
+				
+				}
+				
+			if ( e.Length == 0 )
+			{
+				double testit = e.GetInt32(0);
+				
+				
+				if ( testit < 1 || testit > 59999)
+				{
+				e.Mobile.SendMessage( "Please Choose a number between 1 and 59999." );
+				return;
+				}
+				
+				
+				}
+					from.Target = new PackFromTarget( from, m_amt );
+				
+			switch( e.GetString(0).ToLower() )
+			{ 
+			
+				default:
+					from.LocalOverheadMessage( MessageType.Regular, 1150, true, "Split will allow you to break stacked items apart."); 
+					break;
+			}
+		}
+		else
+		//from.SendMessage("Please Supply only 1 number after [split, if no number is specified it will default to 1");
+			from.Target = new PackFromTarget( from, 1);
+	}
+
+	public static bool InOwnHouse( Mobile from )
+	{
+		BaseHouse house = BaseHouse.FindHouseAt( from );
+//		Console.WriteLine ("results of inownhouse are:" + (house != null && house.IsOwner( from )));
+		return ( house != null && house.IsOwner( from ) );
+	}
+
+	private class PackFromTarget : Target
+	{
+		private int splitamount;
+		private bool zackly;
+		private ChampionSkullType m_Type;
+		private BossSkullType m_Type2;
+		private Type SplitItemsType;
+		public PackFromTarget( Mobile from, int AMT) : base( -1, true, TargetFlags.None )
+		{
+		splitamount = AMT;
+			
+		}
+		protected override void OnTarget( Mobile from, object o )
+		{
+		
+			if ( o != null && o is Item )
+		{
+		
+		Type ItemType = o.GetType();
+		Item targ = o as Item;
+		
+							
+							//	Item newItem = (Item)o;
+		
+		/*	if (!targ.Stackable) 
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "You can only split items that can be stacked."); 
+				return;
+			}
+			*/
+			Item theitem = o as Item;
+			try{
+			Container xY = (Container)theitem.Parent;
+			}
+			catch
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "That item was an invalid target, please try again."); 
+				return;
+			}
+				Container xx = (Container)theitem.Parent;
+			// if item not in a container, just say no.
+			if (xx == null)
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x33, true, "This command is intended to be used to split stacked items."); 
+				return;
+			}
+
+			// if item is in a container not in their backpack
+			if (!(xx.IsChildOf(from.Backpack)) && (xx !=  from.Backpack) && !xx.IsChildOf(from))
+			{
+				// if  player is not in their own house
+				if(!InOwnHouse(from))
+				{
+					from.LocalOverheadMessage( MessageType.Regular, 0x33, true, "You can only split items that are originally in your backpack or in a sub-container in your backpack or in a container in YOUR house."); 
+					return;
+				}
+			}
+			
+		if (targ is StatCapBall || targ is StatBall || targ is ChampionSkull || targ is BossSkull) 
+		{
+	
+		}
+		else {
+		from.SendMessage("This Command Only Works On Stat Balls, Stat Cap Balls, Champion Skulls, and Boss Skulls at this time.");
+		return; }
+		
+		if (targ is StatCapBall)
+		{
+		StatCapBall sb = targ as StatCapBall;
+		if (splitamount >= sb.Value)
+		{
+		from.SendMessage("There are not enough points on this Stat Cap Ball to split off the amount of: {0}",splitamount);  
+		return;
+		}
+		}
+		
+		if (targ is StatBall)
+		{
+		StatBall sb = targ as StatBall;
+		if (splitamount >= sb.Value)
+		{
+		from.SendMessage("There are not enough points on this Stat Ball to split off the amount of: {0}",splitamount);  
+		return;
+		}
+		}
+		
+		if (targ is ChampionSkull)
+		{
+		
+		if (splitamount >= targ.Amount)
+		{
+		from.SendMessage("There are not enough Champ Skulls to split off the amount of: {0}",splitamount);  
+		return;
+		}
+		}
+		
+		if (targ is BossSkull)
+		{
+		if (splitamount >= targ.Amount)
+		{
+		from.SendMessage("There are not enough Boss Skulls to split off the amount of: {0}",splitamount);  
+		return;
+		}
+		}
+		
+		
+	
+		
+	if (targ is BossSkull)
+		{
+		BossSkull bs = targ as BossSkull;
+		m_Type2 = bs.Type;
+		//BossSkullType bst = (BossSkull)targ.BossSkullType;
+		BossSkull split = new BossSkull(m_Type2);
+		split.Amount = splitamount;
+		targ.Amount = targ.Amount - splitamount;
+		xx.AddItem(split);
+		}
+	
+	if (targ is ChampionSkull)
+	{
+		ChampionSkull bs = targ as ChampionSkull;
+	m_Type = bs.Type;
+	//ChampionSkullType cst = (ChampionSkull)targ.BossSkullType;
+	ChampionSkull split = new ChampionSkull(m_Type);
+	split.Amount = splitamount;
+	targ.Amount = targ.Amount - splitamount;
+	xx.AddItem(split);
+	}	
+
+	if (targ is StatBall)
+	{
+	StatBall sb = targ as StatBall;
+				
+	sb.Value -= splitamount;
+		StatBall splitter = new StatBall(splitamount);
+		xx.AddItem(splitter);
+	
+	}
+	
+	if (targ is StatCapBall)
+	{
+	StatCapBall sb = targ as StatCapBall;
+	sb.Value = (sb.Value - splitamount);
+		StatCapBall splitter = new StatCapBall(splitamount);
+		xx.AddItem(splitter);
+		}
+	
+	
+		
+
+			//from.LocalOverheadMessage( MessageType.Regular, 0x33, true, "Now select the container you want to move the items INTO."); 
+			//from.Target = new PackToTarget( from, xx, BType );
+	
+		
+		
+		
+		}
+		}
+	}
+	private class PackToTarget : Target
+	{
+		private Container FromCont;
+		private Type MyItem;
+
+			public PackToTarget( Mobile from, Container cont, Type anitem ) : base( -1, true, TargetFlags.None )
+		{
+			MyItem = anitem;
+			FromCont = cont;
+		}
+		
+		protected override void OnTarget( Mobile from, object o )
+		{
+
+//			Console.WriteLine("Type is ..." + MyItem + "...");
+			if( o is Container)
+			{
+				Container xx = o as Container;
+
+//				if (xx is QuestHolder)
+//				{
+//					from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "Moving items into a Questbook is an exploit. Your Account has been flagged."); 
+//	                  ((Account)from.Account).SetTag( "QuestExploit", "true"); 
+//					return;
+//				}
+
+				//make sure they aren't targeting same container
+				if (xx == FromCont)
+				{
+					from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "The container you are moving an item INTO must be different from the one you are moving an item FROM."); 
+					return;
+				}
+
+				//make sure it isn't a container in their main backpack
+				if (FromCont.IsChildOf(from.Backpack) && (xx.IsChildOf(from.Backpack) || xx == from.Backpack))
+				{
+					from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "You cannot move items between containers in your backpack or from a container in your backpack TO your backpack. Just put one of them on the ground. Trust me, it is simpler. "); 
+					return;
+				}
+				if (xx.IsChildOf(FromCont) )
+                {
+					from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "You cannot move items INTO a subcontainer of the container you are moving items FROM. Just put one of them on the ground. Trust me, it is simpler. "); 
+					return;
+                }
+
+	                Item[] items =  FromCont.FindItemsByType( MyItem, true );
+					foreach (Item item in items) 
+					{
+	//					Console.WriteLine ("SplitItemstype=" + SplitItemsType + " and item is " + item + "");
+						if(!(xx.TryDropItem( from, item, false )))
+							from.SendMessage("That container is too full!");
+	//						xx.AddItem(item);
+					}
+			}
+			else
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "That is not a container!"); 
+			}
+		}
+	}	
+	
+  } 
+} 

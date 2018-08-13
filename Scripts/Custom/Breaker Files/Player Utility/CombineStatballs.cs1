@@ -1,0 +1,225 @@
+// Repurposed by: Burner
+// for: Akara Essex  on 3/16/2013
+// purpose: used to combine stat balls and Stat cap balls in a bag to free up item count.
+using System;
+using Server;
+using Server.Multis;
+using Server.Items;
+using Server.Targeting;
+using Server.Mobiles;
+using Server.Accounting; 
+using System.Collections; 
+using Server.Network;
+
+
+namespace Server.Commands 
+{ 
+  public class CombineStatBalls
+  { 
+	 private Type CombineStatBallsType;
+
+			
+    public static void Initialize() 
+    { 
+      CommandSystem.Register( "CombineStatBalls", AccessLevel.Player, new CommandEventHandler( CombineStatBalls_OnCommand ) ); 
+	  CommandSystem.Register( "CSB", AccessLevel.Player, new CommandEventHandler( CombineStatBalls_OnCommand ) ); 
+    } 
+    public static void CombineStatBalls_OnCommand( CommandEventArgs e ) 
+    { 
+
+		Mobile from = e.Mobile; 
+
+ 		// if we have a command after just the word "MoveItems"...
+		if ( e.Length != 0 )
+		{
+			switch( e.GetString(0).ToLower() )
+			{
+				case "exact" :
+					from.Target = new PackFromTarget( from, true );
+					break;
+				default:
+					from.LocalOverheadMessage( MessageType.Regular, 1150, true, "Use This Command To Combine Stat Balls."); 
+					break;
+			}
+		}
+		else
+			from.Target = new PackFromTarget( from, false );
+	}
+
+	public static bool InOwnHouse( Mobile from )
+	{
+		BaseHouse house = BaseHouse.FindHouseAt( from );
+//		Console.WriteLine ("results of inownhouse are:" + (house != null && house.IsOwner( from )));
+		return ( house != null && house.IsOwner( from ) );
+	}
+
+	private class PackFromTarget : Target
+	{
+		private bool zackly;
+		private Type CombineStatBallsType;
+		public PackFromTarget( Mobile from, bool isex) : base( -1, true, TargetFlags.None )
+		{
+			zackly = isex;
+		}
+		protected override void OnTarget( Mobile from, object o )
+		{
+
+		
+			
+			if((o is StatBall  ))
+			{
+			goto correct;
+			}
+			else if ((o is  StatCapBall) )
+			{
+				goto correct;
+			}
+			else {
+			from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "Only Target a StatBall. Try again."); 
+				return;
+			}
+			correct:
+			
+			Type ItemType = o.GetType();
+			Type BType = ItemType.BaseType;
+
+			Item theitem = o as Item;
+			
+	
+
+						
+			
+			try{
+			Container xY = (Container)theitem.Parent;
+			}
+			catch
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "That item was an invalid target, please try again."); 
+				return;
+			}
+				Container xx = (Container)theitem.Parent;
+			// if item not in a container, just say no.
+			if (xx == null)
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x33, true, "This command is intended to be used to combine stat balls from one container to another. Please target a stat ball in a container"); 
+				return;
+			}
+
+			// if item is in a container not in their backpack
+			if (!(xx.IsChildOf(from.Backpack)) && (xx !=  from.Backpack) && !xx.IsChildOf(from))
+			{
+				// if  player is not in their own house
+				if(!InOwnHouse(from))
+				{
+					from.LocalOverheadMessage( MessageType.Regular, 0x33, true, "You can only move stat balls that are originally in your backpack or in a sub-container in your backpack or in a container in YOUR house."); 
+					return;
+				}
+			}
+			// don't move all items if the base is Item, go back to the specific item type
+			// ie: gold base item is ITEM. So, trying to move gold would move all items of any kind. Not good.
+			if (BType == typeof(Item) || zackly)
+			{
+				BType=o.GetType();
+//				Console.WriteLine("changing Btype");
+			}
+//Console.WriteLine("type is :" + ItemType + ":");
+//Console.WriteLine("final btype is :" + BType + ":");
+
+
+			from.LocalOverheadMessage( MessageType.Regular, 0x33, true, "Now select the container you want to combine the stat balls INTO."); 
+			from.Target = new PackToTarget( from, xx, BType );
+		}
+	}
+	private class PackToTarget : Target
+	{
+		private Container FromCont;
+		private Type MyItem;
+
+			public PackToTarget( Mobile from, Container cont, Type anitem ) : base( -1, true, TargetFlags.None )
+		{
+			MyItem = anitem;
+			FromCont = cont;
+		}
+		
+		protected override void OnTarget( Mobile from, object o )
+		{
+
+//			Console.WriteLine("Type is ..." + MyItem + "...");
+			if( o is Container)
+			{
+				Container xx = o as Container;
+
+
+				
+				int CombinedVal = 0;
+	                Item[] items =  FromCont.FindItemsByType( MyItem, true );
+					
+					string TYPE = "";
+					TYPE = MyItem.GetType().Name;
+					
+					foreach (Item item in items) 
+					{
+	//					Console.WriteLine ("MoveItemstype=" + MoveItemsType + " and item is " + item + "");
+						if(!(xx.TryDropItem( from, item, false )))
+							from.SendMessage("That container is too full!");
+					
+							
+					TYPE = item.GetType().Name;
+				
+				
+					
+					
+				
+					
+					switch (TYPE)
+					{
+					case "StatBall": {
+					CombinedVal += ((StatBall)(item)).Value;
+					
+						break;
+						}
+					case "StatCapBall": {
+						CombinedVal += ((StatCapBall)(item)).Value;
+					
+			break;
+					}
+					}
+						
+				
+												
+						
+							item.Delete();
+							
+							//from.SendMessage("StatBall counted, removed {0}",CombinedVal);
+	//						xx.AddItem(item);
+					}
+					
+					
+						switch (TYPE)
+					{
+					case "StatBall": {
+						StatBall STB = new StatBall(CombinedVal); 
+							from.SendMessage("StatBall counted, removed {0}",CombinedVal);
+						xx.AddItem(STB);
+						break;
+						}
+					case "StatCapBall": {
+					StatCapBall STB = new StatCapBall(CombinedVal);
+					from.SendMessage("StatCapBall counted, removed {0}",CombinedVal);
+					xx.AddItem(STB);
+					break;
+					}
+					}
+					
+					
+				
+					
+			}
+			else
+			{
+				from.LocalOverheadMessage( MessageType.Regular, 0x22, true, "That is not a container!"); 
+			}
+		}
+	}	
+  } 
+} 

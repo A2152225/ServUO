@@ -114,6 +114,85 @@ namespace Server.Mobiles
 		BardsGuild,
 		BlacksmithsGuild
 	}
+	
+	public enum Difficulty
+	{
+		Normal,
+		Hard,
+		Expert,
+		Master,
+		Torment1,
+		Torment2,
+		Torment3,
+		Torment4,
+		Torment5,
+		Torment6,
+		Torment7,
+		Torment8,
+		Torment9,
+		Torment10,
+		Torment11,
+		Torment12
+	}
+	
+	
+	/////Level/////
+        
+        public enum IllnessRace{None,WereWolf,Vampire,Undead}
+
+        public enum Following{None,Good,Evil}
+
+        //public enum Diplomacy{None,Neutral,Ally,Enemy}
+
+		   public class YoungSaveTimer : Timer 
+        { 
+                private Mobile from; 
+
+                public YoungSaveTimer( Mobile owner ) : base( TimeSpan.FromSeconds( 20.0 )) 
+                { 
+                        from = owner;
+                } 
+                protected override void OnTick() 
+                {
+                        PlayerMobile pm = (PlayerMobile)from;
+                        pm.Blessed = false;
+						pm.SendMessage("You are now vulnerable to attacks once more, be careful");
+						Stop();
+                } 
+        }
+
+        public class IllnessEffectTimer : Timer 
+        { 
+                private Mobile from; 
+
+                public IllnessEffectTimer( Mobile owner ) : base( TimeSpan.FromSeconds( 5.0 ), TimeSpan.FromSeconds( 5.0 ) ) 
+                { 
+                        from = owner;
+                } 
+                protected override void OnTick() 
+                {
+                        PlayerMobile pm = (PlayerMobile)from;
+                     //   IllnessRaceEffects.Effects( pm );
+                } 
+        }
+
+        public class GodTimer : Timer
+        { 
+                private PlayerMobile from;
+
+                public GodTimer( PlayerMobile owner, TimeSpan duration ) : base( duration, TimeSpan.FromSeconds( 5.0 ) )
+                { 
+                        from = owner;
+                }
+
+                protected override void OnTick() 
+                {
+                        from.AllowGod = true;
+                        Stop();
+                }
+        }
+/////Level/////
+	
 
 	public enum SolenFriendship
 	{
@@ -236,13 +315,388 @@ namespace Server.Mobiles
 
         public bool UseSummoningRite { get; set; }
 
+		private int m_YoungSaves;
+		private int m_MaxLvl;
+		private int m_OldMaxLvl;
+		private int m_PrestigeLvl;
+		
+		
         #region Guantlet Points
         private double m_GauntletPoints;
 
 		[CommandProperty(AccessLevel.Administrator)]
 		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }
 		#endregion
+		//Paragon Stuff
+		private double m_XPIncrease =0;
+		private Difficulty m_MaxDifficulty = Difficulty.Normal;
+		private int m_ParagonPoints =0;
+		private int m_ParagonPoints0 =0;
+		private int m_ParagonPoints1 =0;
+		private int m_ParagonPoints2 =0;
+		private int m_ParagonPoints3 =0;
+		private int m_ParagonPoints4 =0;
+		private int m_ParagonPoints5 =0;
+		private int m_ParagonPoints6 =0;
+		private int m_ParagonPoints7 =0;
+		private int m_ParagonPoints8 =0;
+		private int m_ParagonPoints9 =0;
+		private int m_ParagonPoints10 =0;
+		private int m_ParagonPoints11 =0;
+		private int m_ParagonPoints12 =0;
+		private int m_ParagonPoints13 =0;
+		private int m_ParagonPoints14 =0;
+		private int m_ParagonPoints15 =0;
+		private int m_ParagonPoints16 =0;
+		
+		
+		/////Level/////
+		[CommandProperty(AccessLevel.Administrator)]
+        public double XPIncrease
+        {
+            get { return m_XPIncrease; }
+            set { m_XPIncrease = value; }
+        }
+		
+		
+			[CommandProperty(AccessLevel.Administrator)]
+        public Difficulty MaxDifficulty
+        {
+            get { return m_MaxDifficulty; }
+            set { m_MaxDifficulty = value; }
+        }
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints
+        {
+            get { return m_ParagonPoints; }
+            set { m_ParagonPoints = value; }
+        }
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints0
+        {
+            get { return m_ParagonPoints0; }
+            set { m_ParagonPoints0 = value; }
+        }
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints1
+        {
+            get { return m_ParagonPoints1; }
+            set { m_ParagonPoints1 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints2
+        {
+            get { return m_ParagonPoints2; }
+            set { m_ParagonPoints2 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints3
+        {
+            get { return m_ParagonPoints3; }
+            set { m_ParagonPoints3 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints4
+        {
+            get { return m_ParagonPoints4; }
+            set { m_ParagonPoints4 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints5
+        {
+            get { return m_ParagonPoints5; }
+            set { m_ParagonPoints5 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints6
+        {
+            get { return m_ParagonPoints6; }
+            set { m_ParagonPoints6 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints7
+        {
+            get { return m_ParagonPoints7; }
+            set { m_ParagonPoints7 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints8
+        {
+            get { return m_ParagonPoints8; }
+            set { m_ParagonPoints8 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints9
+        {
+            get { return m_ParagonPoints9; }
+            set { m_ParagonPoints9 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints10
+        {
+            get { return m_ParagonPoints10; }
+            set { m_ParagonPoints10 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints11
+        {
+            get { return m_ParagonPoints11; }
+            set { m_ParagonPoints11 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints12
+        {
+            get { return m_ParagonPoints12; }
+            set { m_ParagonPoints12 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints13
+        {
+            get { return m_ParagonPoints13; }
+            set { m_ParagonPoints13 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints14
+        {
+            get { return m_ParagonPoints14; }
+            set { m_ParagonPoints14 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints15
+        {
+            get { return m_ParagonPoints15; }
+            set { m_ParagonPoints15 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints16
+        {
+            get { return m_ParagonPoints16; }
+            set { m_ParagonPoints16 = value; }
+        }
+		
+		
+		
+		
+		
+		[CommandProperty(AccessLevel.Seer)]
+        public int YoungSaves
+        {
+            get { return m_YoungSaves; }
+            set { m_YoungSaves = value; }
+        }
+		
+		
+        [CommandProperty(AccessLevel.Administrator)]
+        public int MaxLvl
+        {
+            get { return m_MaxLvl; }
+            set { m_MaxLvl = value; }
+        }
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int OldMaxLvl
+        {
+            get { return m_OldMaxLvl; }
+            set { m_OldMaxLvl = value; }
+        }
+		
+		
+        [CommandProperty(AccessLevel.Administrator)]
+        public int PrestigeLvl
+        {
+            get { return m_PrestigeLvl; }
+            set { m_PrestigeLvl = value; }
+        }
+		
+    		private IllnessRace m_IllnessRace;
+                private Following m_Following;
+                private int m_LvL = 0;
+                private long m_EXPL = 0; 
+                private long m_LastLevelExpL = 0; 
+				private int m_EXP = 0; 
+                private int m_LastLevelExp = 0; 
+                private int m_SP = 0;
+                private int m_BloodThurst = 0;
+                public IllnessEffectTimer m_Timer; 
+                public GodTimer m_GodTimer; 
+                public DateTime m_GodEnd; 
+   private bool m_ShowExpBar;
+  private bool m_HorizontalExpBar;
+                private bool m_HorizontalBloodBar;
+  private int m_ExpBarX = 0; 
+                private int m_ExpBarY = 0; 
+  private bool m_AllowGod = true; 
+                private int m_StrCapInc = 0; 
+                private int m_DexCapInc = 0; 
+                private int m_IntCapInc = 0; 
+   [CommandProperty( AccessLevel.GameMaster )]
+                public IllnessRace IllnessRace
+                {
+                        get{ return m_IllnessRace; }
+                        set{ m_IllnessRace = value; }
+                }
 
+                [CommandProperty( AccessLevel.GameMaster )]
+                public Following Following
+                {
+                        get{ return m_Following; }
+                        set{ m_Following = value; }
+                } 
+
+                [CommandProperty( AccessLevel.Seer )] 
+                public long EXP
+                { 
+                        get{ return m_EXPL; } 
+                        set
+                        { 
+                                if ( m_EXPL > value)  
+                                        this.SendMessage( "You have lost " + (value-m_EXPL) + " experience." ); 
+                                if ( m_EXPL < value)  
+                                        this.SendMessage( "You have gained " + (value-m_EXPL) + " experience." );  
+                                m_EXPL = value;  
+                                Experience.CheckLevel( (PlayerMobile)this );
+                        } 
+                } 
+ 
+                [CommandProperty( AccessLevel.Seer )] 
+                public long LastLevelExp
+                { 
+                        get{ return m_LastLevelExpL; } 
+                        set{ m_LastLevelExpL = value; }
+                }
+ 
+                [CommandProperty( AccessLevel.Seer )]
+                public int LvL
+                {
+                        get{ return m_LvL; }
+                        set{ m_LvL = value; 		InvalidateProperties(); }
+				
+                }
+ 
+                [CommandProperty( AccessLevel.Seer )]
+                public int SP
+                {
+                        get{ return m_SP; }
+                        set{ m_SP = value; }
+                }
+
+ [CommandProperty( AccessLevel.GameMaster )]
+                public bool ShowExpBar
+                {
+                        get{ return m_ShowExpBar; }
+                        set{ m_ShowExpBar = value; }
+                }
+ 
+            
+ 
+                [CommandProperty( AccessLevel.GameMaster )]
+                public bool HorizontalExpBar
+                {
+                        get{ return m_HorizontalExpBar; }
+                        set{ m_HorizontalExpBar = value; }
+                }
+ 
+  [CommandProperty( AccessLevel.Seer )] 
+                public int ExpBarX
+                { 
+                        get{ return m_ExpBarX; } 
+                        set
+                        {
+                                if ( value < 928 )
+                                        m_ExpBarX = value;
+                                else
+                                        m_ExpBarX = 928;
+                                if ( value > 0 )
+                                        m_ExpBarX = value;
+                                else
+                                        m_ExpBarX = 0;
+                        }
+                } 
+ 
+                [CommandProperty( AccessLevel.Seer )] 
+                public int ExpBarY
+                { 
+                        get{ return m_ExpBarY; } 
+                        set
+                        {
+                                if ( value < 703 )
+                                        m_ExpBarY = value;
+                                else
+                                        m_ExpBarY = 703;
+                                if ( value > 0 )
+                                        m_ExpBarY = value;
+                                else
+                                        m_ExpBarY = 0;
+                        }
+                } 
+
+ [CommandProperty( AccessLevel.GameMaster )]
+                public bool AllowGod
+                {
+                        get{ return m_AllowGod; }
+                        set{ m_AllowGod = value; }
+                }
+                public DateTime GodEnd
+                {
+                        get{ return m_GodEnd; }
+                        set{ m_GodEnd = value; }
+                }
+
+                [CommandProperty( AccessLevel.Seer )] 
+                public int StrCapInc
+                { 
+                        get{ return m_StrCapInc; } 
+                        set{ m_StrCapInc = value; }
+                } 
+                [CommandProperty( AccessLevel.Seer )] 
+                public int DexCapInc
+                { 
+                        get{ return m_DexCapInc; } 
+                        set{ m_DexCapInc = value; }
+                } 
+                [CommandProperty( AccessLevel.Seer )] 
+                public int IntCapInc
+                { 
+                        get{ return m_IntCapInc; } 
+                        set{ m_IntCapInc = value; }
+                } 
+/////Level/////
+		
+		
+		
         #region Points System
         private PointsSystemProps _PointsSystemProps;
         private BODProps _BODProps;
@@ -1263,6 +1717,24 @@ namespace Server.Mobiles
                 ((PlayerMobile)from).ValidateEquipment();
 
                 ReportMurdererGump.CheckMurderer(from);
+				
+				
+				/////Level/////
+					 PlayerMobile pm = ((PlayerMobile)from);
+                        if ( pm.m_Timer == null )
+                        {
+                                IllnessEffectTimer iet = new IllnessEffectTimer( from );
+                                pm.m_Timer = iet;
+                                pm.m_Timer.Start();
+                        }
+
+                        if ( pm.ShowExpBar == true )
+                                pm.SendGump( new ExpBarGump(pm));
+                        //if ( pm.ShowBloodBar == true )
+                         //       pm.SendGump( new BloodBarGump(pm));
+
+                       
+/////End Level//
 			}
             else if (Siege.SiegeShard && from.Map == Map.Trammel && from.AccessLevel == AccessLevel.Player)
             {
@@ -2009,7 +2481,7 @@ namespace Server.Mobiles
 			{
 				if (Core.ML && IsPlayer())
 				{
-					return Math.Min(base.Str, StrMaxCap);
+					return base.Str;// Math.Min(base.Str, StrMaxCap);
 				}
 
 				return base.Str;
@@ -2024,7 +2496,7 @@ namespace Server.Mobiles
 			{
 				if (Core.ML && IsPlayer())
 				{
-					return Math.Min(base.Int, IntMaxCap);
+					return base.Int;// Math.Min(base.Int, IntMaxCap);
 				}
 
 				return base.Int;
@@ -2039,7 +2511,7 @@ namespace Server.Mobiles
 			{
 				if (Core.ML && IsPlayer())
 				{
-					return Math.Min(base.Dex, DexMaxCap);
+					return base.Dex;// Math.Min(base.Dex, DexMaxCap);
 				}
 
 				return base.Dex;
@@ -2275,6 +2747,14 @@ namespace Server.Mobiles
 			{
 				RecheckTownProtection();
 			}
+			
+			  /* Begin UltimaLive Mod */
+  if (BlockQuery != null)
+  {
+  m_PreviousMapBlock = BlockQuery.QueryMobile(this, m_PreviousMapBlock);
+  }
+  /* End UltimaLive Mod */
+  
 		}
 
 		public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
@@ -3456,6 +3936,13 @@ namespace Server.Mobiles
 
 		protected override void OnMapChange(Map oldMap)
 		{
+			 /* Begin UltimaLive Mod */
+  if (BlockQuery != null)
+  {
+  m_PreviousMapBlock = BlockQuery.QueryMobile(this, m_PreviousMapBlock);
+  }
+  /* End UltimaLive Mod */
+  
             if (NetState != null && NetState.IsEnhancedClient)
             {
                 Waypoints.OnMapChange(this, oldMap);
@@ -3603,6 +4090,14 @@ namespace Server.Mobiles
 				}
 				#endregion
 			}
+				/////Level/////
+                        if ( this.ShowExpBar == true )
+                                this.SendGump( new ExpBarGump(this));
+                       // if ( this.ShowBloodBar == true )
+                         //       this.SendGump( new BloodBarGump(this));
+
+                    
+/////End Level/////
 		}
 
 		public override double RacialSkillBonus
@@ -3757,9 +4252,25 @@ namespace Server.Mobiles
 
 		private bool CheckInsuranceOnDeath(Item item)
 		{
-            if (Young)
-				return false;
-
+         
+		 if (Young && this.YoungSaves > 0)
+		{
+		this.Hits = 5;
+		this.Blessed = true;
+		this.YoungSaves--;
+		if (YoungSaves == 1)
+		this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. {0} save remaining today.",YoungSaves);
+		else if (YoungSaves > 1)
+		this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. {0} saves remaining today.",YoungSaves);
+		else if (YoungSaves <= 0)
+		this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. You have no saves remaining and will die if you are not careful.");
+		new YoungSaveTimer(this).Start();
+		
+		return false;
+		
+		
+		}
+		
 			if (InsuranceEnabled && item.Insured)
 			{
 				if (XmlPoints.InsuranceIsFree(this, m_InsuranceAward))
@@ -4459,8 +4970,70 @@ namespace Server.Mobiles
 			switch (version)
 			{
                 case 37:
-                    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
-				    goto case 36;
+               /* Uncomment after 1 save //    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
+		m_XPIncrease = reader.ReadDouble();
+		m_MaxDifficulty = (Difficulty)reader.ReadEncodedInt();
+		m_ParagonPoints = reader.ReadInt();
+		m_ParagonPoints0 = reader.ReadInt();
+		m_ParagonPoints1 = reader.ReadInt();
+		m_ParagonPoints2 = reader.ReadInt();
+		m_ParagonPoints3 = reader.ReadInt();
+		m_ParagonPoints4 = reader.ReadInt();
+		m_ParagonPoints5 = reader.ReadInt();
+		m_ParagonPoints6 = reader.ReadInt();
+		m_ParagonPoints7 = reader.ReadInt();
+		m_ParagonPoints8 = reader.ReadInt();
+		m_ParagonPoints9 = reader.ReadInt();
+		m_ParagonPoints10 = reader.ReadInt();
+		m_ParagonPoints11 = reader.ReadInt();
+		m_ParagonPoints12 = reader.ReadInt();
+		m_ParagonPoints13 = reader.ReadInt();
+		m_ParagonPoints14 = reader.ReadInt();
+		m_ParagonPoints15 = reader.ReadInt();
+		m_ParagonPoints16 = reader.ReadInt();
+			
+				*/
+			m_YoungSaves = reader.ReadInt();
+				 m_LastLevelExpL = reader.ReadLong();
+                 m_EXPL = reader.ReadLong();
+				m_MaxLvl = reader.ReadInt();
+				m_OldMaxLvl = reader.ReadInt();
+				m_PrestigeLvl = reader.ReadInt();
+				m_StrCapInc = reader.ReadInt(); 
+                        m_DexCapInc = reader.ReadInt(); 
+                        m_IntCapInc = reader.ReadInt(); 
+                        //gods 
+                        m_GodEnd = reader.ReadDeltaTime();
+                        m_GodTimer = new GodTimer( this, m_GodEnd - DateTime.Now );
+                        m_GodTimer.Start();
+                        TimeSpan duration = TimeSpan.FromDays( 1.0 );
+                        m_GodTimer = new GodTimer( this, duration );//Weird timer... not resetting properly?
+                        m_GodTimer.Start();
+                        m_GodEnd = DateTime.Now + duration;
+                        m_AllowGod = reader.ReadBool(); 
+					//end gods	
+                        
+                        m_ExpBarY = reader.ReadInt(); 
+                        m_ExpBarX = reader.ReadInt(); 
+                        
+                        
+						m_IllnessRace = (IllnessRace)reader.ReadInt();
+                        m_Following = (Following)reader.ReadInt();
+                        m_EXP = reader.ReadInt(); 
+                        m_LastLevelExp = reader.ReadInt(); 
+                        m_LvL = reader.ReadInt(); 
+                        m_SP = reader.ReadInt(); 
+                        
+                        
+                        
+		                
+                        
+                        m_ShowExpBar = reader.ReadBool(); 
+                        m_HorizontalExpBar = reader.ReadBool(); 
+                        
+					
+
+				 goto case 36;
                 case 36:
                     RewardStableSlots = reader.ReadInt();
                     goto case 35;
@@ -4905,6 +5478,98 @@ namespace Server.Mobiles
 			writer.Write(37); // version
 
             writer.Write((int)m_ExtendedFlags);
+			//Paragon Stuff 
+		writer.Write((double)m_XPIncrease);
+		writer.WriteEncodedInt((int)m_MaxDifficulty);
+		writer.Write((int)m_ParagonPoints);
+		writer.Write((int)m_ParagonPoints0);
+		writer.Write((int)m_ParagonPoints1);
+		writer.Write((int)m_ParagonPoints2);
+		writer.Write((int)m_ParagonPoints3);
+		writer.Write((int)m_ParagonPoints4);
+		writer.Write((int)m_ParagonPoints5);
+		writer.Write((int)m_ParagonPoints6);
+		writer.Write((int)m_ParagonPoints7);
+		writer.Write((int)m_ParagonPoints8);
+		writer.Write((int)m_ParagonPoints9);
+		writer.Write((int)m_ParagonPoints10);
+		writer.Write((int)m_ParagonPoints11);
+		writer.Write((int)m_ParagonPoints12);
+		writer.Write((int)m_ParagonPoints13);
+		writer.Write((int)m_ParagonPoints14);
+		writer.Write((int)m_ParagonPoints15);
+		writer.Write((int)m_ParagonPoints16);
+			
+			
+			
+			
+			//end paragon 
+			
+			
+			 writer.Write(m_YoungSaves);
+		
+			//34 stuff
+			
+			if (m_EXPL == null || m_EXPL == 0)
+			{
+			if (m_EXP < 0 )
+			m_EXP *=-1;
+			
+			writer.Write( (long) m_EXP );
+			
+			}
+			else
+			writer.Write( (long) m_EXPL ); 
+			
+			if (m_LastLevelExpL == null || m_LastLevelExpL == 0)
+			{
+            
+			if ( m_LastLevelExp < 0)
+			m_LastLevelExp*=-1;
+			
+			writer.Write( (long) m_LastLevelExp ); 
+			}
+			else
+			writer.Write( (long) m_LastLevelExpL ); 
+			
+			
+			//33 prestige
+			
+			writer.Write((int)m_MaxLvl);
+			writer.Write((int)m_OldMaxLvl);
+			writer.Write((int)m_PrestigeLvl);
+			
+                        writer.Write( (int) m_StrCapInc );
+                        writer.Write( (int) m_DexCapInc );
+                        writer.Write( (int) m_IntCapInc );
+						
+
+
+
+                        writer.WriteDeltaTime( m_GodEnd );
+                        writer.Write( (bool) m_AllowGod ); 
+
+                        writer.Write( (int) m_ExpBarY ); 
+                        writer.Write( (int) m_ExpBarX ); 
+                
+                    
+                        writer.Write( (int) m_IllnessRace );
+                        writer.Write( (int) m_Following );
+                        writer.Write( (int) m_EXP ); 
+                        writer.Write( (int) m_LastLevelExp ); 
+                        writer.Write( (int) m_LvL ); 
+                        writer.Write( (int) m_SP ); 
+       
+                    
+                        writer.Write( (bool) m_ShowExpBar ); 
+                 
+                        writer.Write( (bool) m_HorizontalExpBar ); 
+              
+			
+			
+			
+			
+			
 
             writer.Write(RewardStableSlots);
 			

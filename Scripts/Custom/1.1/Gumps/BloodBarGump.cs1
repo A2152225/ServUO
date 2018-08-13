@@ -1,0 +1,40 @@
+using System; 
+using System.Collections; 
+using Server.Network;
+using Server.Items; 
+using Server.Mobiles;
+using Server.Gumps;
+using Server.Engines.Harvest;
+using Server.Engines.Craft;
+
+namespace Server.Mobiles 
+{ 
+	public class BloodBarGump : Gump
+	{
+		public BloodBarGump( PlayerMobile m ) : base(30,30)
+		{
+			Dragable = true;
+			Closable=false;
+			PlayerMobile from = m;
+			from.CloseGump( typeof( BloodBarGump ) );
+			int CurrentBlood = ( from.BloodThurst * 100 ) / ( from.RawDex * 10 );
+
+			if ( !from.HorizontalBloodBar )
+			{
+				AddImage(0, 0, 9741);
+				if ( from.BloodThurst < ( from.RawDex * 10 ) )
+					AddImageTiled(0, 0, 8, CurrentBlood-4, 9740);
+				else
+					AddImageTiled(0, 0, 8, 96, 9740);
+			}
+			else
+			{
+				AddImage(0, 0, 9750);
+				if ( from.BloodThurst < ( from.RawDex * 10 ) )
+					AddImageTiled(0, 0, CurrentBlood-4, 8, 9751);
+				else
+					AddImageTiled(0, 0, 96, 8, 9751);
+			}
+		}
+	}
+}

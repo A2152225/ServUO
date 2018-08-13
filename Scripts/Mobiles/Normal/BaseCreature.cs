@@ -6209,6 +6209,187 @@ namespace Server.Mobiles
             {
                 Effects.SendLocationEffect(Location, Map, 0x3728, 13, 1, 0x461, 4);
             }
+			
+			/////EXPERIENCE/////
+                        for ( int i = this.DamageEntries.Count - 1; i >= 0; --i )
+            {
+
+                                if ( i >= this.DamageEntries.Count )
+                                        continue;
+
+                                DamageEntry de = (DamageEntry)this.DamageEntries[i];
+                                if ( de.HasExpired )
+                                        continue;
+
+                                Mobile m = de.Damager;
+                                if ( m == null || m.Deleted )
+                                        continue;
+										
+								if ( m is BaseCreature )
+                                {
+								
+                                        BaseCreature bc = (BaseCreature)m;
+									//	int LastLevel = bc.LastLevelExp;
+                                     //   int ExpRequired = (int)(((Math.Pow((Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+bc.LastLevelExp;
+										int karma;
+
+                                         if ( this.Karma <= 0 )
+                                         karma = this.Karma * -1;
+                                         else
+                                         karma = this.Karma;
+										//  int LevelDifference = this.Level - bc.Level;
+										  int ExpGained = 0;
+									 int monsterstats = ( ( this.Fame + karma ) / 8 ) + ( this.RawStatTotal * 2 ) + ( ( this.HitsMax + this.StamMax + this.ManaMax ) / 2 ) + ( this.DamageMax - this.DamageMin ) + ( ( this.ColdResistSeed + this.FireResistSeed + this.EnergyResistSeed + this.PhysicalResistanceSeed + this.PoisonResistSeed ) * 2 ) + this.VirtualArmor;
+										
+										if ( this.MinTameSkill > 0 )
+                                                                monsterstats += (int)this.MinTameSkill;
+			
+                                                //        if ( this.Level <= 0 )
+                                               //                 if ( bc.Level <= 0 )
+                                                                        ExpGained = monsterstats;
+                                                    /*            else
+                                                                        ExpGained = monsterstats / bc.Level;
+                                                        else
+                                                                if ( bc.Level <= 0 )
+                                                                        ExpGained = ( this.Level * monsterstats );
+                                                                else
+                                                                    */    ExpGained = monsterstats;
+
+
+                                                        if ( ExpGained <= 0 )
+                                                                ExpGained = 1;
+                                                        if ( !Utility.InRange( this.Location, bc.Location, 18 ))
+                                                        {
+                                                                ExpGained = (int)(ExpGained/2);
+                                                        }
+															
+				long minexp = 10;
+				long maxexp = 50;						
+		/*		if ( LevelDifference > 0 )
+				{
+					minexp = 5+(ExpGained/9);  // Changed from 60 to 9 by RE 6-19-07
+					maxexp = 5+(ExpGained/5);  // Changed from 40 to 5 by RE 6-19-07
+				}
+				else
+				{*/
+					minexp = 5+(ExpGained/15);  // Changed from 120 to 15 by RE 6-19-07
+					maxexp = 5+(ExpGained/9);  // Changed from 100 to 9 by RE 6-19-07
+				//}
+			
+			/*	 if ( bc.Level >= 500 ) // max level for pets
+				 {
+					minexp *= 0;
+					maxexp *= 0;
+				 }*/
+				 
+				double Percent = ((double)de.DamageGiven / (double)HitsMax) ;
+				             
+								int finalexp = (int)((double)( Utility.RandomMinMax( (int)minexp, (int)maxexp ) )*Percent*Tweaks.XPMod);
+                                                 /*       if ( finalexp > ( ExpRequired - LastLevel ) )
+                                                        {
+                                                                finalexp = (int)( ( ExpRequired - LastLevel ) / 2 );
+                                                        }
+														*/
+					Region re = Region.Find( bc.Location, bc.Map );
+				string regname = re.ToString().ToLower();
+						
+				if (regname == "championspawnregion" ) 
+			{
+				if (Tweaks.CXPMod == 0)
+					finalexp = 0;
+				else
+					finalexp /= (100/Tweaks.CXPMod);//3; //  2/3rds exp for champ spawns, now 1/20th// now 20%
+					//finalexp *= 2; // was *=2, want people out in the world more
+			}
+
+
+				if ( this.IsParagon )
+					finalexp *= 2;
+					
+					
+
+                                                 //       bc.EXP += finalexp;
+														
+                                                
+				 
+												
+												
+												
+                                }		
+										
+                                if ( m is BaseCreature )
+                                {
+                                        BaseCreature bc = (BaseCreature)m;
+
+                                        if ( bc.Controlled && bc.ControlMaster != null )
+                                                m = bc.ControlMaster;
+                                        else if ( bc.Summoned && bc.SummonMaster != null )
+                                                m = bc.SummonMaster;
+                                }
+
+                                if ( m == null || m.Deleted || !m.Player )
+                                        continue;
+									
+										int karma1;
+
+                                         if ( this.Karma <= 0 )
+                                         karma1 = this.Karma * -1;
+                                         else
+                                         karma1 = this.Karma;
+									
+									 int monsterstats1 = ( ( this.Fame + karma1 ) / 8 ) + ( this.RawStatTotal * 2 ) + ( ( this.HitsMax + this.StamMax + this.ManaMax ) / 2 ) + ( this.DamageMax - this.DamageMin ) + ( ( this.ColdResistSeed + this.FireResistSeed + this.EnergyResistSeed + this.PhysicalResistanceSeed + this.PoisonResistSeed ) * 2 ) + this.VirtualArmor;
+										
+										if ( this.MinTameSkill > 0 )
+                                                                monsterstats1 += (int)this.MinTameSkill;
+									
+										double Percent1 = ((double)de.DamageGiven / (double)HitsMax) ;
+				             if (Percent1 >= .02)
+							 {
+								if (Percent1 >= 1.01)
+								 Percent1 = 1;
+								
+								if (Percent1 <= 0.5)
+								Percent1 = 0.5;
+								
+							 }
+							 
+							 
+							 
+							 
+								double finalexp1 = 0;//(int)((double)( Utility.RandomMinMax( (int)minexp, (int)maxexp ) )*Percent*Tweaks.XPMod);
+                                                 /*       if ( finalexp > ( ExpRequired - LastLevel ) )
+                                                        {
+                                                                finalexp = (int)( ( ExpRequired - LastLevel ) / 2 );
+                                                        }
+														*/
+														
+														
+					Region re1 = Region.Find( m.Location, m.Map );
+				string regname1 = re1.ToString().ToLower();
+						
+				if (regname1 == "championspawnregion" ) 
+			{
+				if (Tweaks.CXPMod == 0)
+					finalexp1 = 0;
+				else
+					finalexp1 /= (100/Tweaks.CXPMod);//3; //  2/3rds exp for champ spawns, now 1/20th// now 20%
+					//finalexp *= 2; // was *=2, want people out in the world more
+			}
+
+
+				
+									
+									
+						 finalexp1 = ((monsterstats1)*Percent1*Tweaks.XPMod)/10; 
+						 if ( this.IsParagon )
+					finalexp1 *= 2;
+									
+	  Experience.MonsterExp( m, (Mobile)this, this.Location, de.DamageGiven > HitsMaxSeed? 1.0 : (double)de.DamageGiven / (double)HitsMaxSeed,(long)finalexp1 );
+	  Console.WriteLine("{0} has killed a {1}, earning {2} XP!.",m.Name, this.GetType(),finalexp1 );
+						
+			}
+/////End EXPERIENCE/////
+			
 
             InhumanSpeech speechType = SpeechType;
 

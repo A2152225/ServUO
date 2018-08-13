@@ -33,7 +33,7 @@ namespace Server.Misc
             }
 
             RegisterMap(0x7F, 0x7F, 0x7F, Map.SectorSize, Map.SectorSize, 1, "Internal", MapRules.Internal);
-
+	RegisterMap(32, 32, 32, 7168, 4096, 4, "Akara", MapRules.FeluccaRules);
             /* Example of registering a custom map:
             * RegisterMap( 32, 0, 0, 6144, 4096, 3, "Iceland", MapRules.FeluccaRules );
             * 

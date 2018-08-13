@@ -1,0 +1,566 @@
+using System;
+using System.Collections; 
+using Server;
+using Server.Gumps;
+using Server.Mobiles;
+
+namespace Server.Items
+{
+	[Flipable( 0x14EF, 0x14F0 )]
+	public class LargeMonsterContract : Item
+	{
+		private Type m_type;
+		private int m_amount;
+		private int m_killed;
+		private AosAttribute m_AA = (AosAttribute)(0);
+		private AosWeaponAttribute m_AWA = (AosWeaponAttribute)(0);
+		private AosArmorAttribute m_AAA = (AosArmorAttribute)(0);
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public AosAttribute AA
+		{
+			get{ return m_AA; }
+			set{ m_AA = value; }
+		}
+		[CommandProperty( AccessLevel.GameMaster )]
+		public AosWeaponAttribute AWA
+		{
+			get{ return m_AWA; }
+			set{ m_AWA = value; }
+		}
+		[CommandProperty( AccessLevel.GameMaster )]
+		public AosArmorAttribute AAA
+		{
+			get{ return m_AAA; }
+			set{ m_AAA = value; }
+		}
+
+		[CommandProperty( AccessLevel.GameMaster )]
+		public Type Monster
+		{
+			get{ return m_type; }
+			set{ m_type = value; }
+		}
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public int AmountToKill
+		{
+			get{ return m_amount; }
+			set{ m_amount = value; }
+		}
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public int AmountKilled
+		{
+			get{ return m_killed; }
+			set{ m_killed = value; }
+		}
+		
+		[Constructable]
+		public LargeMonsterContract() : base( 0x14EF )
+		{
+                        Hue = 18;
+			Movable = true;
+			LootType = LootType.Blessed;
+			AmountToKill = Utility.Random( 10 ) + 5;
+			Monster = GetRandomMonster( Utility.Random( 5 ) );
+
+			string s;
+			if ( Monster.DeclaringType == null )
+				s = Monster.Name;
+			else
+				s = Monster.FullName;
+
+			int capsbreak = s.IndexOfAny("ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray(),1);
+
+			if( capsbreak > -1 )
+			{
+				string secondhalf = s.Substring( capsbreak );
+ 				string firsthalf = s.Substring(0, capsbreak );
+
+				capsbreak = secondhalf.IndexOfAny("ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray(),1);
+				if( capsbreak > -1 )
+				{
+					string secondhalf2 = secondhalf.Substring( capsbreak );
+ 					string firsthalf2 = secondhalf.Substring(0, capsbreak );
+
+					Name = "a Contract: "+AmountToKill+" "+firsthalf+" "+firsthalf2+" "+secondhalf2+"s";
+				}
+				else
+					Name = "a Contract: "+AmountToKill+" "+firsthalf+" "+secondhalf+"s";
+			}
+			else
+				Name = "a Contract: "+AmountToKill+" "+s+"s";
+
+			AmountKilled = 0;
+		}
+
+		public override void OnDoubleClick( Mobile from )
+		{
+			if( IsChildOf( from.Backpack ) )
+			{
+				from.SendGump( new MonsterContractGump( from, this ) );
+			} 
+			else 
+		    {
+		    	from.SendLocalizedMessage( 1047012 ); // This contract must be in your backpack to use it
+		    }
+		}
+
+		public LargeMonsterContract( Serial serial ) : base( serial ) 
+		{ 
+		} 
+
+		public override void Serialize( GenericWriter writer ) 
+		{ 
+			base.Serialize( writer ); 
+
+			writer.Write( (int) 0 ); // version 
+		
+			if ( m_type != null )
+			{
+				writer.Write( true );
+				if ( m_type.DeclaringType == null )
+					writer.Write( m_type.Name );
+				else
+					writer.Write( m_type.FullName );
+			}
+			else
+				writer.Write( false );
+			writer.Write( m_amount );
+			writer.Write( m_killed );
+			writer.Write( (int)m_AA );
+			writer.Write( (int)m_AWA );
+			writer.Write( (int)m_AAA );
+		}
+
+		public override void Deserialize( GenericReader reader ) 
+		{ 
+			base.Deserialize( reader ); 
+
+			int version = reader.ReadInt(); 
+			
+			if ( reader.ReadBool() )
+				m_type = ScriptCompiler.FindTypeByName( reader.ReadString() );
+
+			m_amount = reader.ReadInt();
+			m_killed = reader.ReadInt();
+			LootType = LootType.Blessed;
+			AA = (AosAttribute)reader.ReadInt();
+			AWA = (AosWeaponAttribute)reader.ReadInt();
+			AAA = (AosArmorAttribute)reader.ReadInt();
+		}
+
+		public Type GetRandomMonster( int genre )
+		{
+			ArrayList list = new ArrayList(); 
+
+			foreach ( Mobile m in World.Mobiles.Values ) 
+			{ 
+				if ( m is BaseCreature ) 
+					list.Add( m ); 
+			} 
+
+			bool[] check = new bool[list.Count];
+
+			for ( int i = 0; i < list.Count; ++i )
+			{
+				Mobile m = (Mobile)list[i];
+
+				if ( m is BaseVendor || m is EvolutionDragon || m is CustomGolem || m is Spirit )
+					check[i] = true;
+			}
+
+			bool nogood = true;
+			for ( int j = 0; j < check.Length; ++j )
+			{
+				if ( nogood )
+					nogood = check[j];
+					
+			}
+
+			int rnd = Utility.RandomMinMax( 0, list.Count-1 );
+
+			if ( list.Count == 0 )
+				return typeof( Mongbat );
+
+			Mobile m2 = (Mobile)list[rnd];
+
+			Type type = m2.GetType();
+
+			if ( type == null || nogood )
+				return typeof( Mongbat );
+
+			while ( m2 is BaseVendor || m2 is EvolutionDragon || m2 is CustomGolem || m2 is Spirit )
+			{
+				int rnd2 = Utility.RandomMinMax( 0, list.Count-1 );
+				type = ((Mobile)list[rnd2]).GetType();
+				m2 = (Mobile)list[rnd2];
+			}
+
+			ChooseAttribute( (BaseCreature)m2 );
+
+			return type;
+		}
+		
+		public string GetAttr()
+		{
+			string str = "";
+
+			if ( AA >= (AosAttribute)1 )
+				str = AA.ToString();
+			else if ( AWA >= (AosWeaponAttribute)1 )
+				str = AWA.ToString();
+			else if ( AAA >= (AosArmorAttribute)1 )
+				str = AAA.ToString();
+
+			return str;
+		}
+
+		public void ChooseAttribute( BaseCreature m )
+		{
+			int karma;
+
+			if ( m.Karma <= 0 )
+				karma = m.Karma * -1;
+			else
+				karma = m.Karma;
+
+			int monsterstats = ( ( m.Fame + karma ) / 5 ) + ( m.RawStatTotal * 3 ) + ( ( m.HitsMaxSeed + m.StamMaxSeed + m.ManaMaxSeed ) * 3 ) + ( m.DamageMax - m.DamageMin ) + ( ( m.ColdResistSeed + m.FireResistSeed + m.EnergyResistSeed + m.PhysicalResistanceSeed + m.PoisonResistSeed ) * 5 ) + m.VirtualArmor;
+
+			int rwd = (int)(monsterstats*0.45*AmountToKill);
+
+			int level;
+
+			if ( rwd <= 25000 )
+				level = 1;
+			else if ( rwd <= 50000 )
+				level = 2;
+			else if ( rwd <= 75000 )
+				level = 3;
+			else
+				level = 4;
+
+			if ( level == 1 )
+			{
+				switch( Utility.Random(3) )
+				{
+					case 0:AA = (AosAttribute)Utility.RandomList(0x00000008,0x00000100,0x00000200,0x00000400,0x00010000,0x00020000,0x00080000,0x00100000);break;
+					case 1:AWA = (AosWeaponAttribute)Utility.RandomList(0x00000001,0x00000002,0x00000800);break;
+					case 2:AAA = (AosArmorAttribute)Utility.RandomList(0x00000001,0x00000002);break;
+				}
+			}
+			else if ( level == 2 )
+			{
+				switch( Utility.Random(2) )
+				{
+					case 0:AA = (AosAttribute)Utility.RandomList(0x00000001,0x00000002,0x00000004,0x00000010,0x00000800,0x00001000,0x00002000);break;
+					case 1:AWA = (AosWeaponAttribute)Utility.RandomList(0x00000020,0x00000040,0x00000080,0x00000100,0x00000200,0x00000400);break;
+				}
+			}
+			else if ( level == 3 )
+			{
+				switch( Utility.Random(3) )
+				{
+					case 0:AA = (AosAttribute)Utility.RandomList(0x00000020,0x00000040,0x00000080,0x00040000);break;
+					case 1:AWA = (AosWeaponAttribute)Utility.RandomList(0x00001000,0x00002000,0x00004000,0x00008000,0x00010000);break;
+					case 2:AAA = (AosArmorAttribute)Utility.RandomList(0x00000004);break;
+				}
+			}
+			else if ( level == 4 )
+			{
+				switch( Utility.Random(2) )
+				{
+					case 0:AA = (AosAttribute)Utility.RandomList(0x00004000,0x00008000,0x00200000);break;
+					case 1:AWA = (AosWeaponAttribute)Utility.RandomList(0x00000004,0x00000008,0x00000010);break;
+				}
+			}
+		}
+		
+		public bool CheckAttribute( Item item, AosAttribute attr )
+		{
+			if ( item is BaseWeapon )
+			{
+				BaseWeapon b = (BaseWeapon)item;
+
+				if ( attr == AosAttribute.WeaponDamage && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.DefendChance && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusDex && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.EnhancePotions && b.Attributes[attr] < 30 )
+					return true;
+				else if ( attr == AosAttribute.CastRecovery && b.Attributes[attr] < 1 )
+					return true;
+				else if ( attr == AosAttribute.CastSpeed && b.Attributes[attr] < 1 )
+					return true;
+				else if ( attr == AosAttribute.AttackChance && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusHits && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.BonusInt && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.LowerManaCost && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.LowerRegCost && b.Attributes[attr] < 20 )
+					return true;
+				else if ( attr == AosAttribute.Luck && b.GetLuckBonus()+b.Attributes[attr] < 100 )
+					return true;
+				else if ( attr == AosAttribute.BonusMana && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.RegenMana && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.ReflectPhysical && b.Attributes[attr] < 30 )
+					return true;
+				else if ( attr == AosAttribute.RegenStam && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.RegenHits && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.SpellDamage && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusStam && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.BonusStr && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.WeaponSpeed && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.SpellChanneling && b.Attributes[attr] < 1 )
+					return true;
+			}
+			else if ( item is BaseArmor )
+			{
+				BaseArmor b = (BaseArmor)item;
+
+				if ( attr == AosAttribute.WeaponDamage && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.DefendChance && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusDex && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.EnhancePotions && b.Attributes[attr] < 30 )
+					return true;
+				else if ( attr == AosAttribute.CastRecovery && b.Attributes[attr] < 1 )
+					return true;
+				else if ( attr == AosAttribute.CastSpeed && b.Attributes[attr] < 1 )
+					return true;
+				else if ( attr == AosAttribute.AttackChance && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusHits && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.BonusInt && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.LowerManaCost && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.LowerRegCost && b.Attributes[attr] < 20 )
+					return true;
+				else if ( attr == AosAttribute.Luck && b.GetLuckBonus()+b.Attributes[attr] < 100 )
+					return true;
+				else if ( attr == AosAttribute.BonusMana && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.RegenMana && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.ReflectPhysical && b.Attributes[attr] < 30 )
+					return true;
+				else if ( attr == AosAttribute.RegenStam && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.RegenHits && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.SpellDamage && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusStam && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.BonusStr && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.WeaponSpeed && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.SpellChanneling && b.Attributes[attr] < 1 )
+					return true;
+			}
+			else if ( item is BaseJewel )
+			{
+				BaseJewel b = (BaseJewel)item;
+
+				if ( attr == AosAttribute.WeaponDamage && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.DefendChance && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusDex && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.EnhancePotions && b.Attributes[attr] < 30 )
+					return true;
+				else if ( attr == AosAttribute.CastRecovery && b.Attributes[attr] < 1 )
+					return true;
+				else if ( attr == AosAttribute.CastSpeed && b.Attributes[attr] < 1 )
+					return true;
+				else if ( attr == AosAttribute.AttackChance && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusHits && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.BonusInt && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.LowerManaCost && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.LowerRegCost && b.Attributes[attr] < 20 )
+					return true;
+				else if ( attr == AosAttribute.Luck && b.Attributes[attr] < 100 )
+					return true;
+				else if ( attr == AosAttribute.BonusMana && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.RegenMana && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.ReflectPhysical && b.Attributes[attr] < 30 )
+					return true;
+				else if ( attr == AosAttribute.RegenStam && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.RegenHits && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.SpellDamage && b.Attributes[attr] < 40 )
+					return true;
+				else if ( attr == AosAttribute.BonusStam && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.BonusStr && b.Attributes[attr] < 10 )
+					return true;
+				else if ( attr == AosAttribute.WeaponSpeed && b.Attributes[attr] < 15 )
+					return true;
+				else if ( attr == AosAttribute.SpellChanneling && b.Attributes[attr] < 1 )
+					return true;
+			}
+
+			return false;
+		}
+		public bool CheckAttribute( BaseWeapon b, AosWeaponAttribute attr )
+		{
+			if ( attr == AosWeaponAttribute.LowerStatReq && b.GetLowerStatReq() < 40 )
+				return true;
+			else if ( attr == AosWeaponAttribute.SelfRepair && b.WeaponAttributes[attr] < 10 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitColdArea && b.WeaponAttributes[attr] < 60 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitDispel && b.WeaponAttributes[attr] < 100 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitEnergyArea && b.WeaponAttributes[attr] < 60 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitFireArea && b.WeaponAttributes[attr] < 60 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitFireball && b.WeaponAttributes[attr] < 50 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitHarm && b.WeaponAttributes[attr] < 50 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitLeechHits && b.WeaponAttributes[attr] < 40 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitLightning && b.WeaponAttributes[attr] < 50 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitLowerAttack && b.WeaponAttributes[attr] < 40 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitLowerDefend && b.WeaponAttributes[attr] < 40 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitMagicArrow && b.WeaponAttributes[attr] < 50 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitLeechMana && b.WeaponAttributes[attr] < 40 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitPhysicalArea && b.WeaponAttributes[attr] < 60 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitPoisonArea && b.WeaponAttributes[attr] < 60 )
+				return true;
+			else if ( attr == AosWeaponAttribute.HitLeechStam && b.WeaponAttributes[attr] < 40 )
+				return true;
+
+			return false;
+		}
+		public bool CheckAttribute( BaseArmor b, AosArmorAttribute attr )
+		{
+			if ( attr == AosArmorAttribute.LowerStatReq && b.GetLowerStatReq() < 40 )
+				return true;
+			else if ( attr == AosArmorAttribute.SelfRepair && b.WeaponAttributes[attr] < 10 )
+				return true;
+			else if ( attr == AosArmorAttribute.MageArmor && b.ArmorAttributes[attr] < 1 )
+				return true;
+
+			return false;
+		}
+
+		public bool ApplyAttribute( Mobile from, Item item )
+		{
+			if ( item is BaseWeapon )
+			{
+				BaseWeapon b = (BaseWeapon)item;
+
+				if ( AA > 0 && CheckAttribute( b, AA ) )
+				{
+					b.Attributes[AA] += 1;
+					return true;
+				}
+				else if ( AWA > 0 && CheckAttribute( b, AWA ) )
+				{
+					b.WeaponAttributes[AWA] += 1;
+					return true;
+				}
+				else if ( AAA == AosArmorAttribute.LowerStatReq && CheckAttribute( b, AosWeaponAttribute.LowerStatReq ) )
+				{
+					b.WeaponAttributes.LowerStatReq += 1;
+					return true;
+				}
+				else if ( AAA == AosArmorAttribute.SelfRepair && CheckAttribute( b, AosWeaponAttribute.SelfRepair ) )
+				{
+					b.WeaponAttributes.SelfRepair += 1;
+					return true;
+				}
+				else if ( AAA == AosArmorAttribute.DurabilityBonus && CheckAttribute( b, AosWeaponAttribute.DurabilityBonus ) )
+				{
+					b.WeaponAttributes.DurabilityBonus += 1;
+					return true;
+				}
+				else
+					from.SendMessage( "You cannot apply this attribute to that item." );
+			}
+			else if ( item is BaseArmor )
+			{
+				BaseArmor b = (BaseArmor)item;
+
+				if ( AA > 0 && AA != AosAttribute.SpellChanneling )
+				{
+					b.Attributes[AA] += 1;
+					return true;
+				}
+				else if ( AAA > 0 && CheckAttribute( b, AAA ) )
+				{
+					b.ArmorAttributes[AAA] += 1;
+					return true;
+				}
+				else if ( AWA == AosWeaponAttribute.LowerStatReq && CheckAttribute( b, AosArmorAttribute.LowerStatReq ) )
+				{
+					b.ArmorAttributes.LowerStatReq += 1;
+					return true;
+				}
+				else if ( AWA == AosWeaponAttribute.SelfRepair && CheckAttribute( b, AosArmorAttribute.SelfRepair ) )
+				{
+					b.ArmorAttributes.SelfRepair += 1;
+					return true;
+				}
+				else if ( AWA == AosWeaponAttribute.DurabilityBonus && CheckAttribute( b, AosArmorAttribute.DurabilityBonus ) )
+				{
+					b.ArmorAttributes.DurabilityBonus += 1;
+					return true;
+				}
+				else
+					from.SendMessage( "You cannot apply this attribute to that item." );
+			}
+			else if ( item is BaseJewel )
+			{
+				BaseJewel b = (BaseJewel)item;
+
+				if ( AA > 0 && CheckAttribute( b, AAA ) && AA != AosAttribute.SpellChanneling )
+				{
+					b.Attributes[AA] += 1;
+					return true;
+				}
+				else
+					from.SendMessage( "You cannot apply this attribute to that item." );
+			}
+			else
+				from.SendMessage( "That does not have attributes." );
+			return false;
+		}
+	}
+}

@@ -1,0 +1,137 @@
+using System;
+using Server;
+using System.Collections;
+using Server.Items;
+using Server.ContextMenus;
+using Server.Misc;
+using Server.Network; 
+using Server.Spells;
+using Server.Mobiles;
+using Server.Targeting;
+
+
+namespace Server.Items
+{
+
+    public class EscapePotion : Item
+    {
+private Mobile m_Mobile;
+
+        [Constructable]
+        public EscapePotion() : base(0xF04)
+          
+        {
+            Weight = 1.0;
+            ItemID = 3844;
+			Hue = 1174;
+			Stackable = true;
+			Name = "Escape Formula #1";
+        }
+		    
+			[Constructable]
+        public EscapePotion(int amount) : base(0xF04)
+        {
+            Weight = 1.0;
+			Hue = 1174;
+			Amount = amount;
+            ItemID = 3844;
+			Stackable = true;
+			Name = "Escape Formula #1";
+        }
+		
+		
+		public Timer m_Timer;
+	//	public static Mobile m_Mobile;
+	public override void OnDoubleClick(Mobile from)
+{
+
+if ( !IsChildOf( from.Backpack ) )
+			{
+				from.SendLocalizedMessage( 1042001 ); // That must be in your pack for you to use it.
+				
+			}
+else if (from.Frozen == true || from.Paralyzed == true)
+{
+ClearIce(from);
+
+	m_Timer = new InternalTimer( from, TimeSpan.FromSeconds( 12.0 ) );
+				m_Timer.Start();
+				
+				this.Delete();
+				//from.SendMessage("Debug this {0}1{1}2{2}3",from.Name,from.Frozen,from.Name);
+				from.Hidden = true;
+					
+}
+else 
+{
+from.SendMessage("You have no need to use this potion at this time.");
+}
+			
+
+}
+public void ClearIce(Mobile from)
+{ 
+
+//Mobile m_Mobile = from;
+ArrayList list = new ArrayList();
+
+			foreach ( Item i in from.GetItemsInRange( 1 ) )
+			{
+
+				if ( i is Item && ( i.Name == "ice bond" ))
+					list.Add( i );
+				
+			}
+		foreach( Item i in list)
+		i.Delete();
+
+
+
+
+from.Frozen = false;
+from.Paralyzed = false;
+from.Hidden = true;
+from.AllowedStealthSteps += 40;
+from.Hidden = true;
+from.SendMessage("You Are Free!!");
+}
+private class InternalTimer : Timer
+			{
+					
+
+				public InternalTimer( Mobile from, TimeSpan duration ) : base( duration )
+				{
+					Priority = TimerPriority.FiftyMS;
+
+				from.EndAction( typeof( IceBonds ) );
+				from.Hidden = true;
+				
+			}
+
+			
+			}
+			
+
+
+		
+    
+        public EscapePotion (Serial serial) : base(serial)
+        {
+        }
+
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.Write((int)0); //Version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadInt();
+        }   
+    }
+}
+
