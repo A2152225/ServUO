@@ -409,7 +409,8 @@ namespace Server
 		public static Map Tokuno { get { return m_Maps[4]; } }
 		public static Map TerMur { get { return m_Maps[5]; } }
 		public static Map Internal { get { return m_Maps[0x7F]; } }
-
+		public static Map Akara { get { return m_Maps[32]; } }
+		//Add New MAPS HERE
 		private static readonly List<Map> m_AllMaps = new List<Map>();
 
 		public static List<Map> AllMaps { get { return m_AllMaps; } }
@@ -2776,7 +2777,7 @@ namespace Server
 		}
 
 		#region Line Of Sight
-		private static int m_MaxLOSDistance = 25;
+		private static int m_MaxLOSDistance = 40;
 
 		public static int MaxLOSDistance { get { return m_MaxLOSDistance; } set { m_MaxLOSDistance = value; } }
 
@@ -2897,7 +2898,8 @@ namespace Server
 				if (landZ <= pointTop && landTop >= point.m_Z &&
 					(point.m_X != end.m_X || point.m_Y != end.m_Y || landZ > endTop || landTop < end.m_Z) && !landTile.Ignored)
 				{
-					return false;
+					
+					return true; //false;  MIning fix?
 				}
 
 				/* --Do land tiles need to be checked?  There is never land between two people, always statics.--
