@@ -4970,7 +4970,9 @@ namespace Server.Mobiles
 			switch (version)
 			{
                 case 37:
-               /* Uncomment after 1 save //    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
+                   m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
+				   
+				   
 		m_XPIncrease = reader.ReadDouble();
 		m_MaxDifficulty = (Difficulty)reader.ReadEncodedInt();
 		m_ParagonPoints = reader.ReadInt();
@@ -4992,7 +4994,7 @@ namespace Server.Mobiles
 		m_ParagonPoints15 = reader.ReadInt();
 		m_ParagonPoints16 = reader.ReadInt();
 			
-				*/
+				
 			m_YoungSaves = reader.ReadInt();
 				 m_LastLevelExpL = reader.ReadLong();
                  m_EXPL = reader.ReadLong();
