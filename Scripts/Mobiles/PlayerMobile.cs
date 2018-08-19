@@ -51,6 +51,8 @@ using RankDefinition = Server.Guilds.RankDefinition;
 
 namespace Server.Mobiles
 {
+	
+	
 
 	#region Enums
 	[Flags]
@@ -211,6 +213,11 @@ namespace Server.Mobiles
 			Instances = new List<PlayerMobile>(0x1000);
 		}
 
+		#region Flying Carpet
+		public Item m_CarpetItem;
+		public Timer m_Volotimer;
+		#endregion
+		
 		#region Mount Blocking
 		public void SetMountBlock(BlockMountType type, TimeSpan duration, bool dismount)
 		{
@@ -2524,6 +2531,8 @@ namespace Server.Mobiles
 
 		public override bool Move(Direction d)
 		{
+
+			
 			NetState ns = NetState;
 
 			if (ns != null)
@@ -2541,7 +2550,20 @@ namespace Server.Mobiles
 					}
 				}
 			}
+			#region Flying Carpet
+if (HasGump( typeof( FlyingCarpetgump ) ))
+{
+if ( m_Volotimer != null )
+{
+m_Volotimer.Stop();
+m_Volotimer = null;
+CloseGump( typeof( FlyingCarpetgump ) );
 
+if(InRange(m_CarpetItem,0))
+SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
+}
+}
+#endregion
 			int speed = ComputeMovementSpeed(d);
 
 			bool res;

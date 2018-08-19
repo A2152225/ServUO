@@ -807,6 +807,11 @@ namespace Server.Spells
 
         public static bool CheckTravel(Mobile caster, Map map, Point3D loc, TravelCheckType type)
         {
+			  if (caster == null)
+				  return false;
+			  
+			
+				
             if (IsInvalid(map, loc)) // null, internal, out of bounds
             {
                 if (caster != null)
@@ -884,6 +889,15 @@ namespace Server.Spells
             return isValid;
         }
 
+		
+		
+		 public static bool CheckTravelI(Map map, Point3D loc, TravelCheckType type)
+        {
+			  		  
+			     return true;  //only called by FlyingCarpet
+        }
+
+		
         public static bool IsWindLoc(Point3D loc)
         {
             int x = loc.X, y = loc.Y;
