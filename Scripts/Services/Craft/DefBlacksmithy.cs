@@ -939,15 +939,26 @@ namespace Server.Engines.Craft
             // Add every material you want the player to be able to choose from
             // This will override the overridable material
             AddSubRes(typeof(IronIngot), 1044022, 00.0, 1044036, 1044267);
-            AddSubRes(typeof(DullCopperIngot), 1044023, 65.0, 1044036, 1044268);
-            AddSubRes(typeof(ShadowIronIngot), 1044024, 70.0, 1044036, 1044268);
-            AddSubRes(typeof(CopperIngot), 1044025, 75.0, 1044036, 1044268);
-            AddSubRes(typeof(BronzeIngot), 1044026, 80.0, 1044036, 1044268);
-            AddSubRes(typeof(GoldIngot), 1044027, 85.0, 1044036, 1044268);
-            AddSubRes(typeof(AgapiteIngot), 1044028, 90.0, 1044036, 1044268);
-            AddSubRes(typeof(VeriteIngot), 1044029, 95.0, 1044036, 1044268);
-            AddSubRes(typeof(ValoriteIngot), 1044030, 99.0, 1044036, 1044268);
-
+            AddSubRes(typeof(DullCopperIngot), 1044023, 35.0, 1044036, 1044268);
+            AddSubRes(typeof(ShadowIronIngot), 1044024, 40.0, 1044036, 1044268);
+            AddSubRes(typeof(CopperIngot), 1044025, 45.0, 1044036, 1044268);
+            AddSubRes(typeof(BronzeIngot), 1044026, 50.0, 1044036, 1044268);
+            AddSubRes(typeof(GoldIngot), 1044027, 55.0, 1044036, 1044268);
+            AddSubRes(typeof(AgapiteIngot), 1044028, 60.0, 1044036, 1044268);
+            AddSubRes(typeof(VeriteIngot), 1044029, 65.0, 1044036, 1044268);
+            AddSubRes(typeof(ValoriteIngot), 1044030, 70.0, 1044036, 1044268);
+			AddSubRes(typeof(BlazeIngot), 1044030, 75.0, 1044036, 1044268);
+			AddSubRes(typeof(IceIngot), 1044030, 80.0, 1044036, 1044268);
+			AddSubRes(typeof(ToxicIngot), 1044030, 85.0, 1044036, 1044268);
+			AddSubRes(typeof(ElectrumIngot), 1044030, 90.0, 1044036, 1044268);
+			AddSubRes(typeof(PlatinumIngot), 1044030, 95.0, 1044036, 1044268);
+			AddSubRes(typeof(RoyaliteIngot), 1044030, 97.0, 1044036, 1044268);
+			AddSubRes(typeof(DaniteIngot), 1044030, 99.0, 1044036, 1044268);
+			
+			
+				
+				
+				
             SetSubRes2(typeof(RedScales), 1060875);
 
             AddSubRes2(typeof(RedScales), 1060875, 0.0, 1053137, 1044268);

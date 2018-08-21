@@ -474,7 +474,7 @@ namespace Server.Engines.BulkOrders
 
             if (bod.AmountMax == 20 && (!CanBeExceptional(bod) || bod.RequireExceptional) &&
                      (!CanUseMaterial(bod) ||
-                     (bod.Material == BulkMaterialType.Valorite ||
+                     (bod.Material == BulkMaterialType.Danite ||
                       bod.Material == BulkMaterialType.Frostwood ||
                       bod.Material == BulkMaterialType.Barbed)))
             {
@@ -571,7 +571,7 @@ namespace Server.Engines.BulkOrders
                 picker.Add(1);
             }
 
-            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Valorite)
+            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Danite)
             {
                 picker.Add(2);
             }
@@ -625,6 +625,13 @@ namespace Server.Engines.BulkOrders
                 case BulkMaterialType.Agapite: worth += 400; break;
                 case BulkMaterialType.Verite: worth += 500; break;
                 case BulkMaterialType.Valorite: worth += 600; break;
+				       case BulkMaterialType.Blaze: worth += 700; break;
+					          case BulkMaterialType.Ice: worth += 800; break;
+							         case BulkMaterialType.Toxic: worth += 900; break;
+									        case BulkMaterialType.Electrum: worth += 1000; break;
+											       case BulkMaterialType.Platinum: worth += 1200; break;
+												          case BulkMaterialType.Royalite: worth += 1250; break;
+														         case BulkMaterialType.Danite: worth += 1300; break;
                 case BulkMaterialType.Spined: worth += 100; break;
                 case BulkMaterialType.Horned: worth += 250; break;
                 case BulkMaterialType.Barbed: worth += 500; break;

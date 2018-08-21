@@ -5,36 +5,66 @@ namespace Server.Items
 {
     public enum CraftResource
     {
-        None = 0,
-        Iron = 1,
-        DullCopper,
-        ShadowIron,
-        Copper,
-        Bronze,
-        Gold,
-        Agapite,
-        Verite,
-        Valorite,
+		None = 0,
+		Iron = 1,
+		DullCopper,
+		ShadowIron,
+		Copper,
+		Bronze,
+		Gold,
+		Agapite,
+		Verite,
+		Valorite,
+		//daat99 OWLTR start - custom ores
+		Blaze,
+		Ice,
+		Toxic,
+		Electrum,
+		Platinum,
+		//daat99 OWLTR end - custom ores
+		Royalite,
+		Danite, 
 
-        RegularLeather = 101,
-        SpinedLeather,
-        HornedLeather,
-        BarbedLeather,
+		RegularLeather = 101,
+		SpinedLeather,
+		HornedLeather,
+		BarbedLeather,
+		//daat99 OWLTR start - custom leather
+		PolarLeather,
+		SyntheticLeather,
+		BlazeLeather,
+		DaemonicLeather,
+		ShadowLeather,
+		FrostLeather,
+		EtherealLeather,
+		//daat99 OWLTR end - custom leather
 
-        RedScales = 201,
-        YellowScales,
-        BlackScales,
-        GreenScales,
-        WhiteScales,
-        BlueScales,
+		RedScales = 201,
+		YellowScales,
+		BlackScales,
+		GreenScales,
+		WhiteScales,
+		BlueScales,
+		//daat99 OWLTR start - custom scales
+		CopperScales,
+		SilverScales,
+		GoldScales,
+		//daat99 OWLTR end - custom scales
 
-        RegularWood = 301,
+		//daat99 OWLTR start - custom wood
+		RegularWood = 301,
         OakWood,
         AshWood,
         YewWood,
-        Heartwood,
-        Bloodwood,
-        Frostwood
+		Heartwood,
+		Bloodwood,
+		Frostwood,
+		Ebony,
+		Bamboo,
+		PurpleHeart,
+		Redwood,
+		Petrified
+		//daat99 OWLTR end - custom wood
     }
 
     public enum CraftResourceType
@@ -165,433 +195,589 @@ namespace Server.Items
         }
 
         public static readonly CraftAttributeInfo Blank;
-        public static readonly CraftAttributeInfo DullCopper, ShadowIron, Copper, Bronze, Golden, Agapite, Verite, Valorite;
-        public static readonly CraftAttributeInfo Spined, Horned, Barbed;
-        public static readonly CraftAttributeInfo RedScales, YellowScales, BlackScales, GreenScales, WhiteScales, BlueScales;
-        public static readonly CraftAttributeInfo OakWood, AshWood, YewWood, Heartwood, Bloodwood, Frostwood;
+        public static readonly CraftAttributeInfo DullCopper, ShadowIron, Copper, Bronze, Golden, Agapite, Verite, Valorite, Blaze, Ice, Toxic, Electrum, Platinum, Royalite, Danite;
+		public static readonly CraftAttributeInfo Spined, Horned, Barbed, Polar, Synthetic, BlazeL, Daemonic, Shadow, Frost, Ethereal;
+		public static readonly CraftAttributeInfo RedScales, YellowScales, BlackScales, GreenScales, WhiteScales, BlueScales, CopperScales, SilverScales, GoldScales;
+        public static readonly CraftAttributeInfo OakWood, AshWood, YewWood, Heartwood, Bloodwood, Frostwood, Ebony, Bamboo, PurpleHeart, Redwood, Petrified;
 
         static CraftAttributeInfo()
         {
             Blank = new CraftAttributeInfo();
 
-            CraftAttributeInfo dullCopper = DullCopper = new CraftAttributeInfo();
+            //daat99 OWLTR start - custom resources
+			bool Uber = true;// OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.UBBER_RESOURCES);
+			CraftAttributeInfo dullCopper = DullCopper = new CraftAttributeInfo();
 
-            dullCopper.ArmorPhysicalResist = 10;
-            dullCopper.ArmorDurability = 50;
-            dullCopper.ArmorLowerRequirements = 20;
-            dullCopper.WeaponDurability = 100;
-            dullCopper.WeaponLowerRequirements = 50;
-            dullCopper.RunicMinAttributes = 1;
-            dullCopper.RunicMaxAttributes = 2;
+			dullCopper.ArmorPhysicalResist = Uber ? 1 : Utility.Random(2);
+			dullCopper.ArmorFireResist = Uber ? 1 : Utility.Random(2);
+			dullCopper.ArmorColdResist = Uber ? 1 : Utility.Random(2);
+			dullCopper.ArmorPoisonResist = Uber ? 1 : Utility.Random(2);
+			dullCopper.ArmorEnergyResist = Uber ? 1 : Utility.Random(2);
+			dullCopper.ArmorDurability = 10;
+			dullCopper.WeaponDurability = 10;
+			dullCopper.ArmorLowerRequirements = 5;
+			dullCopper.WeaponLowerRequirements = 5;
+			dullCopper.RunicMinAttributes = 1;
+			dullCopper.RunicMaxAttributes = Uber ? 2 : 1;
+			dullCopper.RunicMinIntensity = Uber ?  25 : 10;
+			dullCopper.RunicMaxIntensity = Uber ? 100 : 25;
 
-            if (Core.ML)
-            {
-                dullCopper.RunicMinIntensity = 40;
-                dullCopper.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                dullCopper.RunicMinIntensity = 10;
-                dullCopper.RunicMaxIntensity = 35;
-            }
+			CraftAttributeInfo shadowIron = ShadowIron = new CraftAttributeInfo();
 
-            CraftAttributeInfo shadowIron = ShadowIron = new CraftAttributeInfo();
+			shadowIron.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
+			shadowIron.ArmorFireResist = Uber ? 1 : Utility.Random(2);
+			shadowIron.ArmorColdResist = Uber ? 1 : Utility.Random(2);
+			shadowIron.ArmorPoisonResist = Uber ? 1 : Utility.Random(2);
+			shadowIron.ArmorEnergyResist = Uber ? 1 : Utility.Random(2);
+			shadowIron.ArmorDurability = 20;
+			shadowIron.WeaponDurability = 20;
+			shadowIron.ArmorLowerRequirements = 10;
+			shadowIron.WeaponLowerRequirements = 10;
+			shadowIron.WeaponColdDamage = 20;
+			shadowIron.RunicMinAttributes = 1;
+			shadowIron.RunicMaxAttributes = Uber ? 3 : 2;
+			shadowIron.RunicMinIntensity = Uber ? 30 : 15;
+			shadowIron.RunicMaxIntensity = Uber ? 100 : 30;
 
-            shadowIron.ArmorPhysicalResist = 3;
-            shadowIron.ArmorFireResist = 2;
-            shadowIron.ArmorEnergyResist = 7;
-            shadowIron.ArmorDurability = 100;
+			CraftAttributeInfo copper = Copper = new CraftAttributeInfo();
 
-            shadowIron.WeaponColdDamage = 20;
-            shadowIron.WeaponDurability = 50;
+			copper.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
+			copper.ArmorFireResist = Uber ? 2 : Utility.Random(3);
+			copper.ArmorColdResist = Uber ? 2 : Utility.Random(3);
+			copper.ArmorPoisonResist = Uber ? 2 : Utility.Random(3);
+			copper.ArmorEnergyResist = Uber ? 2 : Utility.Random(3);
+			copper.ArmorDurability = 30;
+			copper.WeaponDurability = 30;
+			copper.ArmorLowerRequirements = 15;
+			copper.WeaponLowerRequirements = 15;
+			copper.WeaponPoisonDamage = 10;
+			copper.WeaponEnergyDamage = 20;
+			copper.RunicMinAttributes = 2;
+			copper.RunicMaxAttributes = Uber ? 3 : 2;
+			copper.RunicMinIntensity = Uber ? 40 : 20;
+			copper.RunicMaxIntensity = Uber ? 100 : 40;
 
-            shadowIron.RunicMinAttributes = 2;
-            shadowIron.RunicMaxAttributes = 2;
-            if (Core.ML)
-            {
-                shadowIron.RunicMinIntensity = 45;
-                shadowIron.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                shadowIron.RunicMinIntensity = 20;
-                shadowIron.RunicMaxIntensity = 45;
-            }
+			CraftAttributeInfo bronze = Bronze = new CraftAttributeInfo();
 
-            CraftAttributeInfo copper = Copper = new CraftAttributeInfo();
+			bronze.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
+			bronze.ArmorFireResist = Uber ? 3 : Utility.Random(4);
+			bronze.ArmorColdResist = Uber ? 2 : Utility.Random(3);
+			bronze.ArmorPoisonResist = Uber ? 2 : Utility.Random(3);
+			bronze.ArmorEnergyResist = Uber ? 2 : Utility.Random(3);
+			bronze.ArmorDurability = 40;
+			bronze.WeaponDurability = 40;
+			bronze.ArmorLowerRequirements = 20;
+			bronze.WeaponLowerRequirements = 20;
+			bronze.WeaponFireDamage = 40;
+			bronze.RunicMinAttributes = 2;
+			bronze.RunicMaxAttributes = Uber ? 4 : 3;
+			bronze.RunicMinIntensity = Uber ?  45 : 25;
+			bronze.RunicMaxIntensity = Uber ? 100 : 45;
 
-            copper.ArmorPhysicalResist = 2;
-            copper.ArmorFireResist = 2;
-            copper.ArmorPoisonResist = 7;
-            copper.ArmorEnergyResist = 2;
-            copper.WeaponPoisonDamage = 10;
-            copper.WeaponEnergyDamage = 20;
-            copper.RunicMinAttributes = 2;
-            copper.RunicMaxAttributes = 3;
-            if (Core.ML)
-            {
-                copper.RunicMinIntensity = 50;
-                copper.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                copper.RunicMinIntensity = 25;
-                copper.RunicMaxIntensity = 50;
-            }
+			CraftAttributeInfo golden = Golden = new CraftAttributeInfo();
 
-            CraftAttributeInfo bronze = Bronze = new CraftAttributeInfo();
+			golden.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
+			golden.ArmorFireResist = Uber ? 3 : Utility.Random(4);
+			golden.ArmorColdResist = Uber ? 3 : Utility.Random(4);
+			golden.ArmorPoisonResist = Uber ? 3 : Utility.Random(4);
+			golden.ArmorEnergyResist = Uber ? 3 : Utility.Random(4);
+			golden.ArmorDurability = 55;
+			golden.WeaponDurability = 55;
+			golden.ArmorLowerRequirements = 25;
+			golden.WeaponLowerRequirements = 25;
+			golden.ArmorLuck = 40;
+			golden.ArmorLowerRequirements = 30;
+			golden.WeaponLuck = 40;
+			golden.WeaponLowerRequirements = 50;
+			golden.RunicMinAttributes = 2;
+			golden.RunicMaxAttributes = Uber ? 5 : 3;
+			golden.RunicMinIntensity = Uber ?  50 : 30;
+			golden.RunicMaxIntensity = Uber ? 100 : 50;
 
-            bronze.ArmorPhysicalResist = 3;
-            bronze.ArmorColdResist = 7;
-            bronze.ArmorPoisonResist = 2;
-            bronze.ArmorEnergyResist = 2;
-            bronze.WeaponFireDamage = 40;
-            bronze.RunicMinAttributes = 3;
-            bronze.RunicMaxAttributes = 3;
-            if (Core.ML)
-            {
-                bronze.RunicMinIntensity = 55;
-                bronze.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                bronze.RunicMinIntensity = 30;
-                bronze.RunicMaxIntensity = 65;
-            }
+			CraftAttributeInfo agapite = Agapite = new CraftAttributeInfo();
 
-            CraftAttributeInfo golden = Golden = new CraftAttributeInfo();
+			agapite.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
+			agapite.ArmorFireResist = Uber ? 3 : Utility.Random(4);
+			agapite.ArmorColdResist = Uber ? 4 : Utility.Random(5);
+			agapite.ArmorPoisonResist = Uber ? 3 : Utility.Random(4);
+			agapite.ArmorEnergyResist = Uber ? 3 : Utility.Random(4);
+			agapite.ArmorDurability = 70;
+			agapite.WeaponDurability = 70;
+			agapite.ArmorLowerRequirements = 30;
+			agapite.WeaponLowerRequirements = 30;
+			agapite.WeaponColdDamage = 30;
+			agapite.WeaponEnergyDamage = 20;
+			agapite.RunicMinAttributes = 3;
+			agapite.RunicMaxAttributes = Uber ? 5 : 3;
+			agapite.RunicMinIntensity = Uber ?  55 : 35;
+			agapite.RunicMaxIntensity = Uber ? 100 : 55;
 
-            golden.ArmorPhysicalResist = 2;
-            golden.ArmorFireResist = 2;
-            golden.ArmorColdResist = 2;
-            golden.ArmorEnergyResist = 3;
-            golden.ArmorLuck = 40;
-            golden.ArmorLowerRequirements = 30;
-            golden.WeaponLuck = 40;
-            golden.WeaponLowerRequirements = 50;
-            golden.RunicMinAttributes = 3;
-            golden.RunicMaxAttributes = 4;
-            if (Core.ML)
-            {
-                golden.RunicMinIntensity = 60;
-                golden.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                golden.RunicMinIntensity = 35;
-                golden.RunicMaxIntensity = 75;
-            }
+			CraftAttributeInfo verite = Verite = new CraftAttributeInfo();
 
-            CraftAttributeInfo agapite = Agapite = new CraftAttributeInfo();
+			verite.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
+			verite.ArmorFireResist = Uber ? 4 : Utility.Random(5);
+			verite.ArmorColdResist = Uber ? 4 : Utility.Random(5);
+			verite.ArmorPoisonResist = Uber ? 4 : Utility.Random(5);
+			verite.ArmorEnergyResist = Uber ? 4 : Utility.Random(5);
+			verite.ArmorDurability = 85;
+			verite.WeaponDurability = 85;
+			verite.ArmorLowerRequirements = 40;
+			verite.WeaponLowerRequirements = 40;
+			verite.WeaponPoisonDamage = 40;
+			verite.WeaponEnergyDamage = 20;
+			verite.RunicMinAttributes = 3;
+			verite.RunicMaxAttributes = Uber ? 5 : 4;
+			verite.RunicMinIntensity = Uber ?  65 : 40;
+			verite.RunicMaxIntensity = Uber ? 100 : 65;
 
-            agapite.ArmorPhysicalResist = 2;
-            agapite.ArmorFireResist = 7;
-            agapite.ArmorColdResist = 2;
-            agapite.ArmorPoisonResist = 2;
-            agapite.ArmorEnergyResist = 2;
-            agapite.WeaponColdDamage = 30;
-            agapite.WeaponEnergyDamage = 20;
-            agapite.RunicMinAttributes = 4;
-            agapite.RunicMaxAttributes = 4;
-            if (Core.ML)
-            {
-                agapite.RunicMinIntensity = 65;
-                agapite.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                agapite.RunicMinIntensity = 40;
-                agapite.RunicMaxIntensity = 80;
-            }
+			CraftAttributeInfo valorite = Valorite = new CraftAttributeInfo();
 
-            CraftAttributeInfo verite = Verite = new CraftAttributeInfo();
+			valorite.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
+			valorite.ArmorFireResist = Uber ? 4 : Utility.Random(5);
+			valorite.ArmorColdResist = Uber ? 4 : Utility.Random(5);
+			valorite.ArmorPoisonResist = Uber ? 5 : Utility.Random(6);
+			valorite.ArmorEnergyResist = Uber ? 4 : Utility.Random(5);
+			valorite.ArmorDurability = 100;
+			valorite.WeaponDurability = 100;
+			valorite.ArmorLowerRequirements = 50;
+			valorite.WeaponLowerRequirements = 50;
+			valorite.WeaponFireDamage = 10;
+			valorite.WeaponColdDamage = 20;
+			valorite.WeaponPoisonDamage = 10;
+			valorite.WeaponEnergyDamage = 20;
+			valorite.RunicMinAttributes = 4;
+			valorite.RunicMaxAttributes = Uber ? 6 : 4;
+			valorite.RunicMinIntensity = Uber ?  70 : 45;
+			valorite.RunicMaxIntensity = Uber ? 100 : 70;
 
-            verite.ArmorPhysicalResist = 4;
-            verite.ArmorFireResist = 4;
-            verite.ArmorColdResist = 3;
-            verite.ArmorPoisonResist = 4;
-            verite.ArmorEnergyResist = 1;
-            verite.WeaponPoisonDamage = 40;
-            verite.WeaponEnergyDamage = 20;
-            verite.RunicMinAttributes = 4;
-            verite.RunicMaxAttributes = 5;
-            if (Core.ML)
-            {
-                verite.RunicMinIntensity = 70;
-                verite.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                verite.RunicMinIntensity = 45;
-                verite.RunicMaxIntensity = 90;
-            }
+CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 
-            CraftAttributeInfo valorite = Valorite = new CraftAttributeInfo();
+			blaze.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
+			blaze.ArmorFireResist = Uber ? 5 : Utility.Random(6);
+			blaze.ArmorColdResist = Uber ? 5 : Utility.Random(6);
+			blaze.ArmorPoisonResist = Uber ? 5 : Utility.Random(6);
+			blaze.ArmorEnergyResist = Uber ? 5 : Utility.Random(6);
+			blaze.ArmorDurability = 125;
+			blaze.WeaponDurability = 125;
+			blaze.ArmorLowerRequirements = 60;
+			blaze.WeaponLowerRequirements = 60;
+			blaze.WeaponFireDamage = 100;
+			blaze.RunicMinAttributes = 4;
+			blaze.RunicMaxAttributes = Uber ? 7 : 5;
+			blaze.RunicMinIntensity = Uber ?  75 : 50;
+			blaze.RunicMaxIntensity = Uber ? 100 : 75;
 
-            valorite.ArmorPhysicalResist = 5;
-            valorite.ArmorColdResist = 4;
-            valorite.ArmorPoisonResist = 4;
-            valorite.ArmorEnergyResist = 4;
-            valorite.ArmorDurability = 50;
-            valorite.WeaponFireDamage = 10;
-            valorite.WeaponColdDamage = 20;
-            valorite.WeaponPoisonDamage = 10;
-            valorite.WeaponEnergyDamage = 20;
-            valorite.RunicMinAttributes = 5;
-            valorite.RunicMaxAttributes = 5;
-            if (Core.ML)
-            {
-                valorite.RunicMinIntensity = 85;
-                valorite.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                valorite.RunicMinIntensity = 50;
-                valorite.RunicMaxIntensity = 100;
-            }
+			CraftAttributeInfo ice = Ice = new CraftAttributeInfo();
 
-            CraftAttributeInfo spined = Spined = new CraftAttributeInfo();
+			ice.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
+			ice.ArmorFireResist = Uber ? 5 : Utility.Random(6);
+			ice.ArmorColdResist = Uber ? 5 : Utility.Random(6);
+			ice.ArmorPoisonResist = Uber ? 5 : Utility.Random(6);
+			ice.ArmorEnergyResist = Uber ? 6 : Utility.Random(7);
+			ice.ArmorDurability = 150;
+			ice.WeaponDurability = 150;
+			ice.ArmorLowerRequirements = 70;
+			ice.WeaponLowerRequirements = 70;
+			ice.WeaponColdDamage = 100;
+			ice.RunicMinAttributes =5;
+			ice.RunicMaxAttributes = Uber ? 8 : 5;
+			ice.RunicMinIntensity = Uber ?  80 : 55;
+			ice.RunicMaxIntensity = Uber ? 100 : 80;
+		
+			CraftAttributeInfo toxic = Toxic = new CraftAttributeInfo();
 
-            spined.ArmorPhysicalResist = 9;
-            spined.ArmorLuck = 40;
-            spined.RunicMinAttributes = 1;
-            spined.RunicMaxAttributes = 3;
+			toxic.ArmorPhysicalResist = Uber ? 6 : Utility.Random(7);
+			toxic.ArmorFireResist = Uber ? 6 : Utility.Random(7);
+			toxic.ArmorColdResist = Uber ? 6 : Utility.Random(7);
+			toxic.ArmorPoisonResist = Uber ? 6 : Utility.Random(7);
+			toxic.ArmorEnergyResist = Uber ? 6 : Utility.Random(7);
+			toxic.ArmorDurability = 175;
+			toxic.WeaponDurability = 175;
+			toxic.ArmorLowerRequirements = 80;
+			toxic.WeaponLowerRequirements = 80;
+			toxic.WeaponPoisonDamage = 100;
+			toxic.RunicMinAttributes = 5;
+			toxic.RunicMaxAttributes = Uber ? 8 : 6;
+			toxic.RunicMinIntensity = Uber ? 90 : 60;
+			toxic.RunicMaxIntensity = Uber ? 100 : 90;
 
-            if (Core.ML)
-            {
-                spined.RunicMinIntensity = 40;
-                spined.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                spined.RunicMinIntensity = 20;
-                spined.RunicMaxIntensity = 40;
-            }
+			CraftAttributeInfo electrum = Electrum = new CraftAttributeInfo();
 
-            CraftAttributeInfo horned = Horned = new CraftAttributeInfo();
+			electrum.ArmorPhysicalResist = Uber ? 7 : Utility.Random(8);
+			electrum.ArmorFireResist = Uber ? 7 : Utility.Random(8);
+			electrum.ArmorColdResist = Uber ? 7 : Utility.Random(8);
+			electrum.ArmorPoisonResist = Uber ? 7 : Utility.Random(8);
+			electrum.ArmorEnergyResist = Uber ? 7 : Utility.Random(8);
+			electrum.ArmorDurability = 200;
+			electrum.WeaponDurability = 200;
+			electrum.ArmorLowerRequirements = 90;
+			electrum.WeaponLowerRequirements = 90;
+			electrum.WeaponEnergyDamage = 100;
+			electrum.RunicMinAttributes = 5;
+			electrum.RunicMaxAttributes = Uber ? 9 : 6;
+			electrum.RunicMinIntensity = Uber ? 100 : 65;
+			electrum.RunicMaxIntensity = Uber ? 100 : 100;
 
-            horned.ArmorPhysicalResist = 2;
-            horned.ArmorFireResist = 4;
-            horned.ArmorColdResist = 3;
-            horned.ArmorPoisonResist = 3;
-            horned.ArmorEnergyResist = 3;
-            horned.RunicMinAttributes = 3;
-            horned.RunicMaxAttributes = 4;
-            if (Core.ML)
-            {
-                horned.RunicMinIntensity = 45;
-                horned.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                horned.RunicMinIntensity = 30;
-                horned.RunicMaxIntensity = 70;
-            }
+			CraftAttributeInfo platinum = Platinum = new CraftAttributeInfo();
 
-            CraftAttributeInfo barbed = Barbed = new CraftAttributeInfo();
+			platinum.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			platinum.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			platinum.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			platinum.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			platinum.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			platinum.ArmorDurability = 250;
+			platinum.WeaponDurability = 250;
+			platinum.ArmorLowerRequirements = 100;
+			platinum.WeaponLowerRequirements = 100;
+			platinum.RunicMinAttributes = 6;
+			platinum.RunicMaxAttributes = Uber ? 9 : 7;
+			platinum.RunicMinIntensity = Uber ? 105 : 70;
+			platinum.RunicMaxIntensity = Uber ? 110 : 105;
 
-            barbed.ArmorPhysicalResist = 3;
-            barbed.ArmorFireResist = 2;
-            barbed.ArmorColdResist = 3;
-            barbed.ArmorPoisonResist = 3;
-            barbed.ArmorEnergyResist = 5;
-            barbed.RunicMinAttributes = 4;
-            barbed.RunicMaxAttributes = 5;
-            if (Core.ML)
-            {
-                barbed.RunicMinIntensity = 50;
-                barbed.RunicMaxIntensity = 100;
-            }
-            else
-            {
-                barbed.RunicMinIntensity = 40;
-                barbed.RunicMaxIntensity = 100;
-            }
+			
+				CraftAttributeInfo royalite = Royalite = new CraftAttributeInfo();
 
-            CraftAttributeInfo red = RedScales = new CraftAttributeInfo();
-            red.ArmorPhysicalResist = 1;
-            red.ArmorFireResist = 11;
-            red.ArmorColdResist = -3;
-            red.ArmorPoisonResist = 1;
-            red.ArmorEnergyResist = 1;
+			royalite.ArmorPhysicalResist = Uber ? 9 : Utility.Random(9);
+			royalite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			royalite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			royalite.ArmorPoisonResist = Uber ? 9 : Utility.Random(9);
+			royalite.ArmorEnergyResist = Uber ? 9 : Utility.Random(9);
+			royalite.ArmorDurability = 250;
+			royalite.WeaponDurability = 250;
+			royalite.ArmorLowerRequirements = 100;
+			royalite.WeaponLowerRequirements = 100;
+			royalite.RunicMinAttributes = 7;
+			royalite.RunicMaxAttributes = Uber ? 10 : 8;
+			royalite.RunicMinIntensity = Uber ? 105 : 85;
+			royalite.RunicMaxIntensity = Uber ? 115 : 120;
 
-            CraftAttributeInfo yellow = YellowScales = new CraftAttributeInfo();
+			
+			
+				CraftAttributeInfo danite = Danite = new CraftAttributeInfo();
 
-            yellow.ArmorPhysicalResist = -3;
-            yellow.ArmorFireResist = 1;
-            yellow.ArmorColdResist = 1;
-            yellow.ArmorPoisonResist = 1;
-            yellow.ArmorPoisonResist = 1;
-            yellow.ArmorLuck = 20;
+			danite.ArmorPhysicalResist = Uber ? 10 : Utility.Random(9);
+			danite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			danite.ArmorColdResist = Uber ? 10 : Utility.Random(9);
+			danite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			danite.ArmorEnergyResist = Uber ? 10 : Utility.Random(9);
+			danite.ArmorDurability = 250;
+			danite.WeaponDurability = 250;
+			danite.ArmorLowerRequirements = 100;
+			danite.WeaponLowerRequirements = 100;
+			danite.RunicMinAttributes = 8;
+			danite.RunicMaxAttributes = Uber ? 11 : 9;
+			danite.RunicMinIntensity = Uber ? 115 : 90;
+			danite.RunicMaxIntensity = Uber ? 120 : 125;
 
-            CraftAttributeInfo black = BlackScales = new CraftAttributeInfo();
+			
+			
+			CraftAttributeInfo spined = Spined = new CraftAttributeInfo();
 
-            black.ArmorPhysicalResist = 11;
-            black.ArmorEnergyResist = -3;
-            black.ArmorFireResist = 1;
-            black.ArmorPoisonResist = 1;
-            black.ArmorColdResist = 1;
+			spined.ArmorPhysicalResist = Uber ? 1 : Utility.Random(2);
+			spined.ArmorFireResist = Uber ? 1 : Utility.Random(2);
+			spined.ArmorColdResist = Uber ? 1 : Utility.Random(2);
+			spined.ArmorPoisonResist = Uber ? 1 : Utility.Random(2);
+			spined.ArmorEnergyResist = Uber ? 1 : Utility.Random(2);
+			spined.ArmorDurability = 25;
+			spined.ArmorLowerRequirements = 20;
+			spined.ArmorLuck = 40;
+			spined.RunicMinAttributes = 1;
+			spined.RunicMaxAttributes = Uber ? 3 : 2;
+			spined.RunicMinIntensity = Uber ?  20 : 10;
+			spined.RunicMaxIntensity = Uber ? 100 : 20;
 
-            CraftAttributeInfo green = GreenScales = new CraftAttributeInfo();
+			CraftAttributeInfo horned = Horned = new CraftAttributeInfo();
 
-            green.ArmorFireResist = -3;
-            green.ArmorPhysicalResist = 1;
-            green.ArmorColdResist = 1;
-            green.ArmorEnergyResist = 1;
-            green.ArmorPoisonResist = 11;
+			horned.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
+			horned.ArmorFireResist = Uber ? 2 : Utility.Random(3);
+			horned.ArmorColdResist = Uber ? 2 : Utility.Random(3);
+			horned.ArmorPoisonResist = Uber ? 2 : Utility.Random(3);
+			horned.ArmorEnergyResist = Uber ? 2 : Utility.Random(3);
+			horned.ArmorDurability = 50;
+			horned.ArmorLowerRequirements = 30;
+			horned.RunicMinAttributes = 2;
+			horned.RunicMaxAttributes = Uber ? 3 : 2;
+			horned.RunicMinIntensity = Uber ?  30 : 15;
+			horned.RunicMaxIntensity = Uber ? 100 : 30;
+			
+			CraftAttributeInfo barbed = Barbed = new CraftAttributeInfo();
 
-            CraftAttributeInfo white = WhiteScales = new CraftAttributeInfo();
+			barbed.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
+			barbed.ArmorFireResist = Uber ? 3 : Utility.Random(4);
+			barbed.ArmorColdResist = Uber ? 3 : Utility.Random(4);
+			barbed.ArmorPoisonResist = Uber ? 3 : Utility.Random(4);
+			barbed.ArmorEnergyResist = Uber ? 3 : Utility.Random(4);
+			barbed.ArmorDurability = 75;
+			barbed.ArmorLowerRequirements = 40;
+			barbed.RunicMinAttributes = 2;
+			barbed.RunicMaxAttributes = Uber ?  4 : 3;
+			barbed.RunicMinIntensity = Uber ?  35 : 20;
+			barbed.RunicMaxIntensity = Uber ? 100 : 35;
 
-            white.ArmorPhysicalResist = -3;
-            white.ArmorFireResist = 1;
-            white.ArmorEnergyResist = 1;
-            white.ArmorPoisonResist = 1;
-            white.ArmorColdResist = 11;
+			CraftAttributeInfo polar = Polar = new CraftAttributeInfo();
 
-            CraftAttributeInfo blue = BlueScales = new CraftAttributeInfo();
+			polar.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
+			polar.ArmorFireResist = Uber ? 3 : Utility.Random(4);
+			polar.ArmorColdResist = Uber ? 4 : Utility.Random(5);
+			polar.ArmorPoisonResist = Uber ? 3 : Utility.Random(4);
+			polar.ArmorEnergyResist = Uber ? 4 : Utility.Random(5);
+			polar.ArmorDurability = 100;
+			polar.ArmorLowerRequirements = 50;
+			polar.RunicMinAttributes = 3;
+			polar.RunicMaxAttributes = Uber ? 5 : 3;
+			polar.RunicMinIntensity = Uber ? 45 : 25;
+			polar.RunicMaxIntensity = Uber ? 100 : 45;
 
-            blue.ArmorPhysicalResist = 1;
-            blue.ArmorFireResist = 1;
-            blue.ArmorColdResist = 1;
-            blue.ArmorPoisonResist = -3;
-            blue.ArmorEnergyResist = 11;
+			CraftAttributeInfo synthetic = Synthetic = new CraftAttributeInfo();
 
-            #region Mondain's Legacy
-            CraftAttributeInfo oak = OakWood = new CraftAttributeInfo();
+			synthetic.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
+			synthetic.ArmorFireResist = Uber ? 4 : Utility.Random(5);
+			synthetic.ArmorColdResist = Uber ? 4 : Utility.Random(5);
+			synthetic.ArmorPoisonResist = Uber ? 4 : Utility.Random(5);
+			synthetic.ArmorEnergyResist = Uber ? 4 : Utility.Random(5);
+			synthetic.ArmorLowerRequirements = 60;
+			synthetic.ArmorDurability = 125;
+			synthetic.RunicMinAttributes = 3;
+			synthetic.RunicMaxAttributes = Uber ? 5 : 4;
+			synthetic.RunicMinIntensity = Uber ? 50 : 30;
+			synthetic.RunicMaxIntensity = Uber ? 100 : 50;
+			
+			CraftAttributeInfo blazel = BlazeL = new CraftAttributeInfo();
 
-            oak.ArmorPhysicalResist = 3;
-            oak.ArmorFireResist = 3;
-            oak.ArmorPoisonResist = 2;
-            oak.ArmorEnergyResist = 3;
-            oak.ArmorLuck = 40;
+			blazel.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
+			blazel.ArmorFireResist = Uber ? 5 : Utility.Random(6);
+			blazel.ArmorColdResist = Uber ? 4 : Utility.Random(5);
+			blazel.ArmorPoisonResist = Uber ? 5 : Utility.Random(6);
+			blazel.ArmorEnergyResist = Uber ? 4 : Utility.Random(5);
+			blazel.ArmorLowerRequirements = 60;
+			blazel.ArmorDurability = 125;
+			blazel.RunicMinAttributes = 4;
+			blazel.RunicMaxAttributes = Uber ? 6 : 4;
+			blazel.RunicMinIntensity = Uber ? 60 : 35;
+			blazel.RunicMaxIntensity = Uber ? 100 : 60;
 
-            oak.ShieldPhysicalResist = 1;
-            oak.ShieldFireResist = 1;
-            oak.ShieldColdResist = 1;
-            oak.ShieldPoisonResist = 1;
-            oak.ShieldEnergyResist = 1;
+			CraftAttributeInfo daemonic = Daemonic = new CraftAttributeInfo();
 
-            oak.WeaponLuck = 40;
-            oak.WeaponDamage = 5;
+			daemonic.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
+			daemonic.ArmorFireResist = Uber ? 5 : Utility.Random(6);
+			daemonic.ArmorColdResist = Uber ? 5 : Utility.Random(6);
+			daemonic.ArmorPoisonResist = Uber ? 5 : Utility.Random(6);
+			daemonic.ArmorEnergyResist = Uber ? 5 : Utility.Random(6);
+			daemonic.ArmorDurability = 150;
+			daemonic.ArmorLowerRequirements = 70;
+			daemonic.RunicMinAttributes = 4;
+			daemonic.RunicMaxAttributes = Uber ? 7 : 5;
+			daemonic.RunicMinIntensity = Uber ? 65 : 40;
+			daemonic.RunicMaxIntensity = Uber ? 100 : 65;
+			
+			CraftAttributeInfo shadow = Shadow = new CraftAttributeInfo();
 
+			shadow.ArmorPhysicalResist = Uber ? 6 : Utility.Random(7);
+			shadow.ArmorFireResist = Uber ? 6 : Utility.Random(7);
+			shadow.ArmorColdResist = Uber ? 6 : Utility.Random(7);
+			shadow.ArmorPoisonResist = Uber ? 6 : Utility.Random(7);
+			shadow.ArmorEnergyResist = Uber ? 6 : Utility.Random(7);
+			shadow.ArmorDurability = 175;
+			shadow.ArmorLowerRequirements = 80;
+			shadow.RunicMinAttributes = 5;
+			shadow.RunicMaxAttributes = Uber ? 7 : 5;
+			shadow.RunicMinIntensity = Uber ? 75 : 45;
+			shadow.RunicMaxIntensity = Uber ? 100 : 75;
+			
+			CraftAttributeInfo frost = Frost = new CraftAttributeInfo();
+
+			frost.ArmorPhysicalResist = Uber ? 7 : Utility.Random(8);
+			frost.ArmorFireResist = Uber ? 7 : Utility.Random(8);
+			frost.ArmorColdResist = Uber ? 7 : Utility.Random(8);
+			frost.ArmorPoisonResist = Uber ? 7 : Utility.Random(8);
+			frost.ArmorEnergyResist = Uber ? 7 : Utility.Random(8);
+			frost.ArmorDurability = 200;
+			frost.ArmorLowerRequirements = 90;
+			frost.RunicMinAttributes = 5;
+			frost.RunicMaxAttributes = Uber ? 8 : 6;
+			frost.RunicMinIntensity = Uber ? 80 : 50;
+			frost.RunicMaxIntensity = Uber ? 100 : 80;
+			
+			CraftAttributeInfo ethereal = Ethereal = new CraftAttributeInfo();
+
+			ethereal.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			ethereal.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			ethereal.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			ethereal.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			ethereal.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			ethereal.ArmorDurability = 250;
+			ethereal.ArmorLowerRequirements = 100;
+			ethereal.RunicMinAttributes = 6;
+			ethereal.RunicMaxAttributes = Uber ? 9 : 7;
+			ethereal.RunicMinIntensity = Uber ? 100 : 60;
+			ethereal.RunicMaxIntensity = Uber ? 110 : 100;
+			
+			CraftAttributeInfo red = RedScales = new CraftAttributeInfo();
+
+			red.ArmorFireResist = 10;
+			red.ArmorColdResist = -3;
+
+			CraftAttributeInfo yellow = YellowScales = new CraftAttributeInfo();
+
+			yellow.ArmorPhysicalResist = -3;
+			yellow.ArmorLuck = 20;
+
+			CraftAttributeInfo black = BlackScales = new CraftAttributeInfo();
+
+			black.ArmorPhysicalResist = 10;
+			black.ArmorEnergyResist = -3;
+
+			CraftAttributeInfo green = GreenScales = new CraftAttributeInfo();
+
+			green.ArmorFireResist = -3;
+			green.ArmorPoisonResist = 10;
+
+			CraftAttributeInfo white = WhiteScales = new CraftAttributeInfo();
+
+			white.ArmorPhysicalResist = -3;
+			white.ArmorColdResist = 10;
+
+			CraftAttributeInfo blue = BlueScales = new CraftAttributeInfo();
+
+			blue.ArmorPoisonResist = -3;
+			blue.ArmorEnergyResist = 10;
+
+			CraftAttributeInfo coppers = CopperScales = new CraftAttributeInfo();
+
+			coppers.ArmorPoisonResist = Uber ? 6 : Utility.Random(7);
+			coppers.ArmorPhysicalResist = Uber ? 6 : Utility.Random(7);
+			coppers.ArmorEnergyResist = Uber ? 6 : Utility.Random(7);
+
+			CraftAttributeInfo silver = SilverScales = new CraftAttributeInfo();
+
+			silver.ArmorColdResist = Uber ? 7 : Utility.Random(8);
+			silver.ArmorEnergyResist = Uber ? 7 : Utility.Random(8);
+			silver.ArmorPhysicalResist = Uber ? 7 : Utility.Random(8);
+
+			CraftAttributeInfo gold = GoldScales = new CraftAttributeInfo();
+
+			gold.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			gold.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			gold.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			gold.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			gold.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			
+			CraftAttributeInfo oak = OakWood = new CraftAttributeInfo();
+
+            oak.WeaponColdDamage = 20;
+            oak.WeaponDurability = 10;
+            oak.WeaponLowerRequirements = 5;
             oak.RunicMinAttributes = 1;
-            oak.RunicMaxAttributes = 2;
-            oak.RunicMinIntensity = 1;
-            oak.RunicMaxIntensity = 50;
+            oak.RunicMaxAttributes = Uber ? 2 : 2;
+            oak.RunicMinIntensity = Uber ? 10 : 5;
+            oak.RunicMaxIntensity = 100;
 
             CraftAttributeInfo ash = AshWood = new CraftAttributeInfo();
 
-            ash.ArmorPhysicalResist = 2;
-            ash.ArmorColdResist = 4;
-            ash.ArmorPoisonResist = 1;
-            ash.ArmorEnergyResist = 6;
-            ash.ArmorLowerRequirements = 20;
-
-            ash.ShieldEnergyResist = 3;
-            ash.ShieldLowerRequirements = 3;
-
-            ash.WeaponSwingSpeed = 10;
-            ash.WeaponLowerRequirements = 20;
-
-            ash.OtherLowerRequirements = 20;
-
+            ash.WeaponFireDamage = 40;
+            ash.WeaponDurability = 25;
+            ash.WeaponLowerRequirements = 10;
             ash.RunicMinAttributes = 2;
-            ash.RunicMaxAttributes = 3;
-            ash.RunicMinIntensity = 35;
-            ash.RunicMaxIntensity = 75;
+            ash.RunicMaxAttributes = Uber ? 3 : 2;
+            ash.RunicMinIntensity = Uber ? 15 : 10;
+            ash.RunicMaxIntensity = 100;
 
             CraftAttributeInfo yew = YewWood = new CraftAttributeInfo();
 
-            yew.ArmorPhysicalResist = 6;
-            yew.ArmorFireResist = 3;
-            yew.ArmorColdResist = 3;
-            yew.ArmorEnergyResist = 3;
-            yew.ArmorRegenHits = 1;
-
-            yew.ShieldPhysicalResist = 3;
-            yew.ShieldRegenHits = 1;
-
-            yew.WeaponHitChance = 5;
-            yew.WeaponDamage = 10;
-
-            yew.OtherRegenHits = 2;
-
-            yew.RunicMinAttributes = 3;
-            yew.RunicMaxAttributes = 3;
-            yew.RunicMinIntensity = 40;
-            yew.RunicMaxIntensity = 90;
+            yew.WeaponPoisonDamage = 10;
+            yew.WeaponEnergyDamage = 20;
+            yew.WeaponDurability = 50;
+            yew.WeaponLowerRequirements = 20;
+            yew.RunicMinAttributes = 1;
+            yew.RunicMaxAttributes = Uber ? 4 : 3;
+            yew.RunicMinIntensity = Uber ? 20 : 15;
+            yew.RunicMaxIntensity = 100;
 
             CraftAttributeInfo heartwood = Heartwood = new CraftAttributeInfo();
 
-            heartwood.ArmorPhysicalResist = 2;
-            heartwood.ArmorFireResist = 3;
-            heartwood.ArmorColdResist = 2;
-            heartwood.ArmorPoisonResist = 7;
-            heartwood.ArmorEnergyResist = 2;
-
-            // one of below
-            heartwood.ArmorDamage = 10;
-            heartwood.ArmorHitChance = 5;
-            heartwood.ArmorLuck = 40;
-            heartwood.ArmorLowerRequirements = 20;
-            heartwood.ArmorMage = 1;
-
-            // one of below
-            heartwood.WeaponDamage = 10;
-            heartwood.WeaponHitChance = 5;
-            heartwood.WeaponHitLifeLeech = 13;
-            heartwood.WeaponLuck = 40;
-            heartwood.WeaponLowerRequirements = 20;
-            heartwood.WeaponSwingSpeed = 10;
-
-            heartwood.ShieldBonusDex = 2;
-            heartwood.ShieldBonusStr = 2;
-            heartwood.ShieldPhysicalRandom = 5;
-            heartwood.ShieldReflectPhys = 5;
-            heartwood.ShieldSelfRepair = 2;
-            heartwood.ShieldColdRandom = 3;
-            heartwood.ShieldSpellChanneling = 1;
-
-            heartwood.RunicMinAttributes = 4;
-            heartwood.RunicMaxAttributes = 4;
-            heartwood.RunicMinIntensity = 50;
+            heartwood.WeaponColdDamage = 30;
+            heartwood.WeaponEnergyDamage = 20;
+            heartwood.WeaponDurability = 75;
+            heartwood.WeaponLowerRequirements = 30;
+            heartwood.RunicMinAttributes = 2;
+            heartwood.RunicMaxAttributes = Uber ? 5 : 3;
+            heartwood.RunicMinIntensity = Uber ? 30 : 20;
             heartwood.RunicMaxIntensity = 100;
 
             CraftAttributeInfo bloodwood = Bloodwood = new CraftAttributeInfo();
 
-            bloodwood.ArmorPhysicalResist = 3;
-            bloodwood.ArmorFireResist = 8;
-            bloodwood.ArmorColdResist = 1;
-            bloodwood.ArmorPoisonResist = 3;
-            bloodwood.ArmorEnergyResist = 3;
-            bloodwood.ArmorRegenHits = 2;
+            bloodwood.WeaponPoisonDamage = 40;
+            bloodwood.WeaponEnergyDamage = 20;
+            bloodwood.WeaponDurability = 100;
+            bloodwood.WeaponLowerRequirements = 40;
+            bloodwood.RunicMinAttributes = 3;
+            bloodwood.RunicMaxAttributes = Uber ? 5 : 3;
+            bloodwood.RunicMinIntensity = Uber ? 40 : 25;
+            bloodwood.RunicMaxIntensity = 100;
 
-            bloodwood.ShieldFireResist = 3;
-            bloodwood.ShieldLuck = 40;
-            bloodwood.ShieldRegenHits = 2;
+            CraftAttributeInfo Frostwood = Frostwood = new CraftAttributeInfo();
 
-            bloodwood.WeaponRegenHits = 2;
-            bloodwood.WeaponHitLifeLeech = 16;
+            Frostwood.WeaponDurability = 125;
+            Frostwood.WeaponLowerRequirements = 50;
+            Frostwood.WeaponFireDamage = 25;
+            Frostwood.WeaponColdDamage = 25;
+            Frostwood.WeaponPoisonDamage = 25;
+            Frostwood.WeaponEnergyDamage = 25;
+            Frostwood.RunicMinAttributes = 2;
+            Frostwood.RunicMaxAttributes = Uber ? 6 : 4;
+            Frostwood.RunicMinIntensity = Uber ? 50 : 30;
+            Frostwood.RunicMaxIntensity = 100;
 
-            bloodwood.OtherLuck = 20;
-            bloodwood.OtherRegenHits = 2;
+			CraftAttributeInfo ebony = Ebony = new CraftAttributeInfo();
 
-            CraftAttributeInfo frostwood = Frostwood = new CraftAttributeInfo();
+			ebony.WeaponDurability = 150;
+			ebony.WeaponLowerRequirements = 60;
+			ebony.WeaponColdDamage = 100;
+			ebony.RunicMinAttributes = 3;
+			ebony.RunicMaxAttributes = Uber ? 6 : 4;
+			ebony.RunicMinIntensity = Uber ? 60 : 35;
+			ebony.RunicMaxIntensity = 100;
+			
+			CraftAttributeInfo bamboo = Bamboo = new CraftAttributeInfo();
 
-            frostwood.ArmorPhysicalResist = 2;
-            frostwood.ArmorFireResist = 1;
-            frostwood.ArmorColdResist = 8;
-            frostwood.ArmorPoisonResist = 3;
-            frostwood.ArmorEnergyResist = 4;
+			bamboo.WeaponDurability = 175;
+			bamboo.WeaponLowerRequirements = 70;
+			bamboo.WeaponEnergyDamage = 100;
+			bamboo.RunicMinAttributes = 4;
+			bamboo.RunicMaxAttributes = Uber ? 7 : 4;
+			bamboo.RunicMinIntensity = Uber ? 70 : 40;
+			bamboo.RunicMaxIntensity = 100;
 
-            frostwood.ShieldColdResist = 3;
-            frostwood.ShieldSpellChanneling = 1;
+			CraftAttributeInfo purpleheart = PurpleHeart = new CraftAttributeInfo();
 
-            frostwood.WeaponColdDamage = 40;
-            frostwood.WeaponDamage = 12;
+			purpleheart.WeaponDurability = 200;
+			purpleheart.WeaponLowerRequirements = 80;
+			purpleheart.WeaponFireDamage = 100;
+			purpleheart.RunicMinAttributes = 3;
+			purpleheart.RunicMaxAttributes = Uber ? 7 : 5;
+			purpleheart.RunicMinIntensity = Uber ? 80 : 50;
+			purpleheart.RunicMaxIntensity = 100;
 
-            frostwood.OtherSpellChanneling = 1;
-            #endregion
+			CraftAttributeInfo redwood = Redwood = new CraftAttributeInfo();
+
+			redwood.WeaponDurability = 225;
+			redwood.WeaponLowerRequirements = 90;
+			redwood.WeaponPoisonDamage = 100;
+			redwood.RunicMinAttributes = 4;
+			redwood.RunicMaxAttributes = Uber ? 8 : 5;
+			redwood.RunicMinIntensity = Uber ? 90 : 55;
+			redwood.RunicMaxIntensity = 100;
+
+			CraftAttributeInfo petrified = Petrified = new CraftAttributeInfo();
+
+			petrified.WeaponDurability = 250;
+			petrified.WeaponLowerRequirements = 100;
+			petrified.RunicMinAttributes = 5;
+			petrified.RunicMaxAttributes = Uber ? 8 : 5;
+			petrified.RunicMinIntensity = Uber ? 100 : 60;
+			petrified.RunicMaxIntensity = 100;
+			//daat99 OWLTR end - custom resources
+			
         }
     }
 
@@ -674,8 +860,15 @@ namespace Server.Items
             new CraftResourceInfo(0x979, 1053103, "Agapite", CraftAttributeInfo.Agapite, CraftResource.Agapite, typeof(AgapiteIngot), typeof(AgapiteOre), typeof(AgapiteGranite)),
             new CraftResourceInfo(0x89F, 1053102, "Verite", CraftAttributeInfo.Verite, CraftResource.Verite, typeof(VeriteIngot), typeof(VeriteOre), typeof(VeriteGranite)),
             new CraftResourceInfo(0x8AB, 1053101, "Valorite", CraftAttributeInfo.Valorite,	CraftResource.Valorite, typeof(ValoriteIngot),	typeof(ValoriteOre), typeof(ValoriteGranite)),
-        };
-
+       
+		new CraftResourceInfo( 1161,	0,		"Blaze",		CraftAttributeInfo.Blaze,		CraftResource.Blaze,			typeof( BlazeIngot ),		typeof( BlazeOre ),			typeof( BlazeGranite ) ),
+				new CraftResourceInfo( 1152,	0,		"Ice",			CraftAttributeInfo.Ice,			CraftResource.Ice,				typeof( IceIngot ),			typeof( IceOre ),			typeof( IceGranite ) ),
+				new CraftResourceInfo( 1272,	0,		"Toxic",		CraftAttributeInfo.Toxic,		CraftResource.Toxic,			typeof( ToxicIngot ),		typeof( ToxicOre ),			typeof( ToxicGranite ) ),
+				new CraftResourceInfo( 1278,	0,		"Electrum",		CraftAttributeInfo.Electrum,	CraftResource.Electrum,			typeof( ElectrumIngot ),	typeof( ElectrumOre ),		typeof( ElectrumGranite ) ),
+				new CraftResourceInfo( 1153,	0,		"Platinum",		CraftAttributeInfo.Platinum,	CraftResource.Platinum,			typeof( PlatinumIngot ),	typeof( PlatinumOre ),		typeof( PlatinumGranite ) ),
+				new CraftResourceInfo( 1153,	0,		"Royalite",		CraftAttributeInfo.Royalite,	CraftResource.Royalite,			typeof( RoyaliteIngot ),	typeof( RoyaliteOre ),		typeof( RoyaliteGranite ) ),
+				new CraftResourceInfo( 1153,	0,		"Danite",		CraftAttributeInfo.Danite,	CraftResource.Danite,			typeof( DaniteIngot ),	typeof( DaniteOre ),		typeof( DaniteGranite ) ),
+ };
         private static readonly CraftResourceInfo[] m_ScaleInfo = new CraftResourceInfo[]
         {
             new CraftResourceInfo(0x66D, 1053129, "Red Scales",	CraftAttributeInfo.RedScales, CraftResource.RedScales, typeof(RedScales)),
@@ -683,16 +876,27 @@ namespace Server.Items
             new CraftResourceInfo(0x455, 1053131, "Black Scales",	CraftAttributeInfo.BlackScales, CraftResource.BlackScales, typeof(BlackScales)),
             new CraftResourceInfo(0x851, 1053132, "Green Scales",	CraftAttributeInfo.GreenScales, CraftResource.GreenScales, typeof(GreenScales)),
             new CraftResourceInfo(0x8FD, 1053133, "White Scales",	CraftAttributeInfo.WhiteScales, CraftResource.WhiteScales, typeof(WhiteScales)),
-            new CraftResourceInfo(0x8B0, 1053134, "Blue Scales",	CraftAttributeInfo.BlueScales, CraftResource.BlueScales, typeof(BlueScales))
-        };
+            new CraftResourceInfo(0x8B0, 1053134, "Blue Scales",	CraftAttributeInfo.BlueScales, CraftResource.BlueScales, typeof(BlueScales)),
+			new CraftResourceInfo( 0x96D,	0,		"Copper Scales",	CraftAttributeInfo.CopperScales,	CraftResource.CopperScales,		typeof( CopperScales ) ),
+				new CraftResourceInfo( 0x8FD,	0,		"Silver Scales",	CraftAttributeInfo.SilverScales,	CraftResource.SilverScales,		typeof( SilverScales ) ),
+				new CraftResourceInfo( 49,  	0,		"Gold Scales",		CraftAttributeInfo.GoldScales,		CraftResource.GoldScales,		typeof( GoldScales ) ),
+		};
 
         private static readonly CraftResourceInfo[] m_LeatherInfo = new CraftResourceInfo[]
         {
             new CraftResourceInfo(0x000, 1049353, "Normal", CraftAttributeInfo.Blank, CraftResource.RegularLeather,	typeof(Leather), typeof(Hides)),
             new CraftResourceInfo(0x283, 1049354, "Spined", CraftAttributeInfo.Spined, CraftResource.SpinedLeather,	typeof(SpinedLeather),	typeof(SpinedHides)),
             new CraftResourceInfo(0x227, 1049355, "Horned", CraftAttributeInfo.Horned, CraftResource.HornedLeather,	typeof(HornedLeather),	typeof(HornedHides)),
-            new CraftResourceInfo(0x1C1, 1049356, "Barbed", CraftAttributeInfo.Barbed, CraftResource.BarbedLeather,	typeof(BarbedLeather),	typeof(BarbedHides))
-        };
+            new CraftResourceInfo(0x1C1, 1049356, "Barbed", CraftAttributeInfo.Barbed, CraftResource.BarbedLeather,	typeof(BarbedLeather),	typeof(BarbedHides)),
+        new CraftResourceInfo( 1150,	0,			"Polar",		CraftAttributeInfo.Polar,			CraftResource.PolarLeather,		typeof( PolarLeather ),		typeof( PolarHides ) ),
+				new CraftResourceInfo( 1023,	0,			"Synthetic",	CraftAttributeInfo.Synthetic,		CraftResource.SyntheticLeather,	typeof( SyntheticLeather ),	typeof( SyntheticHides ) ),
+				new CraftResourceInfo( 1260,	0,			"Blaze",		CraftAttributeInfo.BlazeL,			CraftResource.BlazeLeather,		typeof( BlazeLeather ),		typeof( BlazeHides ) ),
+				new CraftResourceInfo( 32,		0,			"Daemonic",		CraftAttributeInfo.Daemonic,		CraftResource.DaemonicLeather,	typeof( DaemonicLeather ),	typeof( DaemonicHides ) ),
+				new CraftResourceInfo( 0x966,	0,			"Shadow",		CraftAttributeInfo.Shadow,			CraftResource.ShadowLeather,	typeof( ShadowLeather ),	typeof( ShadowHides ) ),
+				new CraftResourceInfo( 93,		0,			"Frost",		CraftAttributeInfo.Frost,			CraftResource.FrostLeather,		typeof( FrostLeather ),		typeof( FrostHides ) ),
+				new CraftResourceInfo( 1159,	0,			"Ethereal",		CraftAttributeInfo.Ethereal,		CraftResource.EtherealLeather,	typeof( EtherealLeather ),	typeof( EtherealHides ) ),
+				//daat99 OWLTR end - custom leather
+		};
 
         private static readonly CraftResourceInfo[] m_AOSLeatherInfo = new CraftResourceInfo[]
         {
@@ -700,6 +904,14 @@ namespace Server.Items
             new CraftResourceInfo(0x8AC, 1049354, "Spined", CraftAttributeInfo.Spined, CraftResource.SpinedLeather,	typeof(SpinedLeather),	typeof(SpinedHides)),
             new CraftResourceInfo(0x845, 1049355, "Horned", CraftAttributeInfo.Horned, CraftResource.HornedLeather,	typeof(HornedLeather),	typeof(HornedHides)),
             new CraftResourceInfo(0x851, 1049356, "Barbed", CraftAttributeInfo.Barbed, CraftResource.BarbedLeather,	typeof(BarbedLeather),	typeof(BarbedHides)),
+			new CraftResourceInfo( 1150,	0,			"Polar",		CraftAttributeInfo.Polar,			CraftResource.PolarLeather,		typeof( PolarLeather ),		typeof( PolarHides ) ),
+				new CraftResourceInfo( 1023,	0,			"Synthetic",	CraftAttributeInfo.Synthetic,		CraftResource.SyntheticLeather,	typeof( SyntheticLeather ),	typeof( SyntheticHides ) ),
+				new CraftResourceInfo( 1260,	0,			"Blaze",		CraftAttributeInfo.BlazeL,			CraftResource.BlazeLeather,		typeof( BlazeLeather ),		typeof( BlazeHides ) ),
+				new CraftResourceInfo( 32,		0,			"Daemonic",		CraftAttributeInfo.Daemonic,		CraftResource.DaemonicLeather,	typeof( DaemonicLeather ),	typeof( DaemonicHides ) ),
+				new CraftResourceInfo( 0x966,	0,			"Shadow",		CraftAttributeInfo.Shadow,			CraftResource.ShadowLeather,	typeof( ShadowLeather ),	typeof( ShadowHides ) ),
+				new CraftResourceInfo( 93,		0,			"Frost",		CraftAttributeInfo.Frost,			CraftResource.FrostLeather,		typeof( FrostLeather ),		typeof( FrostHides ) ),
+				new CraftResourceInfo( 1159,	0,			"Ethereal",		CraftAttributeInfo.Ethereal,		CraftResource.EtherealLeather,	typeof( EtherealLeather ),	typeof( EtherealHides ) ),
+				//daat99 OWLTR end - custom leather
         };
 
         private static readonly CraftResourceInfo[] m_WoodInfo = new CraftResourceInfo[]
@@ -710,7 +922,13 @@ namespace Server.Items
             new CraftResourceInfo(0x4A8, 1072535, "Yew", CraftAttributeInfo.YewWood, CraftResource.YewWood, typeof(YewLog), typeof(YewBoard)),
             new CraftResourceInfo(0x4A9, 1072536, "Heartwood", CraftAttributeInfo.Heartwood,	CraftResource.Heartwood,	typeof(HeartwoodLog),	typeof(HeartwoodBoard)),
             new CraftResourceInfo(0x4AA, 1072538, "Bloodwood", CraftAttributeInfo.Bloodwood,	CraftResource.Bloodwood,	typeof(BloodwoodLog),	typeof(BloodwoodBoard)),
-            new CraftResourceInfo(0x47F, 1072539, "Frostwood", CraftAttributeInfo.Frostwood,	CraftResource.Frostwood,	typeof(FrostwoodLog),	typeof(FrostwoodBoard))
+            new CraftResourceInfo(0x47F, 1072539, "Frostwood", CraftAttributeInfo.Frostwood,	CraftResource.Frostwood,	typeof(FrostwoodLog),	typeof(FrostwoodBoard)),
+						new CraftResourceInfo( 1457, 0, "Ebony",		CraftAttributeInfo.Ebony,		CraftResource.Ebony,		typeof(EbonyBoard),			typeof( EbonyLog ) ),
+				new CraftResourceInfo( 1719, 0,	"Bamboo",		CraftAttributeInfo.Bamboo,		CraftResource.Bamboo,		typeof(BambooBoard),		typeof( BambooLog ) ),
+				new CraftResourceInfo( 114,  0, "PurpleHeart",	CraftAttributeInfo.PurpleHeart,	CraftResource.PurpleHeart,	typeof(PurpleHeartBoard),	typeof( PurpleHeartLog ) ),
+				new CraftResourceInfo( 37,   0,	"Redwood",		CraftAttributeInfo.Redwood,		CraftResource.Redwood,		typeof(RedwoodBoard),		typeof( RedwoodLog ) ),
+				new CraftResourceInfo( 1153, 0, "Petrified",	CraftAttributeInfo.Petrified,	CraftResource.Petrified,	typeof(PetrifiedBoard),		typeof( PetrifiedLog ) ),
+				//daat99 OWLTR end - custom wood
         };
 
         /// <summary>
@@ -789,16 +1007,16 @@ namespace Server.Items
         /// </summary>
         public static CraftResourceType GetType(CraftResource resource)
         {
-            if (resource >= CraftResource.Iron && resource <= CraftResource.Valorite)
+            if (resource >= CraftResource.Iron && resource <= CraftResource.Danite)
                 return CraftResourceType.Metal;
 
-            if (resource >= CraftResource.RegularLeather && resource <= CraftResource.BarbedLeather)
+            if (resource >= CraftResource.RegularLeather && resource <= CraftResource.EtherealLeather)
                 return CraftResourceType.Leather;
 
-            if (resource >= CraftResource.RedScales && resource <= CraftResource.BlueScales)
+            if (resource >= CraftResource.RedScales && resource <= CraftResource.GoldScales)
                 return CraftResourceType.Scales;
 
-            if (resource >= CraftResource.RegularWood && resource <= CraftResource.Frostwood)
+            if (resource >= CraftResource.RegularWood && resource <= CraftResource.Petrified)
                 return CraftResourceType.Wood;
 
             return CraftResourceType.None;
@@ -899,6 +1117,20 @@ namespace Server.Items
                 return CraftResource.Verite;
             else if (info.Level == 8)
                 return CraftResource.Valorite;
+			else if (info.Level == 9)
+                return CraftResource.Blaze;
+			else if (info.Level == 10)
+                return CraftResource.Ice;
+			else if (info.Level == 11)
+                return CraftResource.Toxic;
+			else if (info.Level == 12)
+                return CraftResource.Electrum;
+			else if (info.Level == 13)
+                return CraftResource.Platinum;
+				else if (info.Level == 14)
+                return CraftResource.Royalite;
+				else if (info.Level == 15)
+                return CraftResource.Danite;
 
             return CraftResource.None;
         }
@@ -940,6 +1172,15 @@ namespace Server.Items
         public static readonly OreInfo Agapite = new OreInfo(6, 0x979, "Agapite");
         public static readonly OreInfo Verite = new OreInfo(7, 0x89F, "Verite");
         public static readonly OreInfo Valorite = new OreInfo(8, 0x8AB, "Valorite");
+			//daat99 OWLTR start - custom ores
+		public static readonly OreInfo Blaze		= new OreInfo(  9, 1161, "Blaze" );
+		public static readonly OreInfo Ice			= new OreInfo( 10, 1152, "Ice" );
+		public static readonly OreInfo Toxic		= new OreInfo( 11, 1272, "Toxic" );
+		public static readonly OreInfo Electrum		= new OreInfo( 12, 1278, "Electrum" );
+		public static readonly OreInfo Platinum		= new OreInfo( 13, 1153, "Platinum" );
+		public static readonly OreInfo Royalite		= new OreInfo( 13, 1153, "Royalite" );
+		public static readonly OreInfo Danite		= new OreInfo( 13, 1153, "Danite" );
+		
 
         private readonly int m_Level;
         private readonly int m_Hue;

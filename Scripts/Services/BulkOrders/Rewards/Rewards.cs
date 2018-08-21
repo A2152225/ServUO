@@ -358,6 +358,14 @@ namespace Server.Engines.BulkOrders
                 RewardCollection.Add(new BODCollectionItem(0x13E3, 1157104, 0x482, 1100, AncientHammer, 60));
                 RewardCollection.Add(new BODCollectionItem(0x13E3, 1157098, CraftResources.GetHue(CraftResource.Verite), 1150, RunicHammer, 7));
                 RewardCollection.Add(new BODCollectionItem(0x13E3, 1157099, CraftResources.GetHue(CraftResource.Valorite), 1200, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157293, CraftResources.GetHue(CraftResource.Blaze), 1250, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157294, CraftResources.GetHue(CraftResource.Ice), 1300, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157295, CraftResources.GetHue(CraftResource.Toxic), 1350, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157296, CraftResources.GetHue(CraftResource.Electrum), 1400, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157297, CraftResources.GetHue(CraftResource.Platinum), 1450, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157298, CraftResources.GetHue(CraftResource.Royalite), 1500, RunicHammer, 8));
+				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157299, CraftResources.GetHue(CraftResource.Danite), 1550, RunicHammer, 8));
+				
             }
             else
             {
@@ -517,7 +525,7 @@ namespace Server.Engines.BulkOrders
             if (itemCount > 1)
                 points += this.LookupTypePoints(this.m_Types, type);
 
-            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite)
+            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite)
                 points += 200 + (50 * (material - BulkMaterialType.DullCopper));
 
             return points;
@@ -646,7 +654,7 @@ namespace Server.Engines.BulkOrders
 
             int typeIndex = this.ComputeType(type, itemCount);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
-            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
+            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
 
             if (exceptional)
                 typeIndex++;
@@ -1096,7 +1104,7 @@ namespace Server.Engines.BulkOrders
                 case 6: points += 400; break;
             }
 
-            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite)
+            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite)
                 points += 200 + (50 * (material - BulkMaterialType.DullCopper));
 
             if (exceptional)
@@ -1182,7 +1190,7 @@ namespace Server.Engines.BulkOrders
 
             int typeIndex = ((itemCount == 6 ? 3 : itemCount == 5 ? 2 : itemCount == 4 ? 1 : 0) * 2) + (exceptional ? 1 : 0);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
-            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
+            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
 
             gold = goldTable[typeIndex][quanIndex][mtrlIndex];
 

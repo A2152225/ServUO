@@ -1,0 +1,249 @@
+///Writen by daat99
+///Thank to jjarmis for all his help :)
+using System;
+using System.Collections;
+using System.IO;
+using Server;
+using Server.Targeting;
+using Server.Items;
+using System.Linq;
+using System.Collections.Generic;
+using Server.Commands;
+
+
+namespace Server.Scripts.Commands 
+{ 
+	public class CSBookCmdHandlers 
+	{ 
+		private static string writetitle = "", author = "", title = "", writable = "";
+		private static int itemid = 4030, pages = 20, cnt = 1, bookamount;
+
+		public static void Initialize() 
+		{ 
+			CommandSystem.Register( "CSBook", AccessLevel.GameMaster, new CommandEventHandler( CSBook_OnCommand ) ); 
+		} 
+
+		public static void Register( string command, AccessLevel access, CommandEventHandler handler ) 
+		{ 
+			Server.Commands.Register( command, access, handler ); 
+		} 
+       
+		[Usage( "CSBook" )] 
+		[Description( "Make a c# file from a book." )] 
+		
+		private static string GetRoot()
+		{
+			try
+			{
+				return Path.GetDirectoryName( Environment.GetCommandLineArgs()[0] );
+			}
+			catch
+			{
+				return "";
+			}
+		}
+
+		private string[] m_Lines;
+
+		public string[] Lines
+		{
+			get
+			{
+				return m_Lines;
+			}
+			set
+			{
+				m_Lines = value;
+			}
+		}
+
+		public static void CSBook_OnCommand( CommandEventArgs e )
+		{
+			Mobile from = e.Mobile;
+			from.SendMessage("Select a book to export to a c# script:");
+			from.Target=new CSBookTarget();
+		}
+		
+		private class CSBookTarget : Target
+		{
+			public CSBookTarget() : base( 3, false, TargetFlags.None )
+			{
+			}
+			
+			protected override void OnTarget( Mobile from, object targ)
+			{
+				StartCS( from, targ );
+			}
+		}
+
+		private static string Combine( string path1, string path2 )
+		{
+			if ( path1 == "" )
+				return path2;
+
+			return Path.Combine( path1, path2 );
+		}
+
+		private static void CreateDirectory( string path )
+		{
+			if ( !Directory.Exists( path ) )
+				Directory.CreateDirectory( path );
+		}
+
+		private static void CreateDirectory( string path1, string path2 )
+		{
+			CreateDirectory( Combine( path1, path2 ) );
+		}
+
+		private static void StartCS( Mobile from, object targ )
+		{
+			if (targ is BaseBook)
+			{
+				string countfilePath = Path.Combine( Core.BaseDirectory, "Data/CSBook.cfg" );
+				if ( File.Exists( countfilePath ) )
+				{
+					using ( StreamReader ap = new StreamReader( countfilePath ) )  //  opens the reader to read the filename at filepath.
+					{
+						try
+						{
+							bookamount = Convert.ToInt32( ap.ReadLine() ); //converts the strings to intergers and stores them as x and y.
+						}
+						catch
+						{
+							bookamount = 0;
+						}
+						
+					}
+					using ( StreamWriter bp = new StreamWriter( countfilePath ) )
+					{
+						if (bookamount >= 0)
+						{
+							bookamount++;
+							string fileName = String.Format( "{0}",countfilePath);
+							bp.WriteLine(bookamount);
+						
+						}
+						else
+						{
+							string fileName = String.Format( "{0}",countfilePath);
+							bp.WriteLine("1");
+							bookamount = 1;
+						}
+					}
+						
+				}
+				else
+				{
+					using ( StreamWriter dp = new StreamWriter( countfilePath ) )
+					{
+						string fileName = String.Format( "{0}",countfilePath);
+						dp.WriteLine("1");
+						bookamount = 1;
+					}
+				}
+
+				Console.Write( "Writing CS book..." );
+
+				try
+				{
+					foreach ( char p in ((BaseBook)targ).Title ) //  a string is just an array of chars.
+					{
+						if ( Char.IsDigit(p) && Char.IsLetter(p) )  // Will accept numbers and letters in the class name.
+						{
+							writetitle += p;  // Add this char to the title.
+						}
+					}
+
+					if ( writetitle == "" )
+					{
+						writetitle = String.Format( "Book{0}", bookamount );
+					}
+					
+					string fileName = String.Format( "{0}.cs", writetitle );
+
+					string root = GetRoot();
+					string filePath = Combine( root, fileName );
+
+					using ( StreamWriter op = new StreamWriter( filePath ) )
+					{
+						if (((BaseBook)targ).Author != null)
+							author = ((BaseBook)targ).Author;
+						else
+							author = "unknown";
+						title = writetitle;
+						if (((BaseBook)targ).Writable)
+							writable = "true";
+						else
+							writable = "false";
+						itemid = 4030;
+						if (((BaseBook)targ).PagesCount > 0)
+							pages = ((BaseBook)targ).PagesCount;
+						cnt = 0;
+
+						char quote = (char) 34;
+						op.WriteLine("///This book was exported to c# file using daat99's copybook script.");
+						op.WriteLine("///Thanx a lot for jjarmis for his HUGE support on writing this script.");
+						op.WriteLine("using System;");
+						op.WriteLine("using Server;");
+						op.WriteLine("namespace Server.Items");
+						op.WriteLine("{");
+						op.WriteLine("	public class {0}: BaseBook", writetitle);
+						op.WriteLine("	{");
+						op.WriteLine("		[Constructable]");
+						op.WriteLine("		public {0}() : base( {1}, {2}, {3})", writetitle, itemid, pages, writable);
+						op.WriteLine("		{");
+						op.WriteLine();
+						BookPageInfo[] pagesSrc = ((BaseBook)targ).Pages;
+						
+						op.WriteLine("			Title = {0}{1}{0};", quote, title);
+						op.WriteLine("			Author = {0}{1}{0};", quote, author);
+						op.WriteLine("			LootType = LootType.Blessed;");
+						op.WriteLine("			int cnt = 0;");
+						op.WriteLine("			string[] lines;");
+						for ( int i = 0; i < pagesSrc.Length; i++ )
+						{
+							op.WriteLine("			lines = new string[] //page {0}", cnt);
+							op.WriteLine("			{");
+							BookPageInfo pageSrc = pagesSrc[i];
+							int length = pageSrc.Lines.Length;
+							if (length > 0)
+							{
+								for ( int j = 0; j < length; j++ )
+									op.WriteLine("				{0}{1}{0},", quote , pageSrc.Lines[j]);
+							}
+							else
+							{
+								for ( int j = 0; j < 8; j++ )
+									op.WriteLine("				{0}{0},", quote);
+							}
+							cnt = (cnt + 1);
+							op.WriteLine("			};");
+							op.WriteLine("			Pages[cnt++].Lines = lines;");
+						}
+						op.WriteLine("		}");
+						op.WriteLine("		public {0}( Serial serial ) : base( serial )", writetitle);
+						op.WriteLine("		{");
+						op.WriteLine("		}");
+						op.WriteLine("		public override void Deserialize( GenericReader reader )");
+						op.WriteLine("		{");
+						op.WriteLine("			base.Deserialize( reader );");
+						op.WriteLine("			int version = reader.ReadInt();");
+						op.WriteLine("		}");
+						op.WriteLine("		public override void Serialize( GenericWriter writer )");
+						op.WriteLine("		{");
+						op.WriteLine("			base.Serialize( writer );");
+						op.WriteLine("			writer.Write( (int)0 ); // version");
+						op.WriteLine("		}");
+						op.WriteLine("	}");
+						op.WriteLine("}");
+					}
+					Console.WriteLine( "done" );
+				}
+				catch
+				{
+					Console.WriteLine( "failed" );
+				}
+			}
+		}
+	}
+}

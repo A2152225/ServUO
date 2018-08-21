@@ -342,4 +342,197 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
     }
+	
+	
+	
+	public class BlazeGranite : BaseGranite
+	{
+		[Constructable]
+		public BlazeGranite() : base( CraftResource.Blaze )
+		{
+			Name = "Blaze Granite"; //daat99 OWLTR - granite name
+		}
+
+		public BlazeGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
+	public class IceGranite : BaseGranite
+	{
+		[Constructable]
+		public IceGranite() : base( CraftResource.Ice )
+		{
+			Name = "Ice Granite"; //daat99 OWLTR - granite name
+		}
+
+		public IceGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+
+	public class ToxicGranite : BaseGranite
+	{
+		[Constructable]
+		public ToxicGranite() : base( CraftResource.Toxic )
+		{
+			Name = "Toxic Granite"; //daat99 OWLTR - granite name
+		}
+
+		public ToxicGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+
+	public class ElectrumGranite : BaseGranite
+	{
+		[Constructable]
+		public ElectrumGranite() : base( CraftResource.Electrum )
+		{
+			Name = "Electrum Granite"; //daat99 OWLTR - granite name
+		}
+
+		public ElectrumGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+
+	public class PlatinumGranite : BaseGranite
+	{
+		[Constructable]
+		public PlatinumGranite() : base( CraftResource.Platinum )
+		{
+			Name = "Platinum Granite"; //daat99 OWLTR - granite name
+		}
+
+		public PlatinumGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	public class RoyaliteGranite : BaseGranite
+	{
+		[Constructable]
+		public RoyaliteGranite() : base( CraftResource.Royalite )
+		{
+			Name = "Royalite Granite"; //daat99 OWLTR - granite name
+		}
+
+		public RoyaliteGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
+	public class DaniteGranite : BaseGranite
+	{
+		[Constructable]
+		public DaniteGranite() : base( CraftResource.Danite )
+		{
+			Name = "Danite Granite"; //daat99 OWLTR - granite name
+		}
+
+		public DaniteGranite( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
 }

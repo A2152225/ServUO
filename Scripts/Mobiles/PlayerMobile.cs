@@ -335,6 +335,31 @@ namespace Server.Mobiles
 		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }
 		#endregion
 		//Paragon Stuff
+		
+		//future proofing
+		private double m_customplaceholder0 =0;
+		private double m_customplaceholder1 =0;
+		private double m_customplaceholder2 =0;
+		private double m_customplaceholder3 =0;
+		private double m_customplaceholder4 =0;
+		private double m_customplaceholder5 =0;
+		private double m_customplaceholder6 =0;
+		private double m_customplaceholder7 =0;
+		private double m_customplaceholder8 =0;
+		private double m_customplaceholder9 =0;
+		private double m_customplaceholder10 =0;
+		private double m_customplaceholder11 =0;
+		private double m_customplaceholder12 =0;
+		private double m_customplaceholder13 =0;
+		private double m_customplaceholder14 =0;
+		private bool  m_customplaceholder15 =false;
+		private bool  m_customplaceholder16 =false;
+		private bool m_customplaceholder17 =false;
+		private string m_customplaceholder18 ="";
+		private string m_customplaceholder19 ="";
+		private string m_customplaceholder20 ="";
+		
+		
 		private double m_XPIncrease =0;
 		private Difficulty m_MaxDifficulty = Difficulty.Normal;
 		private int m_ParagonPoints =0;
@@ -4990,6 +5015,29 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
                    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
 				   
 				   
+		m_customplaceholder0 = reader.ReadDouble();
+		m_customplaceholder1 = reader.ReadDouble();
+		m_customplaceholder2 = reader.ReadDouble();
+		m_customplaceholder3 = reader.ReadDouble();
+		m_customplaceholder4 = reader.ReadDouble();
+		m_customplaceholder5 = reader.ReadDouble();
+		m_customplaceholder6 = reader.ReadDouble();
+		m_customplaceholder7 = reader.ReadDouble();
+		m_customplaceholder8 = reader.ReadDouble();
+		m_customplaceholder9 = reader.ReadDouble();
+		m_customplaceholder10 = reader.ReadDouble();
+		m_customplaceholder11 = reader.ReadDouble();
+		m_customplaceholder12 = reader.ReadDouble();
+		m_customplaceholder13 = reader.ReadDouble();
+		m_customplaceholder14 = reader.ReadDouble();
+		m_customplaceholder15 = reader.ReadBool();		   
+		m_customplaceholder16 = reader.ReadBool();		   				  
+		m_customplaceholder17 = reader.ReadBool();		   				  
+		m_customplaceholder18 = reader.ReadString();		   				  
+		m_customplaceholder19 = reader.ReadString();		   				  
+		m_customplaceholder20 = reader.ReadString();		   				  
+		
+				   
 		m_XPIncrease = reader.ReadDouble();
 		m_MaxDifficulty = (Difficulty)reader.ReadEncodedInt();
 		m_ParagonPoints = reader.ReadInt();
@@ -5497,7 +5545,34 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			writer.Write(37); // version
 
             writer.Write((int)m_ExtendedFlags);
-			//Paragon Stuff 
+		
+//future proof 
+
+		writer.Write((double)m_customplaceholder0 );
+		writer.Write((double)m_customplaceholder1 );
+		writer.Write((double)m_customplaceholder2 );
+		writer.Write((double)m_customplaceholder3 );
+		writer.Write((double)m_customplaceholder4 );
+		writer.Write((double)m_customplaceholder5 );
+		writer.Write((double)m_customplaceholder6 );
+		writer.Write((double)m_customplaceholder7 );
+		writer.Write((double)m_customplaceholder8 );
+		writer.Write((double)m_customplaceholder9 );
+		writer.Write((double)m_customplaceholder10 );
+		writer.Write((double)m_customplaceholder11 );
+		writer.Write((double)m_customplaceholder12 );
+		writer.Write((double)m_customplaceholder13 );
+		writer.Write((double)m_customplaceholder14 );
+		writer.Write((bool)m_customplaceholder15 );		   
+		writer.Write((bool)m_customplaceholder16 );		   				  
+		writer.Write((bool)m_customplaceholder17 );		   				  
+		writer.Write((string)m_customplaceholder18 );		   				  
+		writer.Write((string)m_customplaceholder19 );		   				  
+		writer.Write((string)m_customplaceholder20 );		
+
+		//Paragon Stuff 
+			
+			
 		writer.Write((double)m_XPIncrease);
 		writer.WriteEncodedInt((int)m_MaxDifficulty);
 		writer.Write((int)m_ParagonPoints);

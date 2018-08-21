@@ -50,16 +50,16 @@ namespace Server.Engines.Harvest
             HarvestDefinition oreAndStone = this.m_OreAndStone = new HarvestDefinition();
 
             // Resource banks are every 8x8 tiles
-            oreAndStone.BankWidth = 8;
-            oreAndStone.BankHeight = 8;
+            oreAndStone.BankWidth = 6;
+            oreAndStone.BankHeight = 6;
 
             // Every bank holds from 10 to 34 ore
-            oreAndStone.MinTotal = 10;
-            oreAndStone.MaxTotal = 34;
+            oreAndStone.MinTotal = 14;
+            oreAndStone.MaxTotal = 40;
 
             // A resource bank will respawn its content every 10 to 20 minutes
-            oreAndStone.MinRespawn = TimeSpan.FromMinutes(10.0);
-            oreAndStone.MaxRespawn = TimeSpan.FromMinutes(20.0);
+            oreAndStone.MinRespawn = TimeSpan.FromMinutes(5.0);
+            oreAndStone.MaxRespawn = TimeSpan.FromMinutes(15.0);
 
             // Skill checking is done on the Mining skill
             oreAndStone.Skill = SkillName.Mining;
@@ -68,7 +68,7 @@ namespace Server.Engines.Harvest
             oreAndStone.Tiles = m_MountainAndCaveTiles;
 
             // Players must be within 2 tiles to harvest
-            oreAndStone.MaxRange = 2;
+            oreAndStone.MaxRange = 3;
 
             // One ore per harvest action
             oreAndStone.ConsumedPerHarvest = 1;
@@ -99,20 +99,33 @@ namespace Server.Engines.Harvest
                 new HarvestResource(85.0, 45.0, 125.0, 1007077, typeof(GoldOre), typeof(GoldGranite), typeof(GoldenElemental)),
                 new HarvestResource(90.0, 50.0, 130.0, 1007078, typeof(AgapiteOre), typeof(AgapiteGranite), typeof(AgapiteElemental)),
                 new HarvestResource(95.0, 55.0, 135.0, 1007079, typeof(VeriteOre), typeof(VeriteGranite), typeof(VeriteElemental)),
-                new HarvestResource(99.0, 59.0, 139.0, 1007080, typeof(ValoriteOre), typeof(ValoriteGranite), typeof(ValoriteElemental))
-            };
-
+                new HarvestResource(99.0, 59.0, 139.0, 1007080, typeof(ValoriteOre), typeof(ValoriteGranite), typeof(ValoriteElemental)),
+				new HarvestResource( 100.0, 60.0, 140.0, "You put some Blaze ore in your backpack",			typeof( BlazeOre ),				typeof( BlazeGranite ),			typeof( BlazeOreElemental ) ),
+				new HarvestResource( 105.0, 65.0, 145.0, "You put some Ice ore in your backpack", 			typeof( IceOre ),				typeof( IceGranite ),			typeof( IceOreElemental ) ),
+				new HarvestResource( 110.0, 70.0, 150.0, "You put some Toxic ore in your backpack",			typeof( ToxicOre ),				typeof( ToxicGranite ),			typeof( ToxicOreElemental ) ),
+				new HarvestResource( 112.0, 75.0, 155.0, "You put some Electrum ore in your backpack",		typeof( ElectrumOre ),			typeof( ElectrumGranite ),		typeof( ElectrumOreElemental ) ),
+				new HarvestResource( 115.0, 79.0, 159.0, "You put some Platinum ore in your backpack",		typeof( PlatinumOre ),			typeof( PlatinumGranite ),		typeof( PlatinumOreElemental ) ),
+          		new HarvestResource( 117.0, 75.0, 159.0, "You put some Royalite ore in your backpack",		typeof( RoyaliteOre ),			typeof( RoyaliteGranite ),		typeof( RoyaliteOreElemental ) ),
+				new HarvestResource( 119.0, 79.0, 159.0, "You put some Danite ore in your backpack",		typeof( DaniteOre ),			typeof( DaniteGranite ),		typeof( DaniteOreElemental ) )
+		};
             veins = new HarvestVein[]
             {
-                new HarvestVein(49.6, 0.0, res[0], null), // Iron
-                new HarvestVein(11.2, 0.5, res[1], res[0]), // Dull Copper
-                new HarvestVein(09.8, 0.5, res[2], res[0]), // Shadow Iron
-                new HarvestVein(08.4, 0.5, res[3], res[0]), // Copper
-                new HarvestVein(07.0, 0.5, res[4], res[0]), // Bronze
-                new HarvestVein(05.6, 0.5, res[5], res[0]), // Gold
-                new HarvestVein(04.2, 0.5, res[6], res[0]), // Agapite
-                new HarvestVein(02.8, 0.5, res[7], res[0]), // Verite
-                new HarvestVein(01.4, 0.5, res[8], res[0])// Valorite
+					new HarvestVein( 47.0, 0.0, res[0], null   ), // Iron
+					new HarvestVein( 07.0, 0.5, res[1], res[0] ), // Dull Copper
+					new HarvestVein( 06.5, 0.5, res[2], res[0] ), // Shadow Iron
+					new HarvestVein( 06.0, 0.5, res[3], res[0] ), // Copper
+					new HarvestVein( 05.5, 0.5, res[4], res[0] ), // Bronze
+					new HarvestVein( 05.0, 0.5, res[5], res[0] ), // Gold
+					new HarvestVein( 04.5, 0.5, res[6], res[0] ), // Agapite
+					new HarvestVein( 04.0, 0.5, res[7], res[0] ), // Verite
+					new HarvestVein( 03.5, 0.5, res[8], res[0] ),  // Valorite
+					new HarvestVein( 03.0, 0.5, res[9], res[0] ), // Blaze
+					new HarvestVein( 02.5, 0.5, res[10], res[0] ), // Ice
+					new HarvestVein( 02.0, 0.5, res[11], res[0] ), // Toxic
+					new HarvestVein( 01.5, 0.5, res[12], res[0] ), // Electrum
+					new HarvestVein( 01.0, 0.5, res[13], res[0] ), // Platinum
+					new HarvestVein( 00.75, 0.5, res[13], res[0] ), // Royalite
+					new HarvestVein( 00.25, 0.5, res[13], res[0] ) // Danite
             };
 
             oreAndStone.Resources = res;
@@ -152,8 +165,8 @@ namespace Server.Engines.Harvest
             sand.MaxTotal = 13;
 
             // A resource bank will respawn its content every 10 to 20 minutes
-            sand.MinRespawn = TimeSpan.FromMinutes(10.0);
-            sand.MaxRespawn = TimeSpan.FromMinutes(20.0);
+            sand.MinRespawn = TimeSpan.FromMinutes(5.0);
+            sand.MaxRespawn = TimeSpan.FromMinutes(15.0);
 
             // Skill checking is done on the Mining skill
             sand.Skill = SkillName.Mining;
@@ -162,7 +175,7 @@ namespace Server.Engines.Harvest
             sand.Tiles = m_SandTiles;
 
             // Players must be within 2 tiles to harvest
-            sand.MaxRange = 2;
+            sand.MaxRange = 3;
 
             // One sand per harvest action
             sand.ConsumedPerHarvest = 1;
