@@ -84,7 +84,8 @@ namespace Server.Engines.BulkOrders
 
             if (deed.Material != BulkMaterialType.None)
             {
-                AddHtmlLocalized(75, y, 300, 20, SmallBODGump.GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
+				AddHtml( 75, y, 300, 20, "<basefont color=#FF0000>All items must be crafted with " + GetMaterialStringFor(deed.Material), false, false );
+              //  AddHtmlLocalized(75, y, 300, 20, SmallBODGump.GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
                 y += 24;
             }
 
@@ -124,6 +125,52 @@ namespace Server.Engines.BulkOrders
                 AddHtmlLocalized(160, 192 + (entries.Length * 24), 120, 20, 1011441, 0x7FFF, false, false); // EXIT
             }
         }
+		//daat99 OWLTR start - custom resource
+		public static string GetMaterialStringFor( BulkMaterialType material )
+		{
+			string result = "UNKNOWN";
+			switch ((int)material)
+			{
+				case 1: result = "dull copper ingots"; break;
+				case 2: result = "shadow iron ingots"; break;
+				case 3: result = "copper ingots"; break;
+				case 4: result = "bronze ingots"; break;
+				case 5: result = "gold ingots"; break;
+				case 6: result = "agapite ingots"; break;
+				case 7: result = "verite ingots"; break;
+				case 8: result = "valorite ingots"; break;
+				case 9: result = "blaze ingots"; break;
+				case 10: result = "ice ingots"; break;
+				case 11: result = "toxic ingots"; break;
+				case 12: result = "electrum ingots"; break;
+				case 13: result = "platinum ingots"; break;
+				case 14: result = "royalite ingots"; break;
+				case 15: result = "danite ingots"; break;
+				case 16: result = "spined leather"; break;
+				case 17: result = "horned leather"; break;
+				case 18: result = "barbed leather"; break;
+				case 19: result = "polar leather"; break;
+				case 20: result = "synthetic leather"; break;
+				case 21: result = "blaze leather"; break;
+				case 22: result = "daemonic leather"; break;
+				case 23: result = "shadow leather"; break;
+				case 24: result = "frost leather"; break;
+				case 25: result = "ethereal leather"; break;
+				case 26: result = "regular wood"; break;
+				case 27: result = "heartwood wood"; break;
+				case 28: result = "bloodwood wood"; break;
+				case 29: result = "frostwood wood"; break;
+				case 30: result = "oak wood"; break;
+				case 31: result = "ash wood"; break;
+				case 32: result = "yew wood"; break;
+				case 33: result = "bamboo wood"; break;
+				case 34: result = "purple heart wood"; break;
+				case 35: result = "redwood wood"; break;
+				case 36: result = "petrified wood"; break;
+			}
+			return result;
+		}
+		//daat99 OWLTR end - custom resource
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
