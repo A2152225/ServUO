@@ -203,7 +203,7 @@ namespace Solaris.Addons
 			Visible = false;
 			
 			//default delay: 1 second
-			_Delay = TimeSpan.FromSeconds( .3 );		
+			_Delay = TimeSpan.FromSeconds( 1 );		
 			_Components = new List<MovableAddonComponent>();			
 			_Speed = MovableAddonSpeed.Regular;
 		}

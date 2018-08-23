@@ -6674,15 +6674,33 @@ namespace Server.Mobiles
 
             InvalidateProperties();
         }
-
+public string CType = "default";  //Declare variable for use of transferring to mobile
         public virtual void OnKilledBy(Mobile mob)
         {
             if (m_Paragon && XmlParagon.CheckArtifactChance(mob, this))
             {
                 XmlParagon.GiveArtifactTo(mob, this);
             }
+			
 
             EventSink.InvokeOnKilledBy(new OnKilledByEventArgs(this, mob));
+			if ( mob is PlayerMobile)
+			{
+				
+				try {
+				 CType = this.GetType().ToString();
+					((PlayerMobile)mob).CreatureKillUpdate(CType);
+				Console.WriteLine(CType);
+				}
+				catch(Exception e)
+				{
+				//((PlayerMobile)mob).CreatureKillUpdate(CType);
+				Console.WriteLine(CType);
+					Console.WriteLine(this.GetType());
+					Console.WriteLine(this.GetType().ToString());
+					Console.WriteLine(e.ToString());
+				}
+			}
         }
 
         public override void OnDeath(Container c)

@@ -347,7 +347,7 @@ namespace Server.Gumps
 			private int anim = 0;
 			private Item m_Shadow;
 
-           	public Volotimer( Item i, PlayerMobile m, int seq ) : base( TimeSpan.FromSeconds( 0.075 ) )
+           	public Volotimer( Item i, PlayerMobile m, int seq ) : base( TimeSpan.FromSeconds( 0.2 ) )
            	{
 				i_item = i;
            		m_Mobile = m;

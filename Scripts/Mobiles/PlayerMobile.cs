@@ -334,8 +334,58 @@ namespace Server.Mobiles
 		[CommandProperty(AccessLevel.Administrator)]
 		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }
 		#endregion
-		//Paragon Stuff
+		//Kill count tracking
+		public Dictionary<string,int>KillCount = new Dictionary<string,int>();// = new Dictionary<string,int>["default",0];
 		
+		public void CreatureKillUpdate(string ctype)
+		{
+			if (KillCount.ContainsKey(ctype) == true)
+{
+	KillCount[ctype]++;
+}
+else
+{
+	KillCount.Add(ctype,1);
+}
+		
+		}
+		
+		public int GetKCount(string CreatureType){ 
+				if (KillCount.ContainsKey(CreatureType) == true)
+				return KillCount[CreatureType];
+				else return 0;
+		}
+		
+		
+		/*
+		public void Serialize(Dictionary<int, UserSessionInfo> dictionary, Stream stream)
+{
+    BinaryWriter writer = new BinaryWriter(stream);
+		writer.Write(dictionary.Count);
+		foreach (var obj in dictionary)
+		{
+			writer.Write(obj.Key);
+			writer.Write(obj.Value);
+		}
+    writer.Flush();
+}
+
+public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
+{
+    BinaryReader reader = new BinaryReader(stream);
+    int count = reader.ReadInt32();
+    var dictionary = new Dictionary<int, UserSessionInfo>(count);
+    for (int n = 0; n < count; n++)
+    {
+        var key = reader.ReadInt32();
+        var value = reader.ReadString();
+        dictionary.Add(key, value);
+    }
+    return dictionary;                
+}
+		
+		*/
+		//Paragon Stuff
 		//future proofing
 		private double m_customplaceholder0 =0;
 		private double m_customplaceholder1 =0;
@@ -381,7 +431,7 @@ namespace Server.Mobiles
 		private int m_ParagonPoints15 =0;
 		private int m_ParagonPoints16 =0;
 		
-		
+			
 		/////Level/////
 		[CommandProperty(AccessLevel.Administrator)]
         public double XPIncrease
@@ -5014,7 +5064,25 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
                 case 37:
                    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
 				   
-				   
+		
+		int countK = reader.ReadInt();
+    KillCount = new Dictionary<string, int>(countK);
+	if (countK != 0)
+	{
+    for (int n = 0; n < countK; n++)
+    {
+        var key = reader.ReadString();
+        var value = reader.ReadInt();
+        KillCount.Add(key, value);
+    }
+	} 
+	else
+	{
+		var key = "default";
+        var value = 0;
+		KillCount.Add(key, value);
+		}
+	
 		m_customplaceholder0 = reader.ReadDouble();
 		m_customplaceholder1 = reader.ReadDouble();
 		m_customplaceholder2 = reader.ReadDouble();
@@ -5547,7 +5615,20 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
             writer.Write((int)m_ExtendedFlags);
 		
 //future proof 
-
+		writer.Write(KillCount.Count);
+		if (KillCount.Count == 0 ||KillCount.Count == null)
+		{
+			KillCount.Add("default",0);
+			writer.Write("default");
+			writer.Write(0);
+		}
+		else {
+		foreach (var obj in KillCount)
+		{
+			writer.Write(obj.Key);
+			writer.Write(obj.Value);
+		}
+		}
 		writer.Write((double)m_customplaceholder0 );
 		writer.Write((double)m_customplaceholder1 );
 		writer.Write((double)m_customplaceholder2 );

@@ -60,7 +60,7 @@ namespace Server.Engines.Harvest
       lumber.Tiles = tileNums;
 
       // Players must be within 2 tiles to harvest
-      lumber.MaxRange = 2;
+      lumber.MaxRange = 3;
 
       // Skill checking is done on the Lumberjacking skill
       lumber.Skill = SkillName.Lumberjacking;
