@@ -6493,6 +6493,23 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
             set { m_CurrentVeteranTitle = value; InvalidateProperties(); }
         }
 
+		public override bool ShowAccessTitle
+		{
+			get
+			{
+				switch (AccessLevel)
+				{
+					case AccessLevel.VIP:
+					case AccessLevel.Counselor:
+					case AccessLevel.GameMaster:
+					case AccessLevel.Seer:
+						return true;
+				}
+
+				return false;
+			}
+		}
+
 		public override void AddNameProperties(ObjectPropertyList list)
 		{
 			base.AddNameProperties(list);
