@@ -5616,7 +5616,7 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 		
 //future proof 
 		writer.Write(KillCount.Count);
-		if (KillCount.Count == 0 ||KillCount.Count == null)
+		if (KillCount.Count == 0 || KillCount.Count == null)
 		{
 			KillCount.Add("default",0);
 			writer.Write("default");
@@ -6054,7 +6054,15 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 		public override void GetProperties(ObjectPropertyList list)
 		{
 			base.GetProperties(list);
-
+			if (this.m_LvL < 50)
+			list.Add(String.Concat("Level: ",m_LvL));
+			if (this.m_LvL >= 50){
+			list.Add(String.Concat("Level: ", String.Format("<BASEFONT COLOR={0}>{1}", "#0FFF00", m_LvL)));
+		//list.Add(String.Concat("Level: ",m_LvL));			
+			list.Add(String.Concat("Paragon: ",m_PrestigeLvl));
+			
+			}
+			 InvalidateMyRunUO();
             if (Core.SA)
             {
                 if (m_SubtitleSkillTitle != null)

@@ -2033,7 +2033,7 @@ namespace Server
 			public ManaTimer(Mobile m)
 				: base(GetManaRegenRate(m), GetManaRegenRate(m))
 			{
-				Priority = TimerPriority.FiftyMS;
+				Priority = TimerPriority.TwentyFiveMS;
 				m_Owner = m;
 			}
 
@@ -2041,7 +2041,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenMana) // m_Owner.Alive )
 				{
-					m_Owner.Mana++;
+					m_Owner.Mana+=2;
 				}
 
 				Delay = Interval = GetManaRegenRate(m_Owner);
@@ -2055,7 +2055,7 @@ namespace Server
 			public HitsTimer(Mobile m)
 				: base(GetHitsRegenRate(m), GetHitsRegenRate(m))
 			{
-				Priority = TimerPriority.FiftyMS;
+				Priority = TimerPriority.TwentyFiveMS;
 				m_Owner = m;
 			}
 
@@ -2063,7 +2063,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenHits) // m_Owner.Alive && !m_Owner.Poisoned )
 				{
-					m_Owner.Hits++;
+					m_Owner.Hits+=2;
 				}
 
 				Delay = Interval = GetHitsRegenRate(m_Owner);
@@ -2077,7 +2077,7 @@ namespace Server
 			public StamTimer(Mobile m)
 				: base(GetStamRegenRate(m), GetStamRegenRate(m))
 			{
-				Priority = TimerPriority.FiftyMS;
+				Priority = TimerPriority.TwentyFiveMS;
 				m_Owner = m;
 			}
 
@@ -2085,7 +2085,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenStam) // m_Owner.Alive )
 				{
-					m_Owner.Stam++;
+					m_Owner.Stam+=2;
 				}
 
 				Delay = Interval = GetStamRegenRate(m_Owner);

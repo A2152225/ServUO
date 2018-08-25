@@ -278,7 +278,10 @@ namespace Server.Misc
 
 			var city = args.City;
 			var map = Siege.SiegeShard && city.Map == Map.Trammel ? Map.Felucca : city.Map;
-
+			((PlayerMobile)newChar).MaxLvl = 50;  // Cap for now, 50, allows leveling
+			((PlayerMobile)newChar).PrestigeLvl = 0; //paragon lvl 0
+			((PlayerMobile)newChar).YoungSaves = 5; //paragon lvl 0
+			((PlayerMobile)newChar).Young = true; //paragon lvl 0
 			newChar.MoveToWorld(city.Location, map);
 
 			Utility.PushColor(ConsoleColor.Green);

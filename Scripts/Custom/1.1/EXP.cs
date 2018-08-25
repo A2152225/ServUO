@@ -101,7 +101,7 @@ namespace Server.Mobiles
 			
 			from.LvL += 1;
 			
-			   if (pm.Young && pm.LvL == 50)
+			   if (pm.Young && pm.LvL == 15)
             {
                 Account acc = pm.Account as Account;
 
