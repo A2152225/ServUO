@@ -1,4 +1,3 @@
-
 #region References
 using System;
 using System.Collections;
@@ -52,8 +51,6 @@ using RankDefinition = Server.Guilds.RankDefinition;
 
 namespace Server.Mobiles
 {
-	
-	
 
 	#region Enums
 	[Flags]
@@ -2171,18 +2168,23 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 		}
 
-		private static void OnLogout(LogoutEventArgs e)
+			private static void OnLogout(LogoutEventArgs e)
 		{
-			#region Scroll of Alacrity
-			if (((PlayerMobile)e.Mobile).AcceleratedStart > DateTime.UtcNow)
+            PlayerMobile pm = e.Mobile as PlayerMobile;
+
+            #region Scroll of Alacrity
+            if (pm.AcceleratedStart > DateTime.UtcNow)
 			{
-				((PlayerMobile)e.Mobile).AcceleratedStart = DateTime.UtcNow;
-				ScrollofAlacrity.AlacrityEnd(e.Mobile);
+				pm.AcceleratedStart = DateTime.UtcNow;
+				ScrollofAlacrity.AlacrityEnd(pm);
 			}
 			#endregion
 
-            BaseFamiliar.OnLogout(e.Mobile as PlayerMobile);
-		}
+            BaseFamiliar.OnLogout(pm);
+
+            BaseEscort.DeleteEscort(pm);
+        }
+
 
 		private static void EventSink_Connected(ConnectedEventArgs e)
 		{
@@ -4492,7 +4494,8 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			EndAction(typeof(IncognitoSpell));
 
 			MeerMage.StopEffect(this, false);
-
+			
+			BaseEscort.DeleteEscort(this);
 			#region Stygian Abyss
 			if (Flying)
 			{
