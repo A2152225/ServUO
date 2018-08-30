@@ -775,6 +775,7 @@ namespace Server
 		private bool m_CanSwim, m_CantWalk;
 		private int m_TithingPoints;
 		private bool m_DisplayGuildTitle;
+		private bool m_DisplayGuildAbbr;
 		private Mobile m_GuildFealty;
 		private DateTime[] m_StuckMenuUses;
 		private Timer m_ExpireCombatant;
@@ -1177,7 +1178,7 @@ namespace Server
 				suffix += Title;
 			}
 			
-			if (m_DisplayGuildTitle && m_Player && m_Guild != null)
+			if (m_DisplayGuildAbbr && m_Player && m_Guild != null)
 			{
 				if (!String.IsNullOrWhiteSpace(suffix) && !suffix.EndsWith("]") && !suffix.EndsWith(" "))
 				{
@@ -2263,6 +2264,7 @@ namespace Server
 
 		private long m_NextCombatTime;
 
+		[CommandProperty(AccessLevel.GameMaster)]
 		public long NextSkillTime { get { return m_NextSkillTime; } set { m_NextSkillTime = value; } }
 
 		public List<AggressorInfo> Aggressors { get { return m_Aggressors; } }
@@ -5920,6 +5922,12 @@ namespace Server
 
 			switch (version)
 			{
+				case 37:
+				{
+					m_DisplayGuildAbbr = reader.ReadBool();
+
+					goto case 36;
+				}
 				case 36:
 				{
 					m_BloodHue = reader.ReadInt();
@@ -6170,6 +6178,11 @@ namespace Server
 					}
 				case 0:
 					{
+						if (version < 37)
+						{
+							m_DisplayGuildAbbr = true;
+						}
+
 						if (version < 34)
 						{
                             m_StrCap = Config.Get("PlayerCaps.StrCap", 125);
@@ -6468,7 +6481,10 @@ namespace Server
 
 		public virtual void Serialize(GenericWriter writer)
 		{
-			writer.Write(36); // version
+			writer.Write(37); // version
+
+			// 37
+			writer.Write(m_DisplayGuildAbbr);
 
 			// 36
 			writer.Write(m_BloodHue);
@@ -9376,6 +9392,17 @@ namespace Server
 
 		public virtual void OnGuildTitleChange(string oldTitle)
 		{ }
+
+		[CommandProperty(AccessLevel.Decorator)]
+		public bool DisplayGuildAbbr
+		{
+			get { return m_DisplayGuildAbbr; }
+			set
+			{
+				m_DisplayGuildAbbr = value;
+				InvalidateProperties();
+			}
+		}
 
 		[CommandProperty(AccessLevel.Decorator)]
 		public bool DisplayGuildTitle
