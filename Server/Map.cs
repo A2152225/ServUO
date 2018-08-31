@@ -401,15 +401,116 @@ namespace Server
 		private static readonly Map[] m_Maps = new Map[0x100];
 
 		public static Map[] Maps { get { return m_Maps; } }
-
+		//normal start
 		public static Map Felucca { get { return m_Maps[0]; } }
 		public static Map Trammel { get { return m_Maps[1]; } }
 		public static Map Ilshenar { get { return m_Maps[2]; } }
 		public static Map Malas { get { return m_Maps[3]; } }
 		public static Map Tokuno { get { return m_Maps[4]; } }
 		public static Map TerMur { get { return m_Maps[5]; } }
-		public static Map Internal { get { return m_Maps[0x7F]; } }
+		public static Map Internal { get { return m_Maps[0x7F]; } } //127
 		public static Map Akara { get { return m_Maps[32]; } }
+		//normal end 
+		 
+		//hard start
+		public static Map H_Felucca { get { return m_Maps[40]; } }
+		public static Map H_Trammel { get { return m_Maps[41]; } }
+		public static Map H_Ilshenar { get { return m_Maps[42]; } }
+		public static Map H_Malas { get { return m_Maps[43]; } } 
+		public static Map H_Tokuno { get { return m_Maps[44]; } }
+		public static Map H_TerMur { get { return m_Maps[45]; } }
+		public static Map H_Akara { get { return m_Maps[46]; } }
+		//hard end 
+		
+		//expert start
+		public static Map E_Felucca { get { return m_Maps[50]; } }
+		public static Map E_Trammel { get { return m_Maps[51]; } }
+		public static Map E_Ilshenar { get { return m_Maps[52]; } }
+		public static Map E_Malas { get { return m_Maps[53]; } }
+		public static Map E_Tokuno { get { return m_Maps[54]; } }
+		public static Map E_TerMur { get { return m_Maps[55]; } }
+		public static Map E_Akara { get { return m_Maps[56]; } }
+		//expert end 
+
+		
+		//Master start
+		public static Map M_Felucca { get { return m_Maps[60]; } }
+		public static Map M_Trammel { get { return m_Maps[61]; } }
+		public static Map M_Ilshenar { get { return m_Maps[62]; } }
+		public static Map M_Malas { get { return m_Maps[63]; } }
+		public static Map M_Tokuno { get { return m_Maps[64]; } }
+		public static Map M_TerMur { get { return m_Maps[65]; } }
+		public static Map M_Akara { get { return m_Maps[66]; } }
+		//Master end 
+
+		
+		//T1 start
+		public static Map T1_Felucca { get { return m_Maps[70]; } }
+		public static Map T1_Trammel { get { return m_Maps[71]; } }
+		public static Map T1_Ilshenar { get { return m_Maps[72]; } }
+		public static Map T1_Malas { get { return m_Maps[73]; } }
+		public static Map T1_Tokuno { get { return m_Maps[74]; } }
+		public static Map T1_TerMur { get { return m_Maps[75]; } }
+		public static Map T1_Akara { get { return m_Maps[76]; } }
+		//T1 end 
+
+		
+		//T2 start
+		public static Map T2_Felucca { get { return m_Maps[80]; } }
+		public static Map T2_Trammel { get { return m_Maps[81]; } }
+		public static Map T2_Ilshenar { get { return m_Maps[82]; } }
+		public static Map T2_Malas { get { return m_Maps[83]; } }
+		public static Map T2_Tokuno { get { return m_Maps[84]; } }
+		public static Map T2_TerMur { get { return m_Maps[85]; } }
+		public static Map T2_Akara { get { return m_Maps[86]; } }
+		//T2 end 
+
+		
+		//T3 start
+		public static Map T3_Felucca { get { return m_Maps[90]; } }
+		public static Map T3_Trammel { get { return m_Maps[91]; } }
+		public static Map T3_Ilshenar { get { return m_Maps[92]; } }
+		public static Map T3_Malas { get { return m_Maps[93]; } }
+		public static Map T3_Tokuno { get { return m_Maps[94]; } }
+		public static Map T3_TerMur { get { return m_Maps[95]; } }
+		public static Map T3_Akara { get { return m_Maps[96]; } }
+		//T3 end 
+
+		
+		//T4 start
+		public static Map T4_Felucca { get { return m_Maps[100]; } }
+		public static Map T4_Trammel { get { return m_Maps[101]; } }
+		public static Map T4_Ilshenar { get { return m_Maps[102]; } }
+		public static Map T4_Malas { get { return m_Maps[103]; } }
+		public static Map T4_Tokuno { get { return m_Maps[104]; } }
+		public static Map T4_TerMur { get { return m_Maps[105]; } }
+		public static Map T4_Akara { get { return m_Maps[106]; } }
+		//T4 end 
+
+		
+		//T5 start
+		public static Map T5_Felucca { get { return m_Maps[110]; } }
+		public static Map T5_Trammel { get { return m_Maps[111]; } }
+		public static Map T5_Ilshenar { get { return m_Maps[112]; } }
+		public static Map T5_Malas { get { return m_Maps[113]; } }
+		public static Map T5_Tokuno { get { return m_Maps[114]; } }
+		public static Map T5_TerMur { get { return m_Maps[115]; } }
+		public static Map T5_Akara { get { return m_Maps[116]; } }
+		//T5 end 
+
+		
+		//T6 start
+		public static Map T6_Felucca { get { return m_Maps[120]; } }
+		public static Map T6_Trammel { get { return m_Maps[121]; } }
+		public static Map T6_Ilshenar { get { return m_Maps[122]; } }
+		public static Map T6_Malas { get { return m_Maps[123]; } }
+		public static Map T6_Tokuno { get { return m_Maps[124]; } }
+		public static Map T6_TerMur { get { return m_Maps[125]; } }
+		public static Map T6_Akara { get { return m_Maps[126]; } }
+		//T6 end   //127 Is INTERNAL 
+
+		
+		
 		//Add New MAPS HERE
 		private static readonly List<Map> m_AllMaps = new List<Map>();
 

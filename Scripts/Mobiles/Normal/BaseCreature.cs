@@ -2210,9 +2210,9 @@ namespace Server.Mobiles
                     {
                         value = 1;
                     }
-                    else if (value > 1000000)
+                    else if (value > 10000000)
                     {
-                        value = 1000000;
+                        value = 10000000;
                     }
 
                     return value;
@@ -2238,9 +2238,9 @@ namespace Server.Mobiles
                     {
                         value = 1;
                     }
-                    else if (value > 1000000)
+                    else if (value > 10000000)
                     {
-                        value = 1000000;
+                        value = 10000000;
                     }
 
                     return value;
@@ -2266,9 +2266,9 @@ namespace Server.Mobiles
                     {
                         value = 1;
                     }
-                    else if (value > 1000000)
+                    else if (value > 10000000)
                     {
-                        value = 1000000;
+                        value = 10000000;
                     }
 
                     return value;

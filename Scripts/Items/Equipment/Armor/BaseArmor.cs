@@ -446,6 +446,35 @@ namespace Server.Items
                     case CraftResource.Valorite:
                         ar += 16;
                         break;
+                    case CraftResource.Blaze:
+                        ar += 18;
+                        break;
+					
+                    case CraftResource.Ice:
+                        ar += 20;
+                        break;
+					
+                    case CraftResource.Toxic:
+                        ar += 22;
+                        break;
+					
+                    case CraftResource.Electrum:
+                        ar += 24;
+                        break;
+					
+                    case CraftResource.Platinum:
+                        ar += 26;
+                        break;
+					
+                    case CraftResource.Royalite:
+                        ar += 28;
+                        break;
+					
+                    case CraftResource.Danite:
+                        ar += 30;
+                        break;
+					
+					
                     case CraftResource.SpinedLeather:
                         ar += 10;
                         break;
@@ -455,6 +484,7 @@ namespace Server.Items
                     case CraftResource.BarbedLeather:
                         ar += 16;
                         break;
+						
                 }
 
                 ar += -8 + (8 * (int)m_Quality);
@@ -1157,6 +1187,7 @@ namespace Server.Items
                 InvalidateProperties();
             }
         }
+		
 
         public virtual int BasePhysicalResistance
         {
@@ -1233,6 +1264,8 @@ namespace Server.Items
                 return BaseEnergyResistance + GetProtOffset() + m_EnergyBonus;
             }
         }
+		
+		
 
         public virtual int InitMinHits
         {
@@ -2538,7 +2571,7 @@ namespace Server.Items
             if (Absorbed < 2)
                 Absorbed = 2;
 
-            double chance = NegativeAttributes.Antique > 0 ? 80 : 25;
+            double chance = NegativeAttributes.Antique > 0 ? 60 : 15;  // was 80 : 25
 
             if (chance >= Utility.Random(100)) // 25% chance to lower durability
             {
@@ -2548,7 +2581,7 @@ namespace Server.Items
                 {
                     HitPoints += selfRepair;
 
-                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(60);
+                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(45);
                 }
                 else
                 {
@@ -2617,6 +2650,29 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
+			
+				//daat99 OWLTR start - add custom resources to name
+			string oreType = CraftResources.GetName(m_Resource);
+			int level = CraftResources.GetIndex(m_Resource)+1;
+			
+			if ( m_Quality == ItemQuality.Exceptional )
+			{
+				if (level > 1 && !string.IsNullOrEmpty(oreType))
+					list.Add( 1053100, "{0}\t{1}", oreType, GetNameString() ); // exceptional ~1_oretype~ ~2_armortype~
+				else
+					list.Add( 1050040, GetNameString() ); // exceptional ~1_ITEMNAME~
+			}
+			else
+			{
+				if (level > 1 && !string.IsNullOrEmpty(oreType))
+					list.Add( 1053099, "{0}\t{1}", oreType, GetNameString() ); // ~1_oretype~ ~2_armortype~
+				else
+					list.Add( GetNameString() );
+				
+			}
+			//daat99 OWLTR end - add custom resources to name
+			
+			/*
             int oreType;
 
             switch ( m_Resource )
@@ -2645,8 +2701,9 @@ namespace Server.Items
                 case CraftResource.Bloodwood: oreType = 1072538; break; // bloodwood
                 case CraftResource.Frostwood: oreType = 1072539; break; // frostwood
                 default: oreType = 0; break;
-            }
-
+				
+            }*/
+				/*
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -2677,6 +2734,8 @@ namespace Server.Items
             {
                 list.Add(1062613, Utility.FixHtml(_EngravedText));
             }
+			
+			*/
         }
 
         public override bool AllowEquipedCast(Mobile from)

@@ -1378,7 +1378,7 @@ namespace Server.Items
 
                 // Defense Chance Increase = 45%
                 if (bonus > max)
-                    bonus = max;
+                    bonus = bonus; //was max;
 
                 theirValue = (defValue + 20.0) * (100 + bonus);
 
@@ -1438,7 +1438,7 @@ namespace Server.Items
 
 				if (bonus > 60)
 				{
-					bonus = 60;
+					bonus = bonus; //was 60;
 				}
 
 				double ticks;
@@ -1463,9 +1463,9 @@ namespace Server.Items
 				}
 
 				// Swing speed currently capped at one swing every 1.25 seconds (5 ticks).
-				if (ticks < 5)
+				if (ticks < 0.001)
 				{
-					ticks = 5;
+					ticks = 0.001;//was 5;
 				}
 
 				delayInSeconds = ticks * 0.25;
@@ -1487,9 +1487,9 @@ namespace Server.Items
 
 				// Maximum swing rate capped at one swing per second
 				// OSI dev said that it has and is supposed to be 1.25
-				if (delayInSeconds < 1.25)
+				if (delayInSeconds < 0.001)  // 1.25)
 				{
-					delayInSeconds = 1.25;
+					delayInSeconds = 0.001; //was 1.25;
 				}
 			}
 			else
@@ -3628,7 +3628,7 @@ namespace Server.Items
 
 			if (damageBonus > 100)
 			{
-				damageBonus = 100;
+				damageBonus = damageBonus; //was 100, uncapped
 			}
 			#endregion
 
@@ -3693,8 +3693,8 @@ namespace Server.Items
 			{
 				double lumberValue = attacker.Skills[SkillName.Lumberjacking].Value;
 			    lumberValue = (lumberValue/5.0)/100.0;
-			    if (lumberValue > 0.2)
-			        lumberValue = 0.2;
+			    if (lumberValue > 0.25)
+			        lumberValue = lumberValue; //was 0.2;
 
 				modifiers += lumberValue;
 

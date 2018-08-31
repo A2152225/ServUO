@@ -866,8 +866,8 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 				new CraftResourceInfo( 1272,	0,		"Toxic",		CraftAttributeInfo.Toxic,		CraftResource.Toxic,			typeof( ToxicIngot ),		typeof( ToxicOre ),			typeof( ToxicGranite ) ),
 				new CraftResourceInfo( 1278,	0,		"Electrum",		CraftAttributeInfo.Electrum,	CraftResource.Electrum,			typeof( ElectrumIngot ),	typeof( ElectrumOre ),		typeof( ElectrumGranite ) ),
 				new CraftResourceInfo( 1153,	0,		"Platinum",		CraftAttributeInfo.Platinum,	CraftResource.Platinum,			typeof( PlatinumIngot ),	typeof( PlatinumOre ),		typeof( PlatinumGranite ) ),
-				new CraftResourceInfo( 1153,	0,		"Royalite",		CraftAttributeInfo.Royalite,	CraftResource.Royalite,			typeof( RoyaliteIngot ),	typeof( RoyaliteOre ),		typeof( RoyaliteGranite ) ),
-				new CraftResourceInfo( 1153,	0,		"Danite",		CraftAttributeInfo.Danite,	CraftResource.Danite,			typeof( DaniteIngot ),	typeof( DaniteOre ),		typeof( DaniteGranite ) ),
+				new CraftResourceInfo( 1973,	0,		"Royalite",		CraftAttributeInfo.Royalite,	CraftResource.Royalite,			typeof( RoyaliteIngot ),	typeof( RoyaliteOre ),		typeof( RoyaliteGranite ) ),
+				new CraftResourceInfo( 2990,	0,		"Danite",		CraftAttributeInfo.Danite,	CraftResource.Danite,			typeof( DaniteIngot ),	typeof( DaniteOre ),		typeof( DaniteGranite ) ),
  };
         private static readonly CraftResourceInfo[] m_ScaleInfo = new CraftResourceInfo[]
         {
@@ -917,18 +917,18 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
         private static readonly CraftResourceInfo[] m_WoodInfo = new CraftResourceInfo[]
         {
             new CraftResourceInfo(0x000, 1011542, "Normal", CraftAttributeInfo.Blank, CraftResource.RegularWood,	typeof(Log), typeof(Board)),
-            new CraftResourceInfo(0x7DA, 1072533, "Oak", CraftAttributeInfo.OakWood, CraftResource.OakWood, typeof(OakLog), typeof(OakBoard)),
-            new CraftResourceInfo(0x4A7, 1072534, "Ash", CraftAttributeInfo.AshWood, CraftResource.AshWood, typeof(AshLog), typeof(AshBoard)),
-            new CraftResourceInfo(0x4A8, 1072535, "Yew", CraftAttributeInfo.YewWood, CraftResource.YewWood, typeof(YewLog), typeof(YewBoard)),
-            new CraftResourceInfo(0x4A9, 1072536, "Heartwood", CraftAttributeInfo.Heartwood,	CraftResource.Heartwood,	typeof(HeartwoodLog),	typeof(HeartwoodBoard)),
-            new CraftResourceInfo(0x4AA, 1072538, "Bloodwood", CraftAttributeInfo.Bloodwood,	CraftResource.Bloodwood,	typeof(BloodwoodLog),	typeof(BloodwoodBoard)),
-            new CraftResourceInfo(0x47F, 1072539, "Frostwood", CraftAttributeInfo.Frostwood,	CraftResource.Frostwood,	typeof(FrostwoodLog),	typeof(FrostwoodBoard)),
-						new CraftResourceInfo( 1457, 0, "Ebony",		CraftAttributeInfo.Ebony,		CraftResource.Ebony,		typeof(EbonyBoard),			typeof( EbonyLog ) ),
+            new CraftResourceInfo(1457, 1072533, "Oak", CraftAttributeInfo.OakWood, CraftResource.OakWood, typeof(OakLog), typeof(OakBoard)),
+            new CraftResourceInfo(1458, 1072534, "Ash", CraftAttributeInfo.AshWood, CraftResource.AshWood, typeof(AshLog), typeof(AshBoard)),
+            new CraftResourceInfo(1459, 1072535, "Yew", CraftAttributeInfo.YewWood, CraftResource.YewWood, typeof(YewLog), typeof(YewBoard)),
+            new CraftResourceInfo(1460, 1072536, "Heartwood", CraftAttributeInfo.Heartwood,	CraftResource.Heartwood,	typeof(HeartwoodLog),	typeof(HeartwoodBoard)),
+            new CraftResourceInfo(1461, 1072538, "Bloodwood", CraftAttributeInfo.Bloodwood,	CraftResource.Bloodwood,	typeof(BloodwoodLog),	typeof(BloodwoodBoard)),
+            new CraftResourceInfo(1462, 1072539, "Frostwood", CraftAttributeInfo.Frostwood,	CraftResource.Frostwood,	typeof(FrostwoodLog),	typeof(FrostwoodBoard)),
+				new CraftResourceInfo( 1457, 0, "Ebony",		CraftAttributeInfo.Ebony,		CraftResource.Ebony,		typeof(EbonyBoard),			typeof( EbonyLog ) ),
 				new CraftResourceInfo( 1719, 0,	"Bamboo",		CraftAttributeInfo.Bamboo,		CraftResource.Bamboo,		typeof(BambooBoard),		typeof( BambooLog ) ),
 				new CraftResourceInfo( 114,  0, "PurpleHeart",	CraftAttributeInfo.PurpleHeart,	CraftResource.PurpleHeart,	typeof(PurpleHeartBoard),	typeof( PurpleHeartLog ) ),
 				new CraftResourceInfo( 37,   0,	"Redwood",		CraftAttributeInfo.Redwood,		CraftResource.Redwood,		typeof(RedwoodBoard),		typeof( RedwoodLog ) ),
 				new CraftResourceInfo( 1153, 0, "Petrified",	CraftAttributeInfo.Petrified,	CraftResource.Petrified,	typeof(PetrifiedBoard),		typeof( PetrifiedLog ) ),
-				//daat99 OWLTR end - custom wood
+					//daat99 OWLTR end - custom wood
         };
 
         /// <summary>
