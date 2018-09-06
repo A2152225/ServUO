@@ -87,8 +87,8 @@ namespace Server.Mobiles
         HasValiantStatReward = 0x20000000,
         RefuseTrades = 0x40000000,
         DisabledPvpWarning = 0x80000000,
-        //CanBuyCarpets = 0x100000000,
-        //VoidPool = 0x200000000,
+        CanBuyCarpets = 0x100000000,
+        VoidPool = 0x200000000,
     }
 
     [Flags]
@@ -1057,15 +1057,15 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         [CommandProperty(AccessLevel.GameMaster)]
         public bool CanBuyCarpets
         {
-            get { return GetFlag(ExtendedPlayerFlag.CanBuyCarpets); }
-            set { SetFlag(ExtendedPlayerFlag.CanBuyCarpets, value); }
+            get { return GetFlag(PlayerFlag.CanBuyCarpets); }
+            set { SetFlag(PlayerFlag.CanBuyCarpets, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool VoidPool
         {
-            get { return GetFlag(ExtendedPlayerFlag.VoidPool); }
-            set { SetFlag(ExtendedPlayerFlag.VoidPool, value); }
+            get { return GetFlag(PlayerFlag.VoidPool); }
+            set { SetFlag(PlayerFlag.VoidPool, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -6631,7 +6631,7 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 		{
 			if (Young)
 			{
-                if (SkillsTotal >= 4500 && (!Core.AOS && Skills[skill].Base >= 80.0))
+                if (SkillsTotal >= 4500 || (!Core.AOS && Skills[skill].Base >= 80.0))
                 {
                     Account acc = Account as Account;
 
@@ -6645,9 +6645,8 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 
             if (skill != SkillName.Alchemy && Skills.CurrentMastery == skill && Skills[skill].Value < MasteryInfo.MinSkillRequirement)
             {
-                             //SendLocalizedMessage(1156236, String.Format("{0}\t{1}", MasteryInfo.MinSkillRequirement.ToString(), Skills[skill].Info.Name)); 
-							 // You need at least ~1_SKILL_REQUIREMENT~ ~2_SKILL_NAME~ skill to use that mastery.
-							 
+                SendLocalizedMessage(1156236, String.Format("{0}\t{1}", MasteryInfo.MinSkillRequirement.ToString(), Skills[skill].Info.Name)); // You need at least ~1_SKILL_REQUIREMENT~ ~2_SKILL_NAME~ skill to use that mastery.
+
                 SkillName mastery = Skills.CurrentMastery;
                 Skills.CurrentMastery = SkillName.Alchemy;
 
