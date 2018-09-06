@@ -30,7 +30,7 @@ namespace Server.Engines.Events
 
                     for (int i = 0; i < amount; i++)
                     {
-                        new Blood(Utility.RandomMinMax(0x122C, 0x122F)).MoveToWorld(RandomPointOneAway(m_From.X, m_From.Y, m_From.Z, m_From.Map), m_From.Map);
+                        new Server.Items.Blood(Utility.RandomMinMax(0x122C, 0x122F)).MoveToWorld(RandomPointOneAway(m_From.X, m_From.Y, m_From.Z, m_From.Map), m_From.Map);
                     }
                 }
             }
