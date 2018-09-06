@@ -397,7 +397,7 @@ namespace Server.Mobiles
 				{
 					ExpGained = 13;
 				}
-			/*	if (Res.Types[0] == typeof(BlazeOre))
+				if (Res.Types[0] == typeof(BlazeOre))
 				{
 					ExpGained = 12;
 				}
@@ -413,19 +413,21 @@ namespace Server.Mobiles
 				{
 					ExpGained = 15;
 				}
-				if (Res.Types[0] == typeof(MoonstoneOre))
-				{
-					ExpGained = 16;
-				}
-				if (Res.Types[0] == typeof(BloodstoneOre))
-				{
-					ExpGained = 16;
-				}				
+					
 				if (Res.Types[0] == typeof(PlatinumOre))
 				{
 					ExpGained = 16;
 				}
-			*/	if (Res.Types[0] == typeof(Log))
+				if (Res.Types[0] == typeof(RoyaliteOre))
+				{
+					ExpGained = 17;
+				}
+				if (Res.Types[0] == typeof(DaniteOre))
+				{
+					ExpGained = 18;
+				}		
+				
+				if (Res.Types[0] == typeof(Log))
 				{
 					ExpGained = 3;
 				}
@@ -453,10 +455,7 @@ namespace Server.Mobiles
 				{
 					ExpGained = 8;
 				}
-				if (Res.Types[0] == typeof(FrostwoodLog))
-				{
-					ExpGained = 9;
-				}
+		
 			/*	if (Res.Types[0] == typeof(BlueBarkLog))
 				{
 					ExpGained = 10;
@@ -467,17 +466,35 @@ namespace Server.Mobiles
 				}
 			*/	if (Res.Types[0] == typeof(BloodwoodLog))
 				{
+					ExpGained = 10;
+				}
+				if (Res.Types[0] == typeof(FrostwoodLog))
+				{
+					ExpGained = 11;
+				}
+					if (Res.Types[0] == typeof(EbonyLog))
+				{
 					ExpGained = 12;
 				}
-			/*	if (Res.Types[0] == typeof(SwampLog))
+				if (Res.Types[0] == typeof(BambooLog))
 				{
 					ExpGained = 13;
 				}
-				if (Res.Types[0] == typeof(ElvenLog))
+				if (Res.Types[0] == typeof(PurpleHeartLog))
 				{
 					ExpGained = 14;
+				}		
+				if (Res.Types[0] == typeof(RedwoodLog))
+				{
+					ExpGained = 15;
 				}
-			*/	if (Res.Types[0] == typeof(Fish))
+				if (Res.Types[0] == typeof(PetrifiedLog))
+				{
+					ExpGained = 16;
+				}
+				
+
+				if (Res.Types[0] == typeof(Fish))
 				{
 					ExpGained = Utility.RandomMinMax(1,4);//to vary fishing a bit
 				}

@@ -1540,7 +1540,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             if (type != ResistanceType.Physical && 60 < max && Spells.Fourth.CurseSpell.UnderEffect(this))
             {
-                max = 60;
+                max = (int)(base.GetMaxResistance(type)*.8); //was 60;
             }
 
             if ((type == ResistanceType.Fire || type == ResistanceType.Poison) && CorpseSkinSpell.IsUnderEffects(this))
@@ -2523,7 +2523,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 					if (Core.ML && strOffs > 25 && IsPlayer())
 					{
-						strOffs = 25;
+						strOffs = strOffs; //was 25;
 					}
 
 					if (AnimalForm.UnderTransformation(this, typeof(BakeKitsune)) ||

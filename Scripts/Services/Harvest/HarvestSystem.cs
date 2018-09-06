@@ -205,10 +205,14 @@ namespace Server.Engines.Harvest
                         if (Give(from, item, def.PlaceAtFeetIfFull))
                         {
                             SendSuccessTo(from, item, resource);
+							Experience.HarvestExp( from, resource, true );//EXP SYSTEM
+
                         }
                         else
                         {
                             SendPackFullTo(from, item, def, resource);
+							Experience.HarvestExp( from, resource, false );//EXP SYSTEM
+
                             item.Delete();
                         }
 

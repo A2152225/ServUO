@@ -1463,9 +1463,9 @@ namespace Server.Items
 				}
 
 				// Swing speed currently capped at one swing every 1.25 seconds (5 ticks).
-				if (ticks < 0.001)
+				if (ticks < 1)
 				{
-					ticks = 0.001;//was 5;
+					ticks = 1;//was 5;
 				}
 
 				delayInSeconds = ticks * 0.25;
@@ -5109,7 +5109,29 @@ namespace Server.Items
                 list.Add(1152207); // Assassin's Edge
                 return;
             }
-
+				//daat99 OWLTR start - add custom resources to name
+			string oreType = CraftResources.GetName(m_Resource);
+			int level = CraftResources.GetIndex(m_Resource)+1;
+			
+			if ( m_Quality == ItemQuality.Exceptional )
+			{
+				if (level > 1 && !string.IsNullOrEmpty(oreType))
+					list.Add( 1053100, "{0}\t{1}", oreType, GetNameString() ); // exceptional ~1_oretype~ ~2_armortype~
+				else
+					list.Add( 1050040, GetNameString() ); // exceptional ~1_ITEMNAME~
+			}
+			else
+			{
+				if (level > 1 && !string.IsNullOrEmpty(oreType))
+					list.Add( 1053099, "{0}\t{1}", oreType, GetNameString() ); // ~1_oretype~ ~2_armortype~
+				else
+					list.Add( GetNameString() );
+				
+			}
+			//daat99 OWLTR end - add custom resources to name
+			
+			
+			/*
 			int oreType;
 
 			switch (m_Resource)
@@ -5191,7 +5213,7 @@ namespace Server.Items
 					oreType = 0;
 					break;
 			}
-
+*//*
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -5208,7 +5230,7 @@ namespace Server.Items
                     RunicReforging.AddSuffixName(list, m_ReforgedSuffix, GetNameString());
                 }
             }
-			else if (oreType != 0)
+			else if ( !string.IsNullOrEmpty(oreType))  //(oreType != 0)
 			{
 				list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
             }

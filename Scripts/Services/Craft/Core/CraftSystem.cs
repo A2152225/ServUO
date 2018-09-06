@@ -514,6 +514,11 @@ namespace Server.Engines.Craft
             CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, genericName, message);
             m_CraftSubRes.Add(craftSubRes);
         }
+		 public void AddSubRes(Type type, string name, double reqSkill, int genericName, object message)
+        {
+            CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, genericName, message);
+            m_CraftSubRes.Add(craftSubRes);
+        }
 
         public void AddSubRes(Type type, string name, double reqSkill, object message)
         {
@@ -547,6 +552,13 @@ namespace Server.Engines.Craft
             m_CraftSubRes2.Add(craftSubRes);
         }
 
+		
+        public void AddSubRes2(Type type, string name, double reqSkill, int genericName, object message)
+        {
+            CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, genericName, message);
+            m_CraftSubRes2.Add(craftSubRes);
+        }
+		
         public void AddSubRes2(Type type, string name, double reqSkill, object message)
         {
             CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, message);

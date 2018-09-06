@@ -84,6 +84,105 @@ namespace UltimaLive
       AddMapDefinition(4, 4, new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
       AddMapDefinition(5, 5, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
 	  AddMapDefinition(32, 32, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+	  
+	  
+	  //start hard
+			AddMapDefinition(40, 40,  new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(41, 41, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(42, 42,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(43, 43,  new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(44, 44, new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(45, 45, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(46, 46, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			//start Expert
+			AddMapDefinition(50, 50, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(51, 51, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(52, 52,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(53, 53, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(54, 54,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(55, 55, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(56, 56, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			
+			//start Master
+			AddMapDefinition(60, 60, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(61, 61, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(62, 62,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(63, 63, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(64, 64,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(65, 65, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(66, 66, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			
+			
+			//start T1
+			AddMapDefinition(70, 70, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(71, 71, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(72, 72,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(73, 73, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(74, 74,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(75, 75, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(76, 76, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			
+			
+			//start T2
+			AddMapDefinition(80, 80, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(81, 81, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(82, 82,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(83, 83, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(84, 84,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(85, 85, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(86, 86, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			
+			//start T3
+			AddMapDefinition(90, 90, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(91, 91, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(92, 92,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(93, 93, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(94, 94,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(95, 95, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(96, 96, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			
+			//start T4
+			AddMapDefinition(100, 100, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(101, 101, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(102, 102,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(103, 103, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(104, 104,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(105, 105, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(106, 106, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			//start T5
+			AddMapDefinition(110, 110,  new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(111, 111, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(112, 112,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(113, 113, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(114, 114,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(115, 115, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(116, 116, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+			//start T6
+			AddMapDefinition(120, 120,  new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
+			AddMapDefinition(121, 121, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
+			AddMapDefinition(122, 122,  new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar
+			AddMapDefinition(123, 123, new Point2D(2560, 2048), new Point2D(2560, 2048)); //Malas
+			AddMapDefinition(124, 124,  new Point2D(1448, 1448), new Point2D(1448, 1448)); //Tokuno
+			AddMapDefinition(125, 125, new Point2D(1280, 4096), new Point2D(1280, 4096)); //TerMur
+			AddMapDefinition(126, 126, new Point2D(7168, 4096), new Point2D(5120, 4096));//Essex 
+			
+			
+	  
 	/*  AddMapDefinition(33, 33, new Point2D(7168, 4096), new Point2D(5120, 4096)); //felucca
       AddMapDefinition(34, 34, new Point2D(7168, 4096), new Point2D(5120, 4096)); //trammel
       AddMapDefinition(35, 35, new Point2D(2304, 1600), new Point2D(2304, 1600)); //Ilshenar

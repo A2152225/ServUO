@@ -947,13 +947,13 @@ namespace Server.Engines.Craft
             AddSubRes(typeof(AgapiteIngot), 1044028, 60.0, 1044036, 1044268);
             AddSubRes(typeof(VeriteIngot), 1044029, 65.0, 1044036, 1044268);
             AddSubRes(typeof(ValoriteIngot), 1044030, 70.0, 1044036, 1044268);
-			AddSubRes(typeof(BlazeIngot), 1044030, 75.0, 1044036, 1044268);
-			AddSubRes(typeof(IceIngot), 1044030, 80.0, 1044036, 1044268);
-			AddSubRes(typeof(ToxicIngot), 1044030, 85.0, 1044036, 1044268);
-			AddSubRes(typeof(ElectrumIngot), 1044030, 90.0, 1044036, 1044268);
-			AddSubRes(typeof(PlatinumIngot), 1044030, 95.0, 1044036, 1044268);
-			AddSubRes(typeof(RoyaliteIngot), 1044030, 97.0, 1044036, 1044268);
-			AddSubRes(typeof(DaniteIngot), 1044030, 99.0, 1044036, 1044268);
+			AddSubRes(typeof(BlazeIngot), "Blaze", 75.0, 1044036, 1044268);
+			AddSubRes(typeof(IceIngot), "Ice", 80.0, 1044036, 1044268);
+			AddSubRes(typeof(ToxicIngot), "Toxic", 85.0, 1044036, 1044268);
+			AddSubRes(typeof(ElectrumIngot), "Electrum", 90.0, 1044036, 1044268);
+			AddSubRes(typeof(PlatinumIngot), "Platinum", 95.0, 1044036, 1044268);
+			AddSubRes(typeof(RoyaliteIngot), "Royalite", 97.0, 1044036, 1044268);
+			AddSubRes(typeof(DaniteIngot), "Danite", 99.0, 1044036, 1044268);
 			
 			
 				
@@ -967,6 +967,10 @@ namespace Server.Engines.Craft
             AddSubRes2(typeof(GreenScales), 1060878, 0.0, 1053137, 1044268);
             AddSubRes2(typeof(WhiteScales), 1060879, 0.0, 1053137, 1044268);
             AddSubRes2(typeof(BlueScales), 1060880, 0.0, 1053137, 1044268);
+			AddSubRes2(typeof(CopperScales), "Copper Scales", 0.0, 1053137, 1044268);
+			AddSubRes2(typeof(SilverScales), "Silver Scales", 0.0, 1053137, 1044268);
+			AddSubRes2(typeof(GoldScales), "Gold Scales", 0.0, 1053137, 1044268);
+			
 
             Resmelt = true;
             Repair = true;

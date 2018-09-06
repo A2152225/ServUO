@@ -956,9 +956,9 @@ namespace Server.Spells
 			// Lower Mana Cost = 40%
 			int lmc = AosAttributes.GetValue(m_Caster, AosAttribute.LowerManaCost);
 
-			if (lmc > 40)
+			if (lmc > 80)  //was 40 
 			{
-				lmc = 40;
+				lmc = 80; //was 40 
 			}
 
             lmc += BaseArmor.GetInherentLowerManaCost(m_Caster);
@@ -1033,12 +1033,12 @@ namespace Server.Spells
 			// Faster casting cap of 0 (if using the protection spell) 
 			// Paladin spells are subject to a faster casting cap of 4 
 			// Paladins with magery of 70.0 or above are subject to a faster casting cap of 2 
-			int fcMax = 4;
+			int fcMax = 100; // was 4;
 
 			if (CastSkill == SkillName.Magery || CastSkill == SkillName.Necromancy || CastSkill == SkillName.Mysticism ||
                 (CastSkill == SkillName.Chivalry && (m_Caster.Skills[SkillName.Magery].Value >= 70.0 || m_Caster.Skills[SkillName.Mysticism].Value >= 70.0)))
 			{
-				fcMax = 2;
+				fcMax = 100; //was 2;
 			}
 
 			int fc = AosAttributes.GetValue(m_Caster, AosAttribute.CastSpeed);

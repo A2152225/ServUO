@@ -163,19 +163,125 @@ namespace Server
             if (ranged && from.Race != Race.Gargoyle)
                 quiver = from.FindItemOnLayer(Layer.Cloak) as BaseQuiver;
 
-            int totalDamage;
+		int totalDamage;
+		int  physDamage =0;
+		int  fireDamage = 0;
+		int  coldDamage = 0;
+		int  poisonDamage = 0;
+		int  energyDamage = 0;
 
             if (!ignoreArmor)
             {
-                int physDamage = damage * phys * (100 - damageable.PhysicalResistance);
-                int fireDamage = damage * fire * (100 - damageable.FireResistance);
-                int coldDamage = damage * cold * (100 - damageable.ColdResistance);
-                int poisonDamage = damage * pois * (100 - damageable.PoisonResistance);
-                int energyDamage = damage * nrgy * (100 - damageable.EnergyResistance);
+				
+			if (damageable is BaseCreature || damageable is PlayerMobile && from is PlayerMobile)
+		{
+			//old Resistance %s stuff
+		 
+		 if (from is PlayerMobile && damageable is PlayerMobile)
+		  {
+			 physDamage = damage * phys * (100 - Math.Min(70, damageable.PhysicalResistance));
+			 fireDamage = damage * fire * (100 - Math.Min(70, damageable.FireResistance));
+			 coldDamage = damage * cold * (100 - Math.Min(70, damageable.ColdResistance));
+			 poisonDamage = damage * pois * (100 - Math.Min(70, damageable.PoisonResistance));
+			 energyDamage = damage * nrgy * (100 - Math.Min(75, damageable.EnergyResistance));
+			  
+		  }
+		  else 
+		  {
+		  
+			 physDamage = damage * phys * (100 - damageable.PhysicalResistance);
+			 fireDamage = damage * fire * (100 - damageable.FireResistance);
+			 coldDamage = damage * cold * (100 - damageable.ColdResistance);
+			 poisonDamage = damage * pois * (100 - damageable.PoisonResistance);
+			 energyDamage = damage * nrgy * (100 - damageable.EnergyResistance);
+			
+		  }
+			
+			
 
-                totalDamage = physDamage + fireDamage + coldDamage + poisonDamage + energyDamage;
-                totalDamage /= 10000;
-
+			totalDamage = physDamage + fireDamage + coldDamage + poisonDamage + energyDamage;
+			totalDamage /= 10000;
+			
+				
+		}
+		else
+		{
+				
+				//START RESISTANCE CHANGE!!
+			/*	
+				int physDamage = (int)((damage * phys)*.01);
+				
+				if (physDamage != 0)
+				physDamage -= damageable.PhysicalResistance;
+				
+				if (physDamage < 0)
+					physDamage = 1;
+				
+				
+				int fireDamage = (int)((damage * fire)*.01);
+				
+				if (fireDamage != 0)
+				fireDamage -= damageable.FireResistance;
+			
+                	if (fireDamage < 0)
+					fireDamage = 1;
+				
+				
+				int coldDamage = (int)((damage * cold)*.01);
+				
+				if (coldDamage != 0)
+				coldDamage -= damageable.ColdResistance;
+			
+				
+                	if (coldDamage < 0)
+					coldDamage = 1;
+				
+				
+				int poisonDamage = (int)((damage * pois)*.01);
+					if (poisonDamage != 0)
+				poisonDamage -= damageable.PoisonResistance;
+				
+                	if (poisonDamage < 0)
+					poisonDamage = 1;
+				
+				
+				int energyDamage = (int)((damage * nrgy)*.01);
+					if (energyDamage != 0)
+				energyDamage -= damageable.EnergyResistance;
+				
+					if (energyDamage < 0)
+					energyDamage = 1;
+				
+				
+				
+				*/
+			 physDamage = (damage * phys * 100 );
+			 fireDamage = (damage * fire * 100);
+			 coldDamage = (damage * cold * 100);
+			 poisonDamage = (damage * pois * 100);
+			 energyDamage = (damage * nrgy * 100);
+			
+			if (physDamage > 0)
+				physDamage -= damageable.PhysicalResistance*10000;
+			if (fireDamage > 0)
+				fireDamage -= damageable.FireResistance*10000;
+			if (coldDamage > 0)
+				coldDamage -= damageable.ColdResistance*10000;
+			if (poisonDamage > 0)
+				poisonDamage -= damageable.PoisonResistance*10000;
+			if (energyDamage > 0)
+				energyDamage -= damageable.EnergyResistance*10000;
+									
+			
+			
+			
+				
+                totalDamage = physDamage  + fireDamage + coldDamage + poisonDamage + energyDamage;
+				   totalDamage /= 10000;
+              //end resist change
+				
+		}
+				
                 if (Core.ML)
                 {
                     totalDamage += damage * direct / 100;
