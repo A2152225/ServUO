@@ -1178,8 +1178,8 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 		public static readonly OreInfo Toxic		= new OreInfo( 11, 1272, "Toxic" );
 		public static readonly OreInfo Electrum		= new OreInfo( 12, 1278, "Electrum" );
 		public static readonly OreInfo Platinum		= new OreInfo( 13, 1153, "Platinum" );
-		public static readonly OreInfo Royalite		= new OreInfo( 13, 1153, "Royalite" );
-		public static readonly OreInfo Danite		= new OreInfo( 13, 1153, "Danite" );
+		public static readonly OreInfo Royalite		= new OreInfo( 14, 1973, "Royalite" );
+		public static readonly OreInfo Danite		= new OreInfo( 15, 2990, "Danite" );
 		
 
         private readonly int m_Level;

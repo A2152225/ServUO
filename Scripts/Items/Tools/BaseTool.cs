@@ -308,7 +308,7 @@ namespace Server.Items
 
             if (makersMark)
                 Crafter = from;
-
+	
             return quality;
         }
         #endregion

@@ -1,5 +1,6 @@
 #region References
 using System;
+using Server.Mobiles;
 
 using Server.Items;
 #endregion
@@ -253,6 +254,7 @@ namespace Server.Engines.Craft
         public override int PlayEndingEffect(
             Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
+			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
             {
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
@@ -282,7 +284,7 @@ namespace Server.Engines.Craft
             {
                 return 1044155; // You create an exceptional quality item.
             }
-
+			
             return 1044154; // You create the item.
         }
 

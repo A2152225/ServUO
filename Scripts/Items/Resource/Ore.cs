@@ -121,6 +121,7 @@ namespace Server.Items
         private static int RandomSize()
         {
             double rand = Utility.RandomDouble();
+			rand = .3;  //no small ores?
 
             if (rand < 0.12)
                 return 0x19B7;

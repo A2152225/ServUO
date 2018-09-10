@@ -628,13 +628,14 @@ namespace Server.Engines.VeteranRewards
 
         private static void EventSink_Login(LoginEventArgs e)
         {
+		
             if (!e.Mobile.Alive)
                 return;
 
             int cur, max, level;
 
             ComputeRewardInfo(e.Mobile, out cur, out max, out level);
-
+			/*
             if (level > SkillCapBonusLevels)
                 level = SkillCapBonusLevels;
             else if (level < 0)
@@ -665,7 +666,7 @@ namespace Server.Engines.VeteranRewards
             {
                 Server.Gumps.BaseGump.SendGump(new StatRewardGump((PlayerMobile)e.Mobile));
             }
-
+			*/
             if (cur < max)
                 e.Mobile.SendGump(new RewardNoticeGump(e.Mobile));
         }

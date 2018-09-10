@@ -721,12 +721,14 @@ namespace Server.Mobiles
 						ExpGained = (int)((decimal.Divide(ExpGained,4))*2);
 					else if ( quality == 2 )//exceptional
 						ExpGained = (int)((decimal.Divide(ExpGained,4))*4);
-					if ( failed == true )//Quater exp on fail
+					if ( failed == true )//Quarter exp on fail
 						ExpGained = (int)(decimal.Divide(ExpGained,4));
 					if ( ExpGained > 0 )
 					{
 				if (ExpGained > 6000)
 					ExpGained = 6000;
+				
+					ExpGained *= (1 +(2 * Tweaks.XPMod));  //4
 					
 						from.EXP += ExpGained;
 			//			GearUp(from,ExpGained);

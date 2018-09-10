@@ -124,8 +124,8 @@ namespace Server.Engines.Harvest
 					new HarvestVein( 02.0, 0.5, res[11], res[0] ), // Toxic
 					new HarvestVein( 01.5, 0.5, res[12], res[0] ), // Electrum
 					new HarvestVein( 01.0, 0.5, res[13], res[0] ), // Platinum
-					new HarvestVein( 00.75, 0.5, res[13], res[0] ), // Royalite
-					new HarvestVein( 00.25, 0.5, res[13], res[0] ) // Danite
+					new HarvestVein( 00.75, 0.5, res[14], res[0] ), // Royalite
+					new HarvestVein( 00.25, 0.5, res[15], res[0] ) // Danite
             };
 
             oreAndStone.Resources = res;

@@ -80,24 +80,34 @@ namespace Server.Engines.Harvest
             {
                 res = new HarvestResource[]
                 {
-                    new HarvestResource(00.0, 00.0, 100.0, 1072540, typeof(Log)),
-                    new HarvestResource(65.0, 25.0, 105.0, 1072541, typeof(OakLog)),
-                    new HarvestResource(80.0, 40.0, 120.0, 1072542, typeof(AshLog)),
-                    new HarvestResource(95.0, 55.0, 135.0, 1072543, typeof(YewLog)),
-                    new HarvestResource(100.0, 60.0, 140.0, 1072544, typeof(HeartwoodLog)),
-                    new HarvestResource(100.0, 60.0, 140.0, 1072545, typeof(BloodwoodLog)),
-                    new HarvestResource(100.0, 60.0, 140.0, 1072546, typeof(FrostwoodLog)),
+				new HarvestResource( 00.0, 00.0, 95.0, "You put some Regular logs in your backpack",		typeof( Log ) ),
+				new HarvestResource( 20.0, 10.0, 100.0, "You put some Oak logs in your backpack",			typeof( OakLog ) ),
+				new HarvestResource( 30.0, 20.0, 105.0, "You put some Ash logs in your backpack",			typeof( AshLog ) ),
+				new HarvestResource( 40.0, 30.0, 110.0, "You put some Yew logs in your backpack",			typeof( YewLog ) ),
+				new HarvestResource( 50.0, 40.0, 115.0, "You put some Heartwood logs in your backpack",		typeof( HeartwoodLog ) ),
+				new HarvestResource( 60.0, 50.0, 120.0, "You put some Bloodwood logs in your backpack",		typeof( BloodwoodLog ) ),
+				new HarvestResource( 70.0, 60.0, 125.0, "You put some Frostwood logs in your backpack",		typeof( FrostwoodLog ) ),
+				new HarvestResource( 80.0, 70.0, 130.0, "You put some Ebony logs in your backpack",			typeof( EbonyLog ) ),
+				new HarvestResource( 90.0, 80.0, 135.0, "You put some Bamboo logs in your backpack",		typeof( BambooLog ) ),
+				new HarvestResource( 100.0, 90.0, 140.0, "You put some Purple Heart logs in your backpack",	typeof( PurpleHeartLog ) ),
+				new HarvestResource( 110.0, 100.0, 145.0, "You put some Redwood logs in your backpack",		typeof( RedwoodLog ) ),
+				new HarvestResource( 119.0, 110.0, 150.0, "You put some Petrified logs in your backpack",	typeof( PetrifiedLog ) ),
                 };
 
                 veins = new HarvestVein[]
                 {
-                    new HarvestVein(49.0, 0.0, res[0], null), // Ordinary Logs
-                    new HarvestVein(30.0, 0.5, res[1], res[0]), // Oak
-                    new HarvestVein(10.0, 0.5, res[2], res[0]), // Ash
-                    new HarvestVein(05.0, 0.5, res[3], res[0]), // Yew
-                    new HarvestVein(03.0, 0.5, res[4], res[0]), // Heartwood
-                    new HarvestVein(02.0, 0.5, res[5], res[0]), // Bloodwood
-                    new HarvestVein(01.0, 0.5, res[6], res[0]), // Frostwood
+                  	new HarvestVein( 34.0, 0.0, res[0], null ), // this line should replace the original line
+				new HarvestVein( 11.0, 0.5, res[1], res[0] ), 	// OakLog
+				new HarvestVein( 10.0, 0.5, res[2], res[0] ), 	// AshLog
+				new HarvestVein( 09.0, 0.5, res[3], res[0] ), 	// YewLog 
+				new HarvestVein( 08.0, 0.5, res[4], res[0] ), 	// HeartwoodLog
+				new HarvestVein( 07.0, 0.5, res[5], res[0] ), 	// BloodwoodLog
+				new HarvestVein( 06.0, 0.5, res[6], res[0] ), 	// FrostwoodLog 
+				new HarvestVein( 05.0, 0.5, res[7], res[0] ), 	// EbonyLog
+				new HarvestVein( 04.0, 0.5, res[8], res[0] ), 	// BambooLog
+				new HarvestVein( 03.0, 0.5, res[9], res[0] ), 	// PurpleHeartLog
+				new HarvestVein( 02.0, 0.5, res[10], res[0] ),	// RedwoodLog
+				new HarvestVein( 01.0, 0.5, res[11], res[0] ),	// PetrifiedLog
                 };
 
                 lumber.BonusResources = new BonusHarvestResource[]

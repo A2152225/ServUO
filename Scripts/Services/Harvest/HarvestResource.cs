@@ -71,8 +71,12 @@ namespace Server.Engines.Harvest
         {
             if (this.m_SuccessMessage is int)
                 m.SendLocalizedMessage((int)this.m_SuccessMessage);
+
             else if (this.m_SuccessMessage is string)
                 m.SendMessage((string)this.m_SuccessMessage);
+			
+		
+			
         }
     }
 }

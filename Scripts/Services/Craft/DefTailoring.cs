@@ -1,6 +1,7 @@
 using System;
 using Server.Items;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -145,6 +146,7 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
+			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
