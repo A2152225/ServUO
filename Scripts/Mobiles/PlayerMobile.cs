@@ -195,7 +195,6 @@ namespace Server.Mobiles
         }
 /////Level/////
 	
-
 	public enum SolenFriendship
 	{
 		None,
@@ -326,14 +325,14 @@ namespace Server.Mobiles
 		private int m_MaxLvl;
 		private int m_OldMaxLvl;
 		private int m_PrestigeLvl;
-		
-		
+
         #region Guantlet Points
         private double m_GauntletPoints;
 
 		[CommandProperty(AccessLevel.Administrator)]
 		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }
 		#endregion
+
 		//Kill count tracking
 		public Dictionary<string,int>KillCount = new Dictionary<string,int>();// = new Dictionary<string,int>["default",0];
 		
@@ -1542,6 +1541,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             if (type != ResistanceType.Physical && 60 < max && Spells.Fourth.CurseSpell.UnderEffect(this))
             {
+
                 max = (int)(base.GetMaxResistance(type)*.8); //was 60;
             }
 
@@ -1799,6 +1799,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 ((PlayerMobile)from).ValidateEquipment();
 
                 ReportMurdererGump.CheckMurderer(from);
+
 				
 				
 				/////Level/////
@@ -1817,6 +1818,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                        
 /////End Level//
+
 			}
             else if (Siege.SiegeShard && from.Map == Map.Trammel && from.AccessLevel == AccessLevel.Player)
             {
@@ -2170,7 +2172,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 		}
 
-			private static void OnLogout(LogoutEventArgs e)
+		private static void OnLogout(LogoutEventArgs e)
+
 		{
             PlayerMobile pm = e.Mobile as PlayerMobile;
 
@@ -2186,7 +2189,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             BaseEscort.DeleteEscort(pm);
         }
-
 
 		private static void EventSink_Connected(ConnectedEventArgs e)
 		{
@@ -2222,7 +2224,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			SpecialMove.ClearAllMoves(from);
 		}
 
-		private static void EventSink_Disconnected(DisconnectedEventArgs e)
+
+        private static void EventSink_Disconnected(DisconnectedEventArgs e)
 		{
 			Mobile from = e.Mobile;
 			DesignContext context = DesignContext.Find(from);
@@ -2525,7 +2528,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 					if (Core.ML && strOffs > 25 && IsPlayer())
 					{
+
 						strOffs = strOffs; //was 25;
+
+						
+
 					}
 
 					if (AnimalForm.UnderTransformation(this, typeof(BakeKitsune)) ||
@@ -2611,8 +2618,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 		public override bool Move(Direction d)
 		{
-
-			
 			NetState ns = NetState;
 
 			if (ns != null)
@@ -2630,20 +2635,22 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					}
 				}
 			}
-			#region Flying Carpet
-if (HasGump( typeof( FlyingCarpetgump ) ))
-{
-if ( m_Volotimer != null )
-{
-m_Volotimer.Stop();
-m_Volotimer = null;
-CloseGump( typeof( FlyingCarpetgump ) );
 
-if(InRange(m_CarpetItem,0))
-SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
-}
-}
-#endregion
+			#region Flying Carpet
+			if (HasGump( typeof( FlyingCarpetgump ) ))
+			{
+			if ( m_Volotimer != null )
+			{
+			m_Volotimer.Stop();
+			m_Volotimer = null;
+			CloseGump( typeof( FlyingCarpetgump ) );
+
+			if(InRange(m_CarpetItem,0))
+			SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
+			}
+			}
+			#endregion
+
 			int speed = ComputeMovementSpeed(d);
 
 			bool res;
@@ -2849,14 +2856,16 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			{
 				RecheckTownProtection();
 			}
-			
-			  /* Begin UltimaLive Mod */
-  if (BlockQuery != null)
-  {
-  m_PreviousMapBlock = BlockQuery.QueryMobile(this, m_PreviousMapBlock);
-  }
-  /* End UltimaLive Mod */
-  
+
+		
+			/* Begin UltimaLive Mod */
+			if (BlockQuery != null)
+			{
+			m_PreviousMapBlock = BlockQuery.QueryMobile(this, m_PreviousMapBlock);
+			}
+			/* End UltimaLive Mod */
+
+
 		}
 
 		public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
@@ -2983,7 +2992,9 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 				}
 				#endregion
 
-                if (!Core.SA && Alive)
+
+                if (Core.UOR && !Core.SA && Alive)
+
 				{
 					list.Add(new CallbackEntry(6210, ToggleChampionTitleDisplay));
 				}
@@ -4033,12 +4044,13 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 
 		protected override void OnMapChange(Map oldMap)
 		{
+
 			 /* Begin UltimaLive Mod */
-  if (BlockQuery != null)
-  {
-  m_PreviousMapBlock = BlockQuery.QueryMobile(this, m_PreviousMapBlock);
-  }
-  /* End UltimaLive Mod */
+			if (BlockQuery != null)
+			{
+			m_PreviousMapBlock = BlockQuery.QueryMobile(this, m_PreviousMapBlock);
+			}
+			/* End UltimaLive Mod */
   
             if (NetState != null && NetState.IsEnhancedClient)
             {
@@ -4187,6 +4199,7 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 				}
 				#endregion
 			}
+
 				/////Level/////
                         if ( this.ShowExpBar == true )
                                 this.SendGump( new ExpBarGump(this));
@@ -4195,6 +4208,7 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 
                     
 /////End Level/////
+
 		}
 
 		public override double RacialSkillBonus
@@ -4279,6 +4293,24 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 
         public override bool OnBeforeDeath()
         {
+				  
+			if (Young && this.YoungSaves > 0)
+			{
+			this.Hits = 5;
+			this.Blessed = true;
+			this.YoungSaves--;
+			if (YoungSaves == 1)
+			this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. {0} save remaining today.",YoungSaves);
+			else if (YoungSaves > 1)
+			this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. {0} saves remaining today.",YoungSaves);
+			else if (YoungSaves <= 0)
+			this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. You have no saves remaining and will die if you are not careful.");
+			new YoungSaveTimer(this).Start();
+		
+			return false;
+			}
+			
+		
             NetState state = NetState;
 
             if (state != null)
@@ -4349,25 +4381,13 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 
 		private bool CheckInsuranceOnDeath(Item item)
 		{
-         
-		 if (Young && this.YoungSaves > 0)
-		{
-		this.Hits = 5;
-		this.Blessed = true;
-		this.YoungSaves--;
-		if (YoungSaves == 1)
-		this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. {0} save remaining today.",YoungSaves);
-		else if (YoungSaves > 1)
-		this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. {0} saves remaining today.",YoungSaves);
-		else if (YoungSaves <= 0)
-		this.SendMessage("If not for your young status, you would have died just now, you have 20 seconds to escape to safety. You have no saves remaining and will die if you are not careful.");
-		new YoungSaveTimer(this).Start();
+
+       
 		
-		return false;
-		
-		
-		}
-		
+            if (Young)
+				return false;
+
+
 			if (InsuranceEnabled && item.Insured)
 			{
 				if (XmlPoints.InsuranceIsFree(this, m_InsuranceAward))
@@ -4496,10 +4516,11 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			EndAction(typeof(IncognitoSpell));
 
 			MeerMage.StopEffect(this, false);
-			
-			BaseEscort.DeleteEscort(this);
-			#region Stygian Abyss
-			if (Flying)
+
+            BaseEscort.DeleteEscort(this);
+
+            #region Stygian Abyss
+            if (Flying)
 			{
 				Flying = false;
 				BuffInfo.RemoveBuff(this, BuffIcon.Fly);
@@ -5068,6 +5089,7 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			switch (version)
 			{
                 case 37:
+
                    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();
 				   
 		
@@ -5174,7 +5196,11 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
                         
 					
 
-				 goto case 36;
+				
+
+                    
+				    goto case 36;
+
                 case 36:
                     RewardStableSlots = reader.ReadInt();
                     goto case 35;
@@ -5619,6 +5645,7 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			writer.Write(37); // version
 
             writer.Write((int)m_ExtendedFlags);
+
 		
 //future proof 
 		writer.Write(KillCount.Count);
@@ -6068,7 +6095,9 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			list.Add(String.Concat("Paragon: ",m_PrestigeLvl));
 			
 			}
-			 InvalidateMyRunUO();
+			InvalidateMyRunUO();
+
+
             if (Core.SA)
             {
                 if (m_SubtitleSkillTitle != null)
@@ -6545,19 +6574,15 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 			{
 				if (!String.IsNullOrWhiteSpace(m_OverheadTitle))
 				{
-					if (!String.IsNullOrWhiteSpace(suffix) && !suffix.EndsWith(" "))
+
+					if (String.IsNullOrWhiteSpace(suffix))
 					{
-						suffix += " ";
+						suffix = m_OverheadTitle;
 					}
-
-					var loc = Utility.ToInt32(m_OverheadTitle.TrimStart('#'));
-
-					if (loc > 0)
+					else
 					{
-						suffix += "#";
+						suffix = String.Format("{0} {1}", m_OverheadTitle, suffix);
 					}
-
-					suffix += m_OverheadTitle;
 				}
 			}
 
@@ -6645,9 +6670,8 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 
             if (skill != SkillName.Alchemy && Skills.CurrentMastery == skill && Skills[skill].Value < MasteryInfo.MinSkillRequirement)
             {
-                             //SendLocalizedMessage(1156236, String.Format("{0}\t{1}", MasteryInfo.MinSkillRequirement.ToString(), Skills[skill].Info.Name)); 
-							 // You need at least ~1_SKILL_REQUIREMENT~ ~2_SKILL_NAME~ skill to use that mastery.
-							 
+                //SendLocalizedMessage(1156236, String.Format("{0}\t{1}", MasteryInfo.MinSkillRequirement.ToString(), Skills[skill].Info.Name)); // You need at least ~1_SKILL_REQUIREMENT~ ~2_SKILL_NAME~ skill to use that mastery.
+				
                 SkillName mastery = Skills.CurrentMastery;
                 Skills.CurrentMastery = SkillName.Alchemy;
 
@@ -7738,4 +7762,3 @@ SendGump(new FlyingCarpetgump( m_CarpetItem, this, 0 ) );
 		}
 	}
 }
-
