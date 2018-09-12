@@ -1815,7 +1815,14 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                                 pm.SendGump( new ExpBarGump(pm));
                         //if ( pm.ShowBloodBar == true )
                          //       pm.SendGump( new BloodBarGump(pm));
-
+			//	if ( (pm.LastOnline) < (Server.FromSeconds(DateTime.UtcNow) - Core.TickCount ))
+			//	{	
+			pm.Hits = pm.HitsMax; 
+			pm.Mana = pm.ManaMax; 
+			pm.Stam = pm.StamMax;  
+			//	}
+				
+					
                        
 /////End Level//
 

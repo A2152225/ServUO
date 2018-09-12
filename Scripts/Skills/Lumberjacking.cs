@@ -43,12 +43,12 @@ namespace Server.Engines.Harvest
             lumber.BankHeight = 3;
 
             // Every bank holds from 20 to 45 logs
-            lumber.MinTotal = 20;
-            lumber.MaxTotal = 45;
+            lumber.MinTotal = 30;
+            lumber.MaxTotal = 80;
 
             // A resource bank will respawn its content every 20 to 30 minutes
-            lumber.MinRespawn = TimeSpan.FromMinutes(20.0);
-            lumber.MaxRespawn = TimeSpan.FromMinutes(30.0);
+            lumber.MinRespawn = TimeSpan.FromMinutes(5.0);
+            lumber.MaxRespawn = TimeSpan.FromMinutes(15.0);
 
             // Skill checking is done on the Lumberjacking skill
             lumber.Skill = SkillName.Lumberjacking;
@@ -57,7 +57,7 @@ namespace Server.Engines.Harvest
             lumber.Tiles = m_TreeTiles;
 
             // Players must be within 2 tiles to harvest
-            lumber.MaxRange = 2;
+            lumber.MaxRange = 3;
 
             // Ten logs per harvest action
             lumber.ConsumedPerHarvest = 10;

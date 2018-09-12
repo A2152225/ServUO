@@ -376,6 +376,11 @@ namespace Server.Engines.Craft
             new[] {typeof(HeartwoodBoard), typeof(HeartwoodLog)},
 			new[] {typeof(BloodwoodBoard), typeof(BloodwoodLog)}, 
             new[] {typeof(FrostwoodBoard), typeof(FrostwoodLog)},
+			new[] {typeof(EbonyBoard), typeof(EbonyLog)},
+			new[] {typeof(BambooBoard), typeof(BambooLog)},
+			new[] {typeof(PurpleHeartBoard), typeof(PurpleHeartLog)},
+			new[] {typeof(RedwoodBoard), typeof(RedwoodLog)},
+			new[] {typeof(PetrifiedBoard), typeof(PetrifiedLog)},
 			new[] {typeof(OakBoard), typeof(OakLog)}, 
             new[] {typeof(AshBoard), typeof(AshLog)},
 			new[] {typeof(YewBoard), typeof(YewLog)}, 
@@ -383,13 +388,20 @@ namespace Server.Engines.Craft
 			new[] {typeof(SpinedLeather), typeof(SpinedHides)}, 
             new[] {typeof(HornedLeather), typeof(HornedHides)},
 			new[] {typeof(BarbedLeather), typeof(BarbedHides)}, 
+			new[] {typeof(PolarLeather), typeof(PolarHides)}, 
+			new[] {typeof(SyntheticLeather), typeof(SyntheticHides)}, 
+			new[] {typeof(BlazeLeather), typeof(BlazeHides)}, 
+			new[] {typeof(DaemonicLeather), typeof(DaemonicHides)}, 
+			new[] {typeof(ShadowLeather), typeof(ShadowHides)}, 
+			new[] {typeof(FrostLeather), typeof(FrostHides)}, 
+			new[] {typeof(EtherealLeather), typeof(EtherealHides)}, 
             new[] {typeof(BlankMap), typeof(BlankScroll)},
 			new[] {typeof(Cloth), typeof(UncutCloth), typeof(AbyssalCloth)},
             new[] {typeof(CheeseWheel), typeof(CheeseWedge)},
 			new[] {typeof(Pumpkin), typeof(SmallPumpkin)}, 
             new[] {typeof(WoodenBowlOfPeas), typeof(PewterBowlOfPeas)},
             new[] { typeof( CrystallineFragments ), typeof( BrokenCrystals ), typeof( ShatteredCrystals ), typeof( ScatteredCrystals ), typeof( CrushedCrystals ), typeof( JaggedCrystals ), typeof( AncientPotteryFragments ) },
-            new[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ) }
+            new[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ), typeof( BlueScales ), typeof( CopperScales ), typeof( SilverScales ), typeof( GoldScales ) }
 		};
 
 		private static readonly Type[] m_ColoredItemTable = new[]
@@ -451,7 +463,7 @@ namespace Server.Engines.Craft
 
 		private static readonly Dictionary<Type, Type> m_ResourceConversionTable = new Dictionary<Type, Type>()
 		{
-			{ typeof(Board), typeof(Log) },
+		/*	{ typeof(Board), typeof(Log) },
 			{ typeof(HeartwoodBoard), typeof(HeartwoodLog) },
 			{ typeof(BloodwoodBoard), typeof(BloodwoodLog) },
 			{ typeof(FrostwoodBoard), typeof(FrostwoodLog) },
@@ -462,6 +474,33 @@ namespace Server.Engines.Craft
 			{ typeof(SpinedLeather), typeof(SpinedHides) },
 			{ typeof(HornedLeather), typeof(HornedHides) },
 			{ typeof(BarbedLeather), typeof(BarbedHides) },
+		*/	
+			
+			
+			 {typeof(Board), typeof(Log)}, 
+             {typeof(HeartwoodBoard), typeof(HeartwoodLog)},
+			 {typeof(BloodwoodBoard), typeof(BloodwoodLog)}, 
+             {typeof(FrostwoodBoard), typeof(FrostwoodLog)},
+			 {typeof(EbonyBoard), typeof(EbonyLog)},
+			 {typeof(BambooBoard), typeof(BambooLog)},
+			 {typeof(PurpleHeartBoard), typeof(PurpleHeartLog)},
+			 {typeof(RedwoodBoard), typeof(RedwoodLog)},
+			 {typeof(PetrifiedBoard), typeof(PetrifiedLog)},
+			 {typeof(OakBoard), typeof(OakLog)}, 
+             {typeof(AshBoard), typeof(AshLog)},
+			 {typeof(YewBoard), typeof(YewLog)}, 
+             {typeof(Leather), typeof(Hides)},
+			 {typeof(SpinedLeather), typeof(SpinedHides)}, 
+             {typeof(HornedLeather), typeof(HornedHides)},
+			 {typeof(BarbedLeather), typeof(BarbedHides)}, 
+			 {typeof(PolarLeather), typeof(PolarHides)}, 
+			 {typeof(SyntheticLeather), typeof(SyntheticHides)}, 
+			 {typeof(BlazeLeather), typeof(BlazeHides)}, 
+			 {typeof(DaemonicLeather), typeof(DaemonicHides)}, 
+			 {typeof(ShadowLeather), typeof(ShadowHides)}, 
+			 {typeof(FrostLeather), typeof(FrostHides)}, 
+			 {typeof(EtherealLeather), typeof(EtherealHides)},
+			
 		};
 
 		private static Type[] m_NeverColorTable = new[] {typeof(OrcHelm)};
@@ -1224,8 +1263,8 @@ namespace Server.Engines.Craft
 				{
 					bonus = talisman.ExceptionalBonus / 100.0;
 				}
-			}
 
+			}
             MasterChefsApron apron = from.FindItemOnLayer(Layer.MiddleTorso) as MasterChefsApron;
 
             if (apron != null)
@@ -1361,9 +1400,10 @@ namespace Server.Engines.Craft
 
 			return chance;
 		}
-
+		public Type HoldResource;
         public void Craft(Mobile from, CraftSystem craftSystem, Type typeRes, ITool tool)
 		{
+			HoldResource = typeRes;
 			if (from.BeginAction(typeof(CraftSystem)))
 			{
 				if (RequiredExpansion == Expansion.None ||
@@ -1703,6 +1743,22 @@ namespace Server.Engines.Craft
 							case CraftResource.Frostwood:
 								item = new FrostwoodBoard();
 								break;
+							case CraftResource.Ebony:
+								item = new EbonyBoard();
+								break;
+							case CraftResource.Bamboo:
+								item = new BambooBoard();
+								break;
+							case CraftResource.PurpleHeart:
+								item = new PurpleHeartBoard();
+								break;
+							case CraftResource.Redwood:
+								item = new RedwoodBoard();
+								break;
+							case CraftResource.Petrified:
+								item = new PetrifiedBoard();
+								break;
+									
 							default:
 								item = new Board();
 								break;

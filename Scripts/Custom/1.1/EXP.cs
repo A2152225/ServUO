@@ -1,4 +1,5 @@
 using System; 
+using System.ComponentModel;
 using System.Collections; 
 using Server.Network;
 using Server.Items; 
@@ -435,15 +436,7 @@ namespace Server.Mobiles
 				{
 					ExpGained = 4;
 				}
-			/*	if (Res.Types[0] == typeof(MapleLog))
-				{
-					ExpGained = 4;
-				}
-				if (Res.Types[0] == typeof(PineLog))
-				{
-					ExpGained = 5;
-				}
-			*/	if (Res.Types[0] == typeof(AshLog))
+				if (Res.Types[0] == typeof(AshLog))
 				{
 					ExpGained = 6;
 				}
@@ -455,16 +448,7 @@ namespace Server.Mobiles
 				{
 					ExpGained = 8;
 				}
-		
-			/*	if (Res.Types[0] == typeof(BlueBarkLog))
-				{
-					ExpGained = 10;
-				}
-				if (Res.Types[0] == typeof(BlackBarkLog))
-				{
-					ExpGained = 11;
-				}
-			*/	if (Res.Types[0] == typeof(BloodwoodLog))
+				if (Res.Types[0] == typeof(BloodwoodLog))
 				{
 					ExpGained = 10;
 				}
@@ -518,14 +502,106 @@ namespace Server.Mobiles
 				for ( int i = 0; i < item.Resources.Count; ++i )
 				{
 					Res = item.Resources.GetAt(i);
+					Console.WriteLine(item.Resources.GetAt(i));
+					Console.WriteLine(item.HoldResource);
+			
+				//	Console.WriteLine(item.typeRes);
+			/*		Type resourceType = typeRes;
+
+						if (resourceType == null)
+						{
+							resourceType = Resources.GetAt(0).ItemType;
+						}
+
+						CraftResource thisResource = CraftResources.GetFromType(resourceType);
+*/
 				}
 				int ExpGained = 0;
 				if ( Res != null )
 				{
-					if (Res.ItemType == typeof(IronIngot))
+					
+					if (item.HoldResource ==  typeof(DullCopperIngot)){
+						ResExp = 5;
+						}
+					else if (item.HoldResource ==  typeof( ShadowIronIngot)){	
+						ResExp = 6;
+						}
+					else if (item.HoldResource ==  typeof( CopperIngot)){	
+						ResExp = 7;
+						}
+					else if (item.HoldResource ==  typeof( BronzeIngot)){	
+						ResExp = 8;
+						}
+					else if (item.HoldResource ==  typeof( GoldIngot)){	
+						ResExp = 9;
+						}
+					else if (item.HoldResource ==  typeof( AgapiteIngot)){	
+						ResExp = 10;
+						}
+					else if (item.HoldResource ==  typeof( VeriteIngot)){	
+						ResExp = 11;
+						}
+					else if (item.HoldResource ==  typeof( ValoriteIngot)){	
+						ResExp = 12;
+						}
+					else if (item.HoldResource ==  typeof( BlazeIngot)){	
+						ResExp = 13;
+						}
+					else if (item.HoldResource ==  typeof( IceIngot)){	
+						ResExp = 14;
+						}
+					else if (item.HoldResource ==  typeof( ToxicIngot)){	
+						ResExp = 15;
+						}
+					else if (item.HoldResource ==  typeof( ElectrumIngot)){	
+						ResExp = 16;
+						}
+					else if (item.HoldResource ==  typeof( PlatinumIngot)){	
+						ResExp = 17;
+						}
+					else if (item.HoldResource ==  typeof( RoyaliteIngot)){	
+						ResExp = 18;
+						}
+					else if (item.HoldResource ==  typeof( DaniteIngot)){	
+					ResExp = 20;
+					}
+					else if (Res.ItemType == typeof(IronIngot))
 					{
 						ResExp = 4;
 					}
+					else if (item.HoldResource ==  typeof(OakLog)){
+						ResExp = 6;
+						}
+					else if (item.HoldResource ==  typeof( AshLog)){	
+						ResExp = 7;
+						}
+					else if (item.HoldResource ==  typeof( YewLog)){	
+						ResExp = 8;
+						}
+					else if (item.HoldResource ==  typeof( HeartwoodLog)){	
+						ResExp = 9;
+						}
+					else if (item.HoldResource ==  typeof( BloodwoodLog)){	
+						ResExp = 10;
+						}
+					else if (item.HoldResource ==  typeof( FrostwoodLog)){	
+						ResExp = 11;
+						}
+					else if (item.HoldResource ==  typeof( EbonyLog)){	
+						ResExp = 12;
+						}
+					else if (item.HoldResource ==  typeof( BambooLog)){	
+						ResExp = 13;
+						}
+					else if (item.HoldResource ==  typeof( PurpleHeartLog)){	
+						ResExp = 14;
+						}
+					else if (item.HoldResource ==  typeof( RedwoodLog)){	
+						ResExp = 15;
+						}
+					else if (item.HoldResource ==  typeof( PetrifiedLog)){	
+						ResExp = 16;
+						}
 					else if (Res.ItemType == typeof(Log))
 					{
 						ResExp = 5;
@@ -618,10 +694,88 @@ namespace Server.Mobiles
 					{
 						ResExp = 15;
 					}
+					else if (item.HoldResource ==  typeof(DullCopperGranite)){
+						ResExp = 15;
+						}
+					else if (item.HoldResource ==  typeof( ShadowIronGranite)){	
+						ResExp = 16;
+						}
+					else if (item.HoldResource ==  typeof( CopperGranite)){	
+						ResExp = 17;
+						}
+					else if (item.HoldResource ==  typeof( BronzeGranite)){	
+						ResExp = 18;
+						}
+					else if (item.HoldResource ==  typeof( GoldGranite)){	
+						ResExp = 19;
+						}
+					else if (item.HoldResource ==  typeof( AgapiteGranite)){	
+						ResExp = 20;
+						}
+					else if (item.HoldResource ==  typeof( VeriteGranite)){	
+						ResExp = 21;
+						}
+					else if (item.HoldResource ==  typeof( ValoriteGranite)){	
+						ResExp = 22;
+						}
+					else if (item.HoldResource ==  typeof( BlazeGranite)){	
+						ResExp = 23;
+						}
+					else if (item.HoldResource ==  typeof( IceGranite)){	
+						ResExp = 24;
+						}
+					else if (item.HoldResource ==  typeof( ToxicGranite)){	
+						ResExp = 25;
+						}
+					else if (item.HoldResource ==  typeof( ElectrumGranite)){	
+						ResExp = 26;
+						}
+					else if (item.HoldResource ==  typeof( PlatinumGranite)){	
+						ResExp = 27;
+						}
+					else if (item.HoldResource ==  typeof( RoyaliteGranite)){	
+						ResExp = 28;
+						}
+					else if (item.HoldResource ==  typeof( DaniteGranite)){	
+					ResExp = 30;
+					}
 					else if (Res.ItemType == typeof(Granite))
 					{
 						ResExp = 15;
 					}
+					else if (item.HoldResource ==  typeof(OakBoard)){
+						ResExp = 6;
+						}
+					else if (item.HoldResource ==  typeof( AshBoard)){	
+						ResExp = 7;
+						}
+					else if (item.HoldResource ==  typeof( YewBoard)){	
+						ResExp = 8;
+						}
+					else if (item.HoldResource ==  typeof( HeartwoodBoard)){	
+						ResExp = 9;
+						}
+					else if (item.HoldResource ==  typeof( BloodwoodBoard)){	
+						ResExp = 10;
+						}
+					else if (item.HoldResource ==  typeof( FrostwoodBoard)){	
+						ResExp = 11;
+						}
+					else if (item.HoldResource ==  typeof( EbonyBoard)){	
+						ResExp = 12;
+						}
+					else if (item.HoldResource ==  typeof( BambooBoard)){	
+						ResExp = 13;
+						}
+					else if (item.HoldResource ==  typeof( PurpleHeartBoard)){	
+						ResExp = 14;
+						}
+					else if (item.HoldResource ==  typeof( RedwoodBoard)){	
+						ResExp = 15;
+						}
+					else if (item.HoldResource ==  typeof( PetrifiedBoard)){	
+						ResExp = 16;
+						}
 					else if (Res.ItemType == typeof(Board))
 					{
 						ResExp = 5;
@@ -658,6 +812,64 @@ namespace Server.Mobiles
 					{
 						ResExp = 4;
 					}
+					else if (item.HoldResource ==  typeof(SpinedLeather)){
+						ResExp = 5;
+						}
+					else if (item.HoldResource ==  typeof( HornedLeather)){	
+						ResExp = 6;
+						}
+					else if (item.HoldResource ==  typeof( BarbedLeather)){	
+						ResExp = 7;
+						}
+					else if (item.HoldResource ==  typeof( PolarLeather)){	
+						ResExp = 8;
+						}
+					else if (item.HoldResource ==  typeof( SyntheticLeather)){	
+						ResExp = 9;
+						}
+					else if (item.HoldResource ==  typeof( BlazeLeather)){	
+						ResExp = 10;
+						}
+					else if (item.HoldResource ==  typeof( DaemonicLeather)){	
+						ResExp = 11;
+						}
+					else if (item.HoldResource ==  typeof( ShadowLeather)){	
+						ResExp = 12;
+						}
+					else if (item.HoldResource ==  typeof( FrostLeather)){	
+						ResExp = 13;
+						}
+					else if (item.HoldResource ==  typeof( EtherealLeather)){	
+						ResExp = 14;
+						}
+					else if (item.HoldResource == typeof(RedScales))
+					{
+						ResExp = 4;
+					}
+					else if (item.HoldResource ==  typeof(YellowScales)){
+						ResExp = 5;
+						}
+					else if (item.HoldResource ==  typeof( BlackScales)){	
+						ResExp = 6;
+						}
+					else if (item.HoldResource ==  typeof( GreenScales)){	
+						ResExp = 7;
+						}
+					else if (item.HoldResource ==  typeof( WhiteScales)){	
+						ResExp = 8;
+						}
+					else if (item.HoldResource ==  typeof( BlueScales)){	
+						ResExp = 9;
+						}
+					else if (item.HoldResource ==  typeof( CopperScales)){	
+						ResExp = 10;
+						}
+					else if (item.HoldResource ==  typeof( SilverScales)){	
+						ResExp = 11;
+						}
+					else if (item.HoldResource ==  typeof( GoldScales)){	
+						ResExp = 12;
+						}
 					else if (Res.ItemType == typeof(Bone))
 					{
 						ResExp = 4;
@@ -713,7 +925,6 @@ namespace Server.Mobiles
 					else
 						ResExp = 3;
 					ExpGained = ResExp * Res.Amount; /// 3;
-					ExpGained *= (1 +(2 * Tweaks.XPMod));  //4
 			
 					
 
@@ -729,9 +940,19 @@ namespace Server.Mobiles
 					ExpGained = 6000;
 				
 					ExpGained *= (1 +(2 * Tweaks.XPMod));  //4
-					
 						from.EXP += ExpGained;
 			//			GearUp(from,ExpGained);
+		/*	foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(item))
+			{
+				string name=descriptor.Name;
+				object value=descriptor.GetValue(item);
+				Console.WriteLine("{0}={1}",name,value);
+				Console.WriteLine(item.Resources.Type);
+				Console.WriteLine(item.Resources.Type);
+				
+			}
+			*/
+			
 					}
 				}
 			}
