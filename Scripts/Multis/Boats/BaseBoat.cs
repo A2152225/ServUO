@@ -220,7 +220,7 @@ namespace Server.Multis
         #region IMount Members
         public Mobile Rider { get { return m_Pilot; } set { m_Pilot = value; } }
 
-        public void OnRiderDamaged(int amount, Mobile from, bool willKill)
+        public void OnRiderDamaged(Mobile from, ref int amount, bool willKill)
         {
         }
         #endregion
@@ -245,7 +245,6 @@ namespace Server.Multis
             Facing = direction;
             Layer = Layer.Mount;
             m_Anchored = false;
-            m_VirtualMount = new BoatMountItem(this);
 
             if (isClassic)
             {
@@ -437,9 +436,6 @@ namespace Server.Multis
             }
 
             m_Instances.Add(this);
-
-            if (m_VirtualMount == null)
-                m_VirtualMount = new BoatMountItem(this);
 
             if (version == 6)
             {
@@ -1475,8 +1471,8 @@ namespace Server.Multis
                 {
                     Item item = e as Item;
 
-                    if (item is BaseAddon || item is AddonComponent)
-                        return false;
+                    if ((item is BaseAddon || item is AddonComponent) && CheckAddon(item))
+                        continue;
 
                     // Special item, we're good
                     if (CheckItem(itemID, item, p) || CanMoveOver(item) || item.Z < p.Z || ExemptOverheadComponent(p, itemID, item.X, item.Y, item.Z + item.ItemData.Height))
@@ -1501,6 +1497,11 @@ namespace Server.Multis
 
             eable.Free();
             return true;
+        }
+
+        public virtual bool CheckAddon(Item item)
+        {
+            return false;
         }
 
         public virtual bool CheckItem(int itemID, Item item, Point3D p)
@@ -2064,6 +2065,9 @@ namespace Server.Multis
         {
             m_Pilot = pilot;
 
+            if (m_VirtualMount == null || m_VirtualMount.Deleted)
+                m_VirtualMount = new BoatMountItem(this);
+
             pilot.AddItem(m_VirtualMount);
             pilot.Direction = m_Facing;
             pilot.Delta(MobileDelta.Direction | MobileDelta.Properties);
@@ -2093,23 +2097,7 @@ namespace Server.Multis
 
         public static bool IsDriving(Mobile from)
         {
-            foreach (BaseBoat boat in m_Instances)
-            {
-                if (boat.Pilot == from)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static BaseBoat GetPiloting(Mobile from)
-        {
-            BaseBoat boat = FindBoatAt(from, from.Map);
-
-            if (boat != null && boat.Pilot == from)
-                return boat;
-
-            return null;
+            return m_Instances.Any(b => b.Pilot == from);
         }
 
         public virtual void OnMousePilotCommand(Mobile from, Direction d, int rawSpeed)
@@ -2130,18 +2118,32 @@ namespace Server.Multis
 
         public static void EventSink_Disconnected(DisconnectedEventArgs e)
         {
-            BaseBoat boat = GetPiloting(e.Mobile);
-
-            if (boat != null)
-                boat.RemovePilot(e.Mobile);
+            ForceRemovePilot(e.Mobile);
         }
 
         public static void EventSink_PlayerDeath(PlayerDeathEventArgs e)
         {
-            BaseBoat boat = GetPiloting(e.Mobile);
+            ForceRemovePilot(e.Mobile);
+        }
 
-            if (boat != null)
-                boat.RemovePilot(e.Mobile);
+        public static void ForceRemovePilot(Mobile m)
+        {
+            var mountItem = m.FindItemOnLayer(Layer.Mount) as BoatMountItem;
+
+            if (mountItem != null)
+            {
+                BaseBoat boat = mountItem.Mount as BaseBoat;
+
+                if (boat != null)
+                {
+                    boat.RemovePilot(m);
+                }
+                else
+                {
+                    m.RemoveItem(mountItem);
+                    mountItem.Delete();
+                }
+            }
         }
 
         public void SendMessageToAllOnBoard(object message)
@@ -2422,6 +2424,8 @@ namespace Server.Multis
 
                 state.Send(GetPacketContainer(GetEntitiesOnBoard()));
             }
+
+            eable.Free();
         }
 
         public sealed class MoveBoatHS : Packet

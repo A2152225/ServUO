@@ -485,6 +485,12 @@ namespace Server
         Pillage = 14,
         Spawn = 15
     }
+
+    public enum DFAlgorithm
+    {
+        Standard,
+        PainSpike
+    }
 	#endregion
 
 	[Serializable]
@@ -512,6 +518,8 @@ namespace Server
 	public delegate bool AllowBeneficialHandler(Mobile from, Mobile target);
 
 	public delegate bool AllowHarmfulHandler(Mobile from, IDamageable target);
+
+    public delegate void FatigueHandler(Mobile m, int damage, DFAlgorithm df);
 
 	public delegate Container CreateCorpseHandler(
 		Mobile from, HairInfo hair, FacialHairInfo facialhair, List<Item> initialContent, List<Item> equipedItems);
@@ -609,8 +617,9 @@ namespace Server
 
 		#region Handlers
 		public static AllowBeneficialHandler AllowBeneficialHandler { get; set; }
-
 		public static AllowHarmfulHandler AllowHarmfulHandler { get; set; }
+
+        public static FatigueHandler FatigueHandler { get; set; }
 
 		private static SkillCheckTargetHandler m_SkillCheckTargetHandler;
 		private static SkillCheckLocationHandler m_SkillCheckLocationHandler;
@@ -859,6 +868,8 @@ namespace Server
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool CharacterOut { get; set; }
+
+        public DFAlgorithm DFA { get; set; } 
 
         protected virtual void OnRaceChange(Race oldRace)
 		{ }
@@ -1139,170 +1150,84 @@ namespace Server
 			return suffix;
 		}
 
-		protected virtual void AlterName(ref string prefix, ref string name, ref string suffix)
-		{ }
+        public virtual void AddNameProperties(ObjectPropertyList list)
+        {
+            string name = Name;
 
-		public virtual string GetName(out string prefix, out string name, out string suffix)
-		{
-			prefix = String.Empty;
-			name = Name ?? String.Empty;
-			suffix = String.Empty;
-			
-			if (ShowAccessTitle && m_Player && AccessLevel > AccessLevel.Player)
-			{
-				if (!String.IsNullOrWhiteSpace(prefix) && !prefix.StartsWith(" "))
-				{
-					prefix = " " + prefix;
-				}
-
-				prefix = GetAccessLevelShortName(AccessLevel) + prefix;
-			}
-
-			if (ShowFameTitle && m_Fame >= 10000 && (m_Player || m_Body.IsHuman))
-			{
-				if (!String.IsNullOrWhiteSpace(prefix) && !prefix.EndsWith(" "))
-				{
-					prefix += " ";
-				}
-
-				prefix += Female ? "Lady" : "Lord";
-			}
-			
-			if (PropertyTitle && !String.IsNullOrWhiteSpace(Title))
-			{
-				if (!String.IsNullOrWhiteSpace(suffix) && !suffix.EndsWith(" "))
-				{
-					suffix += " ";
-				}
-
-				suffix += Title;
-			}
-			
-			if (m_DisplayGuildAbbr && m_Player && m_Guild != null)
-			{
-				if (!String.IsNullOrWhiteSpace(suffix) && !suffix.EndsWith("]") && !suffix.EndsWith(" "))
-				{
-					suffix += " ";
-				}
-
-				suffix += String.Format("[{0}]", Utility.FixHtml(m_Guild.Abbreviation));
+            if (name == null)
+            {
+                name = String.Empty;
             }
 
-			suffix = ApplyNameSuffix(suffix);
+            string prefix = "";
 
-			prefix = prefix.Trim();
-			name = name.Trim();
-			suffix = suffix.Trim();
+            if (ShowFameTitle && (m_Player || m_Body.IsHuman) && m_Fame >= 10000)
+            {
+                prefix = m_Female ? "Lady" : "Lord";
+            }
 
-			AlterName(ref prefix, ref name, ref suffix);
+            string suffix = "";
 
-			if (String.IsNullOrWhiteSpace(name))
-			{
-				name = " ";
-			}
+            if (PropertyTitle && Title != null && Title.Length > 0)
+            {
+                suffix = Title;
+            }
 
-			var cli = suffix.IndexOf('#');
+            BaseGuild guild = m_Guild;
 
-			if (cli > 0 && Char.IsNumber(suffix, cli + 1))
-			{
-				if (!name.EndsWith(" ") && !suffix.StartsWith(" "))
-				{
-					name += " ";
-				}
+            if (guild != null && m_Player && m_DisplayGuildAbbr)
+            {
+                if (suffix.Length > 0)
+                    suffix = String.Format("{0} [{1}]", suffix, Utility.FixHtml(guild.Abbreviation));
+                else
+                    suffix = String.Format("[{0}]", Utility.FixHtml(guild.Abbreviation));
+            }
 
-				name += suffix.Substring(0, cli);
-				suffix = suffix.Substring(cli);
-			}
+            suffix = ApplyNameSuffix(suffix);
 
-			if (!String.IsNullOrWhiteSpace(prefix) && !name.StartsWith(" "))
-			{
-				name = String.Concat(" ", name);
-			}
+            list.Add(1050045, "{0} \t{1}\t {2}", prefix, name, suffix); // ~1_PREFIX~~2_NAME~~3_SUFFIX~
 
-			if (!String.IsNullOrWhiteSpace(suffix) && !name.EndsWith(" "))
-			{
-				name = String.Concat(name, " ");
-			}
+            if (guild != null && (m_DisplayGuildTitle || (m_Player && guild.Type != GuildType.Regular)))
+            {
+                string type;
 
-			return String.Concat(prefix, name, suffix);
-		}
+                if (guild.Type >= 0 && (int)guild.Type < m_GuildTypes.Length)
+                {
+                    type = m_GuildTypes[(int)guild.Type];
+                }
+                else
+                {
+                    type = "";
+                }
 
-		public virtual void AddNameProperties(ObjectPropertyList list)
-		{
-			string prefix, name, suffix;
+                string title = GuildTitle;
 
-			GetName(out prefix, out name, out suffix);
+                if (title == null)
+                {
+                    title = "";
+                }
+                else
+                {
+                    title = title.Trim();
+                }
 
-			if (String.IsNullOrEmpty(prefix))
-			{
-				prefix = " ";
-			}
-
-			if (String.IsNullOrEmpty(name))
-			{
-				name = " ";
-			}
-
-			if (String.IsNullOrEmpty(suffix))
-			{
-				suffix = " ";
-			}
-
-			list.Add(1050045, "{0}\t{1}\t{2}", prefix, name, suffix); // ~1_PREFIX~~2_NAME~~3_SUFFIX~
-
-			AddGuildProperties(list);
-		}
-
-		public virtual void AddGuildProperties(ObjectPropertyList list)
-		{
-			if (m_Guild == null)
-			{
-				return;
-			}
-
-			var text = String.Empty;
-
-			if (m_DisplayGuildTitle || !m_Player || m_Guild.Type != GuildType.Regular)
-			{
-				string type;
-
-				if (m_Guild.Type >= 0 && (int)m_Guild.Type < m_GuildTypes.Length)
-				{
-					type = m_GuildTypes[(int)m_Guild.Type];
-				}
-				else
-				{
-					type = "";
-				}
-
-				var title = Utility.FixHtml(GuildTitle ?? String.Empty);
-
-				if (NewGuildDisplay && title.Length > 0)
-				{
-					text = String.Format("{0}, {1}", title, Utility.FixHtml(m_Guild.Name));
-				}
-				else if (title.Length > 0)
-				{
-					text = String.Format("{0}, {1} Guild{2}", title, Utility.FixHtml(m_Guild.Name), type);
-				}
-				else
-				{
-					text = Utility.FixHtml(m_Guild.Name);
-				}
-			}
-
-			if (!String.IsNullOrWhiteSpace(text))
-			{
-				list.Add(text);
-			}
-		}
-
-		public virtual string FormatProperty(double value, string format = "#,0.##")
-		{
-			return value == 0 || String.IsNullOrWhiteSpace(format)
-				? value.ToString(CultureInfo.InvariantCulture)
-				: value.ToString(format);
-		}
+                if (NewGuildDisplay && title.Length > 0)
+                {
+                    list.Add("{0}, {1}", Utility.FixHtml(title), Utility.FixHtml(guild.Name));
+                }
+                else
+                {
+                    if (title.Length > 0)
+                    {
+                        list.Add("{0}, {1} Guild{2}", Utility.FixHtml(title), Utility.FixHtml(guild.Name), type);
+                    }
+                    else
+                    {
+                        list.Add(Utility.FixHtml(guild.Name));
+                    }
+                }
+            }
+        }
 
 		public virtual bool NewGuildDisplay { get { return false; } }
 
@@ -4091,6 +4016,8 @@ namespace Server
 
 		public virtual void Kill()
 		{
+            m_LastKilled = DateTime.UtcNow;
+
 			if (!CanBeDamaged())
 			{
 				return;
@@ -4128,7 +4055,6 @@ namespace Server
 			{
 				m_Spell.OnCasterKilled();
 			}
-			//m_Spell.Disturb( DisturbType.Kill );
 
 			if (m_Target != null)
 			{
@@ -4217,8 +4143,6 @@ namespace Server
 					Item item = packCopy[i];
 
 					DeathMoveResult res = GetInventoryMoveResultFor(item);
-
-                    pack.FreePosition(item.GridLocation);
 
                     if (res == DeathMoveResult.MoveToCorpse)
 					{
@@ -4668,10 +4592,9 @@ namespace Server
 						}
 						else
 						{
-                            if (item.Parent != null && item.Parent is Container)
-                                ((Container)item.Parent).FreePosition(item.GridLocation);
-
                             item.SetLastMoved();
+
+                            var itemGrid = item.GridLocation;
 
 							if (item.Spawner != null)
 							{
@@ -4743,6 +4666,12 @@ namespace Server
 							item.Internalize();
 
 							from.Holding = item;
+                            item.GridLocation = 0;
+
+                            if (oldStack != null)
+                            {
+                                oldStack.GridLocation = itemGrid;
+                            }
 
 							int liftSound = item.GetLiftSound(from);
 
@@ -4825,6 +4754,7 @@ namespace Server
 					oldItem.GetType().Name);
 				return null;
 			}
+
 			item.Visible = oldItem.Visible;
 			item.Movable = oldItem.Movable;
 			item.LootType = oldItem.LootType;
@@ -4841,7 +4771,7 @@ namespace Server
 
 			oldItem.Amount = amount;
 			oldItem.OnAfterDuped(item);
-            item.GridLocation = oldItem.GridLocation;
+            //item.GridLocation = oldItem.GridLocation;
 
 			if (oldItem.Parent is Mobile)
 			{
@@ -5616,9 +5546,13 @@ namespace Server
 		}
 
 		private Mobile m_LastKiller;
+        private DateTime m_LastKilled;
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public Mobile LastKiller { get { return m_LastKiller; } set { m_LastKiller = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public DateTime LastKilled { get { return m_LastKilled; } set { m_LastKilled = value; } }
 
 		/// <summary>
 		///     Overridable. Virtual event invoked when the Mobile is <see cref="Damage">damaged</see>. It is called before
@@ -5692,7 +5626,7 @@ namespace Server
 
 				if (m != null && informMount)
 				{
-					m.OnRiderDamaged(amount, from, newHits < 0);
+					m.OnRiderDamaged(from, ref amount, newHits < 0);
 				}
 
 				if (newHits < 0)
@@ -5709,6 +5643,8 @@ namespace Server
 				else
 				{
 					Hits = newHits;
+
+                    FatigueHandler(this, amount, DFA);
 				}
 			}
 
@@ -5864,12 +5800,12 @@ namespace Server
 				return 0;
 			}
 
-			OnHeal(ref amount, from);
-
 			if ((Hits + amount) > HitsMax)
 			{
 				amount = HitsMax - Hits;
 			}
+
+            OnHeal(ref amount, from);
 
 			Hits += amount;
 
@@ -6763,7 +6699,7 @@ namespace Server
 
 		public virtual bool CanPaperdollBeOpenedBy(Mobile from)
 		{
-			return (Body.IsHuman || Body.IsGhost || IsBodyMod);
+			return (Body.IsHuman || Body.IsGhost || IsBodyMod || from == this);
 		}
 
 		public virtual void GetChildContextMenuEntries(Mobile from, List<ContextMenuEntry> list, Item item)
@@ -6895,14 +6831,16 @@ namespace Server
                     using (StreamWriter op = new StreamWriter("LayerConflict.log", true))
                     {
                         op.WriteLine("# {0}", DateTime.UtcNow);
-                        op.WriteLine("Offending Mobile: {0}[{1}]", GetType().ToString(), this);
-                        op.WriteLine("Offending Item: {0}", item.GetType().ToString());
+                        op.WriteLine("Offending Mobile: {0} [{1}]", GetType().ToString(), this);
+                        op.WriteLine("Offending Item: {0} [{1}]", item, item.GetType().ToString());
+                        op.WriteLine("Equipped Item: {0} [{1}]", equipped, equipped.GetType().ToString());
                         op.WriteLine("Layer: {0}", item.Layer.ToString());
                         op.WriteLine();
                     }
 
-                    Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("Offending Mobile: {0}[{1}]", GetType().ToString(), this));
-                    Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("Offending Item: {0}", item.GetType().ToString()));
+                    Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("Offending Mobile: {0} [{1}]", GetType().ToString(), this));
+                    Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("Offending Item: {0} [{1}]", item, item.GetType().ToString()));
+                    Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("Equipped Item: {0} [{1}]", equipped, equipped.GetType().ToString()));
                     Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("Layer: {0}", item.Layer.ToString()));
                 }
                 catch

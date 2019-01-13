@@ -45,6 +45,11 @@ namespace Server.Engines.CannedEvil
 
         private Dictionary<Mobile, int> m_DamageEntries;
 
+        public List<Mobile> Creatures
+        {
+            get { return m_Creatures; }
+        }
+
 		[CommandProperty(AccessLevel.GameMaster)]
 		public string GroupName { get; set; }
 
@@ -304,6 +309,9 @@ namespace Server.Engines.CannedEvil
             }
         }
 
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int StartLevel { get; private set; }
+
         private void RemoveSkulls()
         {
             if (m_WhiteSkulls != null)
@@ -397,11 +405,14 @@ namespace Server.Engines.CannedEvil
                     Level = 2;
                 else if (Utility.RandomBool())
                     Level = 1;
-                else
-                    Level = 0;
 
-                if (Level > 0)
-                    AdvanceLevel();
+                StartLevel = Level;
+
+                if (Level > 0 && m_Altar != null)
+                {
+                    Effects.PlaySound(m_Altar.Location, m_Altar.Map, 0x29);
+                    Effects.SendLocationEffect(new Point3D(m_Altar.X + 1, m_Altar.Y + 1, m_Altar.Z), m_Altar.Map, 0x3728, 10);
+                }
             }
         }
 
@@ -752,6 +763,7 @@ namespace Server.Engines.CannedEvil
         {
             m_Kills = 0;
             Level = 0;
+            StartLevel = 0;
             InvalidateProperties();
             SetWhiteSkullCount(0);
 
@@ -769,6 +781,11 @@ namespace Server.Engines.CannedEvil
 
                 m_Champion.MoveToWorld(p, Map);
                 ((BaseCreature)m_Champion).Home = p;
+
+                if (m_Champion is BaseChampion)
+                {
+                    ((BaseChampion)m_Champion).OnChampPopped(this);
+                }
             }
         }
 
@@ -939,7 +956,7 @@ namespace Server.Engines.CannedEvil
             if (m_WhiteSkulls.Count == 0)
             {
                 // They didn't even get 20%, go back a level
-                if (Level > 0)
+                if (Level > StartLevel)
                     --Level;
 
                 InvalidateProperties();
@@ -1238,7 +1255,9 @@ namespace Server.Engines.CannedEvil
         {
             base.Serialize(writer);
 
-            writer.Write((int)7); // version
+            writer.Write((int)8); // version
+
+            writer.Write(StartLevel);
 
 			writer.Write(KillsMod);
 			writer.Write(GroupName);
@@ -1293,6 +1312,9 @@ namespace Server.Engines.CannedEvil
 
             switch( version )
             {
+                case 8:
+                    StartLevel = reader.ReadInt();
+                    goto case 7;
 				case 7:
 					KillsMod = reader.ReadDouble();
 					GroupName = reader.ReadString();

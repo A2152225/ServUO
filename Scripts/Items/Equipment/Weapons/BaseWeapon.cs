@@ -30,8 +30,87 @@ namespace Server.Items
 		SlayerName Slayer2 { get; set; }
 	}
 
-    public abstract class BaseWeapon : Item, IWeapon, IFactionItem, IUsesRemaining, ICraftable, ISlayer, IDurability, ISetItem, IVvVItem, IOwnerRestricted, IResource
+    public abstract class BaseWeapon : Item, IWeapon, IFactionItem, IUsesRemaining, ICraftable, ISlayer, IDurability, ISetItem, IVvVItem, IOwnerRestricted, IResource, IArtifact, ICombatEquipment
 	{
+		#region Damage Helpers
+		public static BaseWeapon GetDamageOutput(Mobile wielder, out int min, out int max)
+		{
+			return GetDamageOutput(wielder, null, out min, out max);
+		}
+
+		public static BaseWeapon GetDamageOutput(Mobile wielder, BaseWeapon weapon, out int min, out int max)
+		{
+			int minRaw, maxRaw;
+
+			return GetDamageOutput(wielder, weapon, out minRaw, out maxRaw, out min, out max);
+		}
+
+		public static BaseWeapon GetDamageOutput(
+			Mobile wielder,
+			out int minRaw,
+			out int maxRaw,
+			out int minVal,
+			out int maxVal)
+		{
+			return GetDamageOutput(wielder, null, out minRaw, out maxRaw, out minVal, out maxVal);
+		}
+
+		public static BaseWeapon GetDamageOutput(
+			Mobile wielder,
+			BaseWeapon weapon,
+			out int minRaw,
+			out int maxRaw,
+			out int minVal,
+			out int maxVal)
+		{
+			minRaw = maxRaw = 0;
+			minVal = maxVal = 0;
+
+			if (wielder == null)
+			{
+				return null;
+			}
+
+			if (weapon == null)
+			{
+				weapon = wielder.Weapon as BaseWeapon ?? Fists;
+			}
+
+			if (weapon == null)
+			{
+				return null;
+			}
+
+			weapon.GetBaseDamageRange(wielder, out minVal, out maxVal);
+
+			if (wielder is BaseCreature)
+			{
+				if (((BaseCreature)wielder).DamageMin >= 0 || (weapon is Fists && !wielder.Body.IsHuman))
+				{
+					minRaw = minVal;
+					maxRaw = maxVal;
+					return weapon;
+				}
+			}
+
+			minRaw = weapon.MinDamage;
+			maxRaw = weapon.MaxDamage;
+
+			if (Core.AOS)
+			{
+				minVal = (int)weapon.ScaleDamageAOS(wielder, minVal, false);
+				maxVal = (int)weapon.ScaleDamageAOS(wielder, maxVal, false);
+			}
+			else
+			{
+				minVal = (int)weapon.ScaleDamageOld(wielder, minVal, false);
+				maxVal = (int)weapon.ScaleDamageOld(wielder, maxVal, false);
+			}
+
+			return weapon;
+		}
+		#endregion
+
 		private string m_EngravedText;
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -720,13 +799,6 @@ namespace Server.Items
 			{
 				list.Add(new UnBlessEntry(from, this));
 			}
-
-			XmlLevelItem levitem = XmlAttach.FindAttachment(this, typeof(XmlLevelItem)) as XmlLevelItem;
-
-			if (levitem != null)
-			{
-				list.Add(new LevelInfoEntry(from, this, AttributeCategory.Melee));
-			}
 		}
 
 		public override void OnAfterDuped(Item newItem)
@@ -1093,6 +1165,8 @@ namespace Server.Items
 
 			XmlAttach.CheckOnEquip(this, from);
 
+            InDoubleStrike = false;
+
 			return true;
 		}
 
@@ -1246,16 +1320,27 @@ namespace Server.Items
 					sk = Skill;
 				}
 			}
-			else
-			{
-				sk = Skill;
+            else if (m_ExtendedWeaponAttributes.MysticWeapon != 0 || Enhancement.GetValue(m, ExtendedWeaponAttribute.MysticWeapon) > 0)
+            {
+                if (m.Skills[SkillName.Mysticism].Value > m.Skills[Skill].Value)
+                {
+                    sk = SkillName.Mysticism;
+                }
+                else
+                {
+                    sk = Skill;
+                }
+            }
+            else
+            {
+                sk = Skill;
 
-				if (sk != SkillName.Wrestling && !m.Player && !m.Body.IsHuman &&
-					m.Skills[SkillName.Wrestling].Value > m.Skills[sk].Value)
-				{
-					sk = SkillName.Wrestling;
-				}
-			}
+                if (sk != SkillName.Wrestling && !m.Player && !m.Body.IsHuman &&
+                    m.Skills[SkillName.Wrestling].Value > m.Skills[sk].Value)
+                {
+                    sk = SkillName.Wrestling;
+                }
+            }
 
 			return sk;
 		}
@@ -1300,33 +1385,6 @@ namespace Server.Items
 
 			int bonus = GetHitChanceBonus();
 
-			#region Stygian Abyss
-            int hciMod = 0;
-            int dciMod = 0;
-
-			if (atkWeapon is BaseThrown)
-			{
-                int min = ((BaseThrown)atkWeapon).MinThrowRange;
-                double dist = attacker.GetDistanceToSqrt(defender);
-
-                //Distance malas
-                if (attacker.InRange(defender, 1))	//Close Quarters
-                    bonus -= (12 - Math.Min(12, ((int)attacker.Skills[SkillName.Throwing].Value + attacker.RawDex) / 20));
-                else if (dist < min) 				//too close
-                    bonus -= 12;
-
-                //shield penalty
-                BaseShield shield = attacker.FindItemOnLayer(Layer.TwoHanded) as BaseShield;
-
-                if (shield != null)
-                {
-                    double skill = Math.Max(1.0, attacker.Skills[SkillName.Parry].Value);
-
-                    hciMod = (int)Math.Min(50, 1200 / skill);
-                }
-			}
-			#endregion
-
 			if (Core.AOS)
 			{
                 if (atkValue <= -20.0)
@@ -1336,12 +1394,6 @@ namespace Server.Items
                     defValue = -19.9;
 
                 bonus += AosAttributes.GetValue(attacker, AosAttribute.AttackChance);
-
-                #region SA
-                // this value will not be shown on the status bar
-                if (hciMod > 0)
-                    bonus -= (int)(((double)bonus * ((double)hciMod / 100)));
-                #endregion
 
                 //SA Gargoyle cap is 50, else 45
                 bonus = Math.Min(attacker.Race == Race.Gargoyle ? 50 : 45, bonus);
@@ -1354,25 +1406,6 @@ namespace Server.Items
 
                 if (info != null && info.Defender == defender)
                     bonus -= info.DefenseChanceMalus;
-
-                #region SA
-                // Like HitChance, this value is not shown in the status window
-                if (defWeapon is BaseThrown)
-                {
-                    BaseShield shield = defender.FindItemOnLayer(Layer.TwoHanded) as BaseShield;
-
-                    if (shield != null)
-                    {
-                        double skill = Math.Max(1.0, defender.Skills[SkillName.Parry].Value);
-
-                        dciMod = (int)Math.Min(50, 1200 / skill);
-                    }
-                }
-
-                if (dciMod > 0)
-                    bonus -= (int)(((double)bonus * ((double)dciMod / 100)));
-
-                #endregion
 
                 int max = 45 + BaseArmor.GetRefinedDefenseChance(defender);
 
@@ -1404,10 +1437,48 @@ namespace Server.Items
 
 			chance *= 1.0 + ((double)bonus / 100);
 
-			if (Core.AOS && chance < 0.02)
-			{
-				chance = 0.02;
-			}
+            if (Core.SA)
+            {
+                if (atkWeapon is BaseThrown)
+                {
+                    //Distance malas
+                    if (attacker.InRange(defender, 1))	//Close Quarters
+                    {
+                        chance -= (.12 - (double)Math.Min(12, (attacker.Skills[SkillName.Throwing].Value + (double)attacker.RawDex) / 20) / 10);
+                    }
+                    else if (attacker.GetDistanceToSqrt(defender) < ((BaseThrown)atkWeapon).MinThrowRange) 	//too close
+                    {
+                        chance -= .12;
+                    }
+
+                    //shield penalty
+                    BaseShield shield = attacker.FindItemOnLayer(Layer.TwoHanded) as BaseShield;
+
+                    if (shield != null)
+                    {
+                        double malus = Math.Min(90, 1200 / Math.Max(1.0, attacker.Skills[SkillName.Parry].Value));
+
+                        chance = chance - (chance * (malus / 100));
+                    }
+                }
+
+                if (defWeapon is BaseThrown)
+                {
+                    BaseShield shield = defender.FindItemOnLayer(Layer.TwoHanded) as BaseShield;
+
+                    if (shield != null)
+                    {
+                        double malus = Math.Min(90, 1200 / Math.Max(1.0, defender.Skills[SkillName.Parry].Value));
+
+                        chance = chance + (chance * (malus / 100));
+                    }
+                }
+            }
+
+            if (Core.AOS && chance < 0.02)
+            {
+                chance = 0.02;
+            }
 
             if (Core.AOS && m_AosWeaponAttributes.MageWeapon > 0 && attacker.Skills[SkillName.Magery].Value > atkSkill.Value)
                 return attacker.CheckSkill(SkillName.Magery, chance);
@@ -1919,7 +1990,7 @@ namespace Server.Items
 				damage = armor.OnHit(this, damage);
 			}
 
-			int virtualArmor = defender.VirtualArmor + defender.VirtualArmorMod;
+			var virtualArmor = defender.ArmorRating;
 
 			damage -= XmlAttach.OnArmorHit(attacker, defender, armorItem, this, damage);
 			damage -= XmlAttach.OnArmorHit(attacker, defender, shield, this, damage);
@@ -2455,8 +2526,6 @@ namespace Server.Items
 
                 ImmolatingWeaponSpell.DoDelayEffect(attacker, defender);
 
-				AttuneWeaponSpell.TryAbsorb(defender, ref d);
-
 				if (d > 0)
 				{
 					defender.Damage(d);
@@ -2615,15 +2684,18 @@ namespace Server.Items
 						int toHeal = Utility.RandomMinMax(0, (int)(AOS.Scale(damageGiven, lifeLeech) * 0.3));
 
                         if (defender is BaseCreature && ((BaseCreature)defender).TaintedLifeAura)
-                        {
-                            AOS.Damage(attacker, defender, toHeal, false, 0, 0, 0, 0, 0, 0, 100, false, false, false);
+                        {                            
+                            AOS.Damage(attacker, defender, toHeal, false, 0, 0, 0, 0, 0, 0, 100, false, false, false);                            
                             attacker.SendLocalizedMessage(1116778); //The tainted life force energy damages you as your body tries to absorb it.
                         }
                         else
                         {
                             attacker.Hits += toHeal;
                         }
-					}
+
+                        Effects.SendPacket(defender.Location, defender.Map, new ParticleEffect(EffectType.FixedFrom, defender.Serial, Serial.Zero, 0x377A, defender.Location, defender.Location, 1, 15, false, false, 1926, 0, 0, 9502, 1, defender.Serial, 16, 0));
+                        Effects.SendPacket(defender.Location, defender.Map, new ParticleEffect(EffectType.FixedFrom, defender.Serial, Serial.Zero, 0x3728, defender.Location, defender.Location, 1, 12, false, false, 1963, 0, 0, 9042, 1, defender.Serial, 16, 0));
+                    }
 
                     if (toHealCursedWeaponSpell != 0 && !(defender is BaseCreature && ((BaseCreature)defender).TaintedLifeAura))
                     {
@@ -3138,39 +3210,26 @@ namespace Server.Items
 				return;
 			}
 
-			var list = new List<Mobile>();
+            var list = SpellHelper.AcquireIndirectTargets(from, from, from.Map, 5);
 
-            IPooledEnumerable eable = from.GetMobilesInRange(5);
+			var count = 0;
 
-			foreach (Mobile m in eable)
-			{
-				if (from != m && defender != m && SpellHelper.ValidIndirectTarget(from, m) && from.CanBeHarmful(m, false) &&
-					(!Core.ML || from.InLOS(m)))
-				{
-					list.Add(m);
-				}
-			}
-
-            eable.Free();
-
-            if (list.Count > 0)
+            foreach(var m in list)
             {
-                Effects.PlaySound(from.Location, map, sound);
+				++count;
 
-                for (int i = 0; i < list.Count; ++i)
-                {
-                    Mobile m = list[i];
+                from.DoHarmful(m, true);
+                m.FixedEffect(0x3779, 1, 15, hue, 0);
+                AOS.Damage(m, from, (int)(damageGiven / 2), phys, fire, cold, pois, nrgy, Server.DamageType.SpellAOE);
+            }
 
-                    from.DoHarmful(m, true);
-                    m.FixedEffect(0x3779, 1, 15, hue, 0);
-                    AOS.Damage(m, from, (int)(damageGiven / 2), phys, fire, cold, pois, nrgy, Server.DamageType.SpellAOE);
-                }
+			if (count > 0)
+			{
+				Effects.PlaySound(from.Location, map, sound);
             }
 
             if (ProcessingMultipleHits)
                 BlockHitEffects = true;
-
-            ColUtility.Free(list);
 		}
 		#endregion
 
@@ -4907,7 +4966,7 @@ namespace Server.Items
             {
                 if (WeaponAttributes.HitLeechHits > 0 || WeaponAttributes.HitLeechMana > 0)
                 {
-                    WeaponAttributes.ScaleLeech(this, Attributes.WeaponSpeed);
+                    WeaponAttributes.ScaleLeech(Attributes.WeaponSpeed);
                 }
             }
 
@@ -5026,17 +5085,6 @@ namespace Server.Items
             {
                 m_UsesRemaining = 150;
             }
-			// Xml Spawner XmlSockets - SOF
-			// mod to randomly add sockets and socketability features to armor. These settings will yield
-			// 2% drop rate of socketed/socketable items
-			// 0.1% chance of 5 sockets
-			// 0.5% of 4 sockets
-			// 3% chance of 3 sockets
-			// 15% chance of 2 sockets
-			// 50% chance of 1 socket
-			// the remainder will be 0 socket (31.4% in this case)
-			if(XmlSpawner.SocketsEnabled)
-				XmlSockets.ConfigureRandom(this, 2.0, 0.1, 0.5, 3.0, 15.0, 50.0);
 		}
 
 		public BaseWeapon(Serial serial)
@@ -5338,18 +5386,6 @@ namespace Server.Items
             {
                 list.Add(1153213, OwnerName);
             }
-
-			XmlLevelItem levitem = XmlAttach.FindAttachment(this, typeof(XmlLevelItem)) as XmlLevelItem;
-
-			if (levitem != null)
-			{
-				list.Add(1060658, "Level\t{0}", levitem.Level);
-
-				if (LevelItems.DisplayExpProp)
-				{
-					list.Add(1060659, "Experience\t{0}", levitem.Experience);
-				}
-			}
 
             if (m_Crafter != null)
             {

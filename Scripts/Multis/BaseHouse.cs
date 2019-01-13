@@ -15,6 +15,7 @@ using Server.Network;
 using Server.Regions;
 using Server.Targeting;
 using Server.Engines.Auction;
+using Server.Engines.NewMagincia;
 
 namespace Server.Multis
 {
@@ -189,13 +190,28 @@ namespace Server.Multis
             return (checkTime > houseTime);
         }
 
+        private DecayType _CurrentDecay;
+
         public virtual bool CanDecay
         {
             get
             {
-                DecayType type = DecayType;
+                var decay = DecayType;
 
-                return (type == DecayType.Condemned || type == DecayType.ManualRefresh);
+                if (!World.Loading)
+                {
+                    if (_CurrentDecay != DecayType.Condemned)
+                    {
+                        if (decay == DecayType.Condemned)
+                        {
+                            OnCondemned();
+                        }
+                    }
+
+                    _CurrentDecay = decay;
+                }
+
+                return (decay == DecayType.Condemned || decay == DecayType.ManualRefresh);
             }
         }
 
@@ -297,15 +313,9 @@ namespace Server.Multis
 
         public virtual void KillVendors()
         {
-            List<Mobile> list = new List<Mobile>(PlayerVendors);
+            PlayerVendors.OfType<PlayerVendor>().IterateReverse(o => o.Destroy(true));
 
-            foreach (var vendor in list.OfType<PlayerVendor>())
-                vendor.Destroy(true);
-
-            list = new List<Mobile>(PlayerBarkeepers);
-
-            foreach (PlayerBarkeeper barkeeper in list)
-                barkeeper.Delete();
+            PlayerBarkeepers.IterateReverse(o => o.Delete());
         }
 
         public virtual void Decay_Sandbox()
@@ -472,14 +482,15 @@ namespace Server.Multis
         private Type[] _NoItemCountTable = new Type[]
         {
             typeof(Server.Engines.Plants.SeedBox),  typeof(GardenShedAddon),
-            typeof(GardenShedBarrel),               typeof(BaseSpecialScrollBook),    
+            typeof(GardenShedBarrel),               typeof(BaseSpecialScrollBook),
+            typeof(JewelryBox)
         };
 
         private Type[] _NoDecayItems = new Type[]
         {
             typeof(BaseBoard),                      typeof(Aquarium),
             typeof(FishBowl),                       typeof(BaseSpecialScrollBook),
-            typeof(Server.Engines.Plants.SeedBox)
+            typeof(Server.Engines.Plants.SeedBox),  typeof(JewelryBox),
         };
 
         // Not Included Storage
@@ -1932,7 +1943,7 @@ namespace Server.Multis
                 bool valid = m_House != null && Sextant.Format(m_House.Location, m_House.Map, ref xLong, ref yLat, ref xMins, ref yMins, ref xEast, ref ySouth);
 
                 if (valid)
-                    location = String.Format("{0}° {1}'{2}, {3}° {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
+                    location = String.Format("{0}Â° {1}'{2}, {3}Â° {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
                 else
                     location = "unknown";
 
@@ -2007,6 +2018,8 @@ namespace Server.Multis
                 m_House.CoOwners.Clear();
                 m_House.ChangeLocks(to);
                 m_House.LastTraded = DateTime.UtcNow;
+
+                m_House.OnTransfer();
             }
         }
 
@@ -2155,6 +2168,30 @@ namespace Server.Multis
             else
             {
                 from.SendLocalizedMessage(501384); // Only a player can own a house!
+            }
+        }
+
+        public virtual void OnTransfer()
+        {
+            foreach (var vendor in PlayerVendors.OfType<RentedVendor>())
+            {
+                vendor.RenterRenew = false;
+                vendor.LandlordRenew = false;
+            }
+        }
+
+        public void OnCondemned()
+        {
+            foreach (var vendor in PlayerVendors.OfType<RentedVendor>())
+            {
+                string name = Sign == null || Sign.Name == null ? "An Unnamed House" : Sign.Name;
+
+                var message = new NewMaginciaMessage(null, new TextDefinition(1154338), String.Format("{0}\t{1}", vendor.ShopName, name));
+                /* Your rental vendor named ~1_VENDOR~ located in house: ~2_HOUSE~ is in danger of deletion. 
+                 * This house has been condemned and you should remove everything on your vendor AS SOON AS 
+                 * POSSIBLE or risk possible deletion.*/
+
+                MaginciaLottoSystem.SendMessageTo(vendor.Owner, message);
             }
         }
 
@@ -2845,7 +2882,9 @@ namespace Server.Multis
         {
             base.Serialize(writer);
 
-            writer.Write((int)21); // version
+            writer.Write((int)22); // version
+
+            writer.Write((int)_CurrentDecay);
 
             writer.WriteItemList(m_Carpets, true);
 
@@ -2974,6 +3013,11 @@ namespace Server.Multis
 
             switch (version)
             {
+                case 22:
+                    {
+                        _CurrentDecay = (DecayType)reader.ReadInt();
+                        goto case 21;
+                    }
                 case 21: // version 21, version insertion for secureinfo
                 case 20: // version 20, Addons resulted in version 18 bug added to dictionary
                 case 19: // version 19, Visit change to dictionary
@@ -3277,8 +3321,8 @@ namespace Server.Multis
                 if (RelocatedEntities.Count > 0)
                     Timer.DelayCall(TimeSpan.Zero, new TimerCallback(RestoreRelocatedEntities));
 
-                if (m_Owner == null && m_Friends.Count == 0 && m_CoOwners.Count == 0)
-                    Timer.DelayCall(TimeSpan.FromSeconds(10.0), new TimerCallback(Delete));
+                //if (m_Owner == null && m_Friends.Count == 0 && m_CoOwners.Count == 0)
+                //    Timer.DelayCall(TimeSpan.FromSeconds(10.0), new TimerCallback(Delete));
             }
 
             if (version == 19)
@@ -3824,6 +3868,11 @@ namespace Server.Multis
 
             CheckUnregisteredAddons();
 
+            foreach (var m in GetMobiles().Where(m => m is Mannequin || m is Steward))
+            {
+                Mannequin.ForceRedeed(m);
+            }
+
             if (m_Region != null)
             {
                 m_Region.Unregister();
@@ -3973,10 +4022,7 @@ namespace Server.Multis
                 }
             }
 
-            List<VendorInventory> inventories = new List<VendorInventory>(VendorInventories);
-
-            foreach (VendorInventory inventory in inventories)
-                inventory.Delete();
+            VendorInventories.IterateReverse(o => o.Delete());
 
             if (MovingCrate != null)
                 MovingCrate.Delete();

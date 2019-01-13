@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Items;
@@ -9,6 +10,7 @@ using Server.Misc;
 using Server.Multis;
 using Server.Prompts;
 using Server.Targeting;
+using Server.Accounting;
 
 namespace Server.Mobiles
 {
@@ -176,7 +178,7 @@ namespace Server.Mobiles
             if (!base.CheckItemUse(from, item))
                 return false;
 
-            if (item is Container || item is Engines.BulkOrders.BulkOrderBook)
+            if (item is Container || item is Engines.BulkOrders.BulkOrderBook || item is RecipeBook)
                 return true;
 
             from.SendLocalizedMessage(500447); // That is not accessible.
@@ -748,7 +750,16 @@ namespace Server.Mobiles
                             House.MovingCrate = new MovingCrate(House);
 
                         if (HoldGold > 0)
-                            Banker.Deposit(House.MovingCrate, HoldGold);
+                        {
+                            if (AccountGold.Enabled)
+                            {
+                                Banker.Deposit(Owner, HoldGold, true);
+                            }
+                            else
+                            {
+                                Banker.Deposit(House.MovingCrate, HoldGold);
+                            }
+                        }
 
                         foreach (Item item in list)
                         {
@@ -773,7 +784,16 @@ namespace Server.Mobiles
                     Container backpack = new Backpack();
 
                     if (HoldGold > 0)
-                        Banker.Deposit(backpack, HoldGold);
+                    {
+                        if (AccountGold.Enabled && Owner != null)
+                        {
+                            Banker.Deposit(Owner, HoldGold, true);
+                        }
+                        else
+                        {
+                            Banker.Deposit(backpack, HoldGold);
+                        }
+                    }
 
                     foreach (Item item in list)
                     {
@@ -1069,13 +1089,8 @@ namespace Server.Mobiles
                 return 0;
             }
 
-            int amountGiven = Banker.DepositUpTo(to, amount);
+            int amountGiven = Banker.DepositUpTo(to, amount, amount > 0);
             HoldGold -= amountGiven;
-
-            if (amountGiven > 0)
-            {
-                to.SendLocalizedMessage(1060397, amountGiven.ToString()); // ~1_AMOUNT~ gold has been deposited into your bank box.
-            }
 
             if (amountGiven == 0)
             {
@@ -1594,7 +1609,7 @@ namespace Server.Mobiles
                         else
                             setPrice = true;
                     }
-                    else if (item is BaseBook || item is Engines.BulkOrders.BulkOrderBook)
+                    else if (item is BaseBook || item is Engines.BulkOrders.BulkOrderBook || item is RecipeBook)
                     {
                         setPrice = true;
                     }

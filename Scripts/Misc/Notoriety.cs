@@ -6,7 +6,6 @@ using Server.Engines.ArenaSystem;
 using Server.Engines.PartySystem;
 using Server.Engines.Quests;
 using Server.Engines.VvV;
-using Server.Engines.XmlSpawner2;
 using Server.Factions;
 using Server.Guilds;
 using Server.Items;
@@ -41,7 +40,7 @@ namespace Server.Misc
 		{
 			None,
 			Peaceful,
-			Waring
+			Warring
 		}
 
 		private static GuildStatus GetGuildStatus(Mobile m)
@@ -52,12 +51,12 @@ namespace Server.Misc
 			if (((Guild)m.Guild).Enemies.Count == 0 && m.Guild.Type == GuildType.Regular)
 				return GuildStatus.Peaceful;
 
-			return GuildStatus.Waring;
+			return GuildStatus.Warring;
 		}
 
 		private static bool CheckBeneficialStatus(GuildStatus from, GuildStatus target)
 		{
-			if (from == GuildStatus.Waring || target == GuildStatus.Waring)
+			if (from == GuildStatus.Warring || target == GuildStatus.Warring)
 				return false;
 
 			return true;
@@ -82,12 +81,9 @@ namespace Server.Misc
 				}
 			}
 
-			if (ViceVsVirtueSystem.Enabled)
+            if (ViceVsVirtueSystem.Enabled && ViceVsVirtueSystem.IsEnemy(from, target))
 			{
-				if (ViceVsVirtueSystem.IsEnemy(from, target))
-				{
-					return false;
-				}
+                return false;
 			}
 			#endregion
 
@@ -104,9 +100,6 @@ namespace Server.Misc
 
 			if (target is BaseCreature && !((BaseCreature)target).Controlled)
 				return false; // Players cannot heal uncontrolled mobiles
-
-			if (XmlPoints.AreInAnyGame(target))
-				return XmlPoints.AreTeamMembers(from, target);
 
 			if (from is PlayerMobile && ((PlayerMobile)from).Young && target is BaseCreature &&
 				((BaseCreature)target).Controlled)
@@ -169,9 +162,6 @@ namespace Server.Misc
 				return true; // Uncontrolled NPCs are only restricted by the young system
 			}
 
-			if (XmlPoints.AreChallengers(from, target))
-				return true;
-
 			var fromGuild = GetGuildFor(from.Guild as Guild, from);
 			var targetGuild = GetGuildFor(target.Guild as Guild, target);
 
@@ -180,6 +170,9 @@ namespace Server.Misc
 				if (fromGuild == targetGuild || fromGuild.IsAlly(targetGuild) || fromGuild.IsEnemy(targetGuild))
 					return true; // Guild allies or enemies can be harmful
 			}
+
+            if (ViceVsVirtueSystem.Enabled && ViceVsVirtueSystem.EnhancedRules && ViceVsVirtueSystem.IsEnemy(from, damageable))
+                return true;
 
 			if (target is BaseCreature)
 			{
@@ -264,7 +257,7 @@ namespace Server.Misc
 						return Notoriety.Enemy;
 				}
 
-				if (ViceVsVirtueSystem.Enabled && ViceVsVirtueSystem.IsEnemy(source, cretOwner) && source.Map == Faction.Facet)
+				if (ViceVsVirtueSystem.Enabled && ViceVsVirtueSystem.IsEnemy(source, cretOwner) && (ViceVsVirtueSystem.EnhancedRules || source.Map == Faction.Facet))
 					return Notoriety.Enemy;
 
 				if (CheckHouseFlag(source, cretOwner, target.Location, target.Map))
@@ -434,12 +427,6 @@ namespace Server.Misc
 			if (target.Criminal)
 				return Notoriety.Criminal;
 
-			if (XmlPoints.AreTeamMembers(source, target))
-				return Notoriety.Ally;
-
-			if (XmlPoints.AreChallengers(source, target))
-				return Notoriety.Enemy;
-
 			var sourceGuild = GetGuildFor(source.Guild as Guild, source);
 			var targetGuild = GetGuildFor(target.Guild as Guild, target);
 
@@ -464,7 +451,7 @@ namespace Server.Misc
 					return Notoriety.Enemy;
 			}
 
-			if (ViceVsVirtueSystem.Enabled && ViceVsVirtueSystem.IsEnemy(source, damageable) && source.Map == Faction.Facet)
+			if (ViceVsVirtueSystem.Enabled && ViceVsVirtueSystem.IsEnemy(source, target) && (ViceVsVirtueSystem.EnhancedRules || source.Map == Faction.Facet))
 				return Notoriety.Enemy;
 
 			if (Stealing.ClassicMode && target is PlayerMobile && ((PlayerMobile)target).PermaFlags.Contains(source))

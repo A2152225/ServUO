@@ -11,7 +11,6 @@ using Server.Engines.CannedEvil;
 using Server.Engines.CityLoyalty;
 using Server.Engines.Craft;
 using Server.Engines.Help;
-using Server.Engines.MyRunUO;
 using Server.Engines.PartySystem;
 using Server.Engines.Points;
 using Server.Engines.Quests;
@@ -87,14 +86,12 @@ namespace Server.Mobiles
         HasValiantStatReward = 0x20000000,
         RefuseTrades = 0x40000000,
         DisabledPvpWarning = 0x80000000,
-        //CanBuyCarpets = 0x100000000,
-        //VoidPool = 0x200000000,
     }
 
     [Flags]
     public enum ExtendedPlayerFlag
     {
-        HideTownCrierGreetingGump   = 0x00000001,
+        Unused                      = 0x00000001,
         ToggleStoneOnly             = 0x00000002,
         CanBuyCarpets               = 0x00000004,
         VoidPool                    = 0x00000008,
@@ -245,20 +242,38 @@ namespace Server.Mobiles
 
             if (!Flying)
             {
-                if (this.Spell is Spell)
-                    ((Spell)this.Spell).Disturb(DisturbType.Unspecified, false, false);
+                if (BeginAction(typeof(FlySpell)))
+                {
+                    if (this.Spell is Spell)
+                        ((Spell)this.Spell).Disturb(DisturbType.Unspecified, false, false);
 
-                Spell spell = new FlySpell(this);
-                spell.Cast();
+                    Spell spell = new FlySpell(this);
+                    spell.Cast();
+
+                    Timer.DelayCall(TimeSpan.FromSeconds(3), () => EndAction(typeof(FlySpell)));
+                }
+                else
+                {
+                    LocalOverheadMessage(MessageType.Regular, 0x3B2, 1075124); // You must wait before casting that spell again.
+                }
             }
             else if (IsValidLandLocation(Location, Map))
             {
-                if (this.Spell is Spell)
-                    ((Spell)this.Spell).Disturb(DisturbType.Unspecified, false, false);
+                if (BeginAction(typeof(FlySpell)))
+                {
+                    if (this.Spell is Spell)
+                        ((Spell)this.Spell).Disturb(DisturbType.Unspecified, false, false);
 
-                Animate(AnimationType.Land, 0);
-                Flying = false;
-                BuffInfo.RemoveBuff(this, BuffIcon.Fly);
+                    Animate(AnimationType.Land, 0);
+                    Flying = false;
+                    BuffInfo.RemoveBuff(this, BuffIcon.Fly);
+
+                    Timer.DelayCall(TimeSpan.FromSeconds(3), () => EndAction(typeof(FlySpell)));
+                }
+                else
+                {
+                    LocalOverheadMessage(MessageType.Regular, 0x3B2, 1075124); // You must wait before casting that spell again.
+                }
             }
             else
                 LocalOverheadMessage(MessageType.Regular, 0x3B2, 1113081); // You may not land here.
@@ -1020,17 +1035,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		public bool UseOwnFilter { get { return GetFlag(PlayerFlag.UseOwnFilter); } set { SetFlag(PlayerFlag.UseOwnFilter, value); } }
 
 		[CommandProperty(AccessLevel.GameMaster)]
-		public bool PublicMyRunUO
-		{
-			get { return GetFlag(PlayerFlag.PublicMyRunUO); }
-			set
-			{
-				SetFlag(PlayerFlag.PublicMyRunUO, value);
-				InvalidateMyRunUO();
-			}
-		}
-
-		[CommandProperty(AccessLevel.GameMaster)]
 		public bool AcceptGuildInvites { get { return GetFlag(PlayerFlag.AcceptGuildInvites); } set { SetFlag(PlayerFlag.AcceptGuildInvites, value); } }
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -1065,13 +1069,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         {
             get { return GetFlag(ExtendedPlayerFlag.VoidPool); }
             set { SetFlag(ExtendedPlayerFlag.VoidPool, value); }
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool HideTownCrierGreetingGump
-        {
-            get { return GetFlag(ExtendedPlayerFlag.HideTownCrierGreetingGump); }
-            set { SetFlag(ExtendedPlayerFlag.HideTownCrierGreetingGump, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -1433,9 +1430,21 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             from.TargetLocked = true;
 
+            if (e.SkillID == 35)
+            {
+                AnimalTaming.DisableMessage = true;
+                AnimalTaming.DeferredTarget = false;
+            }
+
             if (from.UseSkill(e.SkillID) && from.Target != null)
             {
                 from.Target.Invoke(from, target);
+            }
+
+            if (e.SkillID == 35)
+            {
+                AnimalTaming.DeferredTarget = true;
+                AnimalTaming.DisableMessage = false;
             }
 
             from.TargetLocked = false;
@@ -1532,26 +1541,37 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             }
 
             int max = base.GetMaxResistance(type);
+            int refineBonus = BaseArmor.GetRefinedResist(this, type);
 
-            #region SA
-            max += Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(this);
-            #endregion
+            if (refineBonus != 0)
+            {
+                max += refineBonus;
+            }
+            else
+            {
+                max += Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(this);
+            }
 
-            max += BaseArmor.GetRefinedResist(this, type);
+            if (Core.ML && Race == Race.Elf && type == ResistanceType.Energy)
+            {
+                max += 5; //Intended to go after the 60 max from curse
+            }
 
             if (type != ResistanceType.Physical && 60 < max && Spells.Fourth.CurseSpell.UnderEffect(this))
             {
+<<<<<<< HEAD
 
                 max = (int)(base.GetMaxResistance(type)*.8); //was 60;
+=======
+                max -= 10;
+                //max = 60;
+>>>>>>> upstream/master
             }
 
             if ((type == ResistanceType.Fire || type == ResistanceType.Poison) && CorpseSkinSpell.IsUnderEffects(this))
             {
                 max = CorpseSkinSpell.GetResistMalus(this);
             }
-
-            if (Core.ML && Race == Race.Elf && type == ResistanceType.Energy)
-                max += 5; //Intended to go after the 60 max from curse
 
             return max;
         }
@@ -2161,11 +2181,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				ValidateEquipment();
 			}
 
-			if ((flag & (MobileDelta.Name | MobileDelta.Hue)) != 0)
-			{
-				InvalidateMyRunUO();
-			}
-
             InvalidateProperties();
 		}
 
@@ -2183,6 +2198,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 		{
             PlayerMobile pm = e.Mobile as PlayerMobile;
+
+			if(pm == null)
+				return;
 
             #region Scroll of Alacrity
             if (pm.AcceleratedStart > DateTime.UtcNow)
@@ -2321,12 +2339,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		{
 			if (AccessLevel < AccessLevel.GameMaster && item.IsChildOf(Backpack))
 			{
-				int maxWeight = WeightOverloading.GetMaxWeight(this);
 				int curWeight = BodyWeight + TotalWeight;
 
-				if (curWeight > maxWeight)
+                if (curWeight > MaxWeight)
 				{
-					SendLocalizedMessage(1019035, true, String.Format(" : {0} / {1}", curWeight, maxWeight));
+                    SendLocalizedMessage(1019035, true, String.Format(" : {0} / {1}", curWeight, MaxWeight));
 				}
 			}
 		}
@@ -2355,8 +2372,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                     if (aggressiveMaster is PlayerMobile || (aggressiveMaster is BaseCreature && !((BaseCreature)aggressiveMaster).IsMonster))
                     {
-                        BuffInfo.AddBuff(this, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, AttackMessage.CombatHeatDelay, this, true));
-                        BuffInfo.AddBuff(aggressiveMaster, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, AttackMessage.CombatHeatDelay, aggressiveMaster, true));
+                        BuffInfo.AddBuff(this, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, Aggression.CombatHeatDelay, this, true));
+                        BuffInfo.AddBuff(aggressiveMaster, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, Aggression.CombatHeatDelay, aggressiveMaster, true));
                     }
                 }
             }
@@ -2366,7 +2383,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         {
             base.DoHarmful(damageable, indirect);
 
-            if (ViceVsVirtueSystem.Enabled && Map == Faction.Facet && damageable is Mobile)
+            if (ViceVsVirtueSystem.Enabled && (ViceVsVirtueSystem.EnhancedRules || Map == Faction.Facet) && damageable is Mobile)
             {
                 ViceVsVirtueSystem.CheckHarmful(this, (Mobile)damageable);
             }
@@ -2376,7 +2393,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         {
             base.DoBeneficial(target);
 
-            if (ViceVsVirtueSystem.Enabled && Map == Faction.Facet && target != null)
+            if (ViceVsVirtueSystem.Enabled && (ViceVsVirtueSystem.EnhancedRules || Map == Faction.Facet) && target != null)
             {
                 ViceVsVirtueSystem.CheckBeneficial(this, target);
             }
@@ -2457,8 +2474,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				CheckLightLevels(false);
 			}
-
-			InvalidateMyRunUO();
 		}
 
         private BaseWeapon m_LastWeapon;
@@ -2486,8 +2501,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				CheckLightLevels(false);
 			}
-
-			InvalidateMyRunUO();
 		}
 
 		public override double ArmorRating
@@ -2549,8 +2562,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					}
 
                     // Skill Masteries
-                    if(Core.TOL)
+                    if (Core.TOL)
+                    {
                         strOffs += ToughnessSpell.GetHPBonus(this);
+                        strOffs += InvigorateSpell.GetHPBonus(this);
+                    }
 				}
 				else
 				{
@@ -2766,9 +2782,45 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
         public override void OnHeal(ref int amount, Mobile from)
         {
+            base.OnHeal(ref amount, from);
+
+            if (from == null)
+                return;
+
             BestialSetHelper.OnHeal(this, from, ref amount);
 
-            base.OnHeal(ref amount, from);
+            if (Core.SA && amount > 0 && from != null && from != this)
+            {
+                for (int i = Aggressed.Count - 1; i >= 0; i--)
+                {
+                    var info = Aggressed[i];
+
+                    if (info.Defender.InRange(Location, Core.GlobalMaxUpdateRange) && info.Defender.DamageEntries.Any(de => de.Damager == this))
+                    {
+                        info.Defender.RegisterDamage(amount, from);
+                    }
+
+                    if (info.Defender.Player && from.CanBeHarmful(info.Defender, false))
+                    {
+                        from.DoHarmful(info.Defender, true);
+                    }
+                }
+
+                for (int i = Aggressors.Count - 1; i >= 0; i--)
+                {
+                    var info = Aggressors[i];
+
+                    if (info.Attacker.InRange(Location, Core.GlobalMaxUpdateRange) && info.Attacker.DamageEntries.Any(de => de.Damager == this))
+                    {
+                        info.Attacker.RegisterDamage(amount, from);
+                    }
+
+                    if (info.Attacker.Player && from.CanBeHarmful(info.Attacker, false))
+                    {
+                        from.DoHarmful(info.Attacker, true);
+                    }
+                }
+            }
         }
 
 		public override bool AllowItemUse(Item item)
@@ -4051,6 +4103,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 		protected override void OnMapChange(Map oldMap)
 		{
+<<<<<<< HEAD
 
 			 /* Begin UltimaLive Mod */
 			if (BlockQuery != null)
@@ -4059,6 +4112,10 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 			/* End UltimaLive Mod */
   
+=======
+            ViceVsVirtueSystem.OnMapChange(this);
+
+>>>>>>> upstream/master
             if (NetState != null && NetState.IsEnhancedClient)
             {
                 Waypoints.OnMapChange(this, oldMap);
@@ -4116,6 +4173,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 		public override void OnDamage(int amount, Mobile from, bool willKill)
 		{
+            if (Core.SA && from != null)
+            {
+                from.RegisterDamage(amount, this);
+            }
+
 			int disruptThreshold;
 
 			if (!Core.AOS)
@@ -4150,8 +4212,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				Confidence.StopRegenerating(this);
 			}
-
-			WeightOverloading.FatigueOnDamage(this, amount);
 
 			if (m_ReceivedHonorContext != null)
 			{
@@ -4397,12 +4457,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			if (InsuranceEnabled && item.Insured)
 			{
-				if (XmlPoints.InsuranceIsFree(this, m_InsuranceAward))
-				{
-					item.PayedInsurance = true;
-					return true;
-				}
-
                 int insuredAmount = GetInsuranceCost(item);
 
 				if (AutoRenewInsurance)
@@ -4598,10 +4652,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				}
 			}
 
-			if (!XmlPoints.AreChallengers(this, killer))
-			{
-				Faction.HandleDeath(this, killer);
-			}
+			Faction.HandleDeath(this, killer);
 
 			Guilds.Guild.HandleDeath(this, killer);
             
@@ -4804,8 +4855,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			m_GuildRank = RankDefinition.Lowest;
 
 			m_ChampionTitles = new ChampionTitleInfo();
-
-			InvalidateMyRunUO();
 		}
 
 		public override bool MutateSpeech(List<Mobile> hears, ref string text, ref object context)
@@ -4918,7 +4967,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 
             //Skill Masteries
-            if (SkillMasterySpell.UnderPartyEffects(this, typeof(Spells.SkillMasteries.ResilienceSpell)) && 0.25 > Utility.RandomDouble())
+            if (Spells.SkillMasteries.ResilienceSpell.UnderEffects(this) && 0.25 > Utility.RandomDouble())
             {
                 return ApplyPoisonResult.Immune;
             }
@@ -4981,8 +5030,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			m_VisList = new List<Mobile>();
 			m_AntiMacroTable = new Hashtable();
-
-			InvalidateMyRunUO();
 		}
 
 		public List<Mobile> VisibilityList { get { return m_VisList; } }
@@ -5022,11 +5069,15 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				return false;
 			}
 
-			if (Core.ML && target is BaseCreature && ((BaseCreature)target).Controlled &&
-				this == ((BaseCreature)target).ControlMaster)
+			if (Core.ML && target is BaseCreature && ((BaseCreature)target).Controlled && ((BaseCreature)target).ControlMaster == this)
 			{
 				return false;
 			}
+
+            if (target is BaseCreature && ((BaseCreature)target).Summoned && ((BaseCreature)target).SummonMaster == this)
+            {
+                return false;
+            }
 
 			return base.IsHarmfulCriminal(damageable);
 		}
@@ -6560,23 +6611,18 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 		}
 
-		public override void AddNameProperties(ObjectPropertyList list)
-		{
-			base.AddNameProperties(list);
-			
-			var a = (XmlPoints)XmlAttach.FindAttachment(this, typeof(XmlPoints));
-			var t = (XmlData)XmlAttach.FindAttachment(this, typeof(XmlData), "XmlPointsTitle");
+        public override void AddNameProperties(ObjectPropertyList list)
+        {
+            string name = Name;
 
-			if ((t == null || t.Data != "True") && a != null)
-			{
-				list.Add(1070722, "Kills {0:#,0} / Deaths {1:#,0} : Rank {2:#,0}", a.Kills, a.Deaths, a.Rank);
-			}
-		}
+            if (name == null)
+            {
+                name = String.Empty;
+            }
 
-		protected override void AlterName(ref string prefix, ref string name, ref string suffix)
-		{
-			base.AlterName(ref prefix, ref name, ref suffix);
+            string prefix = "";
 
+<<<<<<< HEAD
 			if (!CityLoyaltySystem.ApplyCityTitle(this, ref prefix, ref name, ref suffix))
 			{
 				if (!String.IsNullOrWhiteSpace(m_OverheadTitle))
@@ -6592,32 +6638,76 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					}
 				}
 			}
+=======
+            if (ShowFameTitle && Fame >= 10000)
+            {
+                prefix = Female ? "Lady" : "Lord";
+            }
+>>>>>>> upstream/master
 
-			if (Map == Faction.Facet && ViceVsVirtueSystem.IsVvV(this, false, true))
-			{
-				if (!String.IsNullOrWhiteSpace(suffix) && !suffix.EndsWith("]") && !suffix.EndsWith(" "))
-				{
-					suffix += " ";
-				}
-				
-				suffix += "[VvV]";
-			}
-		}
+            string suffix = "";
+
+            if (PropertyTitle && Title != null && Title.Length > 0)
+            {
+                suffix = Title;
+            }
+
+            BaseGuild guild = Guild;
+            bool vvv = Server.Engines.VvV.ViceVsVirtueSystem.IsVvV(this) && (ViceVsVirtueSystem.EnhancedRules || this.Map == Faction.Facet);
+
+            if (!vvv && m_OverheadTitle != null)
+            {
+                int loc = Utility.ToInt32(m_OverheadTitle);
+
+                if (loc > 0)
+                {
+                    if (Server.Engines.CityLoyalty.CityLoyaltySystem.ApplyCityTitle(this, list, prefix, loc))
+                        return;
+                }
+                else if (suffix.Length > 0)
+                    suffix = String.Format("{0} {1}", suffix, m_OverheadTitle);
+                else
+                    suffix = String.Format("{0}", m_OverheadTitle);
+            }
+            else if (vvv || (guild != null && DisplayGuildAbbr))
+            {
+                if (vvv)
+                {
+                    if (guild != null && DisplayGuildAbbr)
+                        suffix = String.Format("[{0}] [VvV]", Utility.FixHtml(guild.Abbreviation));
+                    else
+                        suffix = "[VvV]";
+                }
+                else if (suffix.Length > 0)
+                    suffix = String.Format("{0} [{1}]", suffix, Utility.FixHtml(guild.Abbreviation));
+                else
+                    suffix = String.Format("[{0}]", Utility.FixHtml(guild.Abbreviation));
+            }
+
+            suffix = ApplyNameSuffix(suffix);
+
+            list.Add(1050045, "{0} \t{1}\t {2}", prefix, name, suffix); // ~1_PREFIX~~2_NAME~~3_SUFFIX~
+
+            if (guild != null && DisplayGuildTitle)
+            {
+                string title = GuildTitle;
+
+                if (title == null)
+                {
+                    title = "";
+                }
+                else
+                {
+                    title = title.Trim();
+                }
+
+                if (title.Length > 0)
+                {
+                    list.Add("{0}, {1}", Utility.FixHtml(title), Utility.FixHtml(guild.Name));
+                }
+            }
+        }
         #endregion
-
-		#region MyRunUO Invalidation
-		private bool m_ChangedMyRunUO;
-
-		public bool ChangedMyRunUO { get { return m_ChangedMyRunUO; } set { m_ChangedMyRunUO = value; } }
-
-		public void InvalidateMyRunUO()
-		{
-			if (!Deleted && !m_ChangedMyRunUO)
-			{
-				m_ChangedMyRunUO = true;
-				MyRunUO.QueueMobileUpdate(this);
-			}
-		}
 
 		public override void OnKillsChange(int oldValue)
 		{
@@ -6630,33 +6720,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					acc.RemoveYoungStatus(0);
 				}
 			}
-
-			InvalidateMyRunUO();
-		}
-
-		public override void OnGenderChanged(bool oldFemale)
-		{
-			InvalidateMyRunUO();
-		}
-
-		public override void OnGuildChange(BaseGuild oldGuild)
-		{
-			InvalidateMyRunUO();
-		}
-
-		public override void OnGuildTitleChange(string oldTitle)
-		{
-			InvalidateMyRunUO();
 		}
 
 		public override void OnKarmaChange(int oldValue)
 		{
-			InvalidateMyRunUO();
-		}
-
-		public override void OnFameChange(int oldValue)
-		{
-			InvalidateMyRunUO();
+            EpiphanyHelper.OnKarmaChange(this);
 		}
 
 		public override void OnSkillChange(SkillName skill, double oldBase)
@@ -6685,7 +6753,12 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 Server.Spells.SkillMasteries.MasteryInfo.OnMasteryChanged(this, mastery);
             }
 
-			InvalidateMyRunUO();
+            TransformContext context = TransformationSpellHelper.GetContext(this);
+
+            if (context != null)
+            {
+                TransformationSpellHelper.CheckCastSkill(this, context);
+            }
 		}
 
 		public override void OnAccessLevelChanged(AccessLevel oldLevel)
@@ -6698,13 +6771,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				IgnoreMobiles = true;
 			}
-
-			InvalidateMyRunUO();
-		}
-
-		public override void OnRawStatChange(StatType stat, int oldValue)
-		{
-			InvalidateMyRunUO();
 		}
 
 		public override void OnDelete()
@@ -6719,10 +6785,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				m_SentHonorContext.Cancel();
 			}
-
-			InvalidateMyRunUO();
 		}
-		#endregion
 
 		#region Fastwalk Prevention
 		private static bool FastwalkPrevention = true; // Is fastwalk prevention enabled?
@@ -6734,7 +6797,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
         public long NextMovementTime { get { return m_NextMovementTime; } }
 
-		public virtual bool UsesFastwalkPrevention { get { return (IsPlayer()) & !Flying; } }
+		public virtual bool UsesFastwalkPrevention { get { return IsPlayer(); } }
 
 		public override int ComputeMovementSpeed(Direction dir, bool checkTurning)
 		{
@@ -6752,7 +6815,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			bool running = ((dir & Direction.Running) != 0);
 
-			bool onHorse = (Mount != null);
+			bool onHorse = Mount != null || Flying;
 
 			AnimalFormContext animalContext = AnimalForm.GetContext(this);
 
@@ -7128,10 +7191,14 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		}
 		#endregion
 
-		#region Speech log
+		#region Speech
 		private SpeechLog m_SpeechLog;
+        private bool m_TempSquelched;
 
 		public SpeechLog SpeechLog { get { return m_SpeechLog; } }
+
+        [CommandProperty(AccessLevel.Administrator)]
+        public bool TempSquelched { get { return m_TempSquelched; } set { m_TempSquelched = value; } }
 
 		public override void OnSpeech(SpeechEventArgs e)
 		{
@@ -7145,6 +7212,27 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				m_SpeechLog.Add(e.Mobile, e.Speech);
 			}
 		}
+
+        public override void OnSaid(SpeechEventArgs e)
+        {
+            if (m_TempSquelched)
+            {
+                if (Core.ML)
+                {
+                    SendLocalizedMessage(500168); // You can not say anything, you have been muted.
+                }
+                else
+                {
+                    SendMessage("You can not say anything, you have been squelched."); //Cliloc ITSELF changed during ML.
+                }
+
+                e.Blocked = true;
+            }
+            else
+            {
+                base.OnSaid(e);
+            }
+        }
 		#endregion
 
 		#region Champion Titles

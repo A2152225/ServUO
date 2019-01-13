@@ -77,7 +77,8 @@ namespace Server.Mobiles
         Fish = 0x0008,
         Eggs = 0x0010,
         Gold = 0x0020,
-        Metal = 0x0040
+        Metal = 0x0040,
+        BlackrockStew = 0x0080
     }
 
     [Flags]
@@ -120,8 +121,16 @@ namespace Server.Mobiles
         Regular,
         Spined,
         Horned,
-        Barbed,
-        Fur
+        Barbed
+    }
+
+    public enum FurType
+    {
+        None,
+        Green,
+        LightBrown,
+        Yellow,
+        Brown
     }
 
     public enum TribeType
@@ -361,9 +370,6 @@ namespace Server.Mobiles
         protected DateTime SummonEnd { get { return m_SummonEnd; } set { m_SummonEnd = value; } }
 
         public virtual Faction FactionAllegiance { get { return null; } }
-        public virtual int FactionSilverWorth { get { return 30; } }
-
-        public virtual int BaseLootBudget { get { return RandomItemGenerator.GetBaseBudget(this); } }
 
         public virtual int DefaultHitsRegen 
         {
@@ -835,8 +841,6 @@ namespace Server.Mobiles
         }
         #endregion
 
-        public virtual bool AutoRearms { get { return false; } }
-
         public virtual double WeaponAbilityChance { get { return 0.4; } }
 
         public virtual WeaponAbility GetWeaponAbility()
@@ -930,28 +934,28 @@ namespace Server.Mobiles
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsParagon
-        {
-            get { return m_Paragon; }
-            set
-            {
-                if (m_Paragon == value)
-                {
-                    return;
-                }
-                else if (value)
-                {
-                    XmlParagon.Convert(this);
-                }
-                else
-                {
-                    XmlParagon.UnConvert(this);
-                }
+		{
+			get{ return m_Paragon; }
+			set
+			{
+				if (m_Paragon == value)
+				{
+					return;
+				}
+				else if (value)
+				{
+					Paragon.Convert(this);
+				}
+				else
+				{
+					Paragon.UnConvert(this);
+				}
 
-                m_Paragon = value;
+				m_Paragon = value;
 
-                InvalidateProperties();
-            }
-        }
+				InvalidateProperties();
+			}
+		}
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsChampionSpawn
@@ -1017,8 +1021,6 @@ namespace Server.Mobiles
         }
 
         public bool IsAmbusher { get; set; }
-
-        public virtual bool HasManaOveride { get { return false; } }
 
         public virtual FoodType FavoriteFood { get { return FoodType.Meat; } }
         public virtual PackInstinct PackInstinct { get { return PackInstinct.None; } }
@@ -1261,7 +1263,7 @@ namespace Server.Mobiles
 
             if (IsParagon)
             {
-                damage = (int)(damage / XmlParagon.GetHitsBuff(this));
+                damage = (int)(damage / Paragon.HitsBuff);
             }
 
             if (damage > 200)
@@ -1336,24 +1338,7 @@ namespace Server.Mobiles
 
         public virtual void DrainLife()
         {
-            List<Mobile> list = new List<Mobile>();
-
-            IPooledEnumerable eable = GetMobilesInRange(2);
-
-            foreach (Mobile m in eable)
-            {
-                if (m == this || !CanBeHarmful(m))
-                    continue;
-
-                if (m is BaseCreature && (((BaseCreature)m).Controlled || ((BaseCreature)m).Summoned || ((BaseCreature)m).Team != Team))
-                    list.Add(m);
-                else if (m.Player)
-                    list.Add(m);
-            }
-
-            eable.Free();
-
-            foreach (Mobile m in list)
+            foreach (Mobile m in SpellHelper.AcquireIndirectTargets(this, this, Map, 2).OfType<Mobile>())
             {
                 DoHarmful(m);
 
@@ -1376,8 +1361,6 @@ namespace Server.Mobiles
                 Hits += toDrain;
                 m.Damage(toDrain, this);
             }
-
-            ColUtility.Free(list);
         }
         #endregion
 
@@ -1810,24 +1793,16 @@ namespace Server.Mobiles
 
         public override string ApplyNameSuffix(string suffix)
         {
-            XmlData customtitle = (XmlData)XmlAttach.FindAttachment(this, typeof(XmlData), "ParagonTitle");
-
-            if (customtitle != null)
-            {
-                suffix = customtitle.Data;
-            }
-            else if (IsParagon && !GivesMLMinorArtifact)
+            if (IsParagon && !GivesMLMinorArtifact)
             {
                 if (suffix.Length == 0)
                 {
-                    suffix = XmlParagon.GetParagonLabel(this);
+                    suffix = "(Paragon)";
                 }
                 else
                 {
-                    suffix = String.Concat(suffix, " " + XmlParagon.GetParagonLabel(this));
+                    suffix = String.Concat( suffix, " (Paragon)" );
                 }
-
-                XmlAttach.AttachTo(this, new XmlData("ParagonTitle", suffix));
             }
 
             return base.ApplyNameSuffix(suffix);
@@ -1935,8 +1910,6 @@ namespace Server.Mobiles
 
             chance -= (MaxLoyalty - m_Loyalty) * 10;
 
-            chance += (int)XmlMobFactions.GetScaledFaction(m, this, -250, 250, 0.001);
-
             return ((double)chance / 1000);
         }
 
@@ -2041,7 +2014,7 @@ namespace Server.Mobiles
 
         public override void OnBeforeSpawn(Point3D location, Map m)
         {
-            if (XmlParagon.CheckConvert(this, location, m))
+            if (Paragon.CheckConvert(this, location, m))
             {
                 IsParagon = true;
             }
@@ -2202,9 +2175,11 @@ namespace Server.Mobiles
         {
             get
             {
+                int value = Str;
+
                 if (m_HitsMax > 0)
                 {
-                    int value = m_HitsMax + GetStatOffset(StatType.Str);
+                    value = m_HitsMax + GetStatOffset(StatType.Str);
 
                     if (value < 1)
                     {
@@ -2214,11 +2189,16 @@ namespace Server.Mobiles
                     {
                         value = 10000000;
                     }
-
-                    return value;
                 }
 
-                return Str;
+                // Skill Masteries
+                if (Core.TOL)
+                {
+                    value += ToughnessSpell.GetHPBonus(this);
+                    value += InvigorateSpell.GetHPBonus(this);
+                }
+
+                return value;
             }
         }
 
@@ -2338,6 +2318,11 @@ namespace Server.Mobiles
 
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
+            if (Core.SA && from != null)
+            {
+                from.RegisterDamage(amount, this);
+            }
+
             if (BardPacified && (HitsMax - Hits) * 0.001 > Utility.RandomDouble())
             {
                 Unpacify();
@@ -2373,8 +2358,6 @@ namespace Server.Mobiles
                 Confidence.StopRegenerating(this);
             }
 
-            WeightOverloading.FatigueOnDamage(this, amount);
-
             InhumanSpeech speechType = SpeechType;
 
             if (speechType != null && !willKill)
@@ -2398,13 +2381,6 @@ namespace Server.Mobiles
             {
                 Timer.DelayCall(TimeSpan.FromSeconds(10), ((PlayerMobile)@from).RecoverAmmo);
             }
-
-            #region XmlSpawner
-            if (!Summoned && willKill && from != null)
-            {
-                LevelItemManager.CheckItems(from, this);
-            }
-            #endregion
 
             base.OnDamage(amount, from, willKill);
         }
@@ -2485,10 +2461,12 @@ namespace Server.Mobiles
             int hides = Hides;
             int scales = Scales;
             int dragonblood = DragonBlood;
+            int fur = Fur;
 
-            bool special = with is SkinningKnife || with is ButchersWarCleaver || with is HarvestersBlade;
+            bool special = with is HarvestersBlade;
 
-            if ((feathers == 0 && wool == 0 && meat == 0 && hides == 0 && scales == 0) || Summoned || IsBonded || corpse.Animated)
+
+            if ((feathers == 0 && wool == 0 && meat == 0 && hides == 0 && scales == 0 && fur == 0) || Summoned || IsBonded || corpse.Animated)
             {
                 if (corpse.Animated)
                 {
@@ -2511,6 +2489,7 @@ namespace Server.Mobiles
                     feathers *= 2;
                     wool *= 2;
                     hides *= 2;
+                    fur *= 2;
 
                     if (Core.ML)
                     {
@@ -2597,7 +2576,7 @@ namespace Server.Mobiles
                         case HideType.Barbed: leather = new BarbedLeather(hides); break;
                     }
 
-                    if (!Core.AOS || !special || !from.AddToBackpack(leather))
+                    if (!Core.AOS || !special || !from.AddToBackpack(leather) || !(with is ButchersWarCleaver))
                     {
                         corpse.AddCarvedItem(leather, from);
                         from.SendLocalizedMessage(500471); // You skin it, and the hides are now in the corpse.
@@ -2656,7 +2635,7 @@ namespace Server.Mobiles
                         if (anyPack)
                             from.SendLocalizedMessage(1114098); // You cut away some scales and put them in your backpack.
 
-                        if(!allPack)
+                        if (!allPack)
                             from.SendLocalizedMessage(1079284); // You cut away some scales, but they remain on the corpse.
                     }
                     else
@@ -2685,6 +2664,14 @@ namespace Server.Mobiles
                     {
                         from.SendLocalizedMessage(1114100); // You take some blood off the corpse and put it in your backpack.
                     }
+                }
+
+                if (fur != 0)
+                {
+                    Item _fur = new Fur(FurType, fur);
+
+                    corpse.AddCarvedItem(_fur, from);
+                    from.SendLocalizedMessage(1112765); // You shear it, and the fur is now on the corpse.
                 }
 
                 corpse.Carved = true;
@@ -3418,6 +3405,11 @@ namespace Server.Mobiles
             typeof(GoldIngot), typeof(AgapiteIngot), typeof(VeriteIngot), typeof(ValoriteIngot)
         };
 
+        private static readonly Type[] m_BlackrockStew =
+        {
+            typeof(BowlOfBlackrockStew)
+        };
+
         public virtual bool CheckFoodPreference(Item f)
         {
             if (CheckFoodPreference(f, FoodType.Eggs, m_Eggs))
@@ -3450,6 +3442,11 @@ namespace Server.Mobiles
                 return true;
             }
 
+            if (CheckFoodPreference(f, FoodType.BlackrockStew, m_BlackrockStew))
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -3473,11 +3470,12 @@ namespace Server.Mobiles
 
         public virtual bool CheckFeed(Mobile from, Item dropped)
         {
-            if (!IsDeadPet && Controlled && (ControlMaster == from || IsPetFriend(from)) &&
+            if (!IsDeadPet && Controlled && (ControlMaster == from || IsPetFriend(from))) /*&&
                 (dropped is Food || dropped is Gold || dropped is CookableFood || dropped is Head || dropped is LeftArm ||
                  dropped is LeftLeg || dropped is Torso || dropped is RightArm || dropped is RightLeg || dropped is IronIngot ||
                  dropped is DullCopperIngot || dropped is ShadowIronIngot || dropped is CopperIngot || dropped is BronzeIngot ||
-                 dropped is GoldIngot || dropped is AgapiteIngot || dropped is VeriteIngot || dropped is ValoriteIngot))
+                 dropped is GoldIngot || dropped is AgapiteIngot || dropped is VeriteIngot || dropped is ValoriteIngot))*/
+                // Why do we need all this crap, when its checked in CheckFootPreference?
             {
                 Item f = dropped;
 
@@ -3614,7 +3612,10 @@ namespace Server.Mobiles
             {
                 return true;
             }
-	        if (!from.InRange(Location, 2)) return base.OnDragDrop(from, dropped);
+
+	        if (!from.InRange(Location, 2))
+                return base.OnDragDrop(from, dropped);
+
 	        bool gainedPath = false;
 
 	        if (dropped.HonestyOwner == this)
@@ -4145,6 +4146,7 @@ namespace Server.Mobiles
         public virtual int Wool { get { return 0; } }
 
         public virtual int Fur { get { return 0; } }
+        public virtual FurType FurType { get { return FurType.Green; } }
 
         public virtual MeatType MeatType { get { return MeatType.Ribs; } }
         public virtual int Meat { get { return 0; } }
@@ -4778,8 +4780,8 @@ namespace Server.Mobiles
 
                     if (aggressor is PlayerMobile || (aggressor is BaseCreature && !((BaseCreature)aggressor).IsMonster))
                     {
-                        BuffInfo.AddBuff(ControlMaster, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, AttackMessage.CombatHeatDelay, ControlMaster, true));
-                        BuffInfo.AddBuff(aggressor, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, AttackMessage.CombatHeatDelay, aggressor, true));
+                        BuffInfo.AddBuff(ControlMaster, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, Aggression.CombatHeatDelay, ControlMaster, true));
+                        BuffInfo.AddBuff(aggressor, new BuffInfo(BuffIcon.HeatOfBattleStatus, 1153801, 1153827, Aggression.CombatHeatDelay, aggressor, true));
                     }
                 }
             }
@@ -5640,7 +5642,7 @@ namespace Server.Mobiles
 
         public virtual void GenerateLoot(bool spawning)
         {
-            if (m_NoLootOnDeath)
+            if (m_NoLootOnDeath || m_Allured)
                 return;
 
             m_Spawning = spawning;
@@ -6156,10 +6158,10 @@ namespace Server.Mobiles
             {
                 if (treasureLevel >= 0)
                 {
-                    if (m_Paragon && XmlParagon.GetChestChance(this) > Utility.RandomDouble())
-                    {
-                        XmlParagon.AddChest(this, treasureLevel);
-                    }
+					if (m_Paragon && Paragon.ChestChance > Utility.RandomDouble())
+					{
+						PackItem( new ParagonChest( this.Name, treasureLevel ) );
+					}
                     else if (TreasureMapChance >= Utility.RandomDouble())
                     {
                         Map map = Map;
@@ -6624,21 +6626,28 @@ namespace Server.Mobiles
                 int topDamage = rights[0].m_Damage;
                 int minDamage;
 
-                if (hitsMax >= 3000)
+                if (Core.SA)
                 {
-                    minDamage = topDamage / 16;
-                }
-                else if (hitsMax >= 1000)
-                {
-                    minDamage = topDamage / 8;
-                }
-                else if (hitsMax >= 200)
-                {
-                    minDamage = topDamage / 4;
+                    minDamage = (int)((double)topDamage * 0.06);
                 }
                 else
                 {
-                    minDamage = topDamage / 2;
+                    if (hitsMax >= 3000)
+                    {
+                        minDamage = topDamage / 16;
+                    }
+                    else if (hitsMax >= 1000)
+                    {
+                        minDamage = topDamage / 8;
+                    }
+                    else if (hitsMax >= 200)
+                    {
+                        minDamage = topDamage / 4;
+                    }
+                    else
+                    {
+                        minDamage = topDamage / 2;
+                    }
                 }
 
                 for (int i = 0; i < rights.Count; ++i)
@@ -6657,7 +6666,19 @@ namespace Server.Mobiles
         private bool m_Allured;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool Allured { get { return m_Allured; } set { m_Allured = value; } }
+        public bool Allured 
+        { 
+            get { return m_Allured; } 
+            set 
+            { 
+                m_Allured = value;
+
+                if (value && Backpack != null)
+                {
+                    ColUtility.SafeDelete(Backpack.Items);
+                }
+            }
+        }
 
         public virtual bool GivesMLMinorArtifact { get { return false; } }
         #endregion
@@ -6679,9 +6700,9 @@ namespace Server.Mobiles
 public string CType = "default";  //Declare variable for use of transferring to mobile
         public virtual void OnKilledBy(Mobile mob)
         {
-            if (m_Paragon && XmlParagon.CheckArtifactChance(mob, this))
+            if (m_Paragon && Paragon.CheckArtifactChance(mob, this))
             {
-                XmlParagon.GiveArtifactTo(mob, this);
+                Paragon.GiveArtifactTo(mob);
             }
 			
 
@@ -7153,7 +7174,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
         public virtual void OnAfterTame(Mobile tamer)
         {
-            if (StatLossAfterTame)
+            if (StatLossAfterTame && Owners.Count == 0)
             {
                 AnimalTaming.ScaleStats(this, 0.5);
             }
@@ -7490,7 +7511,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
                     toHeal *= HealScalar;
 
-                    patient.Heal((int)toHeal);
+                    patient.Heal((int)toHeal, this);
 
                     CheckSkill(SkillName.Healing, 0.0, Skills[SkillName.Healing].Cap);
                     CheckSkill(SkillName.Anatomy, 0.0, Skills[SkillName.Anatomy].Cap);
@@ -7529,6 +7550,47 @@ public string CType = "default";  //Declare variable for use of transferring to 
         }
         #endregion
 
+        public override void OnHeal(ref int amount, Mobile from)
+        {
+            base.OnHeal(ref amount, from);
+
+            if (from == null)
+                return;
+
+            if (Core.SA && amount > 0 && from != null && from != this)
+            {
+                for (int i = Aggressed.Count - 1; i >= 0; i--)
+                {
+                    var info = Aggressed[i];
+
+                    if (info.Defender.InRange(Location, Core.GlobalMaxUpdateRange) && info.Defender.DamageEntries.Any(de => de.Damager == this))
+                    {
+                        info.Defender.RegisterDamage(amount, from);
+                    }
+
+                    if (info.Defender.Player && from.CanBeHarmful(info.Defender))
+                    {
+                        from.DoHarmful(info.Defender, true);
+                    }
+                }
+
+                for (int i = Aggressors.Count - 1; i >= 0; i--)
+                {
+                    var info = Aggressors[i];
+
+                    if (info.Attacker.InRange(Location, Core.GlobalMaxUpdateRange) && info.Attacker.DamageEntries.Any(de => de.Damager == this))
+                    {
+                        info.Attacker.RegisterDamage(amount, from);
+                    }
+
+                    if (info.Attacker.Player && from.CanBeHarmful(info.Attacker))
+                    {
+                        from.DoHarmful(info.Attacker, true);
+                    }
+                }
+            }
+        }
+
         #region Damaging Aura
         private long m_NextAura;
 
@@ -7559,21 +7621,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
                 return;
             }
 
-            var list = new List<Mobile>();
-
-            IPooledEnumerable eable = GetMobilesInRange(AuraRange);
-
-            foreach (Mobile m in eable)
-            {
-                if (m != this && SpellHelper.ValidIndirectTarget(this, m) && CanBeHarmful(m, false) && (!Core.AOS || InLOS(m)))
-                {
-                    list.Add(m);
-                }
-            }
-
-            eable.Free();
-
-            foreach (Mobile m in list)
+            foreach (Mobile m in SpellHelper.AcquireIndirectTargets(this, this, Map, AuraRange).OfType<Mobile>())
             {
                 int damage = GetAuraDamage(m);
 
@@ -7593,8 +7641,6 @@ public string CType = "default";  //Declare variable for use of transferring to 
                 m.RevealingAction();
                 AuraEffect(m);
             }
-
-            ColUtility.Free(list);
         }
 
         public virtual void AuraEffect(Mobile m)
@@ -7823,6 +7869,8 @@ public string CType = "default";  //Declare variable for use of transferring to 
                     inst.SuccessSound = PlayInstrumentSound ? 0x58B : 0;
                     inst.FailureSound = PlayInstrumentSound ? 0x58C : 0;
                     inst.Movable = false;
+                    inst.Quality = ItemQuality.Exceptional;
+
                     PackItem(inst);
                 }
             }
@@ -8547,11 +8595,8 @@ public string CType = "default";  //Declare variable for use of transferring to 
                     if (m is BaseMount && ((BaseMount)m).Rider != null)
                     {
                         ((BaseCreature)m).OwnerAbandonTime = DateTime.MinValue;
-
-                        return;
                     }
-
-                    if (m is BaseCreature)
+                    else if (m is BaseCreature)
                     {
                         BaseCreature c = (BaseCreature)m;
 

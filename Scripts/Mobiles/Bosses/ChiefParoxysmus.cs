@@ -107,9 +107,6 @@ namespace Server.Mobiles
                     break;
             }
 
-            if (Utility.RandomDouble() < 0.10)
-                c.DropItem(new HumanFeyLeggings());
-			
             if (Utility.RandomDouble() < 0.6)				
                 c.DropItem(new ParrotItem());
 			
@@ -121,9 +118,6 @@ namespace Server.Mobiles
 				
             if (Utility.RandomDouble() < 0.05)
                 c.DropItem(new ScepterOfTheChief());
-				
-            if (Utility.RandomDouble() < 0.025)
-                c.DropItem(new CrimsonCincture());
         }
 
         public override int GetDeathSound()
@@ -198,8 +192,7 @@ namespace Server.Mobiles
         {
             for (int i = 0; i < 3; i++)
             {
-                Mobile blobus = new BulbousPutrification();
-                blobus.MoveToWorld(GetSpawnPosition(4), Map);
+                SpawnHelper(new BulbousPutrification(), GetSpawnPosition(4));
             }
         }
     }

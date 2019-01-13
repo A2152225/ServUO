@@ -1,4 +1,6 @@
 using System;
+
+using Server.Items;
 using Server.Network;
 using System.Collections.Generic;
 
@@ -404,6 +406,23 @@ namespace Server.Mobiles
             base.OnDelete();
         }
 
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            var owner = GetMaster();
+
+            if (owner != null && m_Table.ContainsKey(owner))
+            {
+                var entry = m_Table[owner];
+
+                if (entry.m_Type >= BlockMountType.RidingSwipe && entry.m_Mount == this)
+                {
+                    ExpireMountPrevention(owner);
+                }
+            }
+        }
+
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
@@ -511,12 +530,13 @@ namespace Server.Mobiles
             }
         }
 
-        public virtual void OnRiderDamaged(int amount, Mobile from, bool willKill)
+        public virtual void OnRiderDamaged(Mobile from, ref int amount, bool willKill)
         {
             if (m_Rider == null)
                 return;
 
             Mobile attacker = from;
+
             if (attacker == null)
                 attacker = m_Rider.FindMostRecentDamager(true);
 
@@ -525,6 +545,12 @@ namespace Server.Mobiles
                 if (DoMountAbility(amount, from))
                     m_NextMountAbility = DateTime.UtcNow + MountAbilityDelay;
             }
+        }
+
+        [Obsolete("Call: OnRiderDamaged(Mobile from, ref int amount, bool willKill)")]
+        public virtual void OnRiderDamaged(int amount, Mobile from, bool willKill)
+        {
+            OnRiderDamaged(from, ref amount, willKill);
         }
 
         public virtual bool DoMountAbility(int damage, Mobile attacker)
@@ -557,6 +583,11 @@ namespace Server.Mobiles
                     }
                     else
                     {
+                        if (mount != m_Mount)
+                        {
+                            return true;
+                        }
+
                         switch (m_Type)
                         {
                             default:

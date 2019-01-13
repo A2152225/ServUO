@@ -239,8 +239,11 @@
         <zrange min="-50" />
       </region>
       <region type="TheLostCityEntry">
-				<rect x="6316" y="472" width="8" height="8" />
+		    <rect x="6316" y="472" width="8" height="8" />
         <rect x="6303" y="509" width="11" height="7" />
+	    </region>
+      <region type="ParoxysmusBossEntry">
+				<rect x="6516" y="493" width="5" height="7" />
 			</region>
     </region>
     <region priority="50" name="Huntsman's Forest">
@@ -1235,8 +1238,11 @@
         <zrange min="-50" />
       </region>
       <region type="TheLostCityEntry">
-				<rect x="6316" y="472" width="8" height="8" />
+		    <rect x="6316" y="472" width="8" height="8" />
         <rect x="6303" y="509" width="11" height="7" />
+	    </region>
+      <region type="ParoxysmusBossEntry">
+				<rect x="6516" y="493" width="5" height="7" />
 			</region>
     </region>
     <region priority="50" name="Bravehorn's drinking pool">
@@ -2015,7 +2021,7 @@
       </spawning>
     </region>
     <region type="NoHousingRegion" priority="50" name="FireIsleCasino">
-      <rect x="4041" y="3364" width="60" height="64" />
+      <rect x="4038" y="3303" width="60" height="64" />
       <go x="4047" y="3371" z="0" />
     </region>
     <region priority="50" name="Shrine of Compassion">
@@ -2799,11 +2805,16 @@
       <rect x="624" y="3296" width="303" height="287" />
       <go x="750" y="3440" z="-20" />
       <music name="RoyalCity" />
-      <region name="Queen's Palace">
-        <rect x="717" y="3339" width="68" height="73" />
-        <go x="748" y="3357" z="55" />
-        <music name="QueenPalace" />
-      </region>
+		<region name="Queen's Palace">
+		  <rect x="717" y="3339" width="68" height="73" />
+		  <go x="748" y="3357" z="55" />
+		  <music name="QueenPalace" />
+		</region>
+		<region name="Royal City Inn">
+            <rect x="724" y="3463" width="37" height="20" />
+            <rect x="747" y="3480" width="13" height="13" />
+            <logoutDelay active="false" />
+        </region>
     </region>
     <region type="DungeonRegion" priority="50" name="Royal Park">
       <rect x="632" y="3233" width="176" height="35" />

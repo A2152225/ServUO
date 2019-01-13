@@ -16,7 +16,7 @@ namespace Server.Engines.Craft
         PendantOfTheMagi = 451,
         ResilientBracer = 452,
         ScrappersCompendium = 453,
-        HoveringWisp = 454,
+        HoveringWisp = 454, // Removed at OSI Publish 103
 
         KotlPowerCore = 455,
 
@@ -28,7 +28,10 @@ namespace Server.Engines.Craft
         WeatheredBronzeArcherSculpture = 459,
         WeatheredBronzeFairySculpture = 460,
         WeatheredBronzeGlobeSculpture = 461,
-        WeatheredBronzeManOnABench = 462
+        WeatheredBronzeManOnABench = 462,
+
+        KrampusMinionEarrings = 463,
+        EnchantedPicnicBasket = 464
     }
 
     public class DefTinkering : CraftSystem
@@ -234,6 +237,9 @@ namespace Server.Engines.Craft
             AddJewelrySet(GemType.Tourmaline, typeof(Tourmaline));
             AddJewelrySet(GemType.Amber, typeof(Amber));
             AddJewelrySet(GemType.Diamond, typeof(Diamond));
+
+            index = AddCraft(typeof(KrampusMinionEarrings), 1044049, 1125645, 100.0, 500.0, typeof(IronIngot), 1044036, 3, 1044037);
+            AddRecipe(index, (int)TinkerRecipes.KrampusMinionEarrings);
             #endregion
 
             #region Wooden Items
@@ -317,6 +323,12 @@ namespace Server.Engines.Craft
 
                 index = AddCraft(typeof(SmallRoundBasket), 1044042, 1112298, 75.0, 100.0, typeof(SoftenedReeds), 1112249, 1, 1112251);
                 AddRes(index, typeof(Shaft), 1027125, 2, 1044351);
+                SetRequireResTarget(index);
+                SetRequiresBasketWeaving(index);
+
+                index = AddCraft(typeof(EnchantedPicnicBasket), 1044042, 1158333, 75.0, 100.0, typeof(SoftenedReeds), 1112249, 2, 1112251);
+                AddRes(index, typeof(Shaft), 1027125, 3, 1044351);
+                AddRecipe(index, (int)TinkerRecipes.EnchantedPicnicBasket);
                 SetRequireResTarget(index);
                 SetRequiresBasketWeaving(index);
             }
