@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<cleanup>
+	<cups>
+		<cup notnull="False" cmcc="False">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="1122" cmcc="False">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="IronOre" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="DullCopperOre" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="ShadowIronOre" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="CopperOre" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="BronzeOre" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="BronzeIngot" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="CopperIngot" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="ShadowIronIngot" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="DullCopperIngot" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="IronIngot" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="AgapiteIngot" />
+				<item notnull="True" cont="1073867805" inotnull="True" type="GoldIngot" />
+				<item notnull="False" inotnull="True" type="VeriteOre" />
+				<item notnull="False" inotnull="True" type="MonsterContract" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="1881" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Hides" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="2067" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Hides" />
+				<item notnull="False" inotnull="True" type="TaintedWool" />
+				<item notnull="False" inotnull="True" type="SpinedHides" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="12183" cmcc="True">
+			<items>
+				<item notnull="True" cont="1073790846" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Amethyst" />
+				<item notnull="False" inotnull="True" type="Ruby" />
+				<item notnull="False" inotnull="True" type="StarSapphire" />
+				<item notnull="False" inotnull="True" type="Diamond" />
+				<item notnull="False" inotnull="True" type="Emerald" />
+				<item notnull="False" inotnull="True" type="Tourmaline" />
+				<item notnull="False" inotnull="True" type="Citrine" />
+				<item notnull="False" inotnull="True" type="Sapphire" />
+				<item notnull="False" inotnull="True" type="Amber" />
+				<item notnull="False" inotnull="True" type="ParagonChest" />
+				<item notnull="False" inotnull="True" type="GargoylesPickaxe" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="1908" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="4412" cmcc="True">
+			<items>
+				<item notnull="True" cont="1073867541" inotnull="True" type="Gold" />
+				<item notnull="True" cont="1073867541" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Key" />
+				<item notnull="False" inotnull="True" type="LightYarn" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="SnowyTree" />
+				<item notnull="False" inotnull="True" type="MelisandesHairDye" />
+				<item notnull="False" inotnull="True" type="BoneHarvester" />
+				<item notnull="False" inotnull="True" type="ParagonChest" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="48531" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="55545" cmcc="True">
+			<items>
+				<item notnull="True" cont="1073777706" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Amethyst" />
+				<item notnull="False" inotnull="True" type="Amber" />
+				<item notnull="False" inotnull="True" type="StarSapphire" />
+				<item notnull="False" inotnull="True" type="Emerald" />
+				<item notnull="False" inotnull="True" type="Citrine" />
+				<item notnull="False" inotnull="True" type="Ruby" />
+				<item notnull="False" inotnull="True" type="Tourmaline" />
+				<item notnull="False" inotnull="True" type="Diamond" />
+				<item notnull="False" inotnull="True" type="Sapphire" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="50180" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="RawRibs" />
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Bandage" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="StrengthPotion" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="LesserCurePotion" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="AgilityPotion" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="RefreshPotion" />
+				<item notnull="False" inotnull="True" type="DoubleBladedStaff" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="LesserHealPotion" />
+				<item notnull="False" inotnull="True" type="ParagonChest" />
+				<item notnull="False" inotnull="True" type="Kryss" />
+				<item notnull="False" inotnull="True" type="WarFork" />
+				<item notnull="False" inotnull="True" type="ShortSpear" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Amethyst" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Tourmaline" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Sapphire" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Emerald" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Amber" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Diamond" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="StarSapphire" />
+				<item notnull="True" cont="1073832859" inotnull="True" type="Citrine" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="53791" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="RawRibs" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="53209" cmcc="True">
+			<items>
+				<item notnull="True" cont="1074159308" inotnull="True" type="Gold" />
+				<item notnull="True" cont="1074159308" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="72781" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Citrine" />
+				<item notnull="False" inotnull="True" type="StarSapphire" />
+				<item notnull="False" inotnull="True" type="Diamond" />
+				<item notnull="False" inotnull="True" type="Ruby" />
+				<item notnull="False" inotnull="True" type="Amber" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="54231" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="43202" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="80542" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Hides" />
+				<item notnull="False" inotnull="True" type="RawRibs" />
+				<item notnull="False" inotnull="True" type="RawLambLeg" />
+				<item notnull="False" inotnull="True" type="TaintedWool" />
+				<item notnull="False" inotnull="True" type="Feather" />
+				<item notnull="False" inotnull="True" type="RawBird" />
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="MarkScroll" />
+				<item notnull="False" inotnull="True" type="Garlic" />
+				<item notnull="False" inotnull="True" type="BlackPearl" />
+				<item notnull="False" inotnull="True" type="Arrow" />
+				<item notnull="False" inotnull="True" type="Bloodmoss" />
+				<item notnull="False" inotnull="True" type="NatureFuryScroll" />
+				<item notnull="False" inotnull="True" type="Bandage" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="48661" cmcc="False">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Bandage" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="45405" cmcc="False">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+	</cups>
+</cleanup>

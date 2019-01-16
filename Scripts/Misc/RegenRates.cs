@@ -90,18 +90,18 @@ namespace Server.Misc
 
             bonus += StamRegen(from);
 
-<<<<<<< HEAD
-            return TimeSpan.FromSeconds(0.50 / (0.1 * (2 + points))); // was FromSeconds(1/)
-=======
+
+
+
             if (Core.SA)
             {
-                return TimeSpan.FromSeconds(1.0 / (1.42 + (bonus / 100)));
+                return TimeSpan.FromSeconds(0.5 / (1.42 + (bonus / 100)));// was FromSeconds(1/)
             }
             else
             {
-                return TimeSpan.FromSeconds(1.0 / (0.1 * (2 + bonus)));
+                return TimeSpan.FromSeconds(0.5 / (0.1 * (2 + bonus)));// was FromSeconds(1/)
             }
->>>>>>> upstream/master
+
         }
 
         private static TimeSpan Mobile_ManaRegenRate(Mobile from)
@@ -282,13 +282,12 @@ namespace Server.Misc
             if (from is PlayerMobile && from.Race == Race.Gargoyle)
                 points += 2;
 
-<<<<<<< HEAD
+
             if (Core.ML && from is PlayerMobile)
                 points = points; //Math.Min(points, 18);  //uncapping
-=======
+
             if (!Core.ML && from is PlayerMobile)
-                points = Math.Min(points, 18);
->>>>>>> upstream/master
+                points = points; //Math.Min(points, 18);
 
             foreach (RegenBonusHandler handler in ManaBonusHandlers)
                 points += handler(from);

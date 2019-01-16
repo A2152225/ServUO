@@ -1559,13 +1559,13 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             if (type != ResistanceType.Physical && 60 < max && Spells.Fourth.CurseSpell.UnderEffect(this))
             {
-<<<<<<< HEAD
 
                 max = (int)(base.GetMaxResistance(type)*.8); //was 60;
-=======
+/*
                 max -= 10;
                 //max = 60;
->>>>>>> upstream/master
+
+*/
             }
 
             if ((type == ResistanceType.Fire || type == ResistanceType.Poison) && CorpseSkinSpell.IsUnderEffects(this))
@@ -4103,7 +4103,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 		protected override void OnMapChange(Map oldMap)
 		{
-<<<<<<< HEAD
+
 
 			 /* Begin UltimaLive Mod */
 			if (BlockQuery != null)
@@ -4112,10 +4112,10 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 			/* End UltimaLive Mod */
   
-=======
+
             ViceVsVirtueSystem.OnMapChange(this);
 
->>>>>>> upstream/master
+
             if (NetState != null && NetState.IsEnhancedClient)
             {
                 Waypoints.OnMapChange(this, oldMap);
@@ -6153,7 +6153,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			list.Add(String.Concat("Paragon: ",m_PrestigeLvl));
 			
 			}
-			InvalidateMyRunUO();
+			//InvalidateMyRunUO();
 
 
             if (Core.SA)
@@ -6622,7 +6622,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             string prefix = "";
 
-<<<<<<< HEAD
+/*
 			if (!CityLoyaltySystem.ApplyCityTitle(this, ref prefix, ref name, ref suffix))
 			{
 				if (!String.IsNullOrWhiteSpace(m_OverheadTitle))
@@ -6638,12 +6638,13 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					}
 				}
 			}
-=======
+			*/
+
             if (ShowFameTitle && Fame >= 10000)
             {
                 prefix = Female ? "Lady" : "Lord";
             }
->>>>>>> upstream/master
+
 
             string suffix = "";
 

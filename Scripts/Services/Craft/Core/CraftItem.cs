@@ -401,13 +401,11 @@ namespace Server.Engines.Craft
 			new[] {typeof(Pumpkin), typeof(SmallPumpkin)}, 
             new[] {typeof(WoodenBowlOfPeas), typeof(PewterBowlOfPeas)},
             new[] { typeof( CrystallineFragments ), typeof( BrokenCrystals ), typeof( ShatteredCrystals ), typeof( ScatteredCrystals ), typeof( CrushedCrystals ), typeof( JaggedCrystals ), typeof( AncientPotteryFragments ) },
-<<<<<<< HEAD
-            new[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ), typeof( BlueScales ), typeof( CopperScales ), typeof( SilverScales ), typeof( GoldScales ) }
-=======
-            new[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ) },
+
+           new[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ), typeof( BlueScales ), typeof( CopperScales ), typeof( SilverScales ), typeof( GoldScales )   },
             new[] { typeof(Sausage), typeof(CookableSausage) },
             new[] { typeof(Lettuce), typeof(FarmableLettuce) }
->>>>>>> upstream/master
+
 		};
 
 		private static readonly Type[] m_ColoredItemTable = new[]

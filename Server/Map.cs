@@ -2836,11 +2836,9 @@ namespace Server
 		}
 
 		#region Line Of Sight
-<<<<<<< HEAD
-		private static int m_MaxLOSDistance = 40;
-=======
+
 		private static int m_MaxLOSDistance = Core.GlobalMaxUpdateRange + 1;
->>>>>>> upstream/master
+
 
 		public static int MaxLOSDistance { get { return m_MaxLOSDistance; } set { m_MaxLOSDistance = value; } }
 

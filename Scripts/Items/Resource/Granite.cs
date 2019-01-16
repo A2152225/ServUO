@@ -345,7 +345,7 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
     }
-<<<<<<< HEAD
+
 	
 	
 	
@@ -540,6 +540,6 @@ namespace Server.Items
 	}
 	
 }
-=======
-}
->>>>>>> upstream/master
+
+
+
