@@ -12,6 +12,7 @@
 /Logs
 /Backups
 /Saves
+/Saves - Copy 
 /Web
 /Docs
 /Reports
@@ -33,7 +34,6 @@ CUSTOM
 *.idea
 *.log
 *.bin
-<<<<<<< HEAD
 .vs/
 drng64.dll
 drng32.dll
@@ -41,7 +41,6 @@ libdrng.so
 ServUO.exe
 /WorldFiles
 /GloryUOShard
-=======
 *.csproj.user
 *.DotSettings.user
->>>>>>> upstream/master
+

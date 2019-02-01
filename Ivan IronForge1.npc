@@ -1,0 +1,80 @@
+<?xml version="1.0" standalone="yes"?>
+<XmlQuestNPC>
+  <NPC>
+    <Name>Ivan IronForge</Name>
+    <Running>True</Running>
+    <ProximityRange>3</ProximityRange>
+    <ResetRange>16</ResetRange>
+    <AllowGhost>False</AllowGhost>
+    <SpeechPace>10</SpeechPace>
+    <ResetTime>1</ResetTime>
+    <SpeechEntries>5</SpeechEntries>
+  </NPC>
+  <SpeechEntry>
+    <EntryNumber>0</EntryNumber>
+    <ID>0</ID>
+    <DependsOn />
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+  </SpeechEntry>
+  <SpeechEntry>
+    <EntryNumber>10</EntryNumber>
+    <ID>10</ID>
+    <Text>Please Help Me Adventurer!</Text>
+    <DependsOn>-1</DependsOn>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+  </SpeechEntry>
+  <SpeechEntry>
+    <EntryNumber>20</EntryNumber>
+    <ID>20</ID>
+    <Keywords>Yes!</Keywords>
+    <DependsOn>10</DependsOn>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+    <Gump>GUMP,Ivan IronForge,4/Dear Adventurer, Some bandits have stolen my equipment. Please help me retrieve my items and you shall be rewarded!;Yes!;Agree;</Gump>
+  </SpeechEntry>
+  <SpeechEntry>
+    <EntryNumber>30</EntryNumber>
+    <ID>30</ID>
+    <Keywords>Agree</Keywords>
+    <DependsOn>20</DependsOn>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+    <Gump>GUMP,Ivan IronForge,3/Thank You! Please retrieve the following items. A Cyclops Marble Eye, A Tsuki wolf Fang, Ivan's Mining Vest, Ivan's Mining Helmet, Ivan's Mining Goggles, Ivan's Mining Gloves, and 50 of each type of ingot material ranging from iron to blaze.</Gump>
+  </SpeechEntry>
+  <SpeechEntry>
+    <EntryNumber>40</EntryNumber>
+    <ID>40</ID>
+    <Keywords>accept</Keywords>
+    <Action>GIVE/&lt;questholder/name/Ivan IronForge/notestring/Bandits have stolen Ivan's Mining gear, Retrieve the following A Cyclops Marble Eye, A Tsuki Wolf Fang, Ivan's Mining Vest, Ivan's Mining Goggles, Ivan's Mining Helmet, Ivan's Mining Gloves, And 50 of each ingot type ranging from iron to blaze/objective1/COLLECT,Ivan's Mining Vest/Ivan's Mining Goggles/Ivan's Mining Helmet/Ivan's Mining Gloves,1/Cyclops Marble Eye,1/Tsuki Wolf Fang,1/Ingot,50/Ingot,materialtype,Dull Copper,50/Ingot,materialtype,Shadow Iron,50/Ingot,materialtype,Copper,50/Ingot,materialtype,Bronze,50/Ingot,materialtype,Golden,50/Ingot,materialtype,Agapite,50/Ingot,materialtype,Verite,50/Ingot,materialtype,Valorite,50/Ingot,materialtype,Blaze,50/autoreward/true/rewardstring/@bag/ADD/&lt;club/hue/1157&gt;</Action>
+    <DependsOn>30</DependsOn>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+  </SpeechEntry>
+</XmlQuestNPC>
