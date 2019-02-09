@@ -2318,11 +2318,6 @@ namespace Server.Mobiles
 
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
-            if (Core.SA && from != null)
-            {
-                from.RegisterDamage(amount, this);
-            }
-
             if (BardPacified && (HitsMax - Hits) * 0.001 > Utility.RandomDouble())
             {
                 Unpacify();
@@ -7565,7 +7560,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
                     if (info.Defender.InRange(Location, Core.GlobalMaxUpdateRange) && info.Defender.DamageEntries.Any(de => de.Damager == this))
                     {
-                        info.Defender.RegisterDamage(amount, from);
+                        info.Defender.RegisterDamage(amount / 2, from);
                     }
 
                     if (info.Defender.Player && from.CanBeHarmful(info.Defender))
@@ -7580,7 +7575,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
                     if (info.Attacker.InRange(Location, Core.GlobalMaxUpdateRange) && info.Attacker.DamageEntries.Any(de => de.Damager == this))
                     {
-                        info.Attacker.RegisterDamage(amount, from);
+                        info.Attacker.RegisterDamage(amount / 2, from);
                     }
 
                     if (info.Attacker.Player && from.CanBeHarmful(info.Attacker))
