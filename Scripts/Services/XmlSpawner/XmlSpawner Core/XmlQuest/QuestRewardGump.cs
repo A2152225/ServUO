@@ -5,6 +5,7 @@ using Server.Network;
 using Server.Items;
 using Server.Mobiles;
 using System.Collections.Generic;
+using System.CustomizableVendor;
 using Server.Engines.XmlSpawner2;
 
 /*
@@ -18,7 +19,7 @@ using Server.Engines.XmlSpawner2;
 
 namespace Server.Gumps 
 { 
-	public class QuestRewardGump : Gump
+	public class QuestRewardGump : Gump //JewlRewardGump//Gump
 	{
 		private List<XmlQuestPointsRewards> Rewards;
 
@@ -27,7 +28,8 @@ namespace Server.Gumps
 		private int x_pointsoffset = 480;
 		private int maxItemsPerPage = 9;
 		private int viewpage;
-
+//IRewardVendor vendor, Mobile m)
+            //: base(vendor, m)
 		public QuestRewardGump( Mobile from, int page ) : base( 20, 30 )
 		{ 
 			from.CloseGump(typeof(QuestRewardGump));
@@ -117,11 +119,14 @@ namespace Server.Gumps
 		{
 			if(info == null || state == null || state.Mobile == null || Rewards == null) return;
 
+			Console.WriteLine("This is Message 122 ");
+
 			Mobile from = state.Mobile;
 
 			switch ( info.ButtonID ) 
 			{
 				case 12:
+				
 					// page up
 					int nitems = 0;
 					if(Rewards != null)
@@ -144,6 +149,7 @@ namespace Server.Gumps
 					state.Mobile.SendGump( new QuestRewardGump( state.Mobile, page));
 					break;
 				default:
+				Console.WriteLine("This is Message case: {0} ",info.ButtonID);
 				{
 					if(info.ButtonID >= 1000)
 					{

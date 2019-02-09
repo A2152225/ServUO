@@ -3,11 +3,12 @@
   <NPC>
     <Name>Ivan IronForge</Name>
     <Running>True</Running>
-    <ProximityRange>3</ProximityRange>
+    <ProximityRange>354</ProximityRange>
     <ResetRange>16</ResetRange>
     <AllowGhost>False</AllowGhost>
     <SpeechPace>10</SpeechPace>
     <ResetTime>1</ResetTime>
+    <ConfigFile>Ivan IronForge1</ConfigFile>
     <SpeechEntries>5</SpeechEntries>
   </NPC>
   <SpeechEntry>
@@ -67,7 +68,7 @@
     <EntryNumber>40</EntryNumber>
     <ID>40</ID>
     <Keywords>accept</Keywords>
-    <Action>GIVE/&lt;questholder/name/Ivan IronForge/notestring/Bandits have stolen Ivan's Mining gear, Retrieve the following A Cyclops Marble Eye, A Tsuki Wolf Fang, Ivan's Mining Vest, Ivan's Mining Goggles, Ivan's Mining Helmet, Ivan's Mining Gloves, And 50 of each ingot type ranging from iron to blaze/objective1/COLLECT,Ivan's Mining Vest/Ivan's Mining Goggles/Ivan's Mining Helmet/Ivan's Mining Gloves,1/Cyclops Marble Eye,1/Tsuki Wolf Fang,1/Ingot,50/Ingot,materialtype,Dull Copper,50/Ingot,materialtype,Shadow Iron,50/Ingot,materialtype,Copper,50/Ingot,materialtype,Bronze,50/Ingot,materialtype,Golden,50/Ingot,materialtype,Agapite,50/Ingot,materialtype,Verite,50/Ingot,materialtype,Valorite,50/Ingot,materialtype,Blaze,50/autoreward/true/rewardstring/@bag/ADD/&lt;club/hue/1157&gt;</Action>
+    <Action>GIVE/&lt;questholder/name/Ivan IronForge/notestring/Bandits have stolen Ivan's Mining gear, Retrieve the following A Cyclops Marble Eye, A Tsuki Wolf Fang, Ivan's Mining Vest, Ivan's Mining Goggles, Ivan's Mining Helmet, Ivan's Mining Gloves, And 50 of each ingot type ranging from iron to blaze/objective1/COLLECTNAMED,Ivan's Mining Vest,1/Objective2/COLLECTNAMED,Ivan's Mining Goggles,1/Objective3/COLLECTNAMED,Ivan's Mining Helmet,1/Objective4/COLLECTNAMED,Ivan's Mining Gloves,1/Objective5/COLLECTNAMED,Cyclops Marble Eye,1/autoreward/true/rewardstring/@bag/ADD/&lt;club/hue/1157/name/an orc’s blood encrusted club&gt;</Action>
     <DependsOn>30</DependsOn>
     <Pause>1</Pause>
     <PrePause>-1</PrePause>

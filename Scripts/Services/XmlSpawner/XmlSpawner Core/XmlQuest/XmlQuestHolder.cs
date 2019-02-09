@@ -374,13 +374,36 @@ namespace Server.Items
 			to.Send(new ContainerDisplay(this));
 
 #if(CLIENT6017)
+	
+ NetState ns = to.NetState;
+
+  if (ns.HighSeas)
+            {
+                to.Send(new ContainerDisplayHS(this));
+            }
+            else
+            {
+                to.Send(new ContainerDisplay(this));
+            }
+
+            if (ns.ContainerGridLines)
+            {
+                to.Send(new ContainerContent6017(to, this));
+            }
+            else
+            {
+                to.Send(new ContainerContent(to, this));
+            }
+
+/*
             // add support for new client container packets
 			if (to.NetState != null && to.NetState.ContainerGridLines)
 				to.Send(new ContainerContent6017(to, this));
 			else
 #endif
 				to.Send(new ContainerContent(to, this));
-
+*/
+#endif
 			if (ObjectPropertyList.Enabled)
 			{
 				List<Item> items = this.Items;

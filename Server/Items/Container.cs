@@ -1904,24 +1904,31 @@ namespace Server.Items
 
         public virtual void DisplayTo(Mobile to)
         {
+	Console.WriteLine("1907 before processOpeners(to)");
+
 			ProcessOpeners(to);
-
+Console.WriteLine("1910 after processOpeners(to), before get netstate");
             NetState ns = to.NetState;
-
+			Console.WriteLine("1912 after netstate: {0}",ns);
+//Console.WriteLine("1913 More NS stuff. {0} : {1} ", ns.HighSeas, ns.ContainerGrid);
             if (ns == null)
             {
                 return;
             }
-
+Console.WriteLine("1918 before validatePositions");
             ValidatePositions();
-
+Console.WriteLine("1920 after Validate  Pos");
             if (ns.HighSeas)
             {
+				Console.WriteLine("1923 before displayHS");
                 to.Send(new ContainerDisplayHS(this));
+				Console.WriteLine("1925 after dispolayHS");
             }
             else
             {
+				Console.WriteLine("1929 not HS Else - before ");
                 to.Send(new ContainerDisplay(this));
+				Console.WriteLine("1931 not HS Else - after ");
             }
 
             if (ns.ContainerGridLines)
@@ -1935,11 +1942,14 @@ namespace Server.Items
 
 			if (to.ViewOPL)
             {
+				Console.WriteLine("1945 IF viewOPL - before");
                 var items = Items;
-
+				Console.WriteLine("1947 IF viewOPL - before, ITEMS: {0}", items);
 				foreach (var o in items)
                 {
+					Console.WriteLine("1950 IF viewOPL - before sendpacket");
 					to.Send(o.OPLPacket);
+					Console.WriteLine("1952 IF viewOPL - after sendpacket");
                 }
             }
         }
