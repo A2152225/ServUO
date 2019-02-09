@@ -40,6 +40,7 @@ drng32.dll
 libdrng.so
 ServUO.exe
 /WorldFiles
+/Saves - Copy/*
 /GloryUOShard
 *.csproj.user
 *.DotSettings.user
