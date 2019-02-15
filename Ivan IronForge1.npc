@@ -68,7 +68,7 @@
     <EntryNumber>40</EntryNumber>
     <ID>40</ID>
     <Keywords>accept</Keywords>
-    <Action>GIVE/&lt;questholder/name/Ivan IronForge/notestring/Bandits have stolen Ivan's Mining gear, Retrieve the following A Cyclops Marble Eye, A Tsuki Wolf Fang, Ivan's Mining Vest, Ivan's Mining Goggles, Ivan's Mining Helmet, Ivan's Mining Gloves, And 50 of each ingot type ranging from iron to blaze/objective1/COLLECTNAMED,Ivan's Mining Vest,1/Objective2/COLLECTNAMED,Ivan's Mining Goggles,1/Objective3/COLLECTNAMED,Ivan's Mining Helmet,1/Objective4/COLLECTNAMED,Ivan's Mining Gloves,1/Objective5/COLLECTNAMED,Cyclops Marble Eye,1/autoreward/true/rewardstring/@bag/ADD/&lt;club/hue/1157/name/an orc’s blood encrusted club&gt;</Action>
+    <Action>GIVE/&lt;questholder/name/Ivan IronForge/notestring/Bandits have stolen Ivan's Mining gear, Retrieve the following A Cyclops Marble Eye, Ivan's Mining Vest, Ivan's Mining Goggles, Ivan's Mining Helmet, Ivan's Mining Gloves/objective1/COLLECTNAMED,Ivan's Mining Vest,1/Objective2/COLLECTNAMED,Ivan's Mining Goggles,1/Objective3/COLLECTNAMED,Ivan's Mining Helmet,1/Objective4/COLLECTNAMED,Ivan's Mining Gloves,1/Objective5/COLLECTNAMED,Cyclops Marble Eye,1/autoreward/false/canseereward/false/rewardstring/@bag/ADD,0.05/PowerScroll Mining 120/ADD,0.1/PowerScroll Mining 115/ADD,0.15/PowerScroll Mining 110/ADD/Gold,2500/ADD,0.5/GargoylePickAxe/ADD.0.8/Pickaxe/ADD/Shovel/</Action>
     <DependsOn>30</DependsOn>
     <Pause>1</Pause>
     <PrePause>-1</PrePause>

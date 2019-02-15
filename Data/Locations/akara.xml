@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<places>
+	<parent name="Akara">
+		<parent name="Towns">
+			<parent name="Essex">
+				<child name="Essex Square" x="2053" y="1432" z="5" />
+				<child name="Essex Bank" x="2058" y="1415" z="5" />
+			</parent>
+			<parent name="Darkhaven">
+				<child name="Main" x="1148" y="1552" z="0" />
+			</parent>
+		</parent>
+		<parent name="Dungeons">
+			<parent name="Dartera">
+				<child name="Entrance" x="575" y="1446" z="0" />
+			</parent>
+			<parent name="Lydor">
+				<child name="Entrance" x="680" y="1092" z="0" />
+			</parent>
+			<parent name="Death Star">
+				<child name="Entrance" x="5372" y="3200" z="0" />
+			</parent>
+		</parent>
+		<parent name="Sites">
+			<parent name="Points of Interest">
+				<child name="NYI" x="2053" y="1435" z="5" />
+			</parent>
+			<parent name="Caves and Mines">
+				<child name="Mine 1-NYI-" x="2082" y="574" z="0" />
+				<child name="Mine 2-NYI-" x="2157" y="456" z="0" />
+			</parent>
+			<parent name="Orc Forts">
+				<child name="Fort 1-NYI-" x="912" y="193" z="-79" />
+				<child name="Fort 2-NYI-" x="1666" y="362" z="-50" />
+			</parent>
+		</parent>
+	</parent>
+</places>
