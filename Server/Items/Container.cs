@@ -1630,7 +1630,7 @@ namespace Server.Items
         }
 
         private static int m_GlobalMaxItems = 125;
-        private static int m_GlobalMaxWeight = 400;
+        private static int m_GlobalMaxWeight = 500;
 
         public static int GlobalMaxItems { get { return m_GlobalMaxItems; } set { m_GlobalMaxItems = value; } }
         public static int GlobalMaxWeight { get { return m_GlobalMaxWeight; } set { m_GlobalMaxWeight = value; } }
@@ -1909,7 +1909,7 @@ namespace Server.Items
 			ProcessOpeners(to);
 // Console.WriteLine("1910 after processOpeners(to), before get netstate");
             NetState ns = to.NetState;
-			Console.WriteLine("1912 after netstate: {0}",ns);
+//			Console.WriteLine("1912 after netstate: {0}",ns);
 //Console.WriteLine("1913 More NS stuff. {0} : {1} ", ns.HighSeas, ns.ContainerGrid);
             if (ns == null)
             {

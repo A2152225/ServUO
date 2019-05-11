@@ -351,6 +351,7 @@ namespace Server.Mobiles
 		//Kill count tracking
 		public Dictionary<string,int>KillCount = new Dictionary<string,int>();// = new Dictionary<string,int>["default",0];
 		
+		
 		public void CreatureKillUpdate(string ctype)
 		{
 			if (KillCount.ContainsKey(ctype) == true)
@@ -1533,7 +1534,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         {
             if (IsStaff())
             {
-                return 100;
+                return 2000;
             }
 
             int max = base.GetMaxResistance(type);
@@ -5206,9 +5207,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			
 				
 			m_YoungSaves = reader.ReadInt();
+				 m_EXPL = reader.ReadLong();
 				 m_LastLevelExpL = reader.ReadLong();
-                 m_EXPL = reader.ReadLong();
-				m_MaxLvl = reader.ReadInt();
+                 m_MaxLvl = reader.ReadInt();
 				m_OldMaxLvl = reader.ReadInt();
 				m_PrestigeLvl = reader.ReadInt();
 				m_StrCapInc = reader.ReadInt(); 

@@ -1,4 +1,4 @@
-// Script: SplitItems.cs
+// Script: GetCreatureKills.cs
 // Version: 1.0
 // Author: Burner
 // Date: 7/2/2014
@@ -19,63 +19,23 @@ using Server.Engines.CannedEvil;
 
 namespace Server.Commands 
 { 
-  public class SplitItems
+  public class GetCreatureKills
   { 
 	 private static int m_amt = 1;
 	  private Type SplitItemType;
 	  
     public static void Initialize() 
     { 
-      CommandSystem.Register( "Split", AccessLevel.Player, new CommandEventHandler( SplitItems_OnCommand ) ); 
+      CommandSystem.Register( "GetCreatureKills", AccessLevel.Developer, new CommandEventHandler( GetCreatureKills_OnCommand ) ); 
     } 
-    public static void SplitItems_OnCommand( CommandEventArgs e ) 
+    public static void GetCreatureKills_OnCommand( CommandEventArgs e ) 
     { 
-
 		Mobile from = e.Mobile; 
-
- 		// if we have a command after just the word "SplitItems"...
-		if ( e.Length != 0 )
-		{
-		if ( e.Length == 1 )
-			{
-				double testit = e.GetInt32(0);
-				
-				
-				if ( testit < 1 || testit > 59999)
-				{
-				e.Mobile.SendMessage( "Please Choose a number between 1 and 59999." );
-				return;
-				}
-				m_amt = (int)testit;
-				
-				}
-				
-			if ( e.Length == 0 )
-			{
-				double testit = e.GetInt32(0);
-				
-				
-				if ( testit < 1 || testit > 59999)
-				{
-				e.Mobile.SendMessage( "Please Choose a number between 1 and 59999." );
-				return;
-				}
-				
-				
-				}
-					from.Target = new PackFromTarget( from, m_amt );
-				
-			switch( e.GetString(0).ToLower() )
-			{ 
 			
-				default:
-					from.LocalOverheadMessage( MessageType.Regular, 1150, true, "Split will allow you to break stacked items apart."); 
-					break;
-			}
+				e.GetString(0).ToLower()
+				from.SendMessage("You might have killed {0} creatur
 		}
-		else
-		//from.SendMessage("Please Supply only 1 number after [split, if no number is specified it will default to 1");
-			from.Target = new PackFromTarget( from, 1);
+
 	}
 
 	public static bool InOwnHouse( Mobile from )
@@ -91,7 +51,7 @@ namespace Server.Commands
 		private bool zackly;
 		private ChampionSkullType m_Type;
 		private BossSkullType m_Type2;
-		private Type SplitItemsType;
+		private Type GetCreatureKillsType;
 		public PackFromTarget( Mobile from, int AMT) : base( -1, true, TargetFlags.None )
 		{
 		splitamount = AMT;
@@ -293,7 +253,7 @@ namespace Server.Commands
 	                Item[] items =  FromCont.FindItemsByType( MyItem, true );
 					foreach (Item item in items) 
 					{
-	//					Console.WriteLine ("SplitItemstype=" + SplitItemsType + " and item is " + item + "");
+	//					Console.WriteLine ("GetCreatureKillstype=" + GetCreatureKillsType + " and item is " + item + "");
 						if(!(xx.TryDropItem( from, item, false )))
 							from.SendMessage("That container is too full!");
 	//						xx.AddItem(item);
