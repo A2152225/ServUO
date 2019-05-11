@@ -44,4 +44,4 @@ ServUO.exe
 /GloryUOShard
 *.csproj.user
 *.DotSettings.user
-
+/Saves*
