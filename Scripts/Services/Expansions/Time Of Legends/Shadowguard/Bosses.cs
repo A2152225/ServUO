@@ -17,7 +17,7 @@ namespace Server.Engines.Shadowguard
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsLastBoss { get; set; }
 
-		public DateTime _NextSummon;
+		private DateTime _NextSummon;
 		
 		public virtual Type[] SummonTypes { get { return null; } }
 		public virtual Type[] ArtifactDrops { get { return _ArtifactTypes; } }
@@ -213,13 +213,14 @@ namespace Server.Engines.Shadowguard
 		public virtual void Summon()
 		{
             int max = MaxSummons;
+            var map = Map;
 
             ShadowguardEncounter inst = ShadowguardController.GetEncounter(this.Location, this.Map);
 
             if(inst != null)
                 max += inst.PartySize() * 2;
 
-			if(this.Map == null || this.SummonTypes == null || this.SummonTypes.Length == 0 || TotalSummons() > max)
+			if(map == null || this.SummonTypes == null || this.SummonTypes.Length == 0 || TotalSummons() > max)
 				return;
 				
 			int count = Utility.RandomList(1, 2, 2, 2, 3, 3, 4, 5);
@@ -235,9 +236,9 @@ namespace Server.Engines.Shadowguard
 				{
 					int x = Utility.RandomMinMax(p.X - 3, p.X + 3);
 					int y = Utility.RandomMinMax(p.Y - 3, p.Y + 3);
-					int z = this.Map.GetAverageZ(x, y);
+					int z = map.GetAverageZ(x, y);
 					
-					if(this.Map.CanSpawnMobile(x, y, z))
+					if(map.CanSpawnMobile(x, y, z))
 					{
 						p = new Point3D(x, y, z);
 						break;
@@ -248,7 +249,7 @@ namespace Server.Engines.Shadowguard
 				
 				if(spawn != null)
 				{
-					spawn.MoveToWorld(p, this.Map);
+					spawn.MoveToWorld(p, map);
 					spawn.Team = this.Team;
 					spawn.SummonMaster = this;
 					
@@ -604,11 +605,6 @@ namespace Server.Engines.Shadowguard
 	{
 		public override Type[] SummonTypes { get { return _SummonTypes; } }
 		private Type[] _SummonTypes = new Type[] { typeof(SkeletalDragon), typeof(LichLord), typeof(WailingBanshee), typeof(FleshGolem) };
-		
-		public override bool CanAnimateDead{ get { return true; } }
-		public override double AnimateChance{ get{ return 0.15; } }
-		public override int AnimateScalar{ get{ return 150; } }
-		public override BaseCreature Animates{ get{ return new FleshGolem(); } }
 
         public override bool CanDiscord { get { return true; } }
         public override bool PlayInstrumentSound { get { return false; } }
@@ -708,10 +704,6 @@ namespace Server.Engines.Shadowguard
 		public override Type[] SummonTypes { get { return _SummonTypes; } }
 		private Type[] _SummonTypes = new Type[] { typeof(MinotaurCaptain), typeof(Daemon), typeof(Titan) };
 		
-		public override bool CanAnimateDead{ get { return true; } }
-		public override double AnimateChance{ get{ return 0.15; } }
-		public override int AnimateScalar{ get{ return 150; } }
-		public override BaseCreature Animates{ get{ return new FleshGolem(); } }
         public override bool BardImmune { get { return true; } }
 
 		private DateTime _NextNuke;
@@ -845,8 +837,9 @@ namespace Server.Engines.Shadowguard
 		private void DoDamage_Callback(object o)
 		{
             Mobile m = o as Mobile;
- 
-            if (m != null && this.Map != null)
+            Map map = Map;
+
+            if (m != null && map != null)
             {
                 DoHarmful(m);
                 AOS.Damage(m, this, Utility.RandomMinMax(100, 150), 50, 50, 0, 0, 0);
@@ -866,15 +859,15 @@ namespace Server.Engines.Shadowguard
 
                     Movement.Movement.Offset(d, ref x, ref y);
 
-                    if (!this.Map.CanSpawnMobile(x, y, this.Map.GetAverageZ(x, y)))
+                    if (!map.CanSpawnMobile(x, y, map.GetAverageZ(x, y)))
                     {
-                        m.MoveToWorld(new Point3D(lastx, lasty, this.Map.GetAverageZ(lastx, lasty)), this.Map);
+                        m.MoveToWorld(new Point3D(lastx, lasty, map.GetAverageZ(lastx, lasty)), this.Map);
                         break;
                     }
 
                     if (range >= 12 && (orx != x || ory != y))
                     {
-                        m.MoveToWorld(new Point3D(x, y, this.Map.GetAverageZ(x, y)), this.Map);
+                        m.MoveToWorld(new Point3D(x, y, map.GetAverageZ(x, y)), this.Map);
                     }
                 }
 

@@ -133,52 +133,29 @@ namespace Server.Engines.Craft
                     switch ( resource )
                     {
                         case CraftResource.DullCopper:
-                            difficulty = 35.0;
-                            break;
-                        case CraftResource.ShadowIron:
-                            difficulty = 40.0;
-                            break;
-                        case CraftResource.Copper:
-                            difficulty = 45.0;
-                            break;
-                        case CraftResource.Bronze:
-                            difficulty = 50.0;
-                            break;
-                        case CraftResource.Gold:
-                            difficulty = 55.0;
-                            break;
-                        case CraftResource.Agapite:
-                            difficulty = 60.0;
-                            break;
-                        case CraftResource.Verite:
                             difficulty = 65.0;
                             break;
-                        case CraftResource.Valorite:
+                        case CraftResource.ShadowIron:
                             difficulty = 70.0;
                             break;
-						case CraftResource.Blaze:
+                        case CraftResource.Copper:
                             difficulty = 75.0;
                             break;
-						case CraftResource.Ice:
+                        case CraftResource.Bronze:
                             difficulty = 80.0;
                             break;
-						case CraftResource.Toxic:
+                        case CraftResource.Gold:
                             difficulty = 85.0;
                             break;
-						case CraftResource.Electrum:
+                        case CraftResource.Agapite:
                             difficulty = 90.0;
                             break;
-						case CraftResource.Platinum:
+                        case CraftResource.Verite:
                             difficulty = 95.0;
                             break;
-						case CraftResource.Royalite:
-                            difficulty = 97.0;
-                            break;
-						case CraftResource.Danite:
+                        case CraftResource.Valorite:
                             difficulty = 99.0;
                             break;
-						
-						
                     }
 
                     double skill = Math.Max(from.Skills[SkillName.Mining].Value, from.Skills[SkillName.Blacksmith].Value);

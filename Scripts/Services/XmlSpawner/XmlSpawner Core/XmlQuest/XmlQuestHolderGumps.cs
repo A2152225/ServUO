@@ -206,7 +206,7 @@ namespace Server.Gumps
                             {
                                 if (name != null)
                                 {
-                                    if (type == null) type = "item"; //mob
+                                    if (type == null) type = "mob";
 
                                     text = String.Format("Collect {0} {1}(s) named {2} ({3} left)", targetcount, type, name, remaining);
                                 }
@@ -505,27 +505,21 @@ namespace Server.Gumps
                     if(!m_questitem.CanSeeReward) return;
                     if (m_questitem.RewardItem != null || m_questitem.RewardAttachment != null)
                     {
-						Console.WriteLine("508 reward is not null opening status gump");
                         // open a new status gump
-                        state.Mobile.SendGump(new XmlQuestStatusGump(m_questitem, m_gumptitle, m_X, m_Y, m_solid, m_screen)); 
+                        state.Mobile.SendGump(new XmlQuestStatusGump(m_questitem, m_gumptitle, m_X, m_Y, m_solid, m_screen));
                     }
                     // display the reward item
                     if (m_questitem.RewardItem != null)
                     {
                         // show the contents of the xmlquest pack
                         if (m_questitem.Pack != null)
-							Console.WriteLine("517 reward pack is not null, displaying pack to mobile");
                             m_questitem.Pack.DisplayTo(state.Mobile);
-								Console.WriteLine("519 reward pack is not null, displayed pack to mobile");
                     }
                     // identify the reward attachment
                     if (m_questitem.RewardAttachment != null)
                     {
-							Console.WriteLine("523 reward attachment is not null, closing attachment gump to mobile");
-
                         //state.Mobile.SendMessage("{0}",m_questitem.RewardAttachment.OnIdentify(state.Mobile));
                         state.Mobile.CloseGump(typeof(DisplayAttachmentGump));
-						Console.WriteLine("527 reward attachment is not null, displaying attachment gump to mobile");
                         state.Mobile.SendGump(new DisplayAttachmentGump(state.Mobile, m_questitem.RewardAttachment.OnIdentify(state.Mobile)));
                     }
                     break;

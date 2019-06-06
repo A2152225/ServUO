@@ -223,6 +223,15 @@ namespace Server.Items
 			dullCopper.RunicMaxIntensity = Uber ? 100 : 25;
 
 			CraftAttributeInfo shadowIron = ShadowIron = new CraftAttributeInfo();
+			 
+												  
+												   
+			 
+				
+			 
+												  
+												  
+			 
 
 			shadowIron.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
 			shadowIron.ArmorFireResist = Uber ? 1 : Utility.Random(2);
@@ -240,6 +249,9 @@ namespace Server.Items
 			shadowIron.RunicMaxIntensity = Uber ? 100 : 30;
 
 			CraftAttributeInfo copper = Copper = new CraftAttributeInfo();
+										   
+											 
+											 
 
 			copper.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
 			copper.ArmorFireResist = Uber ? 2 : Utility.Random(3);
@@ -258,6 +270,17 @@ namespace Server.Items
 			copper.RunicMaxIntensity = Uber ? 100 : 40;
 
 			CraftAttributeInfo bronze = Bronze = new CraftAttributeInfo();
+											  
+						
+			 
+												  
+												   
+			 
+				
+			 
+												  
+												  
+			 
 
 			bronze.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
 			bronze.ArmorFireResist = Uber ? 3 : Utility.Random(4);
@@ -275,6 +298,23 @@ namespace Server.Items
 			bronze.RunicMaxIntensity = Uber ? 100 : 45;
 
 			CraftAttributeInfo golden = Golden = new CraftAttributeInfo();
+									   
+										 
+										 
+										   
+										   
+										  
+										  
+						
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											  
+			 
 
 			golden.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
 			golden.ArmorFireResist = Uber ? 3 : Utility.Random(4);
@@ -295,6 +335,22 @@ namespace Server.Items
 			golden.RunicMaxIntensity = Uber ? 100 : 50;
 
 			CraftAttributeInfo agapite = Agapite = new CraftAttributeInfo();
+									   
+										 
+										 
+										 
+										  
+										  
+						
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											  
+			 
 
 			agapite.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
 			agapite.ArmorFireResist = Uber ? 3 : Utility.Random(4);
@@ -313,6 +369,25 @@ namespace Server.Items
 			agapite.RunicMaxIntensity = Uber ? 100 : 55;
 
 			CraftAttributeInfo verite = Verite = new CraftAttributeInfo();
+									   
+									   
+										 
+								  
+											   
+								   
+												
+										  
+										  
+						
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											  
+			 
 
 			verite.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
 			verite.ArmorFireResist = Uber ? 4 : Utility.Random(5);
@@ -331,6 +406,24 @@ namespace Server.Items
 			verite.RunicMaxIntensity = Uber ? 100 : 65;
 
 			CraftAttributeInfo valorite = Valorite = new CraftAttributeInfo();
+										
+										
+										  
+										  
+										  
+											
+										   
+										   
+						
+			 
+											   
+												
+			 
+				
+			 
+											   
+											   
+			 
 
 			valorite.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
 			valorite.ArmorFireResist = Uber ? 4 : Utility.Random(5);
@@ -351,6 +444,24 @@ namespace Server.Items
 			valorite.RunicMaxIntensity = Uber ? 100 : 70;
 
 CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
+									   
+									   
+										 
+										 
+										   
+										   
+										  
+										  
+						
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											  
+			 
 
 			blaze.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
 			blaze.ArmorFireResist = Uber ? 5 : Utility.Random(6);
@@ -368,6 +479,26 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			blaze.RunicMaxIntensity = Uber ? 100 : 75;
 
 			CraftAttributeInfo ice = Ice = new CraftAttributeInfo();
+										 
+										   
+										   
+										  
+										   
+										   
+											 
+											 
+											
+											
+						
+			 
+												
+												 
+			 
+				
+			 
+												
+												 
+			 
 
 			ice.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
 			ice.ArmorFireResist = Uber ? 5 : Utility.Random(6);
@@ -402,6 +533,15 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			toxic.RunicMaxIntensity = Uber ? 100 : 90;
 
 			CraftAttributeInfo electrum = Electrum = new CraftAttributeInfo();
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											  
+			 
 
 			electrum.ArmorPhysicalResist = Uber ? 7 : Utility.Random(8);
 			electrum.ArmorFireResist = Uber ? 7 : Utility.Random(8);
@@ -419,6 +559,22 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			electrum.RunicMaxIntensity = Uber ? 100 : 100;
 
 			CraftAttributeInfo platinum = Platinum = new CraftAttributeInfo();
+									   
+									   
+										 
+										 
+										  
+										  
+						
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											  
+			 
 
 			platinum.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
 			platinum.ArmorFireResist = Uber ? 8 : Utility.Random(9);
@@ -436,6 +592,21 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 
 			
 				CraftAttributeInfo royalite = Royalite = new CraftAttributeInfo();
+									   
+										 
+										 
+										  
+										  
+						
+			 
+											  
+											   
+			 
+				
+			 
+											  
+											   
+			 
 
 			royalite.ArmorPhysicalResist = Uber ? 9 : Utility.Random(9);
 			royalite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
@@ -515,6 +686,10 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			barbed.RunicMaxIntensity = Uber ? 100 : 35;
 
 			CraftAttributeInfo polar = Polar = new CraftAttributeInfo();
+									  
+										
+										
+									   
 
 			polar.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
 			polar.ArmorFireResist = Uber ? 3 : Utility.Random(4);
@@ -529,6 +704,10 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			polar.RunicMaxIntensity = Uber ? 100 : 45;
 
 			CraftAttributeInfo synthetic = Synthetic = new CraftAttributeInfo();
+									 
+									 
+										
+										
 
 			synthetic.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
 			synthetic.ArmorFireResist = Uber ? 4 : Utility.Random(5);
@@ -557,6 +736,10 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			blazel.RunicMaxIntensity = Uber ? 100 : 60;
 
 			CraftAttributeInfo daemonic = Daemonic = new CraftAttributeInfo();
+									 
+									 
+									   
+									   
 
 			daemonic.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
 			daemonic.ArmorFireResist = Uber ? 5 : Utility.Random(6);
@@ -618,41 +801,70 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			red.ArmorColdResist = -3;
 
 			CraftAttributeInfo yellow = YellowScales = new CraftAttributeInfo();
+											 
 
 			yellow.ArmorPhysicalResist = -3;
 			yellow.ArmorLuck = 20;
 
 			CraftAttributeInfo black = BlackScales = new CraftAttributeInfo();
+									   
+									   
+									   
 
 			black.ArmorPhysicalResist = 10;
 			black.ArmorEnergyResist = -3;
 
 			CraftAttributeInfo green = GreenScales = new CraftAttributeInfo();
+									
+									
+									  
+								   
 
 			green.ArmorFireResist = -3;
 			green.ArmorPoisonResist = 10;
 
 			CraftAttributeInfo white = WhiteScales = new CraftAttributeInfo();
+								  
 
 			white.ArmorPhysicalResist = -3;
 			white.ArmorColdResist = 10;
 
 			CraftAttributeInfo blue = BlueScales = new CraftAttributeInfo();
+									   
+									   
+									   
 
 			blue.ArmorPoisonResist = -3;
 			blue.ArmorEnergyResist = 10;
 
 			CraftAttributeInfo coppers = CopperScales = new CraftAttributeInfo();
+										  
+										  
+											
+											
 
 			coppers.ArmorPoisonResist = Uber ? 6 : Utility.Random(7);
 			coppers.ArmorPhysicalResist = Uber ? 6 : Utility.Random(7);
 			coppers.ArmorEnergyResist = Uber ? 6 : Utility.Random(7);
+									 
+												  
+									
 
 			CraftAttributeInfo silver = SilverScales = new CraftAttributeInfo();
+										
+										  
+											  
+									  
+												   
+											
 
 			silver.ArmorColdResist = Uber ? 7 : Utility.Random(8);
 			silver.ArmorEnergyResist = Uber ? 7 : Utility.Random(8);
 			silver.ArmorPhysicalResist = Uber ? 7 : Utility.Random(8);
+											
+										   
+										   
+												
 
 			CraftAttributeInfo gold = GoldScales = new CraftAttributeInfo();
 
@@ -716,6 +928,8 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
             bloodwood.RunicMaxIntensity = 100;
 
             CraftAttributeInfo Frostwood = Frostwood = new CraftAttributeInfo();
+									  
+										  
 
             Frostwood.WeaponDurability = 125;
             Frostwood.WeaponLowerRequirements = 50;
@@ -729,6 +943,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
             Frostwood.RunicMaxIntensity = 100;
 
 			CraftAttributeInfo ebony = Ebony = new CraftAttributeInfo();
+										 
 
 			ebony.WeaponDurability = 150;
 			ebony.WeaponLowerRequirements = 60;
@@ -749,6 +964,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			bamboo.RunicMaxIntensity = 100;
 
 			CraftAttributeInfo purpleheart = PurpleHeart = new CraftAttributeInfo();
+												
 
 			purpleheart.WeaponDurability = 200;
 			purpleheart.WeaponLowerRequirements = 80;
@@ -869,6 +1085,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 				new CraftResourceInfo( 1973,	0,		"Royalite",		CraftAttributeInfo.Royalite,	CraftResource.Royalite,			typeof( RoyaliteIngot ),	typeof( RoyaliteOre ),		typeof( RoyaliteGranite ) ),
 				new CraftResourceInfo( 2990,	0,		"Danite",		CraftAttributeInfo.Danite,	CraftResource.Danite,			typeof( DaniteIngot ),	typeof( DaniteOre ),		typeof( DaniteGranite ) ),
  };
+
         private static readonly CraftResourceInfo[] m_ScaleInfo = new CraftResourceInfo[]
         {
             new CraftResourceInfo(0x66D, 1053129, "Red Scales",	CraftAttributeInfo.RedScales, CraftResource.RedScales, typeof(RedScales)),

@@ -1529,7 +1529,7 @@ namespace Server.Multis
                 return false;
             }
 
-            return entity is Server.Items.Blood;
+            return entity is Blood;
         }
 
         public virtual bool IsExcludedTile(StaticTile tile)
@@ -1601,6 +1601,11 @@ namespace Server.Multis
                 return false;
 
             return Boats.Any(boat => boat.Owner == from && !boat.Deleted && boat.Map != Map.Internal && !(boat is RowBoat));
+        }
+
+        public static BaseBoat GetBoat(Mobile from)
+        {
+            return Boats.FirstOrDefault(boat => boat.Owner == from && !boat.Deleted && boat.Map != Map.Internal && !(boat is RowBoat));
         }
 
         public static bool IsValidLocation(Point3D p, Map map)
@@ -1822,7 +1827,9 @@ namespace Server.Multis
                 NoMoveHS = true;
 
                 foreach (var e in toMove)
+                {
                     e.NoMoveHS = true;
+                }
 
                 // packet created
                 MoveBoatHS smooth = new MoveBoatHS(this, d, clientSpeed, xOffset, yOffset);
@@ -2188,7 +2195,7 @@ namespace Server.Multis
             return false;
         }
 
-        public IEnumerable<IEntity> GetEntitiesOnBoard()
+        public virtual IEnumerable<IEntity> GetEntitiesOnBoard()
         {
             Map map = Map;
 

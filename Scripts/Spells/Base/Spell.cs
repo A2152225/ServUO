@@ -513,6 +513,11 @@ namespace Server.Spells
                 SlayerEntry atkSlayer = SlayerGroup.GetEntryByName(atkBook.Slayer);
                 SlayerEntry atkSlayer2 = SlayerGroup.GetEntryByName(atkBook.Slayer2);
 
+                if (atkSlayer == null && atkSlayer2 == null)
+                {
+                    atkSlayer = SlayerGroup.GetEntryByName(SlayerSocket.GetSlayer(atkBook));
+                }
+
                 if (atkSlayer != null && atkSlayer.Slays(defender) || atkSlayer2 != null && atkSlayer2.Slays(defender))
                 {
                     defender.FixedEffect(0x37B9, 10, 5);
@@ -721,7 +726,7 @@ namespace Server.Spells
 		{
 			m_StartCastTime = Core.TickCount;
 
-			if (Core.AOS && m_Caster.Spell is Spell && ((Spell)m_Caster.Spell).State == SpellState.Sequencing)
+            if (Core.AOS && m_Caster.Spell is Spell && ((Spell)m_Caster.Spell).State == SpellState.Sequencing)
 			{
 				((Spell)m_Caster.Spell).Disturb(DisturbType.NewCast);
 			}
@@ -794,7 +799,13 @@ namespace Server.Spells
 
                     SayMantra();
 
-                    TimeSpan castDelay = GetCastDelay();
+                    /*
+                     * EA seems to use some type of spell variation, of -100 ms + timer resolution.
+                     * Using the below millisecond dropoff with a 50ms timer resolution seems to be exact
+                     * to EA.
+                     */
+
+                    TimeSpan castDelay = GetCastDelay().Subtract(TimeSpan.FromMilliseconds(100));
 
                     if (ShowHandMovement && !(m_Scroll is SpellStone) && (m_Caster.Body.IsHuman || (m_Caster.Player && m_Caster.Body.IsMonster)))
                     {
@@ -956,9 +967,9 @@ namespace Server.Spells
 			// Lower Mana Cost = 40%
 			int lmc = AosAttributes.GetValue(m_Caster, AosAttribute.LowerManaCost);
 
-			if (lmc > 80)  //was 40 
+			if (lmc > 40)
 			{
-				lmc = 80; //was 40 
+				lmc = 40;
 			}
 
             lmc += BaseArmor.GetInherentLowerManaCost(m_Caster);
@@ -1033,12 +1044,12 @@ namespace Server.Spells
 			// Faster casting cap of 0 (if using the protection spell) 
 			// Paladin spells are subject to a faster casting cap of 4 
 			// Paladins with magery of 70.0 or above are subject to a faster casting cap of 2 
-			int fcMax = 100; // was 4;
+			int fcMax = 4;
 
 			if (CastSkill == SkillName.Magery || CastSkill == SkillName.Necromancy || CastSkill == SkillName.Mysticism ||
                 (CastSkill == SkillName.Chivalry && (m_Caster.Skills[SkillName.Magery].Value >= 70.0 || m_Caster.Skills[SkillName.Mysticism].Value >= 70.0)))
 			{
-				fcMax = 100; //was 2;
+				fcMax = 2;
 			}
 
 			int fc = AosAttributes.GetValue(m_Caster, AosAttribute.CastSpeed);
@@ -1065,12 +1076,10 @@ namespace Server.Spells
 				delay = CastDelayMinimum;
 			}
 
-			#region Mondain's Legacy
-			if (DreadHorn.IsUnderInfluence(m_Caster))
+            if (DreadHorn.IsUnderInfluence(m_Caster))
 			{
 				delay.Add(delay);
 			}
-			#endregion
 
 			//return TimeSpan.FromSeconds( (double)delay / CastDelayPerSecond );
 			return delay;
@@ -1327,7 +1336,7 @@ namespace Server.Spells
 			{
 				m_Spell = spell;
 
-				Priority = TimerPriority.TwentyFiveMS;
+				Priority = TimerPriority.FiftyMS;
 			}
 
 			protected override void OnTick()

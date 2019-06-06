@@ -8,6 +8,7 @@ using System.Globalization;
 using Server.Network;
 using Server.Commands;
 using Server.Items;
+using Server.Engines.SeasonalEvents;
 
 namespace Server.Engines.CityLoyalty
 {
@@ -78,7 +79,7 @@ namespace Server.Engines.CityLoyalty
         MaritimeGuild = 1154050,
         MerchantsAssociation = 1154051,
         MiningCooperative = 1154052,
-        LeageOfRangers = 1154053,
+        LeagueOfRangers = 1154053,
         GuildOfAssassins = 1154054,
         WarriorsGuild = 1154055,
     }
@@ -365,15 +366,16 @@ namespace Server.Engines.CityLoyalty
 		public virtual void AwardLove(Mobile from, double love, bool message = true)
 		{
             CityLoyaltyEntry entry = GetPlayerEntry<CityLoyaltyEntry>(from, true);
-			
+
 			if(entry.Hate > 10)
 			{
 				double convert = entry.Hate / 75;
                 entry.Neutrality += (int)convert;
                 entry.Hate -= (int)convert;
 			}
-			
-			foreach(CityLoyaltySystem sys in Cities.Where(s => s.City != this.City))
+
+            // TODO: Re-Enable this for The Awakening Event
+            /*foreach (CityLoyaltySystem sys in Cities.Where(s => s.City != this.City))
 			{
                 CityLoyaltyEntry e = sys.GetPlayerEntry<CityLoyaltyEntry>(from, true);
 
@@ -383,7 +385,7 @@ namespace Server.Engines.CityLoyalty
                     e.Love -= (int)convert;
                     e.Neutrality += (int)convert;
 				}
-			}
+			}*/
 
             if (message && entry.ShowGainMessage)
             {
@@ -578,6 +580,8 @@ namespace Server.Engines.CityLoyalty
                     entry.UtilizingTradeDeal = true;
                     BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.CityTradeDeal, 1154168, 1154169, new TextDefinition((int)ActiveTradeDeal), true));
 
+                    ActivateTradeDeal(m, ActiveTradeDeal);
+
                     m.Delta(MobileDelta.WeaponDamage);
 
                     m.SendLocalizedMessage(1154075); // You gain the benefit of your City's Trade Deal!
@@ -708,7 +712,10 @@ namespace Server.Engines.CityLoyalty
                     CityLoyaltyEntry entry = sys.GetPlayerEntry<CityLoyaltyEntry>(pm, true);
 
                     if (entry != null && entry.UtilizingTradeDeal)
+                    {
                         BuffInfo.AddBuff(pm, new BuffInfo(BuffIcon.CityTradeDeal, 1154168, 1154169, new TextDefinition((int)sys.ActiveTradeDeal), true));
+                        ActivateTradeDeal(pm, sys.ActiveTradeDeal);
+                    }
                 }
 
                 int message;
@@ -727,6 +734,23 @@ namespace Server.Engines.CityLoyalty
                     pm.SendLocalizedMessage(message);
                 });
             }
+        }
+
+        public static void ActivateTradeDeal(Mobile m, TradeDeal deal)
+        {
+            switch (deal)
+            {
+                case TradeDeal.OrderOfEngineers: m.AddStatMod(new StatMod(StatType.Dex, String.Format("TradeDeal_{0}", StatType.Dex), 3, TimeSpan.Zero)); break;
+                case TradeDeal.MiningCooperative: m.AddStatMod(new StatMod(StatType.Str, String.Format("TradeDeal_{0}", StatType.Str), 3, TimeSpan.Zero)); break;
+                case TradeDeal.LeagueOfRangers: m.AddStatMod(new StatMod(StatType.Int, String.Format("TradeDeal_{0}", StatType.Int), 3, TimeSpan.Zero)); break;
+            }
+        }
+
+        public static void RemoveTradeDeal(Mobile m)
+        {
+            m.RemoveStatMod(String.Format("TradeDeal_{0}", StatType.Dex));
+            m.RemoveStatMod(String.Format("TradeDeal_{0}", StatType.Str));
+            m.RemoveStatMod(String.Format("TradeDeal_{0}", StatType.Int));
         }
 
         public static void OnBODTurnIn(Mobile from, int gold)
@@ -802,7 +826,8 @@ namespace Server.Engines.CityLoyalty
 
                 if (DateTime.UtcNow > _NextAtrophy)
                 {
-                    sys.PlayerTable.ForEach(t =>
+                    // TODO: Re-Enable this for The Awakening Event
+                    /*sys.PlayerTable.ForEach(t =>
                     {
                         CityLoyaltyEntry entry = t as CityLoyaltyEntry;
 
@@ -816,7 +841,7 @@ namespace Server.Engines.CityLoyalty
                             if (owner.LastOnline + LoveAtrophyDuration < DateTime.UtcNow)
                                 entry.Love -= entry.Love / 75;
                         }
-                    });
+                    });*/
 
                     _NextAtrophy = DateTime.UtcNow + TimeSpan.FromDays(1);
                 }
@@ -1134,6 +1159,11 @@ namespace Server.Engines.CityLoyalty
             }
 
             origin.CompletedTrades++;
+
+            if (CityTradeSystem.KrampusEncounterActive)
+            {
+                KrampusEncounter.Encounter.OnTradeComplete(from, entry);
+            }
 		}
 
         public static void OnSlimTradeComplete(Mobile from, TradeEntry entry)

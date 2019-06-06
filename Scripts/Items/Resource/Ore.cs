@@ -446,6 +446,11 @@ namespace Server.Items
                             BaseIngot ingot = this.m_Ore.GetIngot();
                             ingot.Amount = ingotAmount;
 
+															  
+							 
+																	 
+							 
+
                             this.m_Ore.Consume(toConsume);
                             from.AddToBackpack(ingot);
                             //from.PlaySound( 0x57 );
@@ -1142,6 +1147,7 @@ namespace Server.Items
     }
 	
 	
+ 
 	
 	
 	}

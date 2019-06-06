@@ -163,125 +163,19 @@ namespace Server
             if (ranged && from.Race != Race.Gargoyle)
                 quiver = from.FindItemOnLayer(Layer.Cloak) as BaseQuiver;
 
-		int totalDamage;
-		int  physDamage =0;
-		int  fireDamage = 0;
-		int  coldDamage = 0;
-		int  poisonDamage = 0;
-		int  energyDamage = 0;
+            int totalDamage;
 
             if (!ignoreArmor)
             {
-				
-			if (damageable is BaseCreature || damageable is PlayerMobile && from is PlayerMobile)
-		{
-			//old Resistance %s stuff
-		 
-		 if (from is PlayerMobile && damageable is PlayerMobile)
-		  {
-			 physDamage = damage * phys * (100 - Math.Min(70, damageable.PhysicalResistance));
-			 fireDamage = damage * fire * (100 - Math.Min(70, damageable.FireResistance));
-			 coldDamage = damage * cold * (100 - Math.Min(70, damageable.ColdResistance));
-			 poisonDamage = damage * pois * (100 - Math.Min(70, damageable.PoisonResistance));
-			 energyDamage = damage * nrgy * (100 - Math.Min(75, damageable.EnergyResistance));
-			  
-		  }
-		  else 
-		  {
-		  
-			 physDamage = damage * phys * (100 - damageable.PhysicalResistance);
-			 fireDamage = damage * fire * (100 - damageable.FireResistance);
-			 coldDamage = damage * cold * (100 - damageable.ColdResistance);
-			 poisonDamage = damage * pois * (100 - damageable.PoisonResistance);
-			 energyDamage = damage * nrgy * (100 - damageable.EnergyResistance);
-			
-		  }
-			
-			
+                int physDamage = damage * phys * (100 - damageable.PhysicalResistance);
+                int fireDamage = damage * fire * (100 - damageable.FireResistance);
+                int coldDamage = damage * cold * (100 - damageable.ColdResistance);
+                int poisonDamage = damage * pois * (100 - damageable.PoisonResistance);
+                int energyDamage = damage * nrgy * (100 - damageable.EnergyResistance);
 
-			totalDamage = physDamage + fireDamage + coldDamage + poisonDamage + energyDamage;
-			totalDamage /= 10000;
-			
-				
-		}
-		else
-		{
-				
-				//START RESISTANCE CHANGE!!
-			/*	
-				int physDamage = (int)((damage * phys)*.01);
-				
-				if (physDamage != 0)
-				physDamage -= damageable.PhysicalResistance;
-				
-				if (physDamage < 0)
-					physDamage = 1;
-				
-				
-				int fireDamage = (int)((damage * fire)*.01);
-				
-				if (fireDamage != 0)
-				fireDamage -= damageable.FireResistance;
-			
-                	if (fireDamage < 0)
-					fireDamage = 1;
-				
-				
-				int coldDamage = (int)((damage * cold)*.01);
-				
-				if (coldDamage != 0)
-				coldDamage -= damageable.ColdResistance;
-			
-				
-                	if (coldDamage < 0)
-					coldDamage = 1;
-				
-				
-				int poisonDamage = (int)((damage * pois)*.01);
-					if (poisonDamage != 0)
-				poisonDamage -= damageable.PoisonResistance;
-				
-                	if (poisonDamage < 0)
-					poisonDamage = 1;
-				
-				
-				int energyDamage = (int)((damage * nrgy)*.01);
-					if (energyDamage != 0)
-				energyDamage -= damageable.EnergyResistance;
-				
-					if (energyDamage < 0)
-					energyDamage = 1;
-				
-				
-				
-				*/
-			 physDamage = (damage * phys * 100 );
-			 fireDamage = (damage * fire * 100);
-			 coldDamage = (damage * cold * 100);
-			 poisonDamage = (damage * pois * 100);
-			 energyDamage = (damage * nrgy * 100);
-			
-			if (physDamage > 0)
-				physDamage -= damageable.PhysicalResistance*10000;
-			if (fireDamage > 0)
-				fireDamage -= damageable.FireResistance*10000;
-			if (coldDamage > 0)
-				coldDamage -= damageable.ColdResistance*10000;
-			if (poisonDamage > 0)
-				poisonDamage -= damageable.PoisonResistance*10000;
-			if (energyDamage > 0)
-				energyDamage -= damageable.EnergyResistance*10000;
-									
-			
-			
-			
-				
-                totalDamage = physDamage  + fireDamage + coldDamage + poisonDamage + energyDamage;
-				   totalDamage /= 10000;
-              //end resist change
-				
-		}
-				
+                totalDamage = physDamage + fireDamage + coldDamage + poisonDamage + energyDamage;
+                totalDamage /= 10000;
+
                 if (Core.ML)
                 {
                     totalDamage += damage * direct / 100;
@@ -291,7 +185,7 @@ namespace Server
                 }
 
                 if (m != null)
-                    BaseFishPie.ScaleDamage(m, ref totalDamage, phys, fire, cold, pois, nrgy, direct);
+                    BaseFishPie.ScaleDamage(from, m, ref totalDamage, phys, fire, cold, pois, nrgy, direct);
 
                 if (Core.HS && ArmorPierce.IsUnderEffects(m))
                 {
@@ -534,7 +428,7 @@ namespace Server
             {
                 if (context.Type == typeof(WraithFormSpell))
                 {
-                    int manaLeech = AOS.Scale(damageGiven, Math.Min(target.Mana, (5 + (int)((15 * from.Skills.SpiritSpeak.Value) / 100)))); // Wraith form gives 5-20% mana leech
+                    int manaLeech = AOS.Scale(damageGiven, Math.Min(target.Mana, (int)from.Skills.SpiritSpeak.Value / 5)); // Wraith form gives 5-20% mana leech
 
                     if (manaLeech != 0)
                     {
@@ -986,20 +880,6 @@ namespace Server
 
                 //Virtue Artifacts
                 value += AnkhPendant.GetManaRegenModifier(m);
-            }
-            else if (attribute == AosAttribute.BonusDex)
-            {
-                #region City Loyalty
-                if (CityLoyaltySystem.HasTradeDeal(m, TradeDeal.OrderOfEngineers))
-                    value += 3;
-                #endregion
-            }
-            else if (attribute == AosAttribute.BonusStr)
-            {
-                #region City Loyalty
-                if (CityLoyaltySystem.HasTradeDeal(m, TradeDeal.MiningCooperative))
-                    value += 3;
-                #endregion
             }
             #endregion
 
@@ -2067,7 +1947,8 @@ namespace Server
         HitSparks       = 0x00000004,
         Bane            = 0x00000008,
         MysticWeapon    = 0x00000010,
-        AssassinHoned   = 0x00000020
+        AssassinHoned   = 0x00000020,
+        Focus            = 0x00000040,
     }
 
     public sealed class ExtendedWeaponAttributes : BaseAttributes
@@ -2207,6 +2088,19 @@ namespace Server
             set
             {
                 this[ExtendedWeaponAttribute.AssassinHoned] = value;
+            }
+        }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int Focus
+        {
+            get
+            {
+                return this[ExtendedWeaponAttribute.Focus];
+            }
+            set
+            {
+                this[ExtendedWeaponAttribute.Focus] = value;
             }
         }
     }
@@ -2481,6 +2375,11 @@ namespace Server
 
         public void AddTo(Mobile m)
         {
+            if (Discordance.UnderPVPEffects(m))
+            {
+                return;
+            }
+
             Remove();
 
             for (int i = 0; i < 5; ++i)

@@ -128,6 +128,7 @@ namespace Server.Engines.Quests
         public virtual object FailedMsg { get { return null; } }
 
         public virtual bool ShowDescription { get { return true; } }
+        public virtual bool ShowRewards { get { return true; } }
         public virtual bool CanRefuseReward { get { return false; } }
 		
         private List<BaseObjective> m_Objectives;		
@@ -446,7 +447,13 @@ namespace Server.Engines.Quests
                         if (m_Rewards[i].Name is int)
                             m_Owner.SendLocalizedMessage(1074360, "#" + (int)m_Rewards[i].Name); // You receive a reward: ~1_REWARD~
                         else if (m_Rewards[i].Name is string)
-                            m_Owner.SendLocalizedMessage(1074360, (string)m_Rewards[i].Name); // You receive a reward: ~1_REWARD~		
+                            m_Owner.SendLocalizedMessage(1074360, (string)m_Rewards[i].Name); // You receive a reward: ~1_REWARD~
+
+                        // already marked, we need to see if this gives progress to another quest.
+                        if (reward.QuestItem)
+                        {
+                            QuestHelper.CheckRewardItem(Owner, reward);
+                        }
                     }
                 }
             }
@@ -466,7 +473,7 @@ namespace Server.Engines.Quests
                     m_Owner.SendGump(new MondainQuestGump(quest));
             }
 
-            Server.Engines.Points.PointsSystem.HandleQuest(Owner, this);
+            EventSink.InvokeQuestComplete(new QuestCompleteEventArgs(Owner, GetType()));
         }
 
         public virtual void RefuseRewards()

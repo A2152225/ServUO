@@ -15,7 +15,7 @@ namespace Server.Items
         bool CheckAccessible(Mobile from, ref int num);
     }
 
-    public abstract class BaseTool : Item, ITool, IResource
+    public abstract class BaseTool : Item, ITool, IResource, IQuality
     {
         private Mobile m_Crafter;
         private ItemQuality m_Quality;
@@ -235,8 +235,6 @@ namespace Server.Items
                     }
                     else
                     {
-                        CraftContext context = system.GetContext(from);
-
                         from.SendGump(new CraftGump(from, system, this, null));
                     }
                 }
@@ -308,7 +306,7 @@ namespace Server.Items
 
             if (makersMark)
                 Crafter = from;
-	
+
             return quality;
         }
         #endregion

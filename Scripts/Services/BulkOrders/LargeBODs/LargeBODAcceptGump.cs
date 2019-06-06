@@ -58,8 +58,7 @@ namespace Server.Engines.BulkOrders
 
                 if (deed.Material != BulkMaterialType.None)
                 {
-					AddHtml( 40, y, 350, 20, "<basefont color=#FF0000>All items must be crafted with " + LargeBODGump.GetMaterialStringFor(deed.Material), false, false );
-                   // AddHtmlLocalized(40, y, 350, 20, SmallBODGump.GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
+                    AddHtmlLocalized(40, y, 350, 20, SmallBODGump.GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
                     y += 24;
                 }
             }

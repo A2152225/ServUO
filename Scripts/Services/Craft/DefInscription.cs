@@ -1,7 +1,6 @@
 using System;
 using Server.Items;
 using Server.Spells;
-using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -89,6 +88,14 @@ namespace Server.Engines.Craft
             return 0;
         }
 
+        public override bool ConsumeOnFailure(Mobile from, Type resourceType, CraftItem craftItem)
+        {
+            if (resourceType == typeof(AntiqueDocumentsKit))
+                return false;
+
+            return base.ConsumeOnFailure(from, resourceType, craftItem);
+        }
+
         private System.Collections.Generic.Dictionary<Type, int> _Buffer = new System.Collections.Generic.Dictionary<Type, int>();
 
         public override void PlayCraftEffect(Mobile from)
@@ -100,7 +107,6 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -429,6 +435,11 @@ namespace Server.Engines.Craft
                 AddRes(index, typeof(Taint), 1032679, 1, 1044253);
                 AddRes(index, typeof(DaemonBone), 1017412, 5, 1044253);
                 AddRes(index, typeof(SummonDaemonScroll), 1016017, 1, 1044253);
+
+                index = AddCraft(typeof(PropheticManuscript), 1044294, 1155631, 90.0, 115.0, typeof(AncientParchment), 1155627, 10, 1044253);
+                AddRes(index, typeof(AntiqueDocumentsKit), 1155630, 1, 1044253);
+                AddRes(index, typeof(WoodPulp), 1113136, 10, 1113289);
+                AddRes(index, typeof(Beeswax), 1025154, 5, 1044253);
 
                 AddCraft(typeof(BlankScroll), 1044294, 1023636, 50.0, 100.0, typeof(WoodPulp), 1113136, 1, 1044378);
 

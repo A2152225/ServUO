@@ -155,7 +155,7 @@ namespace Server.Mobiles
 		public static int seccount;
 
 		// sector hashtable for each map
-		private static Dictionary<Sector, List<XmlSpawner>>[] GlobalSectorTable = new Dictionary<Sector, List<XmlSpawner>>[Map.Maps.Length]; //6 crash check
+		private static Dictionary<Sector, List<XmlSpawner>>[] GlobalSectorTable = new Dictionary<Sector, List<XmlSpawner>>[6];
 
 		#endregion
 
@@ -2041,6 +2041,8 @@ namespace Server.Mobiles
 		{
 			// automatically turn off duped spawners
 			((XmlSpawner)newItem).Running = false;
+
+            base.OnAfterDuped(newItem);
 		}
 
 		public override void OnMapChange()

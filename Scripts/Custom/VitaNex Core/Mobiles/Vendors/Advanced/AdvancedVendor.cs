@@ -43,17 +43,7 @@ namespace VitaNex.Mobiles
 
 		protected override void InitBuyInfo()
 		{ }
-			
-		public override void OnDoubleClick(Mobile m)
-		{
-			base.OnDoubleClick(m);
 
-			if (Backpack != null && m.AccessLevel >= AccessLevel.GameMaster)
-			{
-				Backpack.DisplayTo(m);
-			}
-		}
-		
 		public override void Serialize(GenericWriter writer)
 		{
 			base.Serialize(writer);

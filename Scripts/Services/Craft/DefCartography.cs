@@ -1,7 +1,6 @@
 using System;
 using Server.Items;
 using System.Collections.Generic;
-using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -66,7 +65,6 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -85,7 +83,9 @@ namespace Server.Engines.Craft
                     return 1044156; // You create an exceptional quality item and affix your maker's mark.
                 else if (quality == 2)
                     return 1044155; // You create an exceptional quality item.
-                else 
+                else if (item.ItemType == typeof(StarChart))
+                    return 1158494; // Which telescope do you wish to create the star chart from?
+                else
                     return 1044154; // You create the item.
             }
         }
@@ -112,6 +112,9 @@ namespace Server.Engines.Craft
             index = AddCraft(typeof(EodonianWallMap), 1044448, 1156690, 65.0, 125.0, typeof(BlankMap), 1044449, 50, 1044450);
             AddRes(index, typeof(UnabridgedAtlasOfEodon), 1156721, 1, 1156722);
             AddRecipe(index, (int)CartographyRecipes.EodonianWallMap);
+
+            index = AddCraft(typeof(StarChart), 1044448, 1158493, 0.0, 60.0, typeof(BlankMap), 1044449, 1, 1044450);
+            SetForceSuccess(index, 75);
         }
 
         public int ConsumeTatteredWallMapRes(Mobile from, ConsumeType type)

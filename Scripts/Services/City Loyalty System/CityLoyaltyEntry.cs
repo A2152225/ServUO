@@ -65,6 +65,8 @@ namespace Server.Engines.CityLoyalty
                 {
                     BuffInfo.RemoveBuff(Player, BuffIcon.CityTradeDeal);
 
+                    CityLoyaltySystem.RemoveTradeDeal(Player);
+
                     if (Player.NetState != null)
                     {
                         Player.SendLocalizedMessage(1154074); // The benefit from your City's Trade Deal has expired! Visit the City Stone to reclaim it.
@@ -88,7 +90,12 @@ namespace Server.Engines.CityLoyalty
             City = city;
             ShowGainMessage = true;
 		}
-		
+
+        public override string ToString()
+        {
+            return String.Format("{0} {1}", City.ToString(), IsCitizen ? "[Citizen]" : String.Empty);
+        }
+
 		public void DeclareCitizenship()
 		{
 			IsCitizen = true;

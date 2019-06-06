@@ -102,7 +102,7 @@ namespace Server.Regions
 				return true;
 			}
 
-			return (from.Kills < 5);
+            return !from.Murderer;
 		}
 
 		public override bool OnBeginSpellCast(Mobile m, ISpell s)
@@ -199,7 +199,7 @@ namespace Server.Regions
 		{
 			base.OnAggressed(aggressor, aggressed, criminal);
 
-			if (!IsDisabled() && aggressor != aggressed && criminal)
+            if (!IsDisabled() && aggressor != aggressed && criminal && Utility.InRange(aggressor.Location, aggressed.Location, 12))
 			{
 				CheckGuardCandidate(aggressor, aggressor is BaseCreature && ((BaseCreature)aggressor).IsAggressiveMonster);
 			}

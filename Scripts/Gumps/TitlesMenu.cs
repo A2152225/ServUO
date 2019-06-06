@@ -1094,6 +1094,12 @@ namespace Server.Gumps
                 if (id >= 1152068 && id <= 1152073)
                     return 1152075; // This is a reward title given for your valorous fights in arenas.
 
+                if (id >= 1155600 && id <= 1155603)
+                    return 1155601; // This title is obtained from the Halloween Treasures of Doom Event.
+
+                if (id >= 1157649 && id <= 1157651)
+                    return 1157648; // This title is obtained from the Halloween Treasures of the Sorcerer's Dungeon Event.	
+
                 switch (id)
                 {
                     default: return "This reward title has no desciption.";
@@ -1124,6 +1130,7 @@ namespace Server.Gumps
                     case 1158278: return 1158279; // This title is obtained by completing the "A Forced Sacrifice" quest.
                     case 1158303: return 1158324; // This title is obtained by completing the "Whispering with Wisps" quest.
                     case 1154505: return 1154506; // This is a reward title given for completing the Exploring the Deep Quest.
+                    case 1158523: return 1158537; // This title is obtained by discovering a constellation using the telescope.
                 }
             }
 
@@ -1161,5 +1168,4 @@ namespace Server.Gumps
             return String.Format("<basefont color={0}>{1}", color, str);
         }
     }
-
 }

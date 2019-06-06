@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Server.Items
 {
-    public abstract class BaseArmor : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IResource, ISetItem, IVvVItem, IOwnerRestricted, ITalismanProtection, IEngravable, IArtifact, ICombatEquipment
+    public abstract class BaseArmor : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IResource, ISetItem, IVvVItem, IOwnerRestricted, ITalismanProtection, IEngravable, IArtifact, ICombatEquipment, IQuality
     {
         #region Factions
         private FactionItem m_FactionState;
@@ -316,6 +316,8 @@ namespace Server.Items
 
             armor.m_SetAttributes = new AosAttributes(newItem, m_SetAttributes);
             armor.m_SetSkillBonuses = new AosSkillBonuses(newItem, m_SetSkillBonuses);
+
+            base.OnAfterDuped(newItem);
         }
 
         #region Personal Bless Deed
@@ -446,35 +448,6 @@ namespace Server.Items
                     case CraftResource.Valorite:
                         ar += 16;
                         break;
-                    case CraftResource.Blaze:
-                        ar += 18;
-                        break;
-					
-                    case CraftResource.Ice:
-                        ar += 20;
-                        break;
-					
-                    case CraftResource.Toxic:
-                        ar += 22;
-                        break;
-					
-                    case CraftResource.Electrum:
-                        ar += 24;
-                        break;
-					
-                    case CraftResource.Platinum:
-                        ar += 26;
-                        break;
-					
-                    case CraftResource.Royalite:
-                        ar += 28;
-                        break;
-					
-                    case CraftResource.Danite:
-                        ar += 30;
-                        break;
-					
-					
                     case CraftResource.SpinedLeather:
                         ar += 10;
                         break;
@@ -484,7 +457,6 @@ namespace Server.Items
                     case CraftResource.BarbedLeather:
                         ar += 16;
                         break;
-						
                 }
 
                 ar += -8 + (8 * (int)m_Quality);
@@ -728,6 +700,7 @@ namespace Server.Items
                     m_IsImbued = value; InvalidateProperties();
             }
         }
+
         [CommandProperty(AccessLevel.GameMaster)]
         public int PhysNonImbuing
         {
@@ -761,6 +734,26 @@ namespace Server.Items
         {
             get { return m_EnergyNonImbuing; }
             set { m_EnergyNonImbuing = value; }
+        }
+
+        public virtual int[] BaseResists
+        {
+            get
+            {
+                var list = new int[5];
+
+                list[0] = BasePhysicalResistance;
+                list[1] = BaseFireResistance;
+                list[2] = BaseColdResistance;
+                list[3] = BasePoisonResistance;
+                list[4] = BaseEnergyResistance;
+
+                return list;
+            }
+        }
+
+        public virtual void OnAfterImbued(Mobile m, int mod, int value)
+        {
         }
         #endregion
 
@@ -1247,7 +1240,6 @@ namespace Server.Items
                 InvalidateProperties();
             }
         }
-		
 
         public virtual int BasePhysicalResistance
         {
@@ -1324,8 +1316,6 @@ namespace Server.Items
                 return BaseEnergyResistance + GetProtOffset() + m_EnergyBonus;
             }
         }
-		
-		
 
         public virtual int InitMinHits
         {
@@ -2620,7 +2610,7 @@ namespace Server.Items
             if (Absorbed < 2)
                 Absorbed = 2;
 
-            double chance = NegativeAttributes.Antique > 0 ? 60 : 15;  // was 80 : 25
+            double chance = NegativeAttributes.Antique > 0 ? 80 : 25;
 
             if (chance >= Utility.Random(100)) // 25% chance to lower durability
             {
@@ -2630,7 +2620,7 @@ namespace Server.Items
                 {
                     HitPoints += selfRepair;
 
-                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(45);
+                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(60);
                 }
                 else
                 {
@@ -2699,29 +2689,6 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-			
-				//daat99 OWLTR start - add custom resources to name
-			string oreType = CraftResources.GetName(m_Resource);
-			int level = CraftResources.GetIndex(m_Resource)+1;
-			
-			if ( m_Quality == ItemQuality.Exceptional )
-			{
-				if (level > 1 && !string.IsNullOrEmpty(oreType))
-					list.Add( 1053100, "{0}\t{1}", oreType, GetNameString() ); // exceptional ~1_oretype~ ~2_armortype~
-				else
-					list.Add( 1050040, GetNameString() ); // exceptional ~1_ITEMNAME~
-			}
-			else
-			{
-				if (level > 1 && !string.IsNullOrEmpty(oreType))
-					list.Add( 1053099, "{0}\t{1}", oreType, GetNameString() ); // ~1_oretype~ ~2_armortype~
-				else
-					list.Add( GetNameString() );
-				
-			}
-			//daat99 OWLTR end - add custom resources to name
-			
-			/*
             int oreType;
 
             switch ( m_Resource )
@@ -2750,9 +2717,8 @@ namespace Server.Items
                 case CraftResource.Bloodwood: oreType = 1072538; break; // bloodwood
                 case CraftResource.Frostwood: oreType = 1072539; break; // frostwood
                 default: oreType = 0; break;
-				
-            }*/
-				/*
+            }
+
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -2771,21 +2737,18 @@ namespace Server.Items
             }
             else
             {
-                if (  !string.IsNullOrEmpty(oreType)) //oreType != 0)
+                if (oreType != 0)
                     list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
                 else if (Name == null)
                     list.Add(LabelNumber);
                 else
                     list.Add(Name);
             }
-			*/
 
             if (!String.IsNullOrEmpty(_EngravedText))
             {
                 list.Add(1062613, Utility.FixHtml(_EngravedText));
             }
-			
-			
         }
 
         public override bool AllowEquipedCast(Mobile from)
@@ -2818,9 +2781,9 @@ namespace Server.Items
         {
         }
 
-        public override void GetProperties(ObjectPropertyList list)
+        public override void AddNameProperties(ObjectPropertyList list)
         {
-            base.GetProperties(list);
+            base.AddNameProperties(list);
 
             if (OwnerName != null)
             {
@@ -3027,8 +2990,6 @@ namespace Server.Items
             if (m_HitPoints >= 0 && m_MaxHitPoints > 0)
                 list.Add(1060639, "{0}\t{1}", m_HitPoints, m_MaxHitPoints); // durability ~1_val~ / ~2_val~
 
-            EnchantedHotItem.AddProperties(this, list);
-
             Server.Engines.XmlSpawner2.XmlAttach.AddAttachmentProperties(this, list);
 
             if (IsSetItem && !m_SetEquipped)
@@ -3036,9 +2997,10 @@ namespace Server.Items
                 list.Add(1072378); // <br>Only when full set is present:				
                 GetSetProperties(list);
             }
+        }
 
-            AddHonestyProperty(list);
-
+        public override void AddItemPowerProperties(ObjectPropertyList list)
+        {
             if (m_ItemPower != ItemPower.None)
             {
                 if (m_ItemPower <= ItemPower.LegendaryArtifact)
@@ -3103,7 +3065,7 @@ namespace Server.Items
         {
             bool drop = base.DropToWorld(from, p);
 
-            EnchantedHotItem.CheckDrop(from, this);
+            EnchantedHotItemSocket.CheckDrop(from, this);
 
             return drop;
         }

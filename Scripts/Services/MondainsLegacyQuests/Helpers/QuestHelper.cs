@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Server.ContextMenus;
 using Server.Mobiles;
 using Server.Regions;
@@ -9,7 +10,12 @@ using Server.Targeting;
 namespace Server.Engines.Quests
 {
     public class QuestHelper
-    { 
+    {
+        public static void Initialize()
+        {
+            EventSink.OnKilledBy += OnKilledBy;
+        }
+
         public static void RemoveAcceleratedSkillgain(PlayerMobile from)
         {
             Region region = from.Region;
@@ -628,7 +634,15 @@ namespace Server.Engines.Quests
             }
         }
 
-        public static bool CheckCreature(PlayerMobile player, BaseCreature creature)
+        public static void OnKilledBy(OnKilledByEventArgs e)
+        {
+            if (e.KilledBy is PlayerMobile)
+            {
+                CheckCreature((PlayerMobile)e.KilledBy, e.Killed);
+            }
+        }
+
+        public static bool CheckCreature(PlayerMobile player, Mobile creature)
         {
             for (int i = player.Quests.Count - 1; i >= 0; i --)
             {
@@ -683,6 +697,25 @@ namespace Server.Engines.Quests
                 }
             }
 			
+            return false;
+        }
+
+        public static bool CheckRewardItem(PlayerMobile player, Item item)
+        {
+            foreach(var quest in player.Quests.Where(q => q.Objectives.Any(obj => obj is ObtainObjective)))
+            {
+                foreach (var obtain in quest.Objectives.OfType<ObtainObjective>())
+                {
+                    if (obtain.IsObjective(item))
+                    {
+                        obtain.CurProgress += item.Amount;
+                        quest.OnObjectiveUpdate(item);
+
+                        return true;
+                    }
+                }
+            }
+
             return false;
         }
 

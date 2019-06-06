@@ -30,8 +30,8 @@ namespace Server.Items
 		SlayerName Slayer2 { get; set; }
 	}
 
-    public abstract class BaseWeapon : Item, IWeapon, IFactionItem, IUsesRemaining, ICraftable, ISlayer, IDurability, ISetItem, IVvVItem, IOwnerRestricted, IResource, IArtifact, ICombatEquipment
-	{
+    public abstract class BaseWeapon : Item, IWeapon, IFactionItem, IUsesRemaining, ICraftable, ISlayer, IDurability, ISetItem, IVvVItem, IOwnerRestricted, IResource, IArtifact, ICombatEquipment, IEngravable, IQuality
+    {
 		#region Damage Helpers
 		public static BaseWeapon GetDamageOutput(Mobile wielder, out int min, out int max)
 		{
@@ -722,6 +722,8 @@ namespace Server.Items
         public Mobile FocusWeilder { get; set; }
         public Mobile EnchantedWeilder { get; set; }
 
+        public int LastParryChance { get; set; }
+
         #region Stygian Abyss
         [CommandProperty(AccessLevel.GameMaster)]
         public int TimesImbued
@@ -754,6 +756,18 @@ namespace Server.Items
         {
             get { return m_DImodded; }
             set { m_DImodded = value; }
+        }
+
+        public int[] BaseResists
+        {
+            get
+            {
+                return new int[] { 0, 0, 0, 0, 0 };
+            }
+        }
+
+        public virtual void OnAfterImbued(Mobile m, int mod, int value)
+        {
         }
         #endregion
 
@@ -803,6 +817,8 @@ namespace Server.Items
 
 		public override void OnAfterDuped(Item newItem)
 		{
+            base.OnAfterDuped(newItem);
+
 			BaseWeapon weap = newItem as BaseWeapon;
 
 			if (weap == null)
@@ -1196,7 +1212,17 @@ namespace Server.Items
 				}
 				#endregion
 
-				from.CheckStatTimers();
+                if (HasSocket<Caddellite>())
+                {
+                    Caddellite.UpdateBuff(from);
+                }
+
+                if (ExtendedWeaponAttributes.Focus > 0)
+                {
+                    Focus.UpdateBuff(from);
+                }
+
+                from.CheckStatTimers();
 				from.Delta(MobileDelta.WeaponDamage);
 			}
 		}
@@ -1239,18 +1265,11 @@ namespace Server.Items
 				ImmolatingWeaponSpell.StopImmolating(this, (Mobile)parent);
                 Spells.Mysticism.EnchantSpell.OnWeaponRemoved(this, m);
 
-				m.CheckStatTimers();
-
-				m.Delta(MobileDelta.WeaponDamage);
-
-				XmlAttach.CheckOnRemoved(this, parent);
-
                 if (FocusWeilder != null)
                     FocusWeilder = null;
 
                 //Skill Masteries
                 SkillMasterySpell.OnWeaponRemoved(m, this);
-                //RemoveMysticMod();
 
 				#region Mondain's Legacy Sets
 				if (IsSetItem && m_SetEquipped)
@@ -1258,8 +1277,26 @@ namespace Server.Items
 					SetHelper.RemoveSetBonus(m, SetID, this);
 				}
 				#endregion
+
+                if (HasSocket<Caddellite>())
+                {
+                    Caddellite.UpdateBuff(m);
+                }
+
+                if (ExtendedWeaponAttributes.Focus > 0)
+                {
+                    Focus.UpdateBuff(m);
+                }
+
+                m.CheckStatTimers();
+
+                m.Delta(MobileDelta.WeaponDamage);
+
+                XmlAttach.CheckOnRemoved(this, parent);
 			}
-		}
+
+            LastParryChance = 0;
+        }
 
         public void AddMysticMod(Mobile from)
         {
@@ -1411,7 +1448,7 @@ namespace Server.Items
 
                 // Defense Chance Increase = 45%
                 if (bonus > max)
-                    bonus = bonus; //was max;
+                    bonus = max;
 
                 theirValue = (defValue + 20.0) * (100 + bonus);
 
@@ -1509,7 +1546,7 @@ namespace Server.Items
 
 				if (bonus > 60)
 				{
-					bonus = bonus; //was 60;
+					bonus = 60;
 				}
 
 				double ticks;
@@ -1534,9 +1571,9 @@ namespace Server.Items
 				}
 
 				// Swing speed currently capped at one swing every 1.25 seconds (5 ticks).
-				if (ticks < 1)
+				if (ticks < 5)
 				{
-					ticks = 1;//was 5;
+					ticks = 5;
 				}
 
 				delayInSeconds = ticks * 0.25;
@@ -1558,9 +1595,9 @@ namespace Server.Items
 
 				// Maximum swing rate capped at one swing per second
 				// OSI dev said that it has and is supposed to be 1.25
-				if (delayInSeconds < 0.001)  // 1.25)
+				if (delayInSeconds < 1.25)
 				{
-					delayInSeconds = 0.001; //was 1.25;
+					delayInSeconds = 1.25;
 				}
 			}
 			else
@@ -1745,8 +1782,16 @@ namespace Server.Items
 					chance = chance * (20 + defender.Dex) / 100;
 				}
 
-				return defender.CheckSkill(SkillName.Parry, chance);
-			}
+                bool success = defender.CheckSkill(SkillName.Parry, chance);
+
+                if (shield != null && Core.EJ && success)
+                {
+                    shield.LastParryChance = (int)(chance * 100);
+                    shield.InvalidateProperties();
+                }
+
+                return success;
+            }
 			else if (!(defender.Weapon is Fists) && !(defender.Weapon is BaseRanged))
 			{
 				BaseWeapon weapon = defender.Weapon as BaseWeapon;
@@ -1785,15 +1830,25 @@ namespace Server.Items
 					chance = chance * (20 + defender.Dex) / 100;
 				}
 
+                bool success;
+
 				if (chance > aosChance)
 				{
-					return defender.CheckSkill(SkillName.Parry, chance);
+                    success = defender.CheckSkill(SkillName.Parry, chance);
 				}
 				else
 				{
-					return (aosChance > Utility.RandomDouble());
+                    success = (aosChance > Utility.RandomDouble());
 						// Only skillcheck if wielding a shield & there's no effect from Bushido
 				}
+
+                if (Core.EJ && success)
+                {
+                    weapon.LastParryChance = (int)(chance * 100);
+                    weapon.InvalidateProperties();
+                }
+
+                return success;
 			}
 
 			return false;
@@ -2230,9 +2285,10 @@ namespace Server.Items
             }
 
             bool splintering = false;
-            if (!(a is Disarm) && m_AosWeaponAttributes.SplinteringWeapon > 0 && m_AosWeaponAttributes.SplinteringWeapon > Utility.Random(100))
+
+            if (m_AosWeaponAttributes.SplinteringWeapon > 0 && m_AosWeaponAttributes.SplinteringWeapon > Utility.Random(100))
             {
-                if (SplinteringWeaponContext.CheckHit(attacker, defender, this))
+                if (SplinteringWeaponContext.CheckHit(attacker, defender, a, this))
                     splintering = true;
             }
 
@@ -2334,6 +2390,11 @@ namespace Server.Items
             CheckSlayerResult cs2 = CheckSlayers(attacker, defender, Slayer2);
             CheckSlayerResult suit = CheckSlayers(attacker, defender, SetHelper.GetSetSlayer(attacker));
             CheckSlayerResult tal = CheckTalismanSlayer(attacker, defender);
+
+            if (cs1 == CheckSlayerResult.None && cs2 == CheckSlayerResult.None)
+            {
+                cs1 = CheckSlayers(attacker, defender, SlayerSocket.GetSlayer(this));
+            }
 
 			if (cs1 != CheckSlayerResult.None)
 			{
@@ -2480,7 +2541,13 @@ namespace Server.Items
                 }
             }
 
-			percentageBonus = Math.Min(percentageBonus, 300);
+            if (m_ExtendedWeaponAttributes.Focus > 0)
+            {
+                percentageBonus += Focus.GetBonus(attacker, defender);
+                Focus.OnHit(attacker, defender);
+            }
+
+            percentageBonus = Math.Min(percentageBonus, 300);
 
             // bonus is seprate from weapon damage, ie not capped
             percentageBonus += Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(attacker);
@@ -3269,6 +3336,11 @@ namespace Server.Items
                 SlayerEntry defSlayer2 = SlayerGroup.GetEntryByName(defISlayer.Slayer2);
                 SlayerEntry defSetSlayer = SlayerGroup.GetEntryByName(SetHelper.GetSetSlayer(defender));
 
+                if (defISlayer is Item && defSlayer == null && defSlayer2 == null)
+                {
+                    defSlayer = SlayerGroup.GetEntryByName(SlayerSocket.GetSlayer((Item)defISlayer));
+                }
+
                 if (defSlayer != null && defSlayer.Group.OppositionSuperSlays(attacker) ||
                     defSlayer2 != null && defSlayer2.Group.OppositionSuperSlays(attacker) ||
                     defSetSlayer != null && defSetSlayer.Group.OppositionSuperSlays(attacker))
@@ -3687,7 +3759,7 @@ namespace Server.Items
 
 			if (damageBonus > 100)
 			{
-				damageBonus = damageBonus; //was 100, uncapped
+				damageBonus = 100;
 			}
 			#endregion
 
@@ -3752,8 +3824,8 @@ namespace Server.Items
 			{
 				double lumberValue = attacker.Skills[SkillName.Lumberjacking].Value;
 			    lumberValue = (lumberValue/5.0)/100.0;
-			    if (lumberValue > 0.25)
-			        lumberValue = lumberValue; //was 0.2;
+			    if (lumberValue > 0.2)
+			        lumberValue = 0.2;
 
 				modifiers += lumberValue;
 
@@ -5157,29 +5229,7 @@ namespace Server.Items
                 list.Add(1152207); // Assassin's Edge
                 return;
             }
-				//daat99 OWLTR start - add custom resources to name
-			string oreType = CraftResources.GetName(m_Resource);
-			int level = CraftResources.GetIndex(m_Resource)+1;
-			
-			if ( m_Quality == ItemQuality.Exceptional )
-			{
-				if (level > 1 && !string.IsNullOrEmpty(oreType))
-					list.Add( 1053100, "{0}\t{1}", oreType, GetNameString() ); // exceptional ~1_oretype~ ~2_armortype~
-				else
-					list.Add( 1050040, GetNameString() ); // exceptional ~1_ITEMNAME~
-			}
-			else
-			{
-				if (level > 1 && !string.IsNullOrEmpty(oreType))
-					list.Add( 1053099, "{0}\t{1}", oreType, GetNameString() ); // ~1_oretype~ ~2_armortype~
-				else
-					list.Add( GetNameString() );
-				
-			}
-			//daat99 OWLTR end - add custom resources to name
-			
-			
-			/*
+
 			int oreType;
 
 			switch (m_Resource)
@@ -5261,7 +5311,7 @@ namespace Server.Items
 					oreType = 0;
 					break;
 			}
-*//*
+
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -5278,7 +5328,7 @@ namespace Server.Items
                     RunicReforging.AddSuffixName(list, m_ReforgedSuffix, GetNameString());
                 }
             }
-			else if ( !string.IsNullOrEmpty(oreType))  //(oreType != 0)
+			else if (oreType != 0)
 			{
 				list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
             }
@@ -5373,9 +5423,9 @@ namespace Server.Items
                 list.Add(1154937); // VvV Item
         }
 
-		public override void GetProperties(ObjectPropertyList list)
-		{
-			base.GetProperties(list);
+        public override void AddNameProperties(ObjectPropertyList list)
+        {
+            base.AddNameProperties(list);
 
             if (this is IUsesRemaining && ((IUsesRemaining)this).ShowUsesRemaining)
             {
@@ -5426,7 +5476,12 @@ namespace Server.Items
 					GetSetProperties(list);
 				}
 			}
-			#endregion
+            #endregion
+
+            if (m_ExtendedWeaponAttributes.Focus > 0)
+            {
+                list.Add(1150018); // Focus
+            }
 
             if (m_NegativeAttributes.Brittle == 0 && m_AosAttributes.Brittle != 0)
             {
@@ -5504,6 +5559,11 @@ namespace Server.Items
 				}
 			}
 			#endregion
+
+            if (HasSocket<Caddellite>())
+            {
+                list.Add(1158662); // Caddellite Infused
+            }
 
             double focusBonus = 1;
             int enchantBonus = 0;
@@ -6048,16 +6108,20 @@ namespace Server.Items
 				list.Add(1060639, "{0}\t{1}", m_Hits, m_MaxHits); // durability ~1_val~ / ~2_val~
 			}
 
-            EnchantedHotItem.AddProperties(this, list);
-
 			if (IsSetItem && !m_SetEquipped)
 			{
 				list.Add(1072378); // <br>Only when full set is present:
 				GetSetProperties(list);
 			}
 
-            AddHonestyProperty(list);
+            if (Core.EJ && LastParryChance > 0)
+            {
+                list.Add(1158861, LastParryChance.ToString()); // Last Parry Chance: ~1_val~%
+            }
+        }
 
+        public override void AddItemPowerProperties(ObjectPropertyList list)
+        {
             if (m_ItemPower != ItemPower.None)
             {
                 if (m_ItemPower <= ItemPower.LegendaryArtifact)
@@ -6176,7 +6240,7 @@ namespace Server.Items
         {
             bool drop = base.DropToWorld(from, p);
 
-            EnchantedHotItem.CheckDrop(from, this);
+            EnchantedHotItemSocket.CheckDrop(from, this);
 
             return drop;
         }

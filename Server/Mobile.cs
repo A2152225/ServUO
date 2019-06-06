@@ -1016,11 +1016,11 @@ namespace Server
 			UpdateResistances();
 		}
 
-		private static int m_MinPlayerResistance = -90;
+		private static int m_MinPlayerResistance = -70;
 
 		public static int MinPlayerResistance { get { return m_MinPlayerResistance; } set { m_MinPlayerResistance = value; } }
 
-		private static int m_MaxPlayerResistance = 2000; //was 70
+		private static int m_MaxPlayerResistance = 70;
 
 		public static int MaxPlayerResistance { get { return m_MaxPlayerResistance; } set { m_MaxPlayerResistance = value; } }
 
@@ -1107,7 +1107,7 @@ namespace Server
 				return m_MaxPlayerResistance;
 			}
 
-			return 2000; //was 100;
+			return 100;
 		}
 
 		public int GetAOSStatus(int index)
@@ -1547,9 +1547,19 @@ namespace Server
 			{
 				return true;
 			}
-			else if (target is Item && ((Item)target).RootParent == this)
+			else if (target is Item)
 			{
-				return true;
+                var item = (Item)target;
+
+                if (item.RootParent == this)
+                {
+                    return true;
+                }
+
+                if (item.Parent is Container)
+                {
+                    return InLOS(item.Parent);
+                }
 			}
 
 			return m_Map.LineOfSight(this, target);
@@ -1959,7 +1969,7 @@ namespace Server
 			public ManaTimer(Mobile m)
 				: base(GetManaRegenRate(m), GetManaRegenRate(m))
 			{
-				Priority = TimerPriority.TwentyFiveMS;
+				Priority = TimerPriority.FiftyMS;
 				m_Owner = m;
 			}
 
@@ -1967,7 +1977,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenMana) // m_Owner.Alive )
 				{
-					m_Owner.Mana+=2;
+					m_Owner.Mana++;
 				}
 
 				Delay = Interval = GetManaRegenRate(m_Owner);
@@ -1981,7 +1991,7 @@ namespace Server
 			public HitsTimer(Mobile m)
 				: base(GetHitsRegenRate(m), GetHitsRegenRate(m))
 			{
-				Priority = TimerPriority.TwentyFiveMS;
+				Priority = TimerPriority.FiftyMS;
 				m_Owner = m;
 			}
 
@@ -1989,7 +1999,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenHits) // m_Owner.Alive && !m_Owner.Poisoned )
 				{
-					m_Owner.Hits+=2;
+					m_Owner.Hits++;
 				}
 
 				Delay = Interval = GetHitsRegenRate(m_Owner);
@@ -2003,7 +2013,7 @@ namespace Server
 			public StamTimer(Mobile m)
 				: base(GetStamRegenRate(m), GetStamRegenRate(m))
 			{
-				Priority = TimerPriority.TwentyFiveMS;
+				Priority = TimerPriority.FiftyMS;
 				m_Owner = m;
 			}
 
@@ -2011,7 +2021,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenStam) // m_Owner.Alive )
 				{
-					m_Owner.Stam+=2;
+					m_Owner.Stam++;
 				}
 
 				Delay = Interval = GetStamRegenRate(m_Owner);
@@ -4542,23 +4552,20 @@ namespace Server
 					else if (from.AccessLevel < AccessLevel.GameMaster && !from.InRange(item.GetWorldLocation(), 2))
 					{
 						reject = LRReason.OutOfRange;
-					}
+                    }
 					else if (!from.CanSee(item) || !from.InLOS(item))
 					{
 						reject = LRReason.OutOfSight;
-					}
+                    }
 					else if (!item.VerifyMove(from))
 					{
 						reject = LRReason.CannotLift;
 					}
-					#region Mondain's Legacy
 					else if (item.QuestItem && amount != item.Amount && !from.IsStaff())
 					{
 						reject = LRReason.Inspecific;
 						from.SendLocalizedMessage(1074868); // Stacks of quest items cannot be unstacked.
 					}
-					#endregion
-
 					else if (!item.IsAccessibleTo(from))
 					{
 						reject = LRReason.CannotLift;
@@ -4771,7 +4778,6 @@ namespace Server
 
 			oldItem.Amount = amount;
 			oldItem.OnAfterDuped(item);
-            //item.GridLocation = oldItem.GridLocation;
 
 			if (oldItem.Parent is Mobile)
 			{
@@ -5642,9 +5648,9 @@ namespace Server
 				}
 				else
 				{
-					Hits = newHits;
-
                     FatigueHandler(this, amount, DFA);
+
+					Hits = newHits;
 				}
 			}
 
@@ -7164,7 +7170,8 @@ namespace Server
 					}
 
 					OnFameChange(oldValue);
-				}
+                    EventSink.InvokeFameChange(new FameChangeEventArgs(this, oldValue, m_Fame));
+                }
 			}
 		}
 
@@ -7183,7 +7190,8 @@ namespace Server
 				{
 					m_Karma = value;
 					OnKarmaChange(old);
-				}
+                    EventSink.InvokeKarmaChange(new KarmaChangeEventArgs(this, old, m_Karma));
+                }
 			}
 		}
 
@@ -8010,6 +8018,10 @@ namespace Server
 
                     return false;
                 }
+                else if (!((Mobile)target).CanBeHarmedBy(this, message))
+                {
+                    return false;
+                }
             }
 
 			if (target == this)
@@ -8031,6 +8043,11 @@ namespace Server
 
 			return true;
 		}
+
+        public virtual bool CanBeHarmedBy(Mobile from, bool message)
+        {
+            return true;
+        }
 
 		public virtual bool IsHarmfulCriminal(IDamageable target)
 		{
@@ -9545,10 +9562,8 @@ namespace Server
 		{
 			if (poison != null)
 			{
-				#region Mondain's Legacy
 				LocalOverheadMessage(MessageType.Regular, 0x21, 1042857 + (poison.RealLevel * 2));
 				NonlocalOverheadMessage(MessageType.Regular, 0x21, 1042858 + (poison.RealLevel * 2), Name);
-				#endregion
 			}
 		}
 
@@ -10127,7 +10142,10 @@ namespace Server
 					}
 
 					ClearFastwalkStack();
-				}
+
+                    EventSink.InvokeTeleportMovement(new TeleportMovementEventArgs(this, oldLocation, newLocation));
+
+                }
 
 				Map map = m_Map;
 
@@ -12780,7 +12798,14 @@ namespace Server
 			{
 				if (m_StatCap != value)
 				{
+                    int old = m_StatCap;
+
 					m_StatCap = value;
+
+                    if (old != m_StatCap)
+                    {
+                        EventSink.InvokeStatCapChange(new StatCapChangeEventArgs(this, old, m_StatCap));
+                    }
 
 					Delta(MobileDelta.StatCap);
 				}

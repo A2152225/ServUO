@@ -5,6 +5,7 @@ using Server.Targeting;
 using Server.Engines.Quests;
 using Server.Engines.Quests.Hag;
 using Server.Mobiles;
+using System.Linq;
 
 namespace Server.Engines.Harvest
 {
@@ -203,54 +204,29 @@ namespace Server.Engines.Harvest
                             item.Amount += WoodsmansTalisman.CheckHarvest(from, type, this);
                         }
 
-                        bank.Consume(amount, from);
-						EventSink.InvokeResourceHarvestSuccess(new ResourceHarvestSuccessEventArgs(from, tool,item, this));
+                        if (from.AccessLevel == AccessLevel.Player)
+                        {
+                            bank.Consume(amount, from);
+                        }
 
                         if (Give(from, item, def.PlaceAtFeetIfFull))
                         {
                             SendSuccessTo(from, item, resource);
-							//Console.WriteLine("{0}.{1},{2}",from,item,resource);
-							if (item is BaseOre)
-							{
-							string getorename =  ((BaseOre)(item)).Resource.ToString();	
-						
-								
-							//from.SendMessage(item.Hue,((BaseOre)Item).Resource.Value);
-							from.SendMessage(item.Hue,getorename);
-							}
-							if (item is BaseLog)
-							{
-								string getlogname =  ((BaseLog)(item)).Resource.ToString();
-								
-							from.SendMessage(item.Hue,getlogname);
-							
-							}
-							if (item is BaseGranite)
-							{
-								string getgranitename =  ((BaseGranite)(item)).Resource.ToString();
-								
-							from.SendMessage(item.Hue,getgranitename);
-							
-							}
-												
-							Experience.HarvestExp( from, resource, true );//EXP SYSTEM
-
                         }
                         else
                         {
                             SendPackFullTo(from, item, def, resource);
-							Experience.HarvestExp( from, resource, false );//EXP SYSTEM
-
                             item.Delete();
                         }
 
                         BonusHarvestResource bonus = def.GetBonusResource();
+                        Item bonusItem = null;
 
                         if (bonus != null && bonus.Type != null && skillBase >= bonus.ReqSkill)
                         {
 							if (bonus.RequiredMap == null || bonus.RequiredMap == from.Map)
 							{
-								Item bonusItem = Construct(bonus.Type, from, tool);
+							    bonusItem = Construct(bonus.Type, from, tool);
 
 								if (Give(from, bonusItem, true))	//Bonuses always allow placing at feet, even if pack is full irregrdless of def
 								{
@@ -262,6 +238,8 @@ namespace Server.Engines.Harvest
 								}
 							}
                         }
+
+                        EventSink.InvokeResourceHarvestSuccess(new ResourceHarvestSuccessEventArgs(from, tool, item, bonusItem, this));
                     }
 
                     #region High Seas
@@ -793,11 +771,42 @@ namespace Server
     {
         public FurnitureAttribute()
         {
+        }        
+
+        private static bool IsNotChoppables(Item item)
+        {
+            return _NotChoppables.Any(t => t == item.GetType());
         }
+
+        private static Type[] _NotChoppables = new Type[]
+        {
+            typeof(CommodityDeedBox), typeof(ChinaCabinet), typeof(PieSafe), typeof(AcademicBookCase), typeof(JewelryBox),
+            typeof(WoodenBookcase), typeof(Countertop), typeof(Mailbox)
+        };
 
         public static bool Check(Item item)
         {
-            return (item != null && item.GetType().IsDefined(typeof(FurnitureAttribute), false));
+            if (item == null)
+            {
+                return false;
+            }
+			
+			if (IsNotChoppables(item))
+			{
+				return false;
+			}
+
+            if (item.GetType().IsDefined(typeof(FurnitureAttribute), false))
+            {
+                return true;
+            }
+
+            if (item is AddonComponent && ((AddonComponent)item).Addon != null && ((AddonComponent)item).Addon.GetType().IsDefined(typeof(FurnitureAttribute), false))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

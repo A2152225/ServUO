@@ -76,7 +76,7 @@ namespace Server.Misc
 
         private static TimeSpan Mobile_HitsRegenRate(Mobile from)
         {
-            return TimeSpan.FromSeconds(0.5 / (0.1 * (1 + HitPointRegen(from))));  // was FromSeconds(1/)
+            return TimeSpan.FromSeconds(1.0 / (0.1 * (1 + HitPointRegen(from))));
         }
 
         private static TimeSpan Mobile_StamRegenRate(Mobile from)
@@ -90,18 +90,14 @@ namespace Server.Misc
 
             bonus += StamRegen(from);
 
-
-
-
             if (Core.SA)
             {
-                return TimeSpan.FromSeconds(0.5 / (1.42 + (bonus / 100)));// was FromSeconds(1/)
+                return TimeSpan.FromSeconds(1.0 / (1.42 + (bonus / 100)));
             }
             else
             {
-                return TimeSpan.FromSeconds(0.5 / (0.1 * (2 + bonus)));// was FromSeconds(1/)
+                return TimeSpan.FromSeconds(1.0 / (0.1 * (2 + bonus)));
             }
-
         }
 
         private static TimeSpan Mobile_ManaRegenRate(Mobile from)
@@ -191,10 +187,15 @@ namespace Server.Misc
                 if (from.Meditating)
                     rate *= 0.5;
 
-                if (rate < .0000001)  //uncapping  was 0.5
-                    rate = .0000001;	//uncapping  was 0.5
+                if (rate < 0.5)
+                    rate = 0.5;
                 else if (rate > 7.0)
                     rate = 7.0;
+            }
+
+            if (double.IsNaN(rate))
+            {
+                return Mobile.DefaultManaRate;
             }
 
             return TimeSpan.FromSeconds(rate);
@@ -214,7 +215,7 @@ namespace Server.Misc
                 points = 0;
 
             if (Core.ML && from is PlayerMobile)	//does racial bonus go before/after?
-                points = points;// Math.Min(points, 18);  //uncapping
+                points = Math.Min(points, 18);
 
             if (CheckTransform(from, typeof(HorrificBeastSpell)))
                 points += 20;
@@ -231,9 +232,6 @@ namespace Server.Misc
                 foreach (RegenBonusHandler handler in HitsBonusHandlers)
                     points += handler(from);
 
-					
-				if (points < 0)
-					points = 1; 
             return points;
         }
 
@@ -251,7 +249,7 @@ namespace Server.Misc
                 points += 20;
 
             if (Core.ML && from is PlayerMobile)
-                points = points; //Math.Min(points, 24);  //uncapping
+                points = Math.Min(points, 24);
 
             // Skill Masteries - goes after cap
             points += RampageSpell.GetBonus(from, RampageSpell.BonusType.StamRegen);
@@ -263,15 +261,12 @@ namespace Server.Misc
                 foreach (RegenBonusHandler handler in StamBonusHandlers)
                     points += handler(from);
 
-					
-				if (points < 0)
-					points = 1; 
-			return points;
+            return points;
         }
 
         public static int ManaRegen(Mobile from)
         {
-			int points = AosAttributes.GetValue(from, AosAttribute.RegenMana);
+            int points = AosAttributes.GetValue(from, AosAttribute.RegenMana);
 
             if (from is BaseCreature)
                 points += ((BaseCreature)from).DefaultManaRegen;
@@ -284,18 +279,12 @@ namespace Server.Misc
             if (from is PlayerMobile && from.Race == Race.Gargoyle)
                 points += 2;
 
-
-            if (Core.ML && from is PlayerMobile)
-                points = points; //Math.Min(points, 18);  //uncapping
-
             if (!Core.ML && from is PlayerMobile)
-                points = points; //Math.Min(points, 18);
+                points = Math.Min(points, 18);
 
             foreach (RegenBonusHandler handler in ManaBonusHandlers)
                 points += handler(from);
 
-				if (points < 0)
-					points = 1; 
             return points;
         }
 

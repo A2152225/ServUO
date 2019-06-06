@@ -75,9 +75,8 @@ namespace Server.Engines.BulkOrders
 
             if (deed.Material != BulkMaterialType.None)
             {
-             //   this.AddHtmlLocalized(75, y, 300, 20, GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
-			AddHtml( 75, y, 300, 20, "<basefont color=#FF0000>All items must be crafted with " + LargeBODGump.GetMaterialStringFor( deed.Material ), false, false );               
-			   y += 24;
+                this.AddHtmlLocalized(75, y, 300, 20, GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
+                y += 24;
             }
 
             if (from is PlayerMobile && BulkOrderSystem.NewSystemEnabled)
@@ -115,13 +114,13 @@ namespace Server.Engines.BulkOrders
             this.AddHtmlLocalized(160, y, 120, 20, 1011441, 0x7FFF, false, false); // EXIT
         }
 
-     /*   public static int GetMaterialNumberFor(BulkMaterialType material)
+        public static int GetMaterialNumberFor(BulkMaterialType material)
         {
-            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite)
+            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite)
                 return 1045142 + (int)(material - BulkMaterialType.DullCopper);
-            else if (material >= BulkMaterialType.Spined && material <= BulkMaterialType.Ethereal)
+            else if (material >= BulkMaterialType.Spined && material <= BulkMaterialType.Barbed)
                 return 1049348 + (int)(material - BulkMaterialType.Spined);
-            else if (material >= BulkMaterialType.OakWood && material <= BulkMaterialType.Petrified)
+            else if (material >= BulkMaterialType.OakWood && material <= BulkMaterialType.Frostwood)
             {
                 switch (material)
                 {
@@ -135,7 +134,7 @@ namespace Server.Engines.BulkOrders
             }
             return 0;
         }
-*/
+
         public override void OnResponse(NetState sender, RelayInfo info)
         {
             if (this.m_Deed.Deleted || !this.m_Deed.IsChildOf(this.m_From.Backpack))

@@ -20,6 +20,7 @@ namespace Server.Engines.BulkOrders
     {
         int AmountMax { get; set; }
         bool RequireExceptional { get; set; }
+        bool Complete { get; }
         BulkMaterialType Material { get; set; }
         BODType BODType { get; }
     }
@@ -173,11 +174,21 @@ namespace Server.Engines.BulkOrders
 
                 if (entry != null)
                 {
-                    entry.CheckNextBulkOrder();
-
                     if (entry.CachedDeeds > 0)
                     {
                         entry.CachedDeeds--;
+
+                        return true;
+                    }
+                    else if (entry.LastBulkOrder + TimeSpan.FromHours(Delay) < DateTime.UtcNow)
+                    {
+                        if (entry.LastBulkOrder == DateTime.MinValue)
+                        {
+                            entry.LastBulkOrder = DateTime.UtcNow - TimeSpan.FromHours(Delay);
+                        }
+
+                        entry.LastBulkOrder = entry.LastBulkOrder + TimeSpan.FromHours(Delay);
+
                         return true;
                     }
                 }
@@ -292,6 +303,22 @@ namespace Server.Engines.BulkOrders
                 case BODType.Cooking: return SkillName.Cooking;
                 case BODType.Fletching: return SkillName.Fletching;
                 case BODType.Carpentry: return SkillName.Carpentry;
+            }
+        }
+
+        public static int GetBodHue(BODType type)
+        {
+            switch (type)
+            {
+                default:
+                case BODType.Smith: return 0x44E;
+                case BODType.Tailor: return 0x483;
+                case BODType.Alchemy: return 2505;
+                case BODType.Inscription: return 2598;
+                case BODType.Tinkering: return 1109;
+                case BODType.Cooking: return 1169;
+                case BODType.Fletching: return 1425;
+                case BODType.Carpentry: return 1512;
             }
         }
 
@@ -412,28 +439,16 @@ namespace Server.Engines.BulkOrders
             }
         }
 
-        public static bool CanClaimRewards(Mobile m, BODType type)
+        public static bool CanClaimRewards(Mobile m)
         {
             BODContext context = GetContext(m);
 
             if (context != null)
             {
-                return context.CanClaimRewards(type);
+                return context.CanClaimRewards();
             }
 
             return true;
-        }
-
-        public static int GetPendingRewardFor(Mobile m, BODType type)
-        {
-            BODContext context = GetContext(m);
-
-            if (context != null && context.Entries.ContainsKey(type))
-            {
-                return context.Entries[type].PendingRewardPoints;
-            }
-
-            return 0;
         }
 
         public static bool CanExchangeBOD(Mobile from, BaseVendor vendor, IBOD bod, int cost)
@@ -454,7 +469,7 @@ namespace Server.Engines.BulkOrders
 
             if (bod.AmountMax == 20 && (!CanBeExceptional(bod) || bod.RequireExceptional) &&
                      (!CanUseMaterial(bod) ||
-                     (bod.Material == BulkMaterialType.Danite ||
+                     (bod.Material == BulkMaterialType.Valorite ||
                       bod.Material == BulkMaterialType.Frostwood ||
                       bod.Material == BulkMaterialType.Barbed)))
             {
@@ -551,7 +566,7 @@ namespace Server.Engines.BulkOrders
                 picker.Add(1);
             }
 
-            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Danite)
+            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Valorite)
             {
                 picker.Add(2);
             }
@@ -605,13 +620,6 @@ namespace Server.Engines.BulkOrders
                 case BulkMaterialType.Agapite: worth += 400; break;
                 case BulkMaterialType.Verite: worth += 500; break;
                 case BulkMaterialType.Valorite: worth += 600; break;
-				       case BulkMaterialType.Blaze: worth += 700; break;
-					          case BulkMaterialType.Ice: worth += 800; break;
-							         case BulkMaterialType.Toxic: worth += 900; break;
-									        case BulkMaterialType.Electrum: worth += 1000; break;
-											       case BulkMaterialType.Platinum: worth += 1200; break;
-												          case BulkMaterialType.Royalite: worth += 1250; break;
-														         case BulkMaterialType.Danite: worth += 1300; break;
                 case BulkMaterialType.Spined: worth += 100; break;
                 case BulkMaterialType.Horned: worth += 250; break;
                 case BulkMaterialType.Barbed: worth += 500; break;
@@ -724,12 +732,24 @@ namespace Server.Engines.BulkOrders
             }
         }
 
-        public bool CanClaimRewards(BODType type)
+        public int GetPendingRewardFor(BODType type)
         {
-            foreach (KeyValuePair<BODType, BODEntry> kvp in Entries)
+            if (Entries.ContainsKey(type))
             {
-                if (kvp.Value.PendingRewardPoints > 0 && kvp.Key != type)
+                return Entries[type].PendingRewardPoints;
+            }
+
+            return 0;
+        }
+
+        public bool CanClaimRewards()
+        {
+            foreach (var kvp in Entries)
+            {
+                if (kvp.Value.PendingRewardPoints > 0)
+                {
                     return false;
+                }
             }
 
             return true;
@@ -808,15 +828,6 @@ namespace Server.Engines.BulkOrders
                 int old = _CachedDeeds;
 
                 _CachedDeeds = Math.Max(0, Math.Min(BulkOrderSystem.MaxCachedDeeds, value));
-
-                if (_CachedDeeds < old)
-                {
-                    LastBulkOrder = DateTime.UtcNow;
-                }
-                else if (_CachedDeeds > old)
-                {
-                    LastBulkOrder = LastBulkOrder + TimeSpan.FromHours(BulkOrderSystem.Delay);
-                }
             }
         }
 
@@ -858,14 +869,31 @@ namespace Server.Engines.BulkOrders
         {
             if (_CachedDeeds >= BulkOrderSystem.MaxCachedDeeds)
             {
+                // cache is full, resets
+                if (LastBulkOrder + TimeSpan.FromHours(BulkOrderSystem.Delay) < DateTime.UtcNow)
+                {
+                    LastBulkOrder = DateTime.UtcNow;
+                }
+
                 return;
             }
 
-            for (int i = 0; i < BulkOrderSystem.MaxCachedDeeds; i++)
+            int deeds = Math.Min(BulkOrderSystem.MaxCachedDeeds, (int)((DateTime.UtcNow - LastBulkOrder).TotalHours / (double)BulkOrderSystem.Delay));
+
+            if (deeds > 0)
             {
-                if (_CachedDeeds < BulkOrderSystem.MaxCachedDeeds && LastBulkOrder + TimeSpan.FromHours(BulkOrderSystem.Delay) < DateTime.UtcNow)
+                // cache is not full, gives proper amount and resets
+                for (int i = 0; i < deeds; i++)
                 {
                     CachedDeeds++;
+
+                    // this auto-corrects, in the event a bone-head shard owner sets it to min value, or on new server
+                    if (LastBulkOrder == DateTime.MinValue)
+                    {
+                        LastBulkOrder = DateTime.UtcNow - TimeSpan.FromHours(BulkOrderSystem.Delay * deeds);
+                    }
+
+                    LastBulkOrder = LastBulkOrder + TimeSpan.FromHours(BulkOrderSystem.Delay);
                 }
             }
         }

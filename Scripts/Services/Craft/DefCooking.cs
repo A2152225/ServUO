@@ -1,6 +1,5 @@
 using System;
 using Server.Items;
-using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -96,7 +95,6 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -128,13 +126,13 @@ namespace Server.Engines.Craft
             index = AddCraft(typeof(SackFlour), 1044495, 1024153, 0.0, 100.0, typeof(WheatSheaf), 1044489, 2, 1044490);
             SetNeedMill(index, true);
 
-            index = AddCraft(typeof(Dough), 1044495, 1024157, 0.0, 100.0, typeof(SackFlour), 1044468, 1, 1044253);
+            index = AddCraft(typeof(Dough), 1044495, 1024157, 0.0, 100.0, typeof(SackFlourOpen), 1044468, 1, 1151092);
             AddRes(index, typeof(BaseBeverage), 1046458, 1, 1044253);
 
             index = AddCraft(typeof(SweetDough), 1044495, 1041340, 0.0, 100.0, typeof(Dough), 1044469, 1, 1044253);
             AddRes(index, typeof(JarHoney), 1044472, 1, 1044253);
 
-            index = AddCraft(typeof(CakeMix), 1044495, 1041002, 0.0, 100.0, typeof(SackFlour), 1044468, 1, 1044253);
+            index = AddCraft(typeof(CakeMix), 1044495, 1041002, 0.0, 100.0, typeof(SackFlourOpen), 1044468, 1, 1151092);
             AddRes(index, typeof(SweetDough), 1044475, 1, 1044253);
 
             index = AddCraft(typeof(CookieMix), 1044495, 1024159, 0.0, 100.0, typeof(JarHoney), 1044472, 1, 1044253);
@@ -154,7 +152,7 @@ namespace Server.Engines.Craft
 
             index = AddCraft(typeof(WheatWort), 1044495, 1150275, 30.0, 100.0, typeof(Bottle), 1023854, 1, 1044253);
             AddRes(index, typeof(BaseBeverage), 1046458, 1, 1044253);
-            AddRes(index, typeof(SackFlour), 1044468, 1, 1044253);
+            AddRes(index, typeof(SackFlourOpen), 1044468, 1, 1151092);
             SetItemHue(index, 1281);
             #endregion
 
@@ -200,13 +198,13 @@ namespace Server.Engines.Craft
                 AddRes(index, typeof(RawFishSteak), 1044476, 10, 1044253);
             }
 
-            index = AddCraft(typeof(TribalPaint), 1044496, 1040000, Core.ML ? 55.0 : 80.0, Core.ML ? 105.0 : 80.0, typeof(SackFlour), 1044468, 1, 1044253);
+            index = AddCraft(typeof(TribalPaint), 1044496, 1040000, Core.ML ? 55.0 : 80.0, Core.ML ? 105.0 : 80.0, typeof(SackFlourOpen), 1044468, 1, 1151092);
             AddRes(index, typeof(TribalBerry), 1046460, 1, 1044253);
 
             if (Core.SE)
             {
                 index = AddCraft(typeof(EggBomb), 1044496, 1030249, 90.0, 120.0, typeof(Eggs), 1044477, 1, 1044253);
-                AddRes(index, typeof(SackFlour), 1044468, 3, 1044253);
+                AddRes(index, typeof(SackFlourOpen), 1044468, 3, 1151092);
             }
 
             #region Mondain's Legacy
@@ -345,38 +343,51 @@ namespace Server.Engines.Craft
             SetUseAllRes(index, true);
             ForceNonExceptional(index);
 
-            index = AddCraft(typeof(BowlOfRotwormStew), 1044498, 1031706, 0.0, 100.0, typeof(RawRotwormMeat), 1031705, 1, 1044253);
-            SetNeedHeat(index, true);
-            SetUseAllRes(index, true);
-            AddRecipe(index, (int)CookRecipes.RotWormStew);
-            ForceNonExceptional(index);
+            if (Core.SA)
+            {
+                index = AddCraft(typeof(BowlOfRotwormStew), 1044498, 1031706, 0.0, 100.0, typeof(RawRotwormMeat), 1031705, 1, 1044253);
+                SetNeedHeat(index, true);
+                SetUseAllRes(index, true);
+                AddRecipe(index, (int)CookRecipes.RotWormStew);
+                ForceNonExceptional(index);
 
-            index = AddCraft(typeof(BowlOfBlackrockStew), 1044498, 1115752, 30.0, 70.0, typeof(BowlOfRotwormStew), 1031706, 1, 1044253);
-            AddRes(index, typeof(SmallPieceofBlackrock), 1153836, 1, 1044253);
-            SetNeedHeat(index, true);
-            SetUseAllRes(index, true);
-            SetItemHue(index, 1954);
-            AddRecipe(index, (int)CookRecipes.BlackrockStew);
-            ForceNonExceptional(index);
+                index = AddCraft(typeof(BowlOfBlackrockStew), 1044498, 1115752, 30.0, 70.0, typeof(BowlOfRotwormStew), 1031706, 1, 1044253);
+                AddRes(index, typeof(SmallPieceofBlackrock), 1153836, 1, 1044253);
+                SetNeedHeat(index, true);
+                SetUseAllRes(index, true);
+                SetItemHue(index, 1954);
+                AddRecipe(index, (int)CookRecipes.BlackrockStew);
+                ForceNonExceptional(index);
+            }
 
-            index = AddCraft(typeof(Hamburger), 1044498, 1125202, 40.0, 80.0, typeof(BreadLoaf), 1024155, 1, 1044253);
-            AddRes(index, typeof(RawRibs), 1044485, 1, 1044253);
-            AddRes(index, typeof(Lettuce), 1023184, 1, 1044253);
-            SetNeedHeat(index, true);
-            SetUseAllRes(index, true);
-            AddRecipe(index, (int)CookRecipes.Hamburger);
+            if (Core.EJ)
+            {
+                index = AddCraft(typeof(KhaldunTastyTreat), 1044498, 1158680, 60.0, 100.0, typeof(RawFishSteak), 1044476, 40, 1044253);
+                SetUseAllRes(index, true);
+                SetNeedHeat(index, true);
+            }
 
-            index = AddCraft(typeof(HotDog), 1044498, 1125200, 40.0, 80.0, typeof(BreadLoaf), 1024155, 1, 1044253);
-            AddRes(index, typeof(Sausage), 1125198, 1, 1044253);
-            SetNeedHeat(index, true);
-            SetUseAllRes(index, true);
-            AddRecipe(index, (int)CookRecipes.HotDog);
+            if (Core.TOL)
+            {
+                index = AddCraft(typeof(Hamburger), 1044498, 1125202, 40.0, 80.0, typeof(BreadLoaf), 1024155, 1, 1044253);
+                AddRes(index, typeof(RawRibs), 1044485, 1, 1044253);
+                AddRes(index, typeof(Lettuce), 1023184, 1, 1044253);
+                SetNeedHeat(index, true);
+                SetUseAllRes(index, true);
+                AddRecipe(index, (int)CookRecipes.Hamburger);
 
-            index = AddCraft(typeof(CookableSausage), 1044498, 1125198, 30.0, 70.0, typeof(Ham), 1022515, 1, 1044253);
-            AddRes(index, typeof(DriedHerbs), 1023137, 1, 1044253);
-            SetNeedHeat(index, true);
-            SetUseAllRes(index, true);
-            AddRecipe(index, (int)CookRecipes.Sausage);
+                index = AddCraft(typeof(HotDog), 1044498, 1125200, 40.0, 80.0, typeof(BreadLoaf), 1024155, 1, 1044253);
+                AddRes(index, typeof(Sausage), 1125198, 1, 1044253);
+                SetNeedHeat(index, true);
+                SetUseAllRes(index, true);
+                AddRecipe(index, (int)CookRecipes.HotDog);
+
+                index = AddCraft(typeof(CookableSausage), 1044498, 1125198, 30.0, 70.0, typeof(Ham), 1022515, 1, 1044253);
+                AddRes(index, typeof(DriedHerbs), 1023137, 1, 1044253);
+                SetNeedHeat(index, true);
+                SetUseAllRes(index, true);
+                AddRecipe(index, (int)CookRecipes.Sausage);
+            }
             #endregion
 
             #region Enchanted

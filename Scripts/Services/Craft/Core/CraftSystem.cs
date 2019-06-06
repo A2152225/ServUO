@@ -22,10 +22,9 @@ namespace Server.Engines.Craft
         private bool m_Repair;
         private bool m_MarkOption;
         private bool m_CanEnhance;
-        #region SA
+
         private bool m_QuestOption;
 		private bool m_CanAlter;
-        #endregion
 
         private readonly CraftItemCol m_CraftItems;
         private readonly CraftGroupCol m_CraftGroups;
@@ -153,6 +152,22 @@ namespace Server.Engines.Craft
                 c.OnMade(item);
         }
 
+        public void OnRepair(Mobile m, ITool tool, Item deed, Item addon, IEntity e)
+        {
+            Item source;
+
+            if (tool is Item)
+            {
+                source = (Item)tool;
+            }
+            else
+            {
+                source = deed ?? addon;
+            }
+
+            EventSink.InvokeRepairItem(new RepairItemEventArgs(m, source, e));
+        }
+
         public bool Resmelt
         {
             get
@@ -201,7 +216,6 @@ namespace Server.Engines.Craft
             }
         }
 		
-        #region SA
         public bool QuestOption
         {
             get
@@ -225,7 +239,6 @@ namespace Server.Engines.Craft
                 m_CanAlter = value;
             }
         }
-        #endregion
 
         public CraftSystem(int minCraftEffect, int maxCraftEffect, double delay)
         {
@@ -402,7 +415,6 @@ namespace Server.Engines.Craft
             craftItem.RequiredThemePack = pack;
         }
 
-        #region SA
         public void SetRequiresBasketWeaving(int index)
         {
             CraftItem craftItem = m_CraftItems.GetAt(index);
@@ -420,9 +432,7 @@ namespace Server.Engines.Craft
             CraftItem craftItem = m_CraftItems.GetAt(index);
             craftItem.RequiresMechanicalLife = true;
         }
-        #endregion
 
-        #region TOL
         public void SetData(int index, object data)
         {
             CraftItem craftItem = m_CraftItems.GetAt(index);
@@ -434,7 +444,12 @@ namespace Server.Engines.Craft
             CraftItem craftItem = m_CraftItems.GetAt(index);
             craftItem.DisplayID = id;
         }
-        #endregion
+
+        public void SetForceSuccess(int index, int success)
+        {
+            CraftItem craftItem = m_CraftItems.GetAt(index);
+            craftItem.ForceSuccessChance = success;
+        }
 
         public void AddRes(int index, Type type, TextDefinition name, int amount)
         {
@@ -520,11 +535,6 @@ namespace Server.Engines.Craft
             CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, genericName, message);
             m_CraftSubRes.Add(craftSubRes);
         }
-		 public void AddSubRes(Type type, string name, double reqSkill, int genericName, object message)
-        {
-            CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, genericName, message);
-            m_CraftSubRes.Add(craftSubRes);
-        }
 
         public void AddSubRes(Type type, string name, double reqSkill, object message)
         {
@@ -558,13 +568,6 @@ namespace Server.Engines.Craft
             m_CraftSubRes2.Add(craftSubRes);
         }
 
-		
-        public void AddSubRes2(Type type, string name, double reqSkill, int genericName, object message)
-        {
-            CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, genericName, message);
-            m_CraftSubRes2.Add(craftSubRes);
-        }
-		
         public void AddSubRes2(Type type, string name, double reqSkill, object message)
         {
             CraftSubRes craftSubRes = new CraftSubRes(type, name, reqSkill, message);

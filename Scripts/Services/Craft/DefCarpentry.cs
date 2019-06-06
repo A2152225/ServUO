@@ -1,6 +1,5 @@
 using System;
 using Server.Items;
-using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -111,7 +110,6 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -1000,11 +998,11 @@ namespace Server.Engines.Craft
             // This will override the overridable material	TODO: Verify the required skill amount
             AddSubRes(typeof(Board), 1072643, 00.0, 1044041, 1072652);
             AddSubRes(typeof(OakBoard), 1072644, 65.0, 1044041, 1072652);
-            AddSubRes(typeof(AshBoard), 1072645, 80.0, 1044041, 1072652);
-            AddSubRes(typeof(YewBoard), 1072646, 95.0, 1044041, 1072652);
-            AddSubRes(typeof(HeartwoodBoard), 1072647, 100.0, 1044041, 1072652);
-            AddSubRes(typeof(BloodwoodBoard), 1072648, 100.0, 1044041, 1072652);
-            AddSubRes(typeof(FrostwoodBoard), 1072649, 100.0, 1044041, 1072652);
+            AddSubRes(typeof(AshBoard), 1072645, 75.0, 1044041, 1072652);
+            AddSubRes(typeof(YewBoard), 1072646, 85.0, 1044041, 1072652);
+            AddSubRes(typeof(HeartwoodBoard), 1072647, 95.0, 1044041, 1072652);
+            AddSubRes(typeof(BloodwoodBoard), 1072648, 95.0, 1044041, 1072652);
+            AddSubRes(typeof(FrostwoodBoard), 1072649, 95.0, 1044041, 1072652);
         }
     }
 }

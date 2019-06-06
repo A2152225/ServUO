@@ -64,7 +64,7 @@ namespace Server.Mobiles
             this.PackItem(new ArcaneGem());
 
             if (Core.ML && Utility.RandomDouble() < .33)
-                this.PackItem(Engines.Plants.Seed.RandomPeculiarSeed(4));
+                this.PackItem(Engines.Plants.Seed.RandomPeculiarSeed(2));
 
             this.m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
         }
@@ -88,6 +88,9 @@ namespace Server.Mobiles
                 return true;
             }
         }
+		
+		public override int TreasureMapLevel { get { return 3; } }
+		
         public override int Meat
         {
             get

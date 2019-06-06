@@ -1,7 +1,6 @@
 using System;
 using Server.Items;
 using System.Collections.Generic;
-using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -150,7 +149,6 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -726,8 +724,8 @@ namespace Server.Engines.Craft
             if (Core.SA)
             {
                 index = AddCraft(typeof(CuffsOfTheArchmage), 1049149, 1157348, 120.0, 120.1, typeof(Cloth), 1044455, 8, 1044287);
-                AddRes(index, typeof(MidnightBracers), 1061093, 1, 1049063);
-                AddRes(index, typeof(BloodOfTheDarkFather), 1157343, 5, 1049063);
+                AddRes(index, typeof(MidnightBracers), 1061093, 1, 1044253);
+                AddRes(index, typeof(BloodOfTheDarkFather), 1157343, 5, 1044253);
                 AddRes(index, typeof(DarkSapphire), 1032690, 5, 1044253);
                 ForceNonExceptional(index);
                 AddRecipe(index, (int)TailorRecipe.CuffsOfTheArchmage);

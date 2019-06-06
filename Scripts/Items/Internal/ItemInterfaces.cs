@@ -31,7 +31,7 @@ namespace Server.Items
         bool PlayerConstructed { get; }
     }
 
-    public interface IResource : IQuality
+    public interface IResource
     {
         CraftResource Resource { get; set; }
     }
@@ -45,6 +45,9 @@ namespace Server.Items
     {
         int TimesImbued { get; set; }
         bool IsImbued { get; set; }
+
+        int[] BaseResists { get; }
+        void OnAfterImbued(Mobile m, int mod, int value);
     }
 
     public interface ICombatEquipment : IImbuableEquipement
