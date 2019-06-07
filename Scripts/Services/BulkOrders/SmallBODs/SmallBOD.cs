@@ -182,7 +182,7 @@ namespace Server.Engines.BulkOrders
         {
             switch ( resource )
             {
-                case CraftResource.DullCopper:
+				case CraftResource.DullCopper:
                     return BulkMaterialType.DullCopper;
                 case CraftResource.ShadowIron:
                     return BulkMaterialType.ShadowIron;
@@ -198,24 +198,44 @@ namespace Server.Engines.BulkOrders
                     return BulkMaterialType.Verite;
                 case CraftResource.Valorite:
                     return BulkMaterialType.Valorite;
+				case CraftResource.Blaze:
+					return BulkMaterialType.Blaze;
+				case CraftResource.Ice:		
+					return BulkMaterialType.Ice;
+				case CraftResource.Toxic:	
+					return BulkMaterialType.Toxic;
+				case CraftResource.Electrum:	
+					return BulkMaterialType.Electrum;
+				case CraftResource.Platinum:
+					return BulkMaterialType.Platinum;
+				case CraftResource.Royalite:	
+					return BulkMaterialType.Royalite;
+				case CraftResource.Danite:			
+					return BulkMaterialType.Danite;
                 case CraftResource.SpinedLeather:
                     return BulkMaterialType.Spined;
                 case CraftResource.HornedLeather:
                     return BulkMaterialType.Horned;
                 case CraftResource.BarbedLeather:
                     return BulkMaterialType.Barbed;
-                case CraftResource.OakWood:
-                    return BulkMaterialType.OakWood;
-                case CraftResource.YewWood:
-                    return BulkMaterialType.YewWood;
-                case CraftResource.AshWood:
-                    return BulkMaterialType.AshWood;
-                case CraftResource.Heartwood:
-                    return BulkMaterialType.Heartwood;
-                case CraftResource.Bloodwood:
-                    return BulkMaterialType.Bloodwood;
-                case CraftResource.Frostwood:
-                    return BulkMaterialType.Frostwood;
+               	case CraftResource.PolarLeather:		return BulkMaterialType.Polar;
+				case CraftResource.SyntheticLeather:	return BulkMaterialType.Synthetic;
+				case CraftResource.BlazeLeather:		return BulkMaterialType.BlazeL;
+				case CraftResource.DaemonicLeather:		return BulkMaterialType.Daemonic;
+				case CraftResource.ShadowLeather:		return BulkMaterialType.Shadow;
+				case CraftResource.FrostLeather:		return BulkMaterialType.Frost;
+				case CraftResource.EtherealLeather:		return BulkMaterialType.Ethereal;
+				case CraftResource.Heartwood:			return BulkMaterialType.Heartwood;
+				case CraftResource.Bloodwood:			return BulkMaterialType.Bloodwood;
+				case CraftResource.Frostwood:			return BulkMaterialType.Frostwood;
+				case CraftResource.OakWood:				return BulkMaterialType.OakWood;
+				case CraftResource.AshWood:				return BulkMaterialType.AshWood;
+				case CraftResource.YewWood:				return BulkMaterialType.YewWood;
+				case CraftResource.Ebony:				return BulkMaterialType.Ebony;
+				case CraftResource.Bamboo:				return BulkMaterialType.Bamboo;
+				case CraftResource.PurpleHeart:			return BulkMaterialType.PurpleHeart;
+				case CraftResource.Redwood:				return BulkMaterialType.Redwood;
+				case CraftResource.Petrified:			return BulkMaterialType.Petrified;
             }
 
             return BulkMaterialType.None;
@@ -231,8 +251,9 @@ namespace Server.Engines.BulkOrders
                 list.Add(1045141); // All items must be exceptional.
 
             if (m_Material != BulkMaterialType.None)
-                list.Add(SmallBODGump.GetMaterialNumberFor(m_Material)); // All items must be made with x material.
-
+               	list.Add("All items must be crafted with " + LargeBODGump.GetMaterialStringFor( Material ));
+           //     list.Add(SmallBODGump.GetMaterialNumberFor(m_Material)); // All items must be made with x material.
+				
             list.Add(1060656, m_AmountMax.ToString()); // amount to make: ~1_val~
             list.Add(1060658, "#{0}\t{1}", m_Number, m_AmountCur); // ~1_val~: ~2_val~
         }
