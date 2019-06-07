@@ -967,9 +967,9 @@ namespace Server.Spells
 			// Lower Mana Cost = 40%
 			int lmc = AosAttributes.GetValue(m_Caster, AosAttribute.LowerManaCost);
 
-			if (lmc > 40)
+			if (lmc > 80 ) //40)
 			{
-				lmc = 40;
+				lmc = 80; //40
 			}
 
             lmc += BaseArmor.GetInherentLowerManaCost(m_Caster);
@@ -990,7 +990,7 @@ namespace Server.Spells
 
 			if (delay < 0.2)
 			{
-				delay = 0.2;
+				delay = delay;//0.2;
 			}
 
 			return TimeSpan.FromSeconds(delay);
@@ -1016,7 +1016,7 @@ namespace Server.Spells
 
 			if (delay < CastRecoveryMinimum)
 			{
-				delay = CastRecoveryMinimum;
+				delay = delay; // CastRecoveryMinimum;
 			}
 
 			return TimeSpan.FromSeconds((double)delay / CastRecoveryPerSecond);
@@ -1054,15 +1054,20 @@ namespace Server.Spells
 
 			int fc = AosAttributes.GetValue(m_Caster, AosAttribute.CastSpeed);
 
-			if (fc > fcMax)
+			/*if (fc > fcMax)
 			{
 				fc = fcMax;
-			}
-
+			}*/
             if (ProtectionSpell.Registry.ContainsKey(m_Caster) || EodonianPotion.IsUnderEffects(m_Caster, PotionEffect.Urali))
             {
-                fc = Math.Min(fcMax - 2, fc - 2);
+				
+                fc = ( fc - 2); //Allow players to have enough FC to compensate for Protection 
             }
+			
+				if (fc > fcMax)
+			{
+				fc = fc; // fcMax; lets try not capping
+			}
 
 			TimeSpan baseDelay = CastDelayBase;
 
@@ -1073,7 +1078,7 @@ namespace Server.Spells
 
 			if (delay < CastDelayMinimum)
 			{
-				delay = CastDelayMinimum;
+				delay = delay;//CastDelayMinimum; lets try not capping
 			}
 
             if (DreadHorn.IsUnderInfluence(m_Caster))

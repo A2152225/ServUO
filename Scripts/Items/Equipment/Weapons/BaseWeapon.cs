@@ -1425,10 +1425,10 @@ namespace Server.Items
 			if (Core.AOS)
 			{
                 if (atkValue <= -20.0)
-                    atkValue = -19.9;
+                    atkValue = atkValue; /////// -19.9;
 
                 if (defValue <= -20.0)
-                    defValue = -19.9;
+                    defValue = defValue; ///////-19.9;
 
                 bonus += AosAttributes.GetValue(attacker, AosAttribute.AttackChance);
 
@@ -1448,7 +1448,7 @@ namespace Server.Items
 
                 // Defense Chance Increase = 45%
                 if (bonus > max)
-                    bonus = max;
+                    bonus = bonus; ///////max;
 
                 theirValue = (defValue + 20.0) * (100 + bonus);
 
@@ -1546,7 +1546,7 @@ namespace Server.Items
 
 				if (bonus > 60)
 				{
-					bonus = 60;
+					bonus = bonus; ///////60;
 				}
 
 				double ticks;
@@ -1573,7 +1573,7 @@ namespace Server.Items
 				// Swing speed currently capped at one swing every 1.25 seconds (5 ticks).
 				if (ticks < 5)
 				{
-					ticks = 5;
+					ticks = ticks;///// 5;
 				}
 
 				delayInSeconds = ticks * 0.25;
@@ -1597,7 +1597,7 @@ namespace Server.Items
 				// OSI dev said that it has and is supposed to be 1.25
 				if (delayInSeconds < 1.25)
 				{
-					delayInSeconds = 1.25;
+					delayInSeconds = delayInSeconds;// /////// 1.25;
 				}
 			}
 			else
@@ -2308,7 +2308,7 @@ namespace Server.Items
                 {
                     HitPoints += selfRepair;
 
-                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(60);
+                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(30); ///// 60
                 }
                 else
                 {
@@ -2547,7 +2547,7 @@ namespace Server.Items
                 Focus.OnHit(attacker, defender);
             }
 
-            percentageBonus = Math.Min(percentageBonus, 300);
+            percentageBonus = Math.Min(percentageBonus,percentageBonus); ///////300);
 
             // bonus is seprate from weapon damage, ie not capped
             percentageBonus += Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(attacker);
@@ -2672,6 +2672,27 @@ namespace Server.Items
                 damage += (int)inc;
             }
 
+			if (defender is PlayerMobile){
+				
+			damageGiven = AOS.Damage(
+				defender,
+				attacker,
+				damage,
+				ignoreArmor,
+				phys,
+				fire,
+				cold,
+				pois,
+				nrgy,
+				chaos,
+				(direct + defender.Kills*7),
+				false,
+				ranged ? Server.DamageType.Ranged : Server.DamageType.Melee);
+				
+			}
+			else{
+
+
 			damageGiven = AOS.Damage(
 				defender,
 				attacker,
@@ -2686,7 +2707,7 @@ namespace Server.Items
 				direct,
 				false,
 				ranged ? Server.DamageType.Ranged : Server.DamageType.Melee);
-
+			}
             DualWield.DoHit(attacker, defender, damage);
 
             if (sparks)
@@ -2994,6 +3015,10 @@ namespace Server.Items
 
             BaseFamiliar.OnHit(attacker, damageable);
             WhiteTigerFormSpell.OnHit(attacker, defender);
+			
+			if (defender is PlayerMobile)
+				damageGiven += (defender.Kills*7);
+			
 			XmlAttach.OnWeaponHit(this, attacker, defender, damageGiven);
 		}
 
@@ -3037,7 +3062,7 @@ namespace Server.Items
             int inscribeBonus = (inscribeSkill + (1000 * (inscribeSkill / 1000))) / 200;
 
             damageBonus += inscribeBonus;
-            damageBonus += attacker.Int / 10;
+            damageBonus += attacker.Int / 5; //////10;   was 10 -- Str gives 1% per 5, so scaling int to match 
             damageBonus += SpellHelper.GetSpellDamageBonus(attacker, defender, SkillName.Magery, attacker is PlayerMobile && defender is PlayerMobile);
             damage = AOS.Scale(damage, 100 + damageBonus);
 
@@ -3048,6 +3073,14 @@ namespace Server.Items
             int evalScale = 30 + ((9 * 800) / 100);
 
             damage = AOS.Scale(damage, evalScale);
+			if (defender is PlayerMobile)
+			{
+				if (defender.Kills > 0)
+				return (damage/100 + (defender.Kills * 7));
+				
+			}
+			
+			
 
             return damage / 100;
 		}
@@ -3759,12 +3792,14 @@ namespace Server.Items
 
 			if (damageBonus > 100)
 			{
-				damageBonus = 100;
+				damageBonus =  damageBonus; //was 100, uncapped
 			}
 			#endregion
 
 			double totalBonus = strengthBonus + anatomyBonus + tacticsBonus + lumberBonus +
 								((GetDamageBonus() + damageBonus) / 100.0);
+
+		
 
 			return damage + (int)(damage * totalBonus);
 		}
@@ -3824,8 +3859,8 @@ namespace Server.Items
 			{
 				double lumberValue = attacker.Skills[SkillName.Lumberjacking].Value;
 			    lumberValue = (lumberValue/5.0)/100.0;
-			    if (lumberValue > 0.2)
-			        lumberValue = 0.2;
+			if (lumberValue > 0.25)
+			lumberValue = lumberValue; //was 0.2;
 
 				modifiers += lumberValue;
 
@@ -5229,7 +5264,29 @@ namespace Server.Items
                 list.Add(1152207); // Assassin's Edge
                 return;
             }
-
+		//daat99 OWLTR start - add custom resources to name
+			string oreType = CraftResources.GetName(m_Resource);
+			int level = CraftResources.GetIndex(m_Resource)+1;
+			
+			if ( m_Quality == ItemQuality.Exceptional )
+			{
+				if (level > 1 && !string.IsNullOrEmpty(oreType))
+					list.Add( 1053100, "{0}\t{1}", oreType, GetNameString() ); // exceptional ~1_oretype~ ~2_armortype~
+				else
+					list.Add( 1050040, GetNameString() ); // exceptional ~1_ITEMNAME~
+			}
+			else
+			{
+				if (level > 1 && !string.IsNullOrEmpty(oreType))
+					list.Add( 1053099, "{0}\t{1}", oreType, GetNameString() ); // ~1_oretype~ ~2_armortype~
+				else
+					list.Add( GetNameString() );
+				
+			}
+			//daat99 OWLTR end - add custom resources to name
+			
+			
+			/*
 			int oreType;
 
 			switch (m_Resource)
@@ -5311,7 +5368,7 @@ namespace Server.Items
 					oreType = 0;
 					break;
 			}
-
+*//*
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)

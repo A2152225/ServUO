@@ -1535,11 +1535,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
         public override int GetMaxResistance(ResistanceType type)
         {
-            if (IsStaff())
+          /*  if (IsStaff())
             {
                 return 100;
             }
-
+*/
             int max = base.GetMaxResistance(type);
             int refineBonus = BaseArmor.GetRefinedResist(this, type);
 

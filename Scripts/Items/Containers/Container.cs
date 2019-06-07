@@ -393,11 +393,11 @@ namespace Server.Items
         {
         }
 
-        public override int DefaultMaxWeight
+       public override int DefaultMaxWeight
         {
             get
             {
-                return 1600;
+                return 2000; // was 1600
             }
         }
         public override bool CheckHold(Mobile m, Item item, bool message, bool checkItems, int plusItems, int plusWeight)
@@ -457,7 +457,7 @@ namespace Server.Items
                     Mobile m = ParentEntity as Mobile;
                     if (m != null && m.Player && m.Backpack == this)
                     {
-                        return 550;
+                        return (int)(Math.Max(550,(m.Str*3.5))) ;
                     }
                     else
                     {

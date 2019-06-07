@@ -47,5 +47,7 @@ ServUO.exe
 *.DotSettings.user
 /Saves*
 /Saves - Copy/
-
+/WorldFiles*
+/WorldFiles
+/WorldFiles/*
 ServUO*

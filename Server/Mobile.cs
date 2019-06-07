@@ -1016,11 +1016,11 @@ namespace Server
 			UpdateResistances();
 		}
 
-		private static int m_MinPlayerResistance = -70;
+		private static int m_MinPlayerResistance = -90;
 
 		public static int MinPlayerResistance { get { return m_MinPlayerResistance; } set { m_MinPlayerResistance = value; } }
 
-		private static int m_MaxPlayerResistance = 70;
+		private static int m_MaxPlayerResistance = 12500;
 
 		public static int MaxPlayerResistance { get { return m_MaxPlayerResistance; } set { m_MaxPlayerResistance = value; } }
 
@@ -1097,7 +1097,7 @@ namespace Server
 				return m_MinPlayerResistance;
 			}
 
-			return -100;
+			return -500;
 		}
 
 		public virtual int GetMaxResistance(ResistanceType type)
@@ -1969,7 +1969,7 @@ namespace Server
 			public ManaTimer(Mobile m)
 				: base(GetManaRegenRate(m), GetManaRegenRate(m))
 			{
-				Priority = TimerPriority.FiftyMS;
+				Priority = TimerPriority.TwentyFiveMS;
 				m_Owner = m;
 			}
 
@@ -1977,7 +1977,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenMana) // m_Owner.Alive )
 				{
-					m_Owner.Mana++;
+					m_Owner.Mana+=2;
 				}
 
 				Delay = Interval = GetManaRegenRate(m_Owner);
@@ -1991,7 +1991,7 @@ namespace Server
 			public HitsTimer(Mobile m)
 				: base(GetHitsRegenRate(m), GetHitsRegenRate(m))
 			{
-				Priority = TimerPriority.FiftyMS;
+				Priority = TimerPriority.TwentyFiveMS;
 				m_Owner = m;
 			}
 
@@ -1999,7 +1999,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenHits) // m_Owner.Alive && !m_Owner.Poisoned )
 				{
-					m_Owner.Hits++;
+					m_Owner.Hits+=2;
 				}
 
 				Delay = Interval = GetHitsRegenRate(m_Owner);
@@ -2013,7 +2013,7 @@ namespace Server
 			public StamTimer(Mobile m)
 				: base(GetStamRegenRate(m), GetStamRegenRate(m))
 			{
-				Priority = TimerPriority.FiftyMS;
+				Priority = TimerPriority.TwentyFiveMS;
 				m_Owner = m;
 			}
 
@@ -2021,7 +2021,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenStam) // m_Owner.Alive )
 				{
-					m_Owner.Stam++;
+					m_Owner.Stam+=2;
 				}
 
 				Delay = Interval = GetStamRegenRate(m_Owner);
@@ -2098,7 +2098,7 @@ namespace Server
 
 				if (!m_Mobile.m_Player && m_Mobile.m_Dex <= 100)
 				{
-					Priority = TimerPriority.FiftyMS;
+					Priority = TimerPriority.TwentyFiveMS;
 				}
 			}
 
