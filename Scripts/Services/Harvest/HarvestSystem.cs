@@ -211,14 +211,41 @@ namespace Server.Engines.Harvest
 
                         if (Give(from, item, def.PlaceAtFeetIfFull))
                         {
-                            SendSuccessTo(from, item, resource);
+                                                  SendSuccessTo(from, item, resource);
+							//Console.WriteLine("{0}.{1},{2}",from,item,resource);
+							if (item is BaseOre)
+							{
+							string getorename =  ((BaseOre)(item)).Resource.ToString();	
+						
+								
+							//from.SendMessage(item.Hue,((BaseOre)Item).Resource.Value);
+							from.SendMessage(item.Hue,getorename);
+							}
+							if (item is BaseLog)
+							{
+								string getlogname =  ((BaseLog)(item)).Resource.ToString();
+								
+							from.SendMessage(item.Hue,getlogname);
+							
+							}
+							if (item is BaseGranite)
+							{
+								string getgranitename =  ((BaseGranite)(item)).Resource.ToString();
+								
+							from.SendMessage(item.Hue,getgranitename);
+							
+							}
+												
+							Experience.HarvestExp( from, resource, true );//EXP SYSTEM
+
                         }
                         else
                         {
                             SendPackFullTo(from, item, def, resource);
+							Experience.HarvestExp( from, resource, false );//EXP SYSTEM
+
                             item.Delete();
                         }
-
                         BonusHarvestResource bonus = def.GetBonusResource();
                         Item bonusItem = null;
 

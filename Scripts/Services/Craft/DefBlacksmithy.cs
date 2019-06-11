@@ -1,5 +1,7 @@
 #region References
 using System;
+using Server.Mobiles;
+		 
 
 using Server.Items;
 #endregion
@@ -253,6 +255,8 @@ namespace Server.Engines.Craft
         public override int PlayEndingEffect(
             Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
+		Experience.CraftExp( from, quality, failed, item );
+
             if (toolBroken)
             {
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
@@ -938,16 +942,22 @@ namespace Server.Engines.Craft
 
             // Add every material you want the player to be able to choose from
             // This will override the overridable material
-            AddSubRes(typeof(IronIngot), 1044022, 00.0, 1044036, 1044267);
-            AddSubRes(typeof(DullCopperIngot), 1044023, 65.0, 1044036, 1044268);
-            AddSubRes(typeof(ShadowIronIngot), 1044024, 70.0, 1044036, 1044268);
-            AddSubRes(typeof(CopperIngot), 1044025, 75.0, 1044036, 1044268);
-            AddSubRes(typeof(BronzeIngot), 1044026, 80.0, 1044036, 1044268);
-            AddSubRes(typeof(GoldIngot), 1044027, 85.0, 1044036, 1044268);
-            AddSubRes(typeof(AgapiteIngot), 1044028, 90.0, 1044036, 1044268);
-            AddSubRes(typeof(VeriteIngot), 1044029, 95.0, 1044036, 1044268);
-            AddSubRes(typeof(ValoriteIngot), 1044030, 99.0, 1044036, 1044268);
-
+             AddSubRes(typeof(IronIngot), 1044022, 00.0, 1044036, 1044267);
+            AddSubRes(typeof(DullCopperIngot), 1044023, 35.0, 1044036, 1044268);
+            AddSubRes(typeof(ShadowIronIngot), 1044024, 40.0, 1044036, 1044268);
+            AddSubRes(typeof(CopperIngot), 1044025, 45.0, 1044036, 1044268);
+            AddSubRes(typeof(BronzeIngot), 1044026, 50.0, 1044036, 1044268);
+            AddSubRes(typeof(GoldIngot), 1044027, 55.0, 1044036, 1044268);
+            AddSubRes(typeof(AgapiteIngot), 1044028, 60.0, 1044036, 1044268);
+            AddSubRes(typeof(VeriteIngot), 1044029, 65.0, 1044036, 1044268);
+            AddSubRes(typeof(ValoriteIngot), 1044030, 70.0, 1044036, 1044268);
+			AddSubRes(typeof(BlazeIngot), "Blaze", 75.0, 1044036, 1044268);
+			AddSubRes(typeof(IceIngot), "Ice", 80.0, 1044036, 1044268);
+			AddSubRes(typeof(ToxicIngot), "Toxic", 85.0, 1044036, 1044268);
+			AddSubRes(typeof(ElectrumIngot), "Electrum", 90.0, 1044036, 1044268);
+			AddSubRes(typeof(PlatinumIngot), "Platinum", 95.0, 1044036, 1044268);
+			AddSubRes(typeof(RoyaliteIngot), "Royalite", 97.0, 1044036, 1044268);
+			AddSubRes(typeof(DaniteIngot), "Danite", 99.0, 1044036, 1044268);
             SetSubRes2(typeof(RedScales), 1060875);
 
             AddSubRes2(typeof(RedScales), 1060875, 0.0, 1053137, 1044268);
@@ -956,6 +966,10 @@ namespace Server.Engines.Craft
             AddSubRes2(typeof(GreenScales), 1060878, 0.0, 1053137, 1044268);
             AddSubRes2(typeof(WhiteScales), 1060879, 0.0, 1053137, 1044268);
             AddSubRes2(typeof(BlueScales), 1060880, 0.0, 1053137, 1044268);
+			AddSubRes2(typeof(CopperScales), "Copper Scales", 0.0, 1053137, 1044268);
+			AddSubRes2(typeof(SilverScales), "Silver Scales", 0.0, 1053137, 1044268);
+			AddSubRes2(typeof(GoldScales), "Gold Scales", 0.0, 1053137, 1044268);
+																			
 
             Resmelt = true;
             Repair = true;
