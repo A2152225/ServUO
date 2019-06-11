@@ -761,12 +761,6 @@ namespace Server
         private DateTime m_LastMovedTime;
         private Direction m_Direction;
         private LightType m_Light;
-        //private bool m_HonestyItem;
-        //private string m_HonestyRegion;
-        //private Mobile m_HonestyOwner;
-        //private Timer m_HonestyTimer;
-        //private DateTime m_HonestyPickup;
-        //private Boolean m_HonestyTimerTicking;
         #endregion
 
         private ItemDelta m_DeltaFlags;
@@ -1266,6 +1260,13 @@ namespace Server
         /// </summary>
         public virtual void AddLootTypeProperty(ObjectPropertyList list)
         {
+            Mobile blessedFor = BlessedFor;
+
+            if (blessedFor != null && !blessedFor.Deleted)
+            {
+                AddBlessedForProperty(list, blessedFor);
+            }
+
             if (m_LootType == LootType.Blessed)
             {
                 list.Add(1038021); // blessed
@@ -1384,6 +1385,7 @@ namespace Server
                 AddLockedDownProperty(list);
             }
 
+<<<<<<< HEAD
             Mobile blessedFor = BlessedFor;
 
             if (blessedFor != null && !blessedFor.Deleted)
@@ -1391,6 +1393,8 @@ namespace Server
                 AddBlessedForProperty(list, blessedFor);
             }
 
+=======
+>>>>>>> upstream/master
             if (DisplayLootType)
             {
                 AddLootTypeProperty(list);
@@ -1400,6 +1404,8 @@ namespace Server
             {
                 AddWeightProperty(list);
             }
+
+            AppendChildNameProperties(list);
 
             if (QuestItem)
             {
@@ -1439,17 +1445,18 @@ namespace Server
             list.Add(1062203, "{0}", m.Name); // Blessed for ~1_NAME~
         }
 
+<<<<<<< HEAD
         /*public virtual void AddHonestyProperty(ObjectPropertyList list)
+=======
+        public virtual void AddItemSocketProperties(ObjectPropertyList list)
+>>>>>>> upstream/master
         {
-            if (HonestyItem)
+            if (Sockets != null)
             {
-                if (m_HonestyPickup != DateTime.MinValue)
+                foreach (var socket in Sockets)
                 {
-                    int minutes = (int)(m_HonestyPickup + TimeSpan.FromHours(3) - DateTime.UtcNow).TotalMinutes;
-                    list.Add(1151914, minutes.ToString()); // Minutes remaining for credit: ~1_val~
+                    socket.GetProperties(list);
                 }
-
-                list.Add(1151520); // lost item (Return to gain Honesty)
             }
         }*/
 
@@ -1462,6 +1469,10 @@ namespace Server
                     socket.GetProperties(list);
                 }
             }
+        }
+
+        public virtual void AddItemPowerProperties(ObjectPropertyList list)
+        {
         }
 
         public virtual void AddItemPowerProperties(ObjectPropertyList list)
@@ -1491,8 +1502,11 @@ namespace Server
             }
 
             AddItemPowerProperties(list);
+<<<<<<< HEAD
 
             AppendChildNameProperties(list);
+=======
+>>>>>>> upstream/master
         }
 
         /// <summary>

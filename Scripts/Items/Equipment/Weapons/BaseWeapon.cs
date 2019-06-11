@@ -2547,7 +2547,9 @@ namespace Server.Items
                 Focus.OnHit(attacker, defender);
             }
 
+
             percentageBonus = Math.Min(percentageBonus,percentageBonus); ///////300);
+
 
             // bonus is seprate from weapon damage, ie not capped
             percentageBonus += Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(attacker);
@@ -5474,20 +5476,6 @@ namespace Server.Items
 
         public override void AddWeightProperty(ObjectPropertyList list)
         {
-            base.AddWeightProperty(list);
-
-            if (IsVvVItem)
-                list.Add(1154937); // VvV Item
-        }
-
-        public override void AddNameProperties(ObjectPropertyList list)
-        {
-            base.AddNameProperties(list);
-
-            if (this is IUsesRemaining && ((IUsesRemaining)this).ShowUsesRemaining)
-            {
-                list.Add(1060584, ((IUsesRemaining)this).UsesRemaining.ToString()); // uses remaining: ~1_val~
-            }
 
             if (OwnerName != null)
             {
@@ -5505,12 +5493,31 @@ namespace Server.Items
             }
 
             if (IsImbued)
-			{
-				list.Add(1080418); // (Imbued)
-			}			
+            {
+                list.Add(1080418); // (Imbued)
+            }
 
             if (m_Altered)
+            {
                 list.Add(1111880); // Altered
+            }
+
+            AddLootTypeProperty(list);
+
+            base.AddWeightProperty(list);
+
+            if (IsVvVItem)
+                list.Add(1154937); // VvV Item
+        }
+
+        public override void AddNameProperties(ObjectPropertyList list)
+        {
+            base.AddNameProperties(list);
+
+            if (this is IUsesRemaining && ((IUsesRemaining)this).ShowUsesRemaining)
+            {
+                list.Add(1060584, ((IUsesRemaining)this).UsesRemaining.ToString()); // uses remaining: ~1_val~
+            }
 
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
@@ -5656,6 +5663,11 @@ namespace Server.Items
 
             int prop;
             double fprop;
+
+            if ((prop = m_AosWeaponAttributes.DurabilityBonus) != 0)
+            {
+                list.Add(1060410, prop.ToString()); // durability ~1_val~%
+            }
 
             if (Core.TOL)
             {

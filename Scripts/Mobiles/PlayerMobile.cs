@@ -1179,11 +1179,12 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		[CommandProperty(AccessLevel.GameMaster)]
 		public DateTime AnkhNextUse { get { return m_AnkhNextUse; } set { m_AnkhNextUse = value; } }
 
-	    [CommandProperty(AccessLevel.GameMaster)]
+
+        [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextGemOfSalvationUse { get; set; }
 
-		#region Mondain's Legacy
-		[CommandProperty(AccessLevel.GameMaster)]
+        #region Mondain's Legacy
+        [CommandProperty(AccessLevel.GameMaster)]
 		public bool Bedlam { get { return GetFlag(PlayerFlag.Bedlam); } set { SetFlag(PlayerFlag.Bedlam, value); } }
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -2206,7 +2207,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             if (pm.AcceleratedStart > DateTime.UtcNow)
 			{
 				pm.AcceleratedStart = DateTime.UtcNow;
-				ScrollOfAlacrity.AlacrityEnd(pm);
+
+                ScrollOfAlacrity.AlacrityEnd(pm);
+
 			}
 			#endregion
 
@@ -2598,7 +2601,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				if (Core.ML && IsPlayer())
 				{
+
 					return base.Str;// Math.Min(base.Str, StrMaxCap);
+
 				}
 
 				return base.Str;
@@ -2628,7 +2633,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				if (Core.ML && IsPlayer())
 				{
+
 					return base.Dex;// Math.Min(base.Dex, DexMaxCap);
+
 				}
 
 				return base.Dex;
@@ -3257,14 +3264,19 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             else if (Mobiles.GenericBuyInfo.BuyPrices.ContainsKey(item.GetType()))
                 cost = Math.Min(800, Math.Max(10, Mobiles.GenericBuyInfo.BuyPrices[item.GetType()]));
             else if (item.LootType == LootType.Newbied)
-                 cost = 10;
+
+                cost = 10;
+
+
             var negAttrs = RunicReforging.GetNegativeAttributes(item);
 
             if (negAttrs != null && negAttrs.Prized > 0)
                 cost *= 2;
 
-				 if (Region != null)
-                cost = (int)(cost * Region.InsuranceMultiplier);			   
+            if (Region != null)
+                cost = (int)(cost * Region.InsuranceMultiplier);
+
+
             return cost;
         }
 
@@ -3416,9 +3428,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
         private bool DisplayInItemInsuranceGump(Item item)
         {
-	 if (item.Parent is LockableContainer && ((LockableContainer)item.Parent).Locked)
+
+            if (item.Parent is LockableContainer && ((LockableContainer)item.Parent).Locked)
                 return false;
-															
+
+
             return ((item.Visible || AccessLevel >= AccessLevel.GameMaster) && (item.Insured || CanInsure(item)));
         }
 
@@ -3973,7 +3987,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			if (msgNum == 1154111)
 			{
-			if (to != null)
+
+                if (to != null)
                 {
                     SendLocalizedMessage(msgNum, to.Name);
                 }
@@ -4463,7 +4478,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 				if (AutoRenewInsurance)
 				{
-					int cost = (m_InsuranceAward == null ? insuredAmount : insuredAmount / 2);
+                    int cost = (m_InsuranceAward == null ? insuredAmount : insuredAmount / 2);
 
 					if (Banker.Withdraw(this, cost))
 					{
@@ -5044,7 +5059,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		{ 
             get
             {
-                int facetBonus = !Siege.SiegeShard && this.Map == Map.Felucca ? RandomItemGenerator.FeluccaLuckBonus : 250;
+                int facetBonus = !Siege.SiegeShard && this.Map == Map.Felucca ? RandomItemGenerator.FeluccaLuckBonus : 0;
 
                 return Luck + FountainOfFortune.GetLuckBonus(this) + facetBonus;
             }
@@ -5148,9 +5163,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			switch (version)
 			{
-		  case 38:
+
+                case 38:
                     NextGemOfSalvationUse = reader.ReadDateTime();
-                    goto case 37;				
+                    goto case 37;
+
                 case 37:
 
                    m_ExtendedFlags = (ExtendedPlayerFlag)reader.ReadInt();

@@ -592,7 +592,9 @@ namespace Server
 			{
 				yield return t;
 			}
+
 		}
+
 
         public static Type FindTypeByName(string name)
 		{
@@ -736,6 +738,7 @@ namespace Server
 				}
 			}
 
+
 			m_Names.Prune();
 			m_FullNames.Prune();
 
@@ -758,7 +761,6 @@ namespace Server
 		private static void Prune(Dictionary<string, List<Type>> types)
 		{
 			var buffer = new List<Type>();
-
             foreach (var list in types.Values)
 			{
 				if (list.Count == 1)
@@ -880,8 +882,8 @@ namespace Server
 			else
 			{
 				sensitive.AddRange(types);
-			}
 
+			}
             if (!m_Insensitive.TryGetValue(key, out var insensitive) || insensitive == null)
 			{
 				m_Insensitive[key] = new List<Type>(types);

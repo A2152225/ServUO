@@ -3,7 +3,7 @@ using System;
 namespace Server.Items
 {
     [FlipableAttribute( 0x1BD7, 0x1BDA )]
-	public class BaseWoodBoard : Item, ICommodity
+	public class BaseWoodBoard : Item, ICommodity, IResource
 	{
 		private CraftResource m_Resource;
 
@@ -358,6 +358,7 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
     }
+
 	//daat99 OWLTR start - custom wood
 	public class EbonyBoard : BaseWoodBoard
 	{

@@ -102,6 +102,7 @@ namespace Server.Mobiles
         DreadWarhorse = Bashing | BattleDefense | Chivalry | Discordance | MageryMastery | Mysticism | Necromage | Necromancy | Piercing | Poisoning | Slashing | Spellweaving | WrestlingMastery,
         GreaterDragon = Chivalry | Discordance | MageryMastery | Mysticism | Poisoning | Spellweaving,
         Hellcat = Bashing | Necromage | Necromancy | Piercing | Poisoning | Slashing | WrestlingMastery,
+        GrizzledMare = BattleDefense | Bashing | Necromage | Necromancy | Piercing | Poisoning | Slashing | WrestlingMastery,
         Hiryu = Tokuno | Chivalry | Discordance | Poisoning | Spellweaving | WrestlingMastery,
         LavaLizard = Tokuno | Chivalry | Bashing,
         RuneBeetle = Chivalry | Discordance | MageryMastery | Mysticism | Spellweaving,
@@ -278,6 +279,8 @@ namespace Server.Mobiles
         public static SpecialAbility[] SpecialAbilitySabreTri;
         public static SpecialAbility[] RuleBreakers;
         public static SpecialAbility[] SpecialAbilityTriton;
+        public static SpecialAbility[] SpecialAbilityGrizzledMare;
+
         #endregion
 
         #region AreaEffect Defs
@@ -290,6 +293,7 @@ namespace Server.Mobiles
         public static AreaEffect[] AreaEffectArea1;
         public static AreaEffect[] AreaEffectArea2;
         public static AreaEffect[] AreaEffectArea3;
+        public static AreaEffect[] AreaEffectArea4;
         #endregion
 
         #region Weapon Ability Defs
@@ -570,7 +574,7 @@ namespace Server.Mobiles
                 SpecialAbility.AngryFire, SpecialAbility.ConductiveBlast, SpecialAbility.DragonBreath, SpecialAbility.Inferno,
                 SpecialAbility.LightningForce, SpecialAbility.RagingBreath, SpecialAbility.LifeLeech,
                 SpecialAbility.ManaDrain, SpecialAbility.Repel, SpecialAbility.SearingWounds, SpecialAbility.VenomousBite, SpecialAbility.ViciousBite
-            };
+            };            
 
             SpecialAbilityUnicorn = new SpecialAbility[]
             {
@@ -615,6 +619,13 @@ namespace Server.Mobiles
             RuleBreakers = new SpecialAbility[]
             { 
                 SpecialAbility.SearingWounds, SpecialAbility.TailSwipe, SpecialAbility.DragonBreath, SpecialAbility.LifeLeech, SpecialAbility.ViciousBite
+            };
+
+            SpecialAbilityGrizzledMare = new SpecialAbility[]
+            {
+                SpecialAbility.AngryFire, SpecialAbility.ConductiveBlast, SpecialAbility.DragonBreath, SpecialAbility.Inferno,
+                SpecialAbility.LifeLeech, SpecialAbility.LightningForce, SpecialAbility.ManaDrain, SpecialAbility.RagingBreath,
+                SpecialAbility.Repel, SpecialAbility.SearingWounds, SpecialAbility.StealLife, SpecialAbility.VenomousBite, SpecialAbility.ViciousBite
             };
             #endregion
 
@@ -662,6 +673,12 @@ namespace Server.Mobiles
             AreaEffectArea3 = new AreaEffect[]
             {
                 AreaEffect.AuraOfNausea, AreaEffect.EssenceOfDisease, AreaEffect.PoisonBreath, 
+            };
+
+            AreaEffectArea4 = new AreaEffect[]
+            {
+                AreaEffect.AuraOfEnergy, AreaEffect.ExplosiveGoo, AreaEffect.AuraOfNausea,
+                AreaEffect.PoisonBreath, AreaEffect.EssenceOfDisease,                
             };
             #endregion
 
@@ -805,6 +822,8 @@ namespace Server.Mobiles
                 new TrainingDefinition(typeof(Triton), Class.None, MagicalAbility.Triton, SpecialAbilityTriton, WepAbility11, AreaEffectArea1, 2, 5),
                 new TrainingDefinition(typeof(Eowmu), Class.Clawed, MagicalAbility.None, SpecialAbilityNone, WepAbilityNone, AreaEffectNone, 1, 3),
                 new TrainingDefinition(typeof(TigerCub), Class.ClawedAndTailed, MagicalAbility.None, SpecialAbilityNone, WepAbilityNone, AreaEffectNone, 1, 3),
+
+                new TrainingDefinition(typeof(GrizzledMare), Class.ClawedTailedAndNecromantic, MagicalAbility.GrizzledMare, SpecialAbilityGrizzledMare, WepAbility2, AreaEffectArea4, 1, 3),
             };
             #endregion
         }
@@ -1720,13 +1739,13 @@ namespace Server.Mobiles
 
                                 if (bc is GreaterDragon)
                                 {
-                                    AnimalTaming.ScaleSkills(bc, 0.72, 0.90); // 72% of original skills trainable to 90%
+                                    AnimalTaming.ScaleSkills(bc, 0.72, 0.90, true); // 72% of original skills trainable to 90%
                                     bc.Skills[SkillName.Magery].Base = bc.Skills[SkillName.Magery].Cap;
                                     // Greater dragons have a 90% cap reduction and 90% skill reduction on magery
                                 }
                                 else
                                 {
-                                    AnimalTaming.ScaleSkills(bc, 0.90);
+                                    AnimalTaming.ScaleSkills(bc, 0.90, true);
                                 }
 
                                 Timer.DelayCall(TimeSpan.FromSeconds(.25), () =>

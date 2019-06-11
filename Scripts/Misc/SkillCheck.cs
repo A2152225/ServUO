@@ -519,6 +519,7 @@ namespace Server.Misc
 
 		public static bool CanRaise(Mobile from, Stat stat, bool atTotalCap)
 		{
+
 			switch (stat)
 			{
 				case Stat.Str:
@@ -567,12 +568,15 @@ namespace Server.Misc
 		
 		public static bool CanRaise(Mobile from, Stat stat)
 		{
+
 			switch (stat)
 			{
 				case Stat.Str:
                     if (from.RawStr < from.StrCap)
                     {
+
                         if (from is PlayerMobile)
+
                         {
                             return CanLower(from, Stat.Dex) || CanLower(from, Stat.Int); 
                         }
@@ -585,7 +589,9 @@ namespace Server.Misc
 				case Stat.Dex:
 					if (from.RawDex < from.DexCap)
                     {
+
                         if (from is PlayerMobile)
+
                         {
                             return CanLower(from, Stat.Str) || CanLower(from, Stat.Int);
                         }
@@ -598,7 +604,9 @@ namespace Server.Misc
 				case Stat.Int:
 					if (from.RawInt < from.IntCap)
                     {
+
                         if (from is PlayerMobile)
+
                         {
                             return CanLower(from, Stat.Str) || CanLower(from, Stat.Dex);
                         }

@@ -1601,7 +1601,7 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
 
             if (HitLeechHits > 0)
             {
-                double postcap = (double)HitLeechHits / (double)Imbuing.GetPropRange(wep, AosWeaponAttribute.HitLeechHits)[1];
+                double postcap = (double)HitLeechHits / (double)ItemPropertyInfo.GetMaxIntensity(wep, AosWeaponAttribute.HitLeechHits);
                 if (postcap < 1.0) postcap = 1.0;
 
                 int newhits = (int)((wep.MlSpeed * 2500 / (100 + weaponSpeed)) * postcap);
@@ -1615,7 +1615,7 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
 
             if (HitLeechMana > 0)
             {
-                double postcap = (double)HitLeechMana / (double)Imbuing.GetPropRange(wep, AosWeaponAttribute.HitLeechMana)[1];
+                double postcap = (double)HitLeechMana / (double)ItemPropertyInfo.GetMaxIntensity(wep, AosWeaponAttribute.HitLeechMana);
                 if (postcap < 1.0) postcap = 1.0;
 
                 int newmana = (int)((wep.MlSpeed * 2500 / (100 + weaponSpeed)) * postcap);

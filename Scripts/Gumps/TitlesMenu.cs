@@ -1168,4 +1168,5 @@ namespace Server.Gumps
             return String.Format("<basefont color={0}>{1}", color, str);
         }
     }
+
 }

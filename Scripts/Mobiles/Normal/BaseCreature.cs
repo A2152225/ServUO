@@ -1323,6 +1323,7 @@ namespace Server.Mobiles
             }
         }
 
+
         public virtual void DoLifeDrain(Mobile m)
         {
             DoHarmful(m);
@@ -1333,6 +1334,7 @@ namespace Server.Mobiles
             m.SendMessage("You feel the life drain out of you!");
 
             int toDrain = GetDrainAmount(m);
+
 
             if (m is PlayerMobile)
             {
@@ -1391,7 +1393,7 @@ namespace Server.Mobiles
         #endregion
 
         #region Flee!!!
-        public virtual bool CanFlee { get { return !m_Paragon; } }
+        public virtual bool CanFlee { get { return !m_Paragon && !GivesMLMinorArtifact; } }
 
         private DateTime m_EndFlee;
 
@@ -1735,10 +1737,19 @@ namespace Server.Mobiles
 				return false;
 			}
 
-			if (!(m is BaseCreature))
-			{
-				return true;
-			}
+            if (c == null)
+            {
+                return true;
+            }
+            else
+            {
+                var master = c.GetMaster();
+
+                if (master != null && !(master is BaseCreature))
+                {
+                    return true;
+                }
+            }
 
             if (c is Server.Engines.Quests.Haven.MilitiaFighter)
 			{
@@ -1831,14 +1842,13 @@ namespace Server.Mobiles
 
             double dMinTameSkill = m_CurrentTameSkill;
 
-            if (dMinTameSkill > -24.9 && AnimalTaming.CheckMastery(m, this))
+            if (dMinTameSkill > -24.9 && DarkWolfFamiliar.CheckMastery(m, this))
             {
                 dMinTameSkill = -24.9;
             }
 
-            int taming =
-                (int)((useBaseSkill ? m.Skills[SkillName.AnimalTaming].Base : m.Skills[SkillName.AnimalTaming].Value) * 10);
-            int lore = (int)((useBaseSkill ? m.Skills[SkillName.AnimalLore].Base : m.Skills[SkillName.AnimalLore].Value) * 10);
+            int taming = (int)((useBaseSkill ? m.Skills[SkillName.AnimalTaming].Base : m.Skills[SkillName.AnimalTaming].Value) * 10);
+            int lore =   (int)((useBaseSkill ? m.Skills[SkillName.AnimalLore].Base : m.Skills[SkillName.AnimalLore].Value) * 10);
             int bonus = 0, chance = 700;
 
             if (Core.ML)
@@ -7127,7 +7137,7 @@ namespace Server.Mobiles
 
         public virtual void OnAfterTame(Mobile tamer)
         {
-            if (StatLossAfterTame && Owners.Count == 0)
+            if (StatLossAfterTame && (!PetTrainingHelper.Enabled || Owners.Count == 0))
             {
                 AnimalTaming.ScaleStats(this, 0.5);
             }
