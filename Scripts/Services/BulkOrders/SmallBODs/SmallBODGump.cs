@@ -117,11 +117,11 @@ namespace Server.Engines.BulkOrders
 
    /*     public static int GetMaterialNumberFor(BulkMaterialType material)
         {
-            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite)
+            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite)
                 return 1045142 + (int)(material - BulkMaterialType.DullCopper);
-            else if (material >= BulkMaterialType.Spined && material <= BulkMaterialType.Barbed)
+            else if (material >= BulkMaterialType.Spined && material <= BulkMaterialType.Ethereal)
                 return 1049348 + (int)(material - BulkMaterialType.Spined);
-            else if (material >= BulkMaterialType.OakWood && material <= BulkMaterialType.Frostwood)
+            else if (material >= BulkMaterialType.OakWood && material <= BulkMaterialType.Petrified)
             {
                 switch (material)
                 {

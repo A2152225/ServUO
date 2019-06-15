@@ -448,6 +448,34 @@ namespace Server.Items
                     case CraftResource.Valorite:
                         ar += 16;
                         break;
+				      case CraftResource.Blaze:
+                        ar += 18;
+                        break;
+					
+                    case CraftResource.Ice:
+                        ar += 20;
+                        break;
+					
+                    case CraftResource.Toxic:
+                        ar += 22;
+                        break;
+					
+                    case CraftResource.Electrum:
+                        ar += 24;
+                        break;
+					
+                    case CraftResource.Platinum:
+                        ar += 26;
+                        break;
+					
+                    case CraftResource.Royalite:
+                        ar += 28;
+                        break;
+					
+                    case CraftResource.Danite:
+                        ar += 30;
+                        break;
+												 
                     case CraftResource.SpinedLeather:
                         ar += 10;
                         break;
@@ -457,6 +485,49 @@ namespace Server.Items
                     case CraftResource.BarbedLeather:
                         ar += 16;
                         break;
+	
+                case CraftResource.PolarLeather:
+                        ar += 19;
+                        break;
+	
+                case CraftResource.SyntheticLeather:
+                        ar += 22;
+                        break;
+	  
+	  
+	
+                case CraftResource.BlazeLeather:
+                        ar += 25;
+                        break;
+	  
+	  
+	
+                case CraftResource.DaemonicLeather:
+                        ar += 28;
+                        break;
+	  
+	  
+	
+                case CraftResource.ShadowLeather:
+                        ar += 31;
+                        break;
+	  
+	  
+	
+                case CraftResource.FrostLeather:
+                        ar += 34;
+                        break;
+	  
+	  
+	
+                case CraftResource.EtherealLeather:
+                        ar += 37;
+                        break;
+	  
+	  
+	  
+	  
+	
                 }
 
                 ar += -8 + (8 * (int)m_Quality);

@@ -1078,7 +1078,7 @@ namespace Server.Spells
 
 			if (delay < CastDelayMinimum)
 			{
-				delay = delay;//CastDelayMinimum; lets try not capping
+				delay = TimeSpan.FromSeconds(0.001);//delay;//CastDelayMinimum; lets try not capping
 			}
 
             if (DreadHorn.IsUnderInfluence(m_Caster))
