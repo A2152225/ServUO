@@ -42,8 +42,7 @@ libdrng.so
 ServUO.exe
 
 /Saves - Copy/*
-/GloryUOShard
-/GloryUOShard/
+
 *.csproj.user
 *.DotSettings.user
 /Saves*
