@@ -168,6 +168,17 @@ namespace Server.Engines.Harvest
                     newType = typeof(BloodwoodBoard);
                 else if (type == typeof(FrostwoodLog))
                     newType = typeof(FrostwoodBoard);
+				    else if (type == typeof(EbonyLog))
+                    newType = typeof(EbonyBoard);
+				    else if (type == typeof(BambooLog))
+                    newType = typeof(BambooBoard);
+				    else if (type == typeof(PurpleHeartLog))
+                    newType = typeof(PurpleHeartBoard);
+				    else if (type == typeof(RedwoodLog))
+                    newType = typeof(RedwoodBoard);
+				 else if (type == typeof(PetrifiedLog))
+                    newType = typeof(PetrifiedBoard);
+
 
                 if (newType != type)
                 {

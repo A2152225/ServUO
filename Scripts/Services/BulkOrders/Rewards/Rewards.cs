@@ -704,6 +704,12 @@ namespace Server.Engines.BulkOrders
                 RewardCollection.Add(new BODCollectionItem(0xF9D, 1157116, CraftResources.GetHue(CraftResource.HornedLeather), 600, RunicKit, 2));
                 RewardCollection.Add(new BODCollectionItem(0x14F0, 1157121, 0x481, 650, PowerScroll, 20));
                 RewardCollection.Add(new BODCollectionItem(0xF9D, 1157117, CraftResources.GetHue(CraftResource.BarbedLeather), 700, RunicKit, 3));
+				RewardCollection.Add(new BODCollectionItem(0xF9D, 6000001, CraftResources.GetHue(CraftResource.PolarLeather), 800, RunicKit, 4));
+				RewardCollection.Add(new BODCollectionItem(0xF9D, 6000001, CraftResources.GetHue(CraftResource.SyntheticLeather), 900, RunicKit, 5));
+				RewardCollection.Add(new BODCollectionItem(0xF9D, 6000001, CraftResources.GetHue(CraftResource.BlazeLeather), 1000, RunicKit, 6));
+				RewardCollection.Add(new BODCollectionItem(0xF9D, 6000001, CraftResources.GetHue(CraftResource.DaemonicLeather), 1100, RunicKit, 7));
+				RewardCollection.Add(new BODCollectionItem(0xF9D, 6000001, CraftResources.GetHue(CraftResource.ShadowLeather), 1200, RunicKit, 8));
+				RewardCollection.Add(new BODCollectionItem(0xF9D, 6000001, CraftResources.GetHue(CraftResource.EtherealLeather), 1300, RunicKit, 9));
             }
             else
             {
@@ -832,8 +838,21 @@ namespace Server.Engines.BulkOrders
 
         private static Item CreateRunicKit(int type)
         {
-            if (type >= 1 && type <= 3)
-                return new RunicSewingKit(CraftResource.RegularLeather + type, 60 - (type * 15));
+			int charges = 60;
+			switch (type) {
+				case 1: charges = 60; break;
+				case 2: charges = 50;break;
+				case 3: charges = 40;break;
+				case 4: charges = 30;break;
+				case 5: charges = 20;break;
+				case 6: charges = 15;break;
+				case 7: charges = 10;break;
+				case 8: charges = 8;break;
+				case 9: charges = 5;break;
+				default: charges = 60;	break;
+			}
+            if (type >= 1 && type <= 9)
+                return new RunicSewingKit(CraftResource.RegularLeather + type, charges);
 
             throw new InvalidOperationException();
         }
@@ -1704,6 +1723,13 @@ namespace Server.Engines.BulkOrders
                 case 1: return new RunicFletcherTool(CraftResource.AshWood, 35);
                 case 2: return new RunicFletcherTool(CraftResource.YewWood, 25);
                 case 3: return new RunicFletcherTool(CraftResource.Heartwood, 15);
+				case 4: return new RunicFletcherTool(CraftResource.Bloodwood, 45);
+                case 5: return new RunicFletcherTool(CraftResource.Frostwood, 35);
+                case 6: return new RunicFletcherTool(CraftResource.Ebony, 25);
+                case 7: return new RunicFletcherTool(CraftResource.Bamboo, 15);
+				case 8: return new RunicFletcherTool(CraftResource.PurpleHeart, 45);
+                case 9: return new RunicFletcherTool(CraftResource.Redwood, 35);
+                case 10: return new RunicFletcherTool(CraftResource.Petrified, 25);
             }
         }
 
@@ -1734,6 +1760,11 @@ namespace Server.Engines.BulkOrders
                 case BulkMaterialType.Heartwood: points += 450; break;
                 case BulkMaterialType.Bloodwood: points += 500; break;
                 case BulkMaterialType.Frostwood: points += 550; break;
+				case BulkMaterialType.Ebony: points += 650; break;
+				case BulkMaterialType.Bamboo: points += 700; break;
+				case BulkMaterialType.PurpleHeart: points += 750; break;
+				case BulkMaterialType.Redwood: points += 800; break;
+				case BulkMaterialType.Petrified: points += 850; break;	
             }
 
             if (itemCount > 1)

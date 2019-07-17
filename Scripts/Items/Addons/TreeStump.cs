@@ -122,6 +122,21 @@ namespace Server.Items
                         case 6:
                             logs = new FrostwoodLog();
                             break;
+						case 7:
+                            logs = new EbonyLog();
+                            break;
+                        case 8:
+                            logs = new BambooLog();
+                            break;
+                        case 9:
+                            logs = new PurpleHeartLog();
+                            break;
+                        case 10:
+                            logs = new RedwoodLog();
+                            break;
+                        case 11:
+                            logs = new PetrifiedLog();
+                            break;
                     }
 
                     int amount = Math.Min(10, m_Logs);

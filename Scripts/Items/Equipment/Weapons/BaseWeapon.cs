@@ -1511,11 +1511,14 @@ namespace Server.Items
                     }
                 }
             }
-
+			if (Core.AOS && chance < 0.00)
+            {
+                chance = 0.00; //////// <^ was 0.02 
+            }/*
             if (Core.AOS && chance < 0.02)
             {
                 chance = 0.02;
-            }
+            }*/
 
             if (Core.AOS && m_AosWeaponAttributes.MageWeapon > 0 && attacker.Skills[SkillName.Magery].Value > atkSkill.Value)
                 return attacker.CheckSkill(SkillName.Magery, chance);
@@ -1571,9 +1574,9 @@ namespace Server.Items
 				}
 
 				// Swing speed currently capped at one swing every 1.25 seconds (5 ticks).
-				if (ticks < 5)
+				if (ticks < 2)
 				{
-					ticks = ticks;///// 5;
+					ticks = 2;///// 5;
 				}
 
 				delayInSeconds = ticks * 0.25;
@@ -1595,9 +1598,9 @@ namespace Server.Items
 
 				// Maximum swing rate capped at one swing per second
 				// OSI dev said that it has and is supposed to be 1.25
-				if (delayInSeconds < 1.25)
+				if (delayInSeconds < 1)
 				{
-					delayInSeconds = delayInSeconds;// /////// 1.25;
+					delayInSeconds = 1;////delayInSeconds;// /////// 1.25;
 				}
 			}
 			else

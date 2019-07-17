@@ -194,7 +194,7 @@ namespace Server.Engines.CityLoyalty
             switch (Utility.Random(4))
             {
                 case 0:
-                    switch (Utility.Random(9))
+                    switch (Utility.Random(16))
                     {
                         case 0: return new IronIngot(amount);
                         case 1: return new DullCopperIngot(amount);
@@ -205,19 +205,34 @@ namespace Server.Engines.CityLoyalty
                         case 6: return new AgapiteIngot(amount);
                         case 7: return new VeriteIngot(amount);
                         case 8: return new ValoriteIngot(amount);
+						case 9: return new BlazeIngot(amount);
+						case 10: return new IceIngot(amount);
+						case 11: return new ToxicIngot(amount);
+						case 12: return new ElectrumIngot(amount);
+						case 13: return new PlatinumIngot(amount);
+						case 14: return new RoyaliteIngot(amount);
+						case 15: return new DaniteIngot(amount);
                     }
                     break;
                 case 1:
-                    switch (Utility.Random(4))
+                    switch (Utility.Random(11))
                     {
                         case 0: return new Leather(amount);
                         case 1: return new SpinedLeather(amount);
                         case 2: return new HornedLeather(amount);
                         case 3: return new BarbedLeather(amount);
+						       case 4: return new PolarLeather(amount);
+                        case 5: return new SyntheticLeather(amount);
+                        case 6: return new BlazeLeather(amount);
+                        case 7: return new DaemonicLeather(amount);
+						       case 8: return new ShadowLeather(amount);
+                        case 9: return new FrostLeather(amount);
+                        case 10: return new EtherealLeather(amount);
+                 
                     }
                     break;
                 case 2:
-                    switch (Utility.Random(7))
+                    switch (Utility.Random(11))
                     {
                         case 0: return new Board(amount);
                         case 1: return new OakBoard(amount);
@@ -226,6 +241,11 @@ namespace Server.Engines.CityLoyalty
                         case 4: return new BloodwoodBoard(amount);
                         case 5: return new HeartwoodBoard(amount);
                         case 6: return new FrostwoodBoard(amount);
+						case 7: return new EbonyBoard(amount);
+						case 8: return new BambooBoard(amount);
+						case 9: return new PurpleHeartBoard(amount);
+						case 10: return new RedwoodBoard(amount);
+						case 11: return new PetrifiedBoard(amount);
                     }
                     break;
                 case 3:

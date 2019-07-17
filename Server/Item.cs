@@ -1385,16 +1385,7 @@ namespace Server
                 AddLockedDownProperty(list);
             }
 
-<<<<<<< HEAD
-            Mobile blessedFor = BlessedFor;
 
-            if (blessedFor != null && !blessedFor.Deleted)
-            {
-                AddBlessedForProperty(list, blessedFor);
-            }
-
-=======
->>>>>>> upstream/master
             if (DisplayLootType)
             {
                 AddLootTypeProperty(list);
@@ -1445,20 +1436,6 @@ namespace Server
             list.Add(1062203, "{0}", m.Name); // Blessed for ~1_NAME~
         }
 
-<<<<<<< HEAD
-        /*public virtual void AddHonestyProperty(ObjectPropertyList list)
-=======
-        public virtual void AddItemSocketProperties(ObjectPropertyList list)
->>>>>>> upstream/master
-        {
-            if (Sockets != null)
-            {
-                foreach (var socket in Sockets)
-                {
-                    socket.GetProperties(list);
-                }
-            }
-        }*/
 
         public virtual void AddItemSocketProperties(ObjectPropertyList list)
         {
@@ -1469,10 +1446,6 @@ namespace Server
                     socket.GetProperties(list);
                 }
             }
-        }
-
-        public virtual void AddItemPowerProperties(ObjectPropertyList list)
-        {
         }
 
         public virtual void AddItemPowerProperties(ObjectPropertyList list)
@@ -1502,11 +1475,7 @@ namespace Server
             }
 
             AddItemPowerProperties(list);
-<<<<<<< HEAD
 
-            AppendChildNameProperties(list);
-=======
->>>>>>> upstream/master
         }
 
         /// <summary>

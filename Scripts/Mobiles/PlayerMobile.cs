@@ -5237,8 +5237,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			
 				
 			m_YoungSaves = reader.ReadInt();
-				 m_LastLevelExpL = reader.ReadLong();
+				
                  m_EXPL = reader.ReadLong();
+				  m_LastLevelExpL = reader.ReadLong();
 				m_MaxLvl = reader.ReadInt();
 				m_OldMaxLvl = reader.ReadInt();
 				m_PrestigeLvl = reader.ReadInt();
