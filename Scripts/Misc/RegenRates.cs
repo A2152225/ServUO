@@ -86,13 +86,24 @@ namespace Server.Misc
 
             CheckBonusSkill(from, from.Stam, from.StamMax, SkillName.Focus);
 
-            int bonus = (int)(from.Skills[SkillName.Focus].Value * 0.1);
+            double bonus = from.Skills[SkillName.Focus].Value * 0.1;
 
             bonus += StamRegen(from);
 
             if (Core.SA)
             {
-             return TimeSpan.FromSeconds(0.5 / (1.42 + (bonus / 100)));// was FromSeconds(1/)
+
+            
+
+                double rate = 1.0 / (1.42 + (bonus / 100));
+
+                if (from is BaseCreature && ((BaseCreature)from).IsMonster)
+                {
+                    rate *= 1.95;
+                }
+
+                return TimeSpan.FromSeconds(rate);
+			
             }
             else
             {
@@ -201,9 +212,9 @@ namespace Server.Misc
             return TimeSpan.FromSeconds(rate);
         }
 
-        public static int HitPointRegen(Mobile from)
+        public static double HitPointRegen(Mobile from)
         {
-            int points = AosAttributes.GetValue(from, AosAttribute.RegenHits);
+            double points = AosAttributes.GetValue(from, AosAttribute.RegenHits);
 
             if (from is BaseCreature)
                 points += ((BaseCreature)from).DefaultHitsRegen;
@@ -236,9 +247,9 @@ namespace Server.Misc
             return points;
         }
 
-        public static int StamRegen(Mobile from)
+        public static double StamRegen(Mobile from)
         {
-            int points = AosAttributes.GetValue(from, AosAttribute.RegenStam);
+            double points = AosAttributes.GetValue(from, AosAttribute.RegenStam);
 
             if (from is BaseCreature)
                 points += ((BaseCreature)from).DefaultStamRegen;
@@ -267,9 +278,9 @@ namespace Server.Misc
             return points;
         }
 
-        public static int ManaRegen(Mobile from)
+        public static double ManaRegen(Mobile from)
         {
-            int points = AosAttributes.GetValue(from, AosAttribute.RegenMana);
+            double points = AosAttributes.GetValue(from, AosAttribute.RegenMana);
 
             if (from is BaseCreature)
                 points += ((BaseCreature)from).DefaultManaRegen;

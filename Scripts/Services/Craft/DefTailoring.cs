@@ -188,11 +188,20 @@ namespace Server.Engines.Craft
 
             if (Core.HS)
             {
-                index = AddCraft(typeof(LightPowderCharge), 1044457, 1116159, 0.0, 50.0, typeof(Cloth), 1044455, 1, 1044253);
-                AddRes(index, typeof(BlackPowder), 1095826, 1, 1044253);
+                if (Core.EJ)
+                {
+                    index = AddCraft(typeof(PowderCharge), 1044457, 1116160, 0.0, 50.0, typeof(Cloth), 1044455, 1, 1044253);
+                    AddRes(index, typeof(BlackPowder), 1095826, 4, 1044253);
+                    SetUseAllRes(index, true);
+                }
+                else
+                {
+                    index = AddCraft(typeof(LightPowderCharge), 1044457, 1116159, 0.0, 50.0, typeof(Cloth), 1044455, 1, 1044253);
+                    AddRes(index, typeof(BlackPowder), 1095826, 1, 1044253);
 
-                index = AddCraft(typeof(HeavyPowderCharge), 1044457, 1116160, 0.0, 50.0, typeof(Cloth), 1044455, 1, 1044253);
-                AddRes(index, typeof(BlackPowder), 1095826, 4, 1044253);
+                    index = AddCraft(typeof(HeavyPowderCharge), 1044457, 1116160, 0.0, 50.0, typeof(Cloth), 1044455, 1, 1044253);
+                    AddRes(index, typeof(BlackPowder), 1095826, 4, 1044253);
+                }
             }
 
             if (Core.SA)
@@ -477,7 +486,7 @@ namespace Server.Engines.Craft
             {
                 index = AddCraft(typeof(SpellWovenBritches), 1015293, 1072929, 92.5, 117.5, typeof(Leather), 1044462, 15, 1044463);
                 AddRes(index, typeof(EyeOfTheTravesty), 1032685, 1, 1044253);
-                AddRes(index, typeof(Putrefication), 1032678, 10, 1044253);
+                AddRes(index, typeof(Putrefaction), 1032678, 10, 1044253);
                 AddRes(index, typeof(Scourge), 1032677, 10, 1044253);
                 AddRecipe(index, (int)TailorRecipe.SpellWovenBritches);
                 ForceNonExceptional(index);

@@ -590,9 +590,9 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
                 case 13: return Math.Min(4, AosAttributes.GetValue(from, AosAttribute.CastSpeed));
                 case 14: return Math.Min(40, AosAttributes.GetValue(from, AosAttribute.LowerManaCost)) + BaseArmor.GetInherentLowerManaCost(from);
                 
-                case 15: return RegenRates.HitPointRegen(from); // HP   REGEN
-                case 16: return RegenRates.StamRegen(from); // Stam REGEN
-                case 17: return RegenRates.ManaRegen(from); // MANA REGEN
+                case 15: return (int)RegenRates.HitPointRegen(from); // HP   REGEN
+                case 16: return (int)RegenRates.StamRegen(from); // Stam REGEN
+                case 17: return (int)RegenRates.ManaRegen(from); // MANA REGEN
                 case 18: return Math.Min(105, AosAttributes.GetValue(from, AosAttribute.ReflectPhysical)); // reflect phys
                 case 19: return Math.Min(50, AosAttributes.GetValue(from, AosAttribute.EnhancePotions)); // enhance pots
 
@@ -2061,7 +2061,8 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
         Bane            = 0x00000008,
         MysticWeapon    = 0x00000010,
         AssassinHoned   = 0x00000020,
-        Focus            = 0x00000040,
+        Focus           = 0x00000040,
+        HitExplosion    = 0x00000080
     }
 
     public sealed class ExtendedWeaponAttributes : BaseAttributes
@@ -2081,7 +2082,7 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
         {
         }
 
-        public static int GetValue(Mobile m, AosWeaponAttribute attribute)
+        public static int GetValue(Mobile m, ExtendedWeaponAttribute attribute)
         {
             if (!Core.AOS)
                 return 0;
@@ -2099,7 +2100,7 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
 
                 if (obj is BaseWeapon)
                 {
-                    AosWeaponAttributes attrs = ((BaseWeapon)obj).WeaponAttributes;
+                    ExtendedWeaponAttributes attrs = ((BaseWeapon)obj).ExtendedWeaponAttributes;
 
                     if (attrs != null)
                         value += attrs[attribute];
@@ -2214,6 +2215,19 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
             set
             {
                 this[ExtendedWeaponAttribute.Focus] = value;
+            }
+        }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int HitExplosion
+        {
+            get
+            {
+                return this[ExtendedWeaponAttribute.HitExplosion];
+            }
+            set
+            {
+                this[ExtendedWeaponAttribute.HitExplosion] = value;
             }
         }
     }

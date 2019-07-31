@@ -73,13 +73,6 @@ namespace Server.Mobiles
             get { return 5; }
         }
 
-        public override bool CanHealOwner
-        {
-            get
-            {
-                return true;
-            }
-        }
         public override FoodType FavoriteFood
         {
             get
@@ -124,14 +117,17 @@ namespace Server.Mobiles
         {
             if (Owners.Count == 0 && PetTrainingHelper.Enabled)
             {
-                RawStr = (int)Math.Max(1, RawStr * 0.5);
-                RawDex = (int)Math.Max(1, RawDex * 0.5);
+                if (RawStr > 0)
+                    RawStr = (int)Math.Max(1, RawStr * 0.5);
 
-                HitsMaxSeed = RawStr;
-                Hits = RawStr;
+                if (RawDex > 0)
+                    RawDex = (int)Math.Max(1, RawDex * 0.5);
 
-                StamMaxSeed = RawDex;
-                Stam = RawDex;
+                if (HitsMaxSeed > 0)
+                    HitsMaxSeed = (int)Math.Max(1, HitsMaxSeed * 0.5);
+
+                Hits = Math.Min(HitsMaxSeed, Hits);
+                Stam = Math.Min(RawDex, Stam);
             }
             else
             {

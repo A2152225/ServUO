@@ -1,14 +1,16 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
+
 using Server;
 using Server.Mobiles;
 using Server.Items;
 using Server.Guilds;
-using System.Collections.Generic;
 using Server.Accounting;
 using Server.Engines.PartySystem;
 using Server.ContextMenus;
 using Server.Gumps;
-using System.Linq;
+using Server.Network;
 
 namespace Server.Multis
 {
@@ -65,29 +67,29 @@ namespace Server.Multis
         public Mobile GalleonPilot { get { return m_GalleonPilot; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public SecurityEntry SecurityEntry 
-        { 
-            get 
+        public SecurityEntry SecurityEntry
+        {
+            get
             {
                 if (m_SecurityEntry == null)
                     m_SecurityEntry = new SecurityEntry(this);
-                return m_SecurityEntry; 
+                return m_SecurityEntry;
             }
-            set 
-            { 
-                m_SecurityEntry = value; 
-                m_SecurityEntry.Galleon = this; 
-            } 
+            set
+            {
+                m_SecurityEntry = value;
+                m_SecurityEntry.Galleon = this;
+            }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DamageLevel DamageTaken
-        { 
+        {
             get { return m_DamageTaken; }
-            set 
+            set
             {
                 DamageLevel oldDamage = m_DamageTaken;
-                
+
                 m_DamageTaken = value;
 
                 if (m_DamageTaken != oldDamage)
@@ -102,7 +104,7 @@ namespace Server.Multis
                             m_GalleonPilot.Say(1116687); //Arr, we be scuttled!
                     }
                 }
-            } 
+            }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -157,7 +159,7 @@ namespace Server.Multis
         public virtual int CaptiveOffset { get { return 0; } }
         public virtual double CannonDamageMod { get { return 1.0; } }
         public virtual int MaxHits { get { return 100; } }
-        public virtual double ScuttleLevel { get { return 33.0; } }
+        public virtual double ScuttleLevel { get { return 25.0; } }
         public virtual int RuneOffset { get { return 0; } }
         public virtual int ZSurface { get { return 0; } }
 
@@ -182,6 +184,12 @@ namespace Server.Multis
 
             AddGalleonPilotAndWheel(direction);
             Timer.DelayCall(TimeSpan.FromSeconds(2), new TimerCallback(MarkRunes));
+        }
+
+        public void InvalidateHoldPorperties()
+        {
+            foreach(Item hold in m_HoldTiles)
+                hold.InvalidateProperties();
         }
 
         public void AddGalleonPilotAndWheel(Direction direction)
@@ -540,16 +548,16 @@ namespace Server.Multis
         {
             m_Hits -= damage;
 
-            //TODO: Damage packets?
             if (damager != null)
             {
-                foreach (var m in GetMobilesOnBoard().OfType<PlayerMobile>().Where(mobile => mobile.NetState != null && HasAccess(mobile)))
+                SendDamagePacket(damager, damage);
+                /*foreach (var m in GetMobilesOnBoard().OfType<PlayerMobile>().Where(mobile => mobile.NetState != null && HasAccess(mobile)))
                 {
                     m.SendMessage(33, "Your ship has recieved {0} damage from {1}.", damage, damager.Name);
                 }
 
                 if (damager is PlayerMobile && damager.NetState != null)
-                    damager.SendMessage(33, "You have inflicted {0} to {1}.", damage, ShipName == null ? "an unnamed ship" : ShipName);
+                    damager.SendMessage(33, "You have inflicted {0} to {1}.", damage, ShipName == null ? "an unnamed ship" : ShipName);*/
             }
 
             if (m_Hits < 0)
@@ -558,6 +566,29 @@ namespace Server.Multis
                 m_Hits = MaxHits;
 
             ComputeDamage();
+        }
+
+        public virtual void SendDamagePacket(Mobile from, int amount)
+        {
+            if (amount == 0)
+                return;
+
+            NetState theirState = (from == null ? null : from.NetState);
+
+            if (theirState == null && from != null)
+            {
+                Mobile master = from.GetDamageMaster(null);
+
+                if (master != null)
+                {
+                    theirState = master.NetState;
+                }
+            }
+
+            if (theirState != null)
+            {
+                theirState.Send(new DamagePacket(this, amount));
+            }
         }
 
         private void ComputeDamage()
@@ -590,54 +621,139 @@ namespace Server.Multis
         public void AutoAddCannons(Mobile captain)
         {
             bool heavy = Utility.RandomBool();
+
             foreach (Item item in m_CannonTiles)
             {
                 if (item.Map != Map.Internal && !item.Deleted)
                 {
-                    if(heavy)
-                        TryAddCannon(captain, item.Location, new HeavyShipCannon(this), null);
+                    IShipCannon cannon;
+
+                    if (heavy)
+                    {
+                        if (Core.EJ)
+                        {
+                            cannon = new Carronade(this);
+                        }
+                        else
+                        {
+                            cannon = new HeavyShipCannon(this);
+                        }
+                    }
                     else
-                        TryAddCannon(captain, item.Location, new LightShipCannon(this), null);
+                    {
+                        if (Core.EJ)
+                        {
+                            cannon = new Culverin(this);
+                        }
+                        else
+                        {
+                            cannon = new LightShipCannon(this);
+                        }
+                    }
+
+                    if (!TryAddCannon(captain, item.Location, cannon, null))
+                    {
+                        cannon.Delete();
+                    }
                 }
             }
         }
 
-        public bool TryAddCannon(Mobile from, Point3D pnt, ShipCannonDeed deed)
+        public bool TryAddCannon(Mobile from, Point3D pnt, ShipCannonDeed deed, bool force = false)
         {
-            BaseCannon item;
-            switch (deed.CannonType)
+            if (!IsNearLandOrDocks(this) && !force)
             {
-                default:
-                case CannonType.Light: item = new LightShipCannon(this); break;
-                case CannonType.Heavy: item = new HeavyShipCannon(this); break;
+                if (from != null)
+                {
+                    from.SendLocalizedMessage(1116076); // The ship must be near shore or a sea market to deploy this weapon.
+                }
+            }
+            else
+            {
+                IShipCannon cannon;
+
+                switch (deed.CannonType)
+                {
+                    default:
+                    case CannonPower.Light:
+                        if (Core.EJ)
+                        {
+                            cannon = new Culverin(this);
+                        }
+                        else
+                        {
+                            cannon = new LightShipCannon(this);
+                        }
+                        break;
+                    case CannonPower.Heavy:
+                        if (Core.EJ)
+                        {
+                            cannon = new Carronade(this);
+                        }
+                        else
+                        {
+                            cannon = new HeavyShipCannon(this);
+                        }
+                        break;
+                    case CannonPower.Massive:
+                        if (Core.EJ)
+                        {
+                            cannon = new Blundercannon(this);
+                        }
+                        else
+                        {
+                            cannon = new HeavyShipCannon(this);
+                        }
+                        break;
+                }
+
+                return TryAddCannon(from, pnt, cannon, deed);
             }
 
-            return TryAddCannon(from, pnt, item, deed);
+            return false;
         }
 
-        public bool TryAddCannon(Mobile from, Point3D pnt, BaseCannon cannon, ShipCannonDeed deed)
+        public bool TryAddCannon(Mobile from, Point3D pnt, IShipCannon cannon, ShipCannonDeed deed)
         {
-            if (cannon == null)
+            if (cannon == null || !(cannon is Item))
+            {
                 return false;
+            }
 
             if (IsValidCannonSpot(ref pnt, from))
             {
-                cannon.MoveToWorld(pnt, this.Map);
+                ((Item)cannon).MoveToWorld(pnt, this.Map);
                 m_Cannons.Add((Item)cannon);
-                UpdateCannonID(cannon);
+                UpdateCannonID((Item)cannon);
                 cannon.Position = GetCannonPosition(pnt);
-                cannon.DoAreaMessage(1116074, 10, from); //~1_NAME~ deploys a ship cannon.
 
-                if (deed != null && from.AccessLevel == AccessLevel.Player)
+                if (from != null)
+                {
+                    cannon.DoAreaMessage(1116074, 10, from); //~1_NAME~ deploys a ship cannon.
+                }
+
+                if (from != null && from.NetState != null)
+                {
+                    Timer.DelayCall(() =>
+                    {
+                        from.ClearScreen();
+                        from.SendEverything();
+                    });
+                }
+
+                if (deed != null && (from == null || from.AccessLevel == AccessLevel.Player))
+                {
                     deed.Delete();
+                }
 
                 return true;
             }
+
             cannon.Delete();
             return false;
         }
 
-        public void RemoveCannon(BaseCannon cannon)
+        public void RemoveCannon(Item cannon)
         {
             if(m_Cannons.Contains(cannon))
                 m_Cannons.Remove(cannon);
@@ -864,14 +980,12 @@ namespace Server.Multis
 
             if (m_Cannons != null && m_Cannons.Count > 0)
             {
-                foreach (Item item in m_Cannons)
+                foreach (var cannon in m_Cannons.OfType<IShipCannon>())
                 {
-                    BaseCannon cannon = (BaseCannon)item;
-
                     if (cannon == null)
                         continue;
 
-                    if (cannon.AmmoType != AmmoType.Empty)
+                    if (cannon.AmmoType != AmmunitionType.Empty)
                         return DryDockResult.Cannon;
                 }
             }
@@ -913,7 +1027,7 @@ namespace Server.Multis
             int dirMod = newdir + (DamageValue * 4);
             int temp = dirMod;
 
-            if (dirMod < 0) 
+            if (dirMod < 0)
                 dirMod = 0;
 
             if (m_CannonTiles != null)
@@ -1033,16 +1147,16 @@ namespace Server.Multis
         public void UpdateCannonIDs()
         {
             m_Cannons.ForEach(c => {
-                UpdateCannonID(c as BaseCannon);
+                UpdateCannonID(c);
             });
         }
 
-        public void UpdateCannonID(BaseCannon cannon)
+        public void UpdateCannonID(Item cannon)
         {
             if (cannon == null)
                 return;
 
-            int type = cannon is LightShipCannon ? 0 : 1;
+            int type = cannon is Blundercannon ? 2 : cannon is LightShipCannon || cannon is Culverin ? 0 : 1;
 
             switch (this.Facing)
             {
@@ -1072,13 +1186,14 @@ namespace Server.Multis
             }
         }
 
-        private int[][] m_CannonIDs = new int[][]
-        { 
-                      //Light  Heavy
-            new int[] { 16918, 16922 }, //South
-            new int[] { 16919, 16923 }, //West
-            new int[] { 16920, 16924 }, //North
-            new int[] { 16921, 16925 }, //East
+        public static int[][] CannonIDs { get { return m_CannonIDs; } }
+        private static int[][] m_CannonIDs = new int[][]
+        {
+                      //Light  Heavy, Blunder
+            new int[] { 16918, 16922, 41664 }, //South
+            new int[] { 16919, 16923, 41665 }, //West
+            new int[] { 16920, 16924, 41666 }, //North
+            new int[] { 16921, 16925, 41667 }, //East
         };
 
         public virtual ShipPosition GetCannonPosition(Point3D pnt)
@@ -1252,14 +1367,14 @@ namespace Server.Multis
 
         private Type[] WoodTypes = new Type[] { typeof(Board),  typeof(OakBoard), typeof(AshBoard), typeof(YewBoard), typeof(HeartwoodBoard), typeof(BloodwoodBoard), typeof(FrostwoodBoard),
                                                 typeof(Log), typeof(OakLog), typeof(AshLog), typeof(YewLog), typeof(HeartwoodLog), typeof(BloodwoodLog), typeof(FrostwoodLog), };
-        
+
         private Type[] ClothTypes = new Type[] { typeof(Cloth), typeof(UncutCloth) };
 
         public void TryRepairs(Mobile from)
         {
 			if(from == null || from.Backpack == null)
 				return;
-				
+
 			Container pack = from.Backpack;
             Container hold = m_GalleonHold;
             Container secure = SecureContainer;
@@ -1288,11 +1403,11 @@ namespace Server.Multis
 			//Now, how much do they need for 100% repair
             double woodNeeded = WoodPer * (100.0 - durability);
             double clothNeeded = ClothPer * (100.0 - durability);
-			
+
 			//Apply skill bonus
 			woodNeeded -= ((double)from.Skills[SkillName.Carpentry].Value / 200.0) * woodNeeded;
 			clothNeeded -= ((double)from.Skills[SkillName.Tailoring].Value / 200.0) * clothNeeded;
-			
+
 			//get 10% of needed repairs
 			double minWood = woodNeeded / 10;
 			double minCloth = clothNeeded / 10;
@@ -1302,9 +1417,9 @@ namespace Server.Multis
                 from.SendLocalizedMessage(1116593, String.Format("{0}\t{1}", ((int)minCloth).ToString(), ((int)minWood).ToString())); //You need a minimum of ~1_CLOTH~ yards of cloth and ~2_WOOD~ pieces of lumber to effect repairs to this ship.
 				return;
 			}
-			
+
 			double percWood, percCloth, woodUsed, clothUsed;
-			
+
 			if(wood >= woodNeeded)
 			{
 				woodUsed = woodNeeded;
@@ -1315,7 +1430,7 @@ namespace Server.Multis
 				woodUsed = wood;
 				percWood = (wood / woodNeeded) * 100;
 			}
-            
+
 			if(cloth >= clothNeeded)
 			{
 				clothUsed = clothNeeded;
@@ -1404,7 +1519,7 @@ namespace Server.Multis
 			if(m_Hits > MaxHits) m_Hits = MaxHits;
 			ComputeDamage();
 
-			if(totalPerc > 100) 
+			if(totalPerc > 100)
                 totalPerc = 100;
 
             if (m_EmergencyRepairTimer != null)
@@ -1412,7 +1527,7 @@ namespace Server.Multis
                 m_EmergencyRepairTimer.Stop();
                 m_EmergencyRepairTimer = null;
             }
-		
+
             string args = String.Format("{0}\t{1}\t{2}", ((int)clothTemp).ToString(), ((int)woodTemp).ToString(), ((int)Durability).ToString());
             from.SendLocalizedMessage(1116598, args); //You effect permanent repairs using ~1_CLOTH~ yards of cloth and ~2_WOOD~ pieces of lumber. The ship is now ~3_DMGPCT~% repaired.
         }
@@ -1456,8 +1571,8 @@ namespace Server.Multis
         private DateTime m_NextPaintDecay;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int BaseBoatHue 
-        { 
+        public int BaseBoatHue
+        {
             get { return m_BaseBoatHue; }
             set
             {
@@ -1726,9 +1841,7 @@ namespace Server.Multis
 
             if (deed != null)
             {
-                #region Mondains Legacy
                 deed.Resource = addon.Resource;
-                #endregion
 
                 if (addon.RetainDeedHue)
                     deed.Hue = hue;
@@ -1747,7 +1860,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write((int)3);
+            writer.Write((int)4);
 
             writer.Write(m_Pole);
             writer.Write(m_CapturedCaptain);
@@ -1769,7 +1882,7 @@ namespace Server.Multis
             writer.Write(m_CannonTiles.Count);
             for(int i = 0; i < m_CannonTiles.Count; i++)
                 writer.Write(m_CannonTiles[i]);
-            
+
             writer.Write(m_Cannons.Count);
             for (int i = 0; i < m_Cannons.Count; i++)
                 writer.Write(m_Cannons[i]);
@@ -1804,6 +1917,7 @@ namespace Server.Multis
 
             switch (version)
             {
+                case 4:
                 case 3:
                 case 2:
                     m_Pole = reader.ReadItem() as BindingPole;
@@ -1893,6 +2007,11 @@ namespace Server.Multis
 
             if (m_Pole != null)
                 m_Pole.Galleon = this;
+
+            if (version == 3)
+            {
+                Timer.DelayCall(() => Hits = MaxHits);
+            }
         }
     }
 
@@ -1922,7 +2041,7 @@ namespace Server.Multis
 
         [CommandProperty(AccessLevel.GameMaster)]
         public SecurityLevel DefaultGuildAccess { get { return m_DefaultGuildAccess; } set { m_DefaultGuildAccess = value; } }
-        
+
         public Dictionary<Mobile, SecurityLevel> Manifest { get { return m_Manifest; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -2143,12 +2262,12 @@ namespace Server.Multis
 
         [CommandProperty(AccessLevel.GameMaster)]
 		public int SpeechHue { get { return m_SpeechHue; } }
-		
+
 		public override string ToString()
 		{
 			return "...";
 		}
-		
+
 		public PilotEntry(Mobile pilot)
 		{
 			m_Name = pilot.Name;
@@ -2158,7 +2277,7 @@ namespace Server.Multis
 			m_HairID = pilot.HairItemID;
 			m_SpeechHue = pilot.SpeechHue;
 		}
-		
+
 		public void Serialize(GenericWriter writer)
 		{
 			writer.Write((int)0);
@@ -2169,7 +2288,7 @@ namespace Server.Multis
 			writer.Write(m_HairID);
 			writer.Write(m_SpeechHue);
 		}
-		
+
 		public PilotEntry(GenericReader reader)
 		{
 			int version = reader.ReadInt();

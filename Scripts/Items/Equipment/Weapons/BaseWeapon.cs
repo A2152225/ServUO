@@ -2362,6 +2362,11 @@ namespace Server.Items
                 WeaponAbility.ClearCurrentAbility(attacker);
                 SpecialMove.ClearCurrentMove(attacker);
 
+                if (WeaponAttributes.HitLeechHits > 0)
+                {
+                    attacker.SendLocalizedMessage(1152566); // You fail to leech life from your target!
+                }
+
                 return;
             }
 
@@ -2736,12 +2741,12 @@ namespace Server.Items
 					stamLeech += 100; // HitLeechStam% chance to leech 100% of damage as stamina
 				}
 
-				if (Core.SA) // New formulas
+				if (Core.SA)
 				{
                     lifeLeech = (int)(WeaponAttributes.HitLeechHits * propertyBonus);
                     manaLeech = (int)(WeaponAttributes.HitLeechMana * propertyBonus);
 				}
-				else // Old leech formulas
+				else
 				{
 					if ((int)(AosWeaponAttributes.GetValue(attacker, AosWeaponAttribute.HitLeechHits) * propertyBonus) >
 						Utility.Random(100))
@@ -2882,6 +2887,7 @@ namespace Server.Items
 				int fireballChance = (int)(AosWeaponAttributes.GetValue(attacker, AosWeaponAttribute.HitFireball) * propertyBonus);
 				int lightningChance = (int)(AosWeaponAttributes.GetValue(attacker, AosWeaponAttribute.HitLightning) * propertyBonus);
 				int dispelChance = (int)(AosWeaponAttributes.GetValue(attacker, AosWeaponAttribute.HitDispel) * propertyBonus);
+                int explosChance = (int)(ExtendedWeaponAttributes.GetValue(attacker, ExtendedWeaponAttribute.HitExplosion) * propertyBonus);
 
                 #region Mondains Legacy
                 int velocityChance = this is BaseRanged ? (int)((BaseRanged)this).Velocity : 0;
@@ -2916,6 +2922,11 @@ namespace Server.Items
 				if (dispelChance != 0 && dispelChance > Utility.Random(100))
 				{
 					DoDispel(attacker, defender);
+                }
+
+                if (explosChance != 0 && explosChance > Utility.Random(100))
+                {
+                    DoExplosion(attacker, defender);
                 }
 
                 #region Mondains Legacy
@@ -3215,6 +3226,26 @@ namespace Server.Items
 				defender.Delete();
 			}
 		}
+
+        public virtual void DoExplosion(Mobile attacker, Mobile defender)
+        {
+            if (!attacker.CanBeHarmful(defender, false))
+            {
+                return;
+            }
+
+            attacker.DoHarmful(defender);
+
+            double damage = GetAosSpellDamage(attacker, defender, 40, 1, 5);
+
+            defender.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
+            defender.PlaySound(0x307);
+
+            SpellHelper.Damage(TimeSpan.FromSeconds(1.0), defender, attacker, damage, 0, 100, 0, 0, 0);
+
+            if (ProcessingMultipleHits)
+                BlockHitEffects = true;
+        }
 
         public virtual void DoHitVelocity(Mobile attacker, IDamageable damageable)
         {
@@ -5477,7 +5508,7 @@ namespace Server.Items
 			return attrInfo.WeaponLuck;
 		}
 
-        public override void AddWeightProperty(ObjectPropertyList list)
+        public override void AddCraftedProperties(ObjectPropertyList list)
         {
 
             if (OwnerName != null)
@@ -5504,23 +5535,27 @@ namespace Server.Items
             {
                 list.Add(1111880); // Altered
             }
+        }
 
-            AddLootTypeProperty(list);
-
+        public override void AddWeightProperty(ObjectPropertyList list)
+        {
             base.AddWeightProperty(list);
 
             if (IsVvVItem)
                 list.Add(1154937); // VvV Item
         }
 
+        public override void AddUsesRemainingProperties(ObjectPropertyList list)
+        {
+            if (ShowUsesRemaining)
+            {
+                list.Add(1060584, UsesRemaining.ToString()); // uses remaining: ~1_val~
+            }
+        }
+
         public override void AddNameProperties(ObjectPropertyList list)
         {
             base.AddNameProperties(list);
-
-            if (this is IUsesRemaining && ((IUsesRemaining)this).ShowUsesRemaining)
-            {
-                list.Add(1060584, ((IUsesRemaining)this).UsesRemaining.ToString()); // uses remaining: ~1_val~
-            }
 
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
@@ -5739,6 +5774,11 @@ namespace Server.Items
             else if (bonus == AosWeaponAttribute.HitHarm && enchantBonus != 0)
             {
                 list.Add(1060421, ((int)(enchantBonus * focusBonus)).ToString()); // hit harm ~1_val~%
+            }
+
+            if ((fprop = (double)m_ExtendedWeaponAttributes.HitExplosion * focusBonus) != 0)
+            {
+                list.Add(1158922, ((int)fprop).ToString()); // hit explosion ~1_val~%
             }
 
             if (m_SearingWeapon)

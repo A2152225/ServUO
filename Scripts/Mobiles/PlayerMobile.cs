@@ -342,10 +342,10 @@ namespace Server.Mobiles
 		private int m_PrestigeLvl;
 
         #region Guantlet Points
-        private double m_GauntletPoints;
+        /*private double m_GauntletPoints;
 
 		[CommandProperty(AccessLevel.Administrator)]
-		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }
+		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }*/
 		#endregion
 
 		//Kill count tracking
@@ -964,22 +964,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		[CommandProperty(AccessLevel.GameMaster)]
 		public TimeSpan NpcGuildGameTime { get { return m_NpcGuildGameTime; } set { m_NpcGuildGameTime = value; } }
 
-		private int m_ToTItemsTurnedIn;
-
-		[CommandProperty(AccessLevel.GameMaster)]
-		public int ToTItemsTurnedIn { get { return m_ToTItemsTurnedIn; } set { m_ToTItemsTurnedIn = value; } }
-
-		private int m_ToTTotalMonsterFame;
-
-		[CommandProperty(AccessLevel.GameMaster)]
-		public int ToTTotalMonsterFame { get { return m_ToTTotalMonsterFame; } set { m_ToTTotalMonsterFame = value; } }
-
 		public int ExecutesLightningStrike { get { return m_ExecutesLightningStrike; } set { m_ExecutesLightningStrike = value; } }
-
-		private int m_VASTotalMonsterFame;
-
-		[CommandProperty(AccessLevel.GameMaster)]
-		public int VASTotalMonsterFame { get { return m_VASTotalMonsterFame; } set { m_VASTotalMonsterFame = value; } }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public int ToothAche { get { return BaseSweet.GetToothAche(this); } set { BaseSweet.SetToothAche(this, value, true); } }
@@ -1871,6 +1856,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 }, 
                 (EtherealMount)from.Mount);
             }
+
+            from.CheckStatTimers();
         }
 
 		private bool m_NoDeltaRecursion;
@@ -3254,7 +3241,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
         public int GetInsuranceCost(Item item)
         {
-            var imbueWeight = Imbuing.GetTotalWeight(item);
+            var imbueWeight = Imbuing.GetTotalWeight(item, -1, false, false);
             int cost = 600; // this handles old items, set items, etc
 
             if (item.GetType().IsAssignableFrom(typeof(Factions.FactionItem)))
@@ -4848,8 +4835,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			m_AutoStabled = new List<Mobile>();
 
 			#region Mondain's Legacy
-			m_Quests = new List<BaseQuest>();
-			m_Chains = new Dictionary<QuestChain, BaseChain>();
+			//m_Quests = new List<BaseQuest>();
+			//m_Chains = new Dictionary<QuestChain, BaseChain>();
 			m_DoneQuests = new List<QuestRestartInfo>();
 			m_Collections = new Dictionary<Collection, int>();
 			m_RewardTitles = new List<object>();
@@ -4978,7 +4965,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
         public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison)
 		{
-			if (!Alive)
+			if (!Alive || poison == null)
 			{
 				return ApplyPoisonResult.Immune;
 			}
@@ -5163,6 +5150,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			switch (version)
 			{
+                case 40: // Version 40, moved gauntlet points, virtua artys and TOT turn ins to PointsSystem
+                case 39: // Version 39, removed ML quest save/load
 
                 case 38:
                     NextGemOfSalvationUse = reader.ReadDateTime();
@@ -5311,7 +5300,10 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 case 30: goto case 29;
 				case 29:
 					{
-						m_GauntletPoints = reader.ReadDouble();
+                        if (version < 40)
+                        {
+                            PointsSystem.DoomGauntlet.SetPoints(this, reader.ReadDouble());
+                        }
 
 						m_SSNextSeed = reader.ReadDateTime();
 						m_SSSeedExpire = reader.ReadDateTime();
@@ -5331,12 +5323,24 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                             reader.ReadString(); // Old m_ExpTitle
                         }
 
-                        m_VASTotalMonsterFame = reader.ReadInt();
+                        if (version < 40)
+                        {
+                            PointsSystem.VirtueArtifacts.SetPoints(this, reader.ReadInt());
+                        }
 
-						m_Quests = QuestReader.Quests(reader, this);
-						m_Chains = QuestReader.Chains(reader);
+                        if (version < 39)
+                        {
+                            List<BaseQuest> quests = QuestReader.Quests(reader, this);
+                            Dictionary<QuestChain, BaseChain> dic = QuestReader.Chains(reader);
 
-						m_Collections = new Dictionary<Collection, int>();
+                            if (quests != null && quests.Count > 0)
+                                MondainQuestData.QuestData[this] = quests;
+
+                            if (dic != null && dic.Count > 0)
+                                MondainQuestData.ChainData[this] = dic;
+                        }
+
+                        m_Collections = new Dictionary<Collection, int>();
 						m_RewardTitles = new List<object>();
 
 						for (int i = reader.ReadInt(); i > 0; i--)
@@ -5407,8 +5411,10 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					}
 				case 21:
 					{
-						m_ToTItemsTurnedIn = reader.ReadEncodedInt();
-						m_ToTTotalMonsterFame = reader.ReadInt();
+                        if (version < 40)
+                        {
+                            PointsSystem.TreasuresOfTokuno.Convert(this, reader.ReadEncodedInt(), reader.ReadInt());
+                        }
 						goto case 20;
 					}
 				case 20:
@@ -5606,7 +5612,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 
 			#region Mondain's Legacy
-			if (m_Quests == null)
+			/*if (m_Quests == null)
 			{
 				m_Quests = new List<BaseQuest>();
 			}
@@ -5614,7 +5620,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			if (m_Chains == null)
 			{
 				m_Chains = new Dictionary<QuestChain, BaseChain>();
-			}
+			}*/
 
 			if (m_DoneQuests == null)
 			{
@@ -5723,7 +5729,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			base.Serialize(writer);
 
-			writer.Write(38); // version
+			writer.Write(40); // version
 
             writer.Write((DateTime)NextGemOfSalvationUse);
 
@@ -5884,9 +5890,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
             // Version 30 open to take out old Queens Loyalty Info
 
-			// Version 29
-			writer.Write(m_GauntletPoints);
-
 			#region Plant System
 			writer.Write(m_SSNextSeed);
 			writer.Write(m_SSSeedExpire);
@@ -5894,13 +5897,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			writer.Write(m_SSSeedMap);
 			#endregion
 
-            writer.Write(m_VASTotalMonsterFame);
+            #region Mondain's Legacy
 
-			#region Mondain's Legacy
-			QuestWriter.Quests(writer, m_Quests);
-			QuestWriter.Chains(writer, m_Chains);
-
-			if (m_Collections == null)
+            if (m_Collections == null)
 			{
 				writer.Write(0);
 			}
@@ -5957,8 +5956,6 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			ChampionTitleInfo.Serialize(writer, m_ChampionTitles);
 
 			writer.Write(m_LastValorLoss);
-			writer.WriteEncodedInt(m_ToTItemsTurnedIn);
-			writer.Write(m_ToTTotalMonsterFame); //This ain't going to be a small #.
 
 			writer.WriteEncodedInt(m_AllianceMessageHue);
 			writer.WriteEncodedInt(m_GuildMessageHue);
@@ -6430,15 +6427,29 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public SolenFriendship SolenFriendship { get { return m_SolenFriendship; } set { m_SolenFriendship = value; } }
-		#endregion
+        #endregion
 
-		#region Mondain's Legacy
-		private List<BaseQuest> m_Quests;
+        #region Mondain's Legacy
+        /*private List<BaseQuest> m_Quests;
 		private Dictionary<QuestChain, BaseChain> m_Chains;
 
 		public List<BaseQuest> Quests { get { return m_Quests; } }
+        public Dictionary<QuestChain, BaseChain> Chains { get { return m_Chains; } }*/
+        public List<BaseQuest> Quests
+        {
+            get
+            {
+                return MondainQuestData.GetQuests(this);
+            }
+        }
 
-		public Dictionary<QuestChain, BaseChain> Chains { get { return m_Chains; } }
+        public Dictionary<QuestChain, BaseChain> Chains
+        {
+            get
+            {
+                return MondainQuestData.GetChains(this);
+            }
+        }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public bool Peaced
@@ -6681,33 +6692,56 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             BaseGuild guild = Guild;
             bool vvv = Server.Engines.VvV.ViceVsVirtueSystem.IsVvV(this) && (ViceVsVirtueSystem.EnhancedRules || this.Map == Faction.Facet);
 
-            if (!vvv && m_OverheadTitle != null)
+            if (m_OverheadTitle != null)
             {
-                int loc = Utility.ToInt32(m_OverheadTitle);
-
-                if (loc > 0)
+                if (vvv)
                 {
-                    if (CityLoyaltySystem.ApplyCityTitle(this, list, prefix, loc))
-                        return;
+                    suffix = "[VvV]";
                 }
-                else if (suffix.Length > 0)
-                    suffix = String.Format("{0} {1}", suffix, m_OverheadTitle);
                 else
-                    suffix = String.Format("{0}", m_OverheadTitle);
+                {
+                    int loc = Utility.ToInt32(m_OverheadTitle);
+
+                    if (loc > 0)
+                    {
+                        if (CityLoyaltySystem.ApplyCityTitle(this, list, prefix, loc))
+                            return;
+                    }
+                    else if (suffix.Length > 0)
+                    {
+                        suffix = String.Format("{0} {1}", suffix, m_OverheadTitle);
+                    }
+                    else
+                    {
+                        suffix = String.Format("{0}", m_OverheadTitle);
+                    }
+                }
             }
-            else if (vvv || (guild != null && DisplayGuildAbbr))
+            else if (guild != null && DisplayGuildAbbr)
             {
                 if (vvv)
                 {
                     if (guild != null && DisplayGuildAbbr)
+                    {
                         suffix = String.Format("[{0}] [VvV]", Utility.FixHtml(guild.Abbreviation));
+                    }
                     else
+                    {
                         suffix = "[VvV]";
+                    }
                 }
                 else if (suffix.Length > 0)
+                {
                     suffix = String.Format("{0} [{1}]", suffix, Utility.FixHtml(guild.Abbreviation));
+                }
                 else
+                {
                     suffix = String.Format("[{0}]", Utility.FixHtml(guild.Abbreviation));
+                }
+            }
+            else if (vvv)
+            {
+                suffix = "[VvV]";
             }
 
             suffix = ApplyNameSuffix(suffix);

@@ -1202,7 +1202,7 @@ namespace Server.Items
                 list.Add(Name);
         }
 
-        public override void AddWeightProperty(ObjectPropertyList list)
+        public override void AddCraftedProperties(ObjectPropertyList list)
         {
 
             if (OwnerName != null)
@@ -1219,9 +1219,10 @@ namespace Server.Items
 
             if (m_Altered)
                 list.Add(1111880); // Altered
+        }
 
-            AddLootTypeProperty(list);
-
+        public override void AddWeightProperty(ObjectPropertyList list)
+        {
             base.AddWeightProperty(list);
 
             if (IsVvVItem)

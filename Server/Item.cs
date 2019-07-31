@@ -1260,24 +1260,27 @@ namespace Server
         /// </summary>
         public virtual void AddLootTypeProperty(ObjectPropertyList list)
         {
-            Mobile blessedFor = BlessedFor;
+            if (DisplayLootType)
+            {
+                Mobile blessedFor = BlessedFor;
 
-            if (blessedFor != null && !blessedFor.Deleted)
-            {
-                AddBlessedForProperty(list, blessedFor);
-            }
+                if (blessedFor != null && !blessedFor.Deleted)
+                {
+                    AddBlessedForProperty(list, blessedFor);
+                }
 
-            if (m_LootType == LootType.Blessed)
-            {
-                list.Add(1038021); // blessed
-            }
-            else if (m_LootType == LootType.Cursed)
-            {
-                list.Add(1049643); // cursed
-            }
-            else if (Insured)
-            {
-                list.Add(1061682); // <b>insured</b>
+                if (m_LootType == LootType.Blessed)
+                {
+                    list.Add(1038021); // blessed
+                }
+                else if (m_LootType == LootType.Cursed)
+                {
+                    list.Add(1049643); // cursed
+                }
+                else if (Insured)
+                {
+                    list.Add(1061682); // <b>insured</b>
+                }
             }
         }
 
@@ -1344,26 +1347,6 @@ namespace Server
         }
 
         /// <summary>
-        ///     Overridable. Displays cliloc 1072788-1072789.
-        /// </summary>
-        public virtual void AddWeightProperty(ObjectPropertyList list)
-        {
-            if (Weight == 0)
-                return;
-
-            int weight = PileWeight + TotalWeight;
-
-            if (weight == 1)
-            {
-                list.Add(1072788, weight.ToString()); //Weight: ~1_WEIGHT~ stone
-            }
-            else
-            {
-                list.Add(1072789, weight.ToString()); //Weight: ~1_WEIGHT~ stones
-            }
-        }
-
-        /// <summary>
         ///     Overridable. Adds header properties. By default, this invokes <see cref="AddNameProperty" />,
         ///     <see
         ///         cref="AddBlessedForProperty" />
@@ -1386,21 +1369,53 @@ namespace Server
             }
 
 
-            if (DisplayLootType)
-            {
-                AddLootTypeProperty(list);
-            }
+            AddCraftedProperties(list);
+            AddLootTypeProperty(list);
+            AddUsesRemainingProperties(list);
+            AddWeightProperty(list);
 
-            if (DisplayWeight)
-            {
-                AddWeightProperty(list);
-            }
 
             AppendChildNameProperties(list);
 
             if (QuestItem)
             {
                 AddQuestItemProperty(list);
+            }
+        }
+
+        /// <summary>
+        /// Overrideable, used to add crafted by, excpetional, etc properties to items
+        /// </summary>
+        /// <param name="list"></param>
+        public virtual void AddCraftedProperties(ObjectPropertyList list)
+        {
+        }
+
+        /// <summary>
+        /// Overrideable, used for IUsesRemaining UsesRemaining property
+        /// </summary>
+        /// <param name="list"></param>
+        public virtual void AddUsesRemainingProperties(ObjectPropertyList list)
+        {
+        }
+
+        /// <summary>
+        ///     Overridable. Displays cliloc 1072788-1072789.
+        /// </summary>
+        public virtual void AddWeightProperty(ObjectPropertyList list)
+        {
+            if (DisplayWeight && Weight > 0)
+            {
+                int weight = PileWeight + TotalWeight;
+
+                if (weight == 1)
+                {
+                    list.Add(1072788, weight.ToString()); //Weight: ~1_WEIGHT~ stone
+                }
+                else
+                {
+                    list.Add(1072789, weight.ToString()); //Weight: ~1_WEIGHT~ stones
+                }
             }
         }
 

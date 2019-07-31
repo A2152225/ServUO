@@ -795,7 +795,7 @@ namespace Server.Items
             return name;
         }
 
-        public override void AddWeightProperty(ObjectPropertyList list)
+        public override void AddCraftedProperties(ObjectPropertyList list)
         {
 	
             if (OwnerName != null)
@@ -809,9 +809,10 @@ namespace Server.Items
 
             if (IsImbued)
                 list.Add(1080418); // (Imbued)
+        }
 
-            AddLootTypeProperty(list);
-
+        public override void AddWeightProperty(ObjectPropertyList list)
+        {
             base.AddWeightProperty(list);
 
             if (IsVvVItem)

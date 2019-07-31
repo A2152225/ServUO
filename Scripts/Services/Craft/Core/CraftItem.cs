@@ -32,8 +32,8 @@ namespace Server.Engines.Craft
 			int resHue);
 	}
 
-	public class CraftItem
-	{
+    public class CraftItem
+    {
         /// <summary>
         /// this delegate will handle all crafting functions, 
         /// such as resource check, actual crafting, etc. 
@@ -47,185 +47,74 @@ namespace Server.Engines.Craft
         /// </summary>
         public Func<Mobile, CraftItem, ITool, Item> CreateItem { get; set; }
 
-		private readonly CraftResCol m_arCraftRes;
-		private readonly CraftSkillCol m_arCraftSkill;
-		private readonly Type m_Type;
+        public Func<Mobile, ConsumeType, int> ConsumeResCallback { get; set; }
+
+        public Type ItemType { get; private set; }
+        public string GroupNameString { get; private set; }
+        public int GroupNameNumber { get; private set; }
+        public string NameString { get; private set; }
+        public int NameNumber { get; private set; }
+        public CraftResCol Resources { get; private set; }
+        public CraftSkillCol Skills { get; private set; }
+
+        public BeverageType RequiredBeverage { get; set; }
+
+        public int ForceSuccessChance { get; set; } = -1;
+
         public double MinSkillOffset { get; set; }
-
-		private readonly string m_GroupNameString;
-		private readonly int m_GroupNameNumber;
-
-		private readonly string m_NameString;
-		private readonly int m_NameNumber;
-
-		private BeverageType m_RequiredBeverage;
-
-		private bool m_NeedHeat;
-		private bool m_NeedOven;
-		private bool m_NeedMill;
-        private bool m_NeedMaker;
-
-        private bool m_UseSubRes2;
-
-		private bool m_ForceNonExceptional;
-
-		public bool ForceNonExceptional { get { return m_ForceNonExceptional; } set { m_ForceNonExceptional = value; } }
-
-		public Expansion RequiredExpansion { get; set; }
+        public bool ForceNonExceptional { get; set; }
+        public Expansion RequiredExpansion { get; set; }
         public ThemePack RequiredThemePack { get; set; }
 
         public bool RequiresBasketWeaving { get; set; }
         public bool RequiresResTarget { get; set; }
         public bool RequiresMechanicalLife { get; set; }
 
-        private object m_Data;
-        private int m_DisplayID;
+        public object Data { get; set; }
+        public int DisplayID { get; set; }
+        public Recipe Recipe { get; set; }
 
-        public object Data
+        public int Mana { get; set; }
+        public int Hits { get; set; }
+        public int Stam { get; set; }
+        public bool UseSubRes2 { get; set; }
+        public bool UseAllRes { get; set; }
+        public bool ForceTypeRes { get; set; }
+
+        public bool NeedHeat { get; set; }
+        public bool NeedOven { get; set; }
+        public bool NeedMaker { get; set; }
+        public bool NeedMill { get; set; }
+        public bool NeedWater { get; set; }
+        public int ItemHue { get; set; }
+
+        public void AddRecipe(int id, CraftSystem system)
         {
-            get { return m_Data; }
-            set { m_Data = value; }
+            if (Recipe != null)
+            {
+                Console.WriteLine(
+                    "Warning: Attempted add of recipe #{0} to the crafting of {1} in CraftSystem {2}.", id, ItemType.Name, system);
+                return;
+            }
+
+            Recipe = new Recipe(id, system, this);
         }
 
-        public int DisplayID
+        public CraftItem(Type type, TextDefinition groupName, TextDefinition name)
         {
-            get { return m_DisplayID; }
-            set { m_DisplayID = value; }
+            Resources = new CraftResCol();
+            Skills = new CraftSkillCol();
+
+            ItemType = type;
+
+            GroupNameString = groupName;
+            NameString = name;
+
+            GroupNameNumber = groupName;
+            NameNumber = name;
+
+            RequiredBeverage = BeverageType.Water;
         }
-
-        public int ForceSuccessChance { get; set; } = -1;
-
-        public Func<Mobile, ConsumeType, int> ConsumeResCallback { get; set; }
-
-        private Recipe m_Recipe;
-
-		public Recipe Recipe { get { return m_Recipe; } }
-
-		public void AddRecipe(int id, CraftSystem system)
-		{
-			if (m_Recipe != null)
-			{
-				Console.WriteLine(
-					"Warning: Attempted add of recipe #{0} to the crafting of {1} in CraftSystem {2}.", id, m_Type.Name, system);
-				return;
-			}
-
-			m_Recipe = new Recipe(id, system, this);
-		}
-
-		private static readonly Dictionary<Type, int> _itemIds = new Dictionary<Type, int>();
-
-		public static int ItemIDOf(Type type)
-		{
-			int itemId;
-
-			if (!_itemIds.TryGetValue(type, out itemId))
-			{
-				if (type == typeof(FactionExplosionTrap))
-				{
-					itemId = 14034;
-				}
-				else if (type == typeof(FactionGasTrap))
-				{
-					itemId = 4523;
-				}
-				else if (type == typeof(FactionSawTrap))
-				{
-					itemId = 4359;
-				}
-				else if (type == typeof(FactionSpikeTrap))
-				{
-					itemId = 4517;
-				}
-					#region Mondain's Legacy
-				else if (type == typeof(ArcaneBookshelfSouthDeed))
-				{
-					itemId = 0x2DEF;
-				}
-				else if (type == typeof(ArcaneBookshelfEastDeed))
-				{
-					itemId = 0x2DF0;
-				}
-				else if (type == typeof(OrnateElvenChestSouthDeed))
-				{
-					itemId = 0x2DE9;
-				}
-				else if (type == typeof(OrnateElvenChestEastDeed))
-				{
-					itemId = 0x2DEA;
-				}
-				else if (type == typeof(ElvenWashBasinSouthDeed) ||
-					type == typeof(ElvenWashBasinSouthAddonWithDrawer))
-				{
-					itemId = 0x2D0B;
-				}
-				else if (type == typeof(ElvenWashBasinEastDeed) ||
-					type == typeof(ElvenWashBasinEastAddonWithDrawer))
-				{
-					itemId = 0x2D0C;
-				}
-				else if (type == typeof(ElvenDresserSouthDeed))
-				{
-					itemId = 0x2D09;
-				}
-				else if (type == typeof(ElvenDresserEastDeed))
-				{
-					itemId = 0x2D0A;
-				}
-				#endregion
-
-				if (itemId == 0)
-				{
-					var attrs = type.GetCustomAttributes(typeof(CraftItemIDAttribute), false);
-
-					if (attrs.Length > 0)
-					{
-						CraftItemIDAttribute craftItemID = (CraftItemIDAttribute)attrs[0];
-						itemId = craftItemID.ItemID;
-					}
-				}
-
-				if (itemId == 0)
-				{
-					Item item = null;
-
-					try
-					{
-						item = Activator.CreateInstance(type) as Item;
-					}
-					catch
-					{ }
-
-					if (item != null)
-					{
-						itemId = item.ItemID;
-						item.Delete();
-					}
-				}
-
-				_itemIds[type] = itemId;
-			}
-
-			return itemId;
-		}
-
-		public CraftItem(Type type, TextDefinition groupName, TextDefinition name)
-		{
-			m_arCraftRes = new CraftResCol();
-			m_arCraftSkill = new CraftSkillCol();
-
-			m_Type = type;
-
-			m_GroupNameString = groupName;
-			m_NameString = name;
-
-			m_GroupNameNumber = groupName;
-			m_NameNumber = name;
-
-			m_RequiredBeverage = BeverageType.Water;
-		}
-
-		public BeverageType RequiredBeverage { get { return m_RequiredBeverage; } set { m_RequiredBeverage = value; } }
 
 		public void AddRes(Type type, TextDefinition name, int amount)
 		{
@@ -235,35 +124,112 @@ namespace Server.Engines.Craft
 		public void AddRes(Type type, TextDefinition name, int amount, TextDefinition message)
 		{
 			CraftRes craftRes = new CraftRes(type, name, amount, message);
-			m_arCraftRes.Add(craftRes);
+			Resources.Add(craftRes);
 		}
 
 		public void AddSkill(SkillName skillToMake, double minSkill, double maxSkill)
 		{
 			CraftSkill craftSkill = new CraftSkill(skillToMake, minSkill, maxSkill);
-			m_arCraftSkill.Add(craftSkill);
+			Skills.Add(craftSkill);
 		}
 
-		public int Mana { get; set; }
-		public int Hits { get; set; }
-		public int Stam { get; set; }
-		public bool UseSubRes2 { get { return m_UseSubRes2; } set { m_UseSubRes2 = value; } }
-		public bool UseAllRes { get; set; }
-		public bool ForceTypeRes { get; set; }
-		public bool NeedHeat { get { return m_NeedHeat; } set { m_NeedHeat = value; } }
-		public bool NeedOven { get { return m_NeedOven; } set { m_NeedOven = value; } }
-        public bool NeedMaker { get { return m_NeedMaker; } set { m_NeedMaker = value; } }
-        public bool NeedMill { get { return m_NeedMill; } set { m_NeedMill = value; } }
-		public Type ItemType { get { return m_Type; } }
-		public int ItemHue { get; set; }
-		public string GroupNameString { get { return m_GroupNameString; } }
-		public int GroupNameNumber { get { return m_GroupNameNumber; } }
-		public string NameString { get { return m_NameString; } }
-		public int NameNumber { get { return m_NameNumber; } }
-		public CraftResCol Resources { get { return m_arCraftRes; } }
-		public CraftSkillCol Skills { get { return m_arCraftSkill; } }
+        private static readonly Dictionary<Type, int> _itemIds = new Dictionary<Type, int>();
 
-		public bool ConsumeAttributes(Mobile from, ref object message, bool consume)
+        public static int ItemIDOf(Type type)
+        {
+            int itemId;
+
+            if (!_itemIds.TryGetValue(type, out itemId))
+            {
+                if (type == typeof(FactionExplosionTrap))
+                {
+                    itemId = 14034;
+                }
+                else if (type == typeof(FactionGasTrap))
+                {
+                    itemId = 4523;
+                }
+                else if (type == typeof(FactionSawTrap))
+                {
+                    itemId = 4359;
+                }
+                else if (type == typeof(FactionSpikeTrap))
+                {
+                    itemId = 4517;
+                }
+                #region Mondain's Legacy
+                else if (type == typeof(ArcaneBookshelfSouthDeed))
+                {
+                    itemId = 0x2DEF;
+                }
+                else if (type == typeof(ArcaneBookshelfEastDeed))
+                {
+                    itemId = 0x2DF0;
+                }
+                else if (type == typeof(OrnateElvenChestSouthDeed))
+                {
+                    itemId = 0x2DE9;
+                }
+                else if (type == typeof(OrnateElvenChestEastDeed))
+                {
+                    itemId = 0x2DEA;
+                }
+                else if (type == typeof(ElvenWashBasinSouthDeed) ||
+                    type == typeof(ElvenWashBasinSouthAddonWithDrawer))
+                {
+                    itemId = 0x2D0B;
+                }
+                else if (type == typeof(ElvenWashBasinEastDeed) ||
+                    type == typeof(ElvenWashBasinEastAddonWithDrawer))
+                {
+                    itemId = 0x2D0C;
+                }
+                else if (type == typeof(ElvenDresserSouthDeed))
+                {
+                    itemId = 0x2D09;
+                }
+                else if (type == typeof(ElvenDresserEastDeed))
+                {
+                    itemId = 0x2D0A;
+                }
+                #endregion
+
+                if (itemId == 0)
+                {
+                    var attrs = type.GetCustomAttributes(typeof(CraftItemIDAttribute), false);
+
+                    if (attrs.Length > 0)
+                    {
+                        CraftItemIDAttribute craftItemID = (CraftItemIDAttribute)attrs[0];
+                        itemId = craftItemID.ItemID;
+                    }
+                }
+
+                if (itemId == 0)
+                {
+                    Item item = null;
+
+                    try
+                    {
+                        item = Activator.CreateInstance(type) as Item;
+                    }
+                    catch
+                    { }
+
+                    if (item != null)
+                    {
+                        itemId = item.ItemID;
+                        item.Delete();
+                    }
+                }
+
+                _itemIds[type] = itemId;
+            }
+
+            return itemId;
+        }
+
+        public bool ConsumeAttributes(Mobile from, ref object message, bool consume)
 		{
 			bool consumMana = false;
 			bool consumHits = false;
@@ -341,7 +307,7 @@ namespace Server.Engines.Craft
 		}
 
 		#region Tables
-		private static readonly int[] m_HeatSources = new[]
+		private static int[] m_HeatSources =
 		{
 			0x461, 0x48E, // Sandstone oven/fireplace
 			0x92B, 0x96C, // Stone oven/fireplace
@@ -358,25 +324,37 @@ namespace Server.Engines.Craft
             0xA2A4, 0xA2A5, 0xA2A8, 0xA2A9 // Wood Stove
         };
 
-		private static readonly int[] m_Ovens = new[]
+		private static int[] m_Ovens =
 		{
 			0x461, 0x46F, // Sandstone oven
 			0x92B, 0x93F, // Stone oven
 			0x2DDB, 0x2DDC, //Elven stove
 		};
 
-        private static readonly int[] m_Makers = new[]
+        private static int[] m_Makers =
         {
             0x9A96, 0x9A96 // steam powered beverage maker
         };
 
-        private static readonly int[] m_Mills = new[]
+        private static readonly int[] m_Mills =
 		{
 			0x1920, 0x1921, 0x1922, 0x1923, 0x1924, 0x1295, 0x1926, 0x1928, 0x192C, 0x192D, 0x192E, 0x129F, 0x1930, 0x1931,
 			0x1932, 0x1934
 		};
 
-		private static readonly Type[][] m_TypesTable = new[]
+        private static int[] m_WaterSources =
+        {
+            0xB41, 0xB44,
+            0xE7B, 0xE7B,
+            0xFFA, 0xFFA,
+            0x154D, 0x154D,
+            0x99CA, 0x99CB,
+            0x9A14, 0x9A19,
+            0xA2AF, 0xA2B9,
+            0x2AC0, 0x2AC5
+        };
+
+		private static readonly Type[][] ItemTypesTable =
 		{
 			new[] {typeof(Board), typeof(Log)}, 
             new[] {typeof(HeartwoodBoard), typeof(HeartwoodLog)},
@@ -409,10 +387,12 @@ namespace Server.Engines.Craft
             new[] { typeof( CrystallineFragments ), typeof( BrokenCrystals ), typeof( ShatteredCrystals ), typeof( ScatteredCrystals ), typeof( CrushedCrystals ), typeof( JaggedCrystals ), typeof( AncientPotteryFragments ) },
            new[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ), typeof( BlueScales ), typeof( CopperScales ), typeof( SilverScales ), typeof( GoldScales )   },
             new[] { typeof(Sausage), typeof(CookableSausage) },
-            new[] { typeof(Lettuce), typeof(FarmableLettuce) }
-		};
+            new[] { typeof(Lettuce), typeof(FarmableLettuce) },
+            new[] { typeof(DarkYarn), typeof(LightYarn) }
 
-		private static readonly Type[] m_ColoredItemTable = new[]
+        };
+
+		private static readonly Type[] m_ColoredItemTable = 
 		{
 			#region Mondain's Legacy
 			typeof(BaseContainer), typeof(ParrotPerchAddonDeed),
@@ -427,7 +407,7 @@ namespace Server.Engines.Craft
             #endregion
 		};
 
-        private static readonly Type[] m_ClothColoredItemTable = new[]
+        private static readonly Type[] m_ClothColoredItemTable =
         {
             typeof( GozaMatSouthDeed ), typeof( GozaMatEastDeed ),
 			typeof( SquareGozaMatSouthDeed ), typeof( SquareGozaMatEastDeed ),
@@ -436,7 +416,7 @@ namespace Server.Engines.Craft
             typeof( Tessen )
         };
 
-		private static readonly Type[] m_ColoredResourceTable = new[]
+		private static readonly Type[] m_ColoredResourceTable =
 		{
 			#region Mondain's Legacy
 			typeof(Board), typeof(Log),
@@ -446,7 +426,7 @@ namespace Server.Engines.Craft
 			typeof(PlantPigment), typeof(BaseContainer)
 		};
 
-		private static readonly Type[] m_MarkableTable = new[]
+		private static readonly Type[] m_MarkableTable =
 		{
 			#region Mondain's Legacy
 			typeof(BlueDiamondRing), typeof(BrilliantAmberBracelet), typeof(DarkSapphireBracelet), typeof(EcruCitrineRing),
@@ -515,7 +495,7 @@ namespace Server.Engines.Craft
 
 		public bool IsMarkable(Type type)
 		{
-			if (m_ForceNonExceptional) //Don't even display the stuff for marking if it can't ever be exceptional.
+			if (ForceNonExceptional) //Don't even display the stuff for marking if it can't ever be exceptional.
 			{
 				return false;
 			}
@@ -554,7 +534,7 @@ namespace Server.Engines.Craft
 
 			for (int i = 0; !inItemTable && i < m_ColoredItemTable.Length; ++i)
 			{
-				inItemTable = (m_Type == m_ColoredItemTable[i] || m_Type.IsSubclassOf(m_ColoredItemTable[i]));
+				inItemTable = (ItemType == m_ColoredItemTable[i] || ItemType.IsSubclassOf(m_ColoredItemTable[i]));
 			}
 
 			for (int i = 0; inItemTable && !inResourceTable && i < m_ColoredResourceTable.Length; ++i)
@@ -637,23 +617,50 @@ namespace Server.Engines.Craft
 			return contains;
 		}
 
-		public bool IsQuantityType(Type[][] types)
-		{
-			for (int i = 0; i < types.Length; ++i)
-			{
-				var check = types[i];
+        private bool FindWater(Mobile m)
+        {
+            Map map = m.Map;
 
-				for (int j = 0; j < check.Length; ++j)
-				{
-					if (typeof(IHasQuantity).IsAssignableFrom(check[j]))
-					{
-						return true;
-					}
-				}
-			}
+            if (map == null)
+                return false;
 
-			return false;
-		}
+            IPooledEnumerable eable = map.GetItemsInRange(m.Location, 2);
+
+            foreach (Item item in eable)
+            {
+                if (item is AddonComponent)
+                {
+                    var addon = ((AddonComponent)item).Addon;
+
+                    if (addon is KoiPondAddon || addon is DragonTurtleFountainAddon || addon is WaterWheelAddon)
+                    {
+                        eable.Free();
+                        return true;
+                    }
+                }
+            }
+
+            eable.Free();
+            return false;
+        }
+
+        public bool IsQuantityType(Type[][] types)
+        {
+            for (int i = 0; i < types.Length; ++i)
+            {
+                var check = types[i];
+
+                for (int j = 0; j < check.Length; ++j)
+                {
+                    if (typeof(IHasQuantity).IsAssignableFrom(check[j]))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         #region SA
         public bool IsPlantHueType(Type[][] types)
@@ -770,7 +777,7 @@ namespace Server.Engines.Craft
 					}
 					else
 					{
-						if (hq is BaseBeverage && ((BaseBeverage)hq).Content != m_RequiredBeverage)
+						if (hq is BaseBeverage && ((BaseBeverage)hq).Content != RequiredBeverage)
 						{
 							continue;
 						}
@@ -811,7 +818,7 @@ namespace Server.Engines.Craft
 					}
 					else
 					{
-						if (hq is BaseBeverage && ((BaseBeverage)hq).Content != m_RequiredBeverage)
+						if (hq is BaseBeverage && ((BaseBeverage)hq).Content != RequiredBeverage)
 						{
 							continue;
 						}
@@ -851,7 +858,7 @@ namespace Server.Engines.Craft
 				}
 				else
 				{
-					if (hq is BaseBeverage && ((BaseBeverage)hq).Content != m_RequiredBeverage)
+					if (hq is BaseBeverage && ((BaseBeverage)hq).Content != RequiredBeverage)
 					{
 						continue;
 					}
@@ -934,41 +941,47 @@ namespace Server.Engines.Craft
                 }
             }
 
-			if (m_NeedHeat && !Find(from, m_HeatSources))
+			if (NeedHeat && !Find(from, m_HeatSources))
 			{
 				message = 1044487; // You must be near a fire source to cook.
 				return false;
 			}
 
-			if (m_NeedOven && !Find(from, m_Ovens))
+			if (NeedOven && !Find(from, m_Ovens))
 			{
 				message = 1044493; // You must be near an oven to bake that.
 				return false;
 			}
 
-            if (m_NeedMaker && !Find(from, m_Makers))
+            if (NeedMaker && !Find(from, m_Makers))
             {
                 message = 1155732; // You must be near a steam powered beverage maker to do that.
                 return false;
             }
 
-            if (m_NeedMill && !Find(from, m_Mills))
+            if (NeedMill && !Find(from, m_Mills))
 			{
 				message = 1044491; // You must be near a flour mill to do that.
 				return false;
 			}
 
-			var types = new Type[m_arCraftRes.Count][];
-			var amounts = new int[m_arCraftRes.Count];
+            if (NeedWater && !Find(from, m_WaterSources) && !FindWater(from))
+            {
+                message = 1158882; // You must be near a water source such as a water trough to craft this item.
+                return false;
+            }
+
+            var types = new Type[Resources.Count][];
+			var amounts = new int[Resources.Count];
 
 			maxAmount = int.MaxValue;
 
-			CraftSubResCol resCol = (m_UseSubRes2 ? craftSystem.CraftSubRes2 : craftSystem.CraftSubRes);
+			CraftSubResCol resCol = (UseSubRes2 ? craftSystem.CraftSubRes2 : craftSystem.CraftSubRes);
             MasterCraftsmanTalisman talisman = null;
 
 			for (int i = 0; i < types.Length; ++i)
 			{
-				CraftRes craftRes = m_arCraftRes.GetAt(i);
+				CraftRes craftRes = Resources.GetAt(i);
 				Type baseType = craftRes.ItemType;
 
 				if (typeRes != null && ForceTypeRes)
@@ -993,11 +1006,11 @@ namespace Server.Engines.Craft
 				}
 				// ******************
 
-				for (int j = 0; types[i] == null && j < m_TypesTable.Length; ++j)
+				for (int j = 0; types[i] == null && j < ItemTypesTable.Length; ++j)
 				{
-					if (m_TypesTable[j][0] == baseType)
+					if (ItemTypesTable[j][0] == baseType)
 					{
-						types[i] = m_TypesTable[j];
+						types[i] = ItemTypesTable[j];
 					}
 				}
 
@@ -1013,13 +1026,14 @@ namespace Server.Engines.Craft
 				{
 					int tempAmount = ourPack.GetAmount(types[i]);
 					tempAmount /= amounts[i];
+
 					if (tempAmount < maxAmount)
 					{
 						maxAmount = tempAmount;
 
 						if (maxAmount == 0)
 						{
-							CraftRes res = m_arCraftRes.GetAt(i);
+							CraftRes res = Resources.GetAt(i);
 
 							if (res.MessageNumber > 0)
 							{
@@ -1052,7 +1066,7 @@ namespace Server.Engines.Craft
             }
 
 			// We adjust the amount of each resource to consume the max posible
-			if (UseAllRes)
+			if (UseAllRes && consumeType != ConsumeType.Half)
 			{
 				for (int i = 0; i < amounts.Length; ++i)
 				{
@@ -1066,7 +1080,7 @@ namespace Server.Engines.Craft
 
 			Item consumeExtra = null;
 
-			if (m_NameNumber == 1041267)
+			if (NameNumber == 1041267)
 			{
 				// Runebooks are a special case, they need a blank recall rune
 				var runes = ourPack.FindItemsByType<RecallRune>();
@@ -1202,7 +1216,7 @@ namespace Server.Engines.Craft
 			}
 			else
 			{
-				CraftRes res = m_arCraftRes.GetAt(index);
+				CraftRes res = Resources.GetAt(index);
 
 				if (res.MessageNumber > 0)
 				{
@@ -1275,7 +1289,7 @@ namespace Server.Engines.Craft
 
 		public double GetExceptionalChance(CraftSystem system, double chance, Mobile from)
 		{
-			if (m_ForceNonExceptional)
+			if (ForceNonExceptional)
 			{
 				return 0.0;
 			}
@@ -1340,15 +1354,15 @@ namespace Server.Engines.Craft
 		}
 
 		public bool CheckSkills(
-			Mobile from, Type typeRes, CraftSystem craftSystem, ref int quality, ref bool allRequiredSkills)
+			Mobile from, Type typeRes, CraftSystem craftSystem, ref int quality, ref bool allRequiredSkills, int maxAmount)
 		{
-			return CheckSkills(from, typeRes, craftSystem, ref quality, ref allRequiredSkills, true);
+			return CheckSkills(from, typeRes, craftSystem, ref quality, ref allRequiredSkills, true, maxAmount);
 		}
 
 		public bool CheckSkills(
-			Mobile from, Type typeRes, CraftSystem craftSystem, ref int quality, ref bool allRequiredSkills, bool gainSkills)
+			Mobile from, Type typeRes, CraftSystem craftSystem, ref int quality, ref bool allRequiredSkills, bool gainSkills, int maxAmount)
 		{
-			double chance = GetSuccessChance(from, typeRes, craftSystem, gainSkills, ref allRequiredSkills);
+			double chance = GetSuccessChance(from, typeRes, craftSystem, gainSkills, ref allRequiredSkills, maxAmount);
 
 			if (GetExceptionalChance(craftSystem, chance, from) > Utility.RandomDouble())
 			{
@@ -1358,8 +1372,12 @@ namespace Server.Engines.Craft
 			return (chance > Utility.RandomDouble());
 		}
 
-		public double GetSuccessChance(
-			Mobile from, Type typeRes, CraftSystem craftSystem, bool gainSkills, ref bool allRequiredSkills)
+        public double GetSuccessChance(Mobile from, Type typeRes, CraftSystem craftSystem, bool gainSkills, ref bool allRequiredSkills)
+        {
+            return GetSuccessChance(from, typeRes, craftSystem, gainSkills, ref allRequiredSkills, 1);
+        }
+
+        public double GetSuccessChance(Mobile from, Type typeRes, CraftSystem craftSystem, bool gainSkills, ref bool allRequiredSkills, int maxAmount)
 		{
             if (ForceSuccessChance > -1)
             {
@@ -1372,31 +1390,31 @@ namespace Server.Engines.Craft
 
 			allRequiredSkills = true;
 
-			for (int i = 0; i < m_arCraftSkill.Count; i++)
-			{
-				CraftSkill craftSkill = m_arCraftSkill.GetAt(i);
+            for (int i = 0; i < Skills.Count; i++)
+            {
+                CraftSkill craftSkill = Skills.GetAt(i);
 
-				double minSkill = craftSkill.MinSkill - MinSkillOffset;
-				double maxSkill = craftSkill.MaxSkill;
-				double valSkill = from.Skills[craftSkill.SkillToMake].Value;
+                double minSkill = craftSkill.MinSkill - MinSkillOffset;
+                double maxSkill = craftSkill.MaxSkill;
+                double valSkill = from.Skills[craftSkill.SkillToMake].Value;
 
-				if (valSkill < minSkill)
-				{
-					allRequiredSkills = false;
-				}
+                if (valSkill < minSkill)
+                {
+                    allRequiredSkills = false;
+                }
 
-				if (craftSkill.SkillToMake == craftSystem.MainSkill)
-				{
-					minMainSkill = minSkill;
-					maxMainSkill = maxSkill;
-					valMainSkill = valSkill;
-				}
+                if (craftSkill.SkillToMake == craftSystem.MainSkill)
+                {
+                    minMainSkill = minSkill;
+                    maxMainSkill = maxSkill;
+                    valMainSkill = valSkill;
+                }
 
-				if (gainSkills) // This is a passive check. Success chance is entirely dependant on the main skill
-				{
-					from.CheckSkill(craftSkill.SkillToMake, minSkill, maxSkill);
-				}
-			}
+                if (gainSkills && !UseAllRes) // This is a passive check. Success chance is entirely dependant on the main skill
+                {
+                    from.CheckSkill(craftSkill.SkillToMake, minSkill, maxSkill);
+                }
+            }
 
 			double chance;
 
@@ -1434,6 +1452,16 @@ namespace Server.Engines.Craft
 		}
 				public Type HoldResource;
 
+        private void MultipleSkillCheck(Mobile from, int amount)
+        {
+            for (int i = 0; i < Skills.Count; i++)
+            {
+                CraftSkill craftSkill = Skills.GetAt(i);
+
+                Server.Misc.SkillCheck.CheckSkill(from, craftSkill.SkillToMake, craftSkill.MinSkill - MinSkillOffset, craftSkill.MaxSkill, amount);
+            }
+        }
+
         public void Craft(Mobile from, CraftSystem craftSystem, Type typeRes, ITool tool)
 		{
 						  HoldResource = typeRes;
@@ -1453,7 +1481,7 @@ namespace Server.Engines.Craft
                             {
                                 if (!RequiresMechanicalLife || (from is PlayerMobile && ((PlayerMobile)from).MechanicalLife))
                                 {
-                                    int badCraft = craftSystem.CanCraft(from, tool, m_Type);
+                                    int badCraft = craftSystem.CanCraft(from, tool, ItemType);
 
                                     if (badCraft <= 0)
                                     {
@@ -1574,7 +1602,7 @@ namespace Server.Engines.Craft
 			ITool tool,
 			CustomCraft customCraft)
 		{
-			int badCraft = craftSystem.CanCraft(from, tool, m_Type);
+			int badCraft = craftSystem.CanCraft(from, tool, ItemType);
 
             if (badCraft > 0)
 			{
@@ -1642,7 +1670,7 @@ namespace Server.Engines.Craft
 
 			bool allRequiredSkills = true;
 
-			if (CheckSkills(from, typeRes, craftSystem, ref ignored, ref allRequiredSkills))
+			if (CheckSkills(from, typeRes, craftSystem, ref ignored, ref allRequiredSkills, checkMaxAmount))
 			{
 				// Resource
 				int resHue = 0;
@@ -1689,6 +1717,11 @@ namespace Server.Engines.Craft
 
 					return;
 				}
+
+                if (UseAllRes && maxAmount > 0)
+                {
+                    MultipleSkillCheck(from, maxAmount);
+                }
 
 				if (craftSystem is DefBlacksmithy)
 				{
@@ -2041,8 +2074,13 @@ namespace Server.Engines.Craft
 					tool.Delete();
 				}
 
-				// SkillCheck failed.
-				int num = craftSystem.PlayEndingEffect(from, true, true, toolBroken, endquality, false, this);
+                if (UseAllRes)
+                {
+                    MultipleSkillCheck(from, 1);
+                }
+
+                // SkillCheck failed.
+                int num = craftSystem.PlayEndingEffect(from, true, true, toolBroken, endquality, false, this);
 
 				if (tool != null && !tool.Deleted && tool.UsesRemaining > 0)
 				{
@@ -2052,7 +2090,7 @@ namespace Server.Engines.Craft
 				{
 					from.SendLocalizedMessage(num);
 				}
-			}
+            }
 		}
 
 		private class InternalTimer : Timer
@@ -2062,7 +2100,7 @@ namespace Server.Engines.Craft
 			private readonly int m_iCountMax;
 			private readonly CraftItem m_CraftItem;
 			private readonly CraftSystem m_CraftSystem;
-			private readonly Type m_TypeRes;
+			private readonly Type ItemTypeRes;
 			private readonly ITool m_Tool;
             private bool m_AutoCraft;
 
@@ -2075,7 +2113,7 @@ namespace Server.Engines.Craft
 				m_iCount = 0;
 				m_iCountMax = iCountMax;
 				m_CraftSystem = craftSystem;
-				m_TypeRes = typeRes;
+				ItemTypeRes = typeRes;
 				m_Tool = tool;
                 m_AutoCraft = AutoCraftTimer.HasTimer(from);
 			}
@@ -2094,7 +2132,7 @@ namespace Server.Engines.Craft
 				{
 					m_From.EndAction(typeof(CraftSystem));
 
-					int badCraft = m_CraftSystem.CanCraft(m_From, m_Tool, m_CraftItem.m_Type);
+					int badCraft = m_CraftSystem.CanCraft(m_From, m_Tool, m_CraftItem.ItemType);
 
 					if (badCraft > 0)
 					{
@@ -2115,7 +2153,7 @@ namespace Server.Engines.Craft
 					int quality = 1;
 					bool allRequiredSkills = true;
 
-					m_CraftItem.CheckSkills(m_From, m_TypeRes, m_CraftSystem, ref quality, ref allRequiredSkills, false);
+					m_CraftItem.CheckSkills(m_From, ItemTypeRes, m_CraftSystem, ref quality, ref allRequiredSkills, false, 1);
 
 					CraftContext context = m_CraftSystem.GetContext(m_From);
 
@@ -2132,7 +2170,7 @@ namespace Server.Engines.Craft
 						{
 							cc =
 								Activator.CreateInstance(
-									m_CraftItem.ItemType, new object[] {m_From, m_CraftItem, m_CraftSystem, m_TypeRes, m_Tool, quality}) as
+									m_CraftItem.ItemType, new object[] {m_From, m_CraftItem, m_CraftSystem, ItemTypeRes, m_Tool, quality}) as
 								CustomCraft;
 						}
 						catch
@@ -2155,7 +2193,7 @@ namespace Server.Engines.Craft
 
                     if (makersMark && context.MarkOption == CraftMarkOption.PromptForMark && !m_AutoCraft)
 					{
-						m_From.SendGump(new QueryMakersMarkGump(quality, m_From, m_CraftItem, m_CraftSystem, m_TypeRes, m_Tool));
+						m_From.SendGump(new QueryMakersMarkGump(quality, m_From, m_CraftItem, m_CraftSystem, ItemTypeRes, m_Tool));
 					}
 					else
 					{
@@ -2164,7 +2202,7 @@ namespace Server.Engines.Craft
 							makersMark = false;
 						}
 
-						m_CraftItem.CompleteCraft(quality, makersMark, m_From, m_CraftSystem, m_TypeRes, m_Tool, null);
+						m_CraftItem.CompleteCraft(quality, makersMark, m_From, m_CraftSystem, ItemTypeRes, m_Tool, null);
 					}
 				}
 			}
@@ -2197,14 +2235,14 @@ namespace Server.Engines.Craft
             if (context == null || HasResTarget(from))
                 return false;
 
-            Type[][] types = new Type[m_arCraftRes.Count][];
+            Type[][] types = new Type[Resources.Count][];
             Container pack = from.Backpack;
             PlantHue hue = PlantHue.None;
             PlantPigmentHue phue = PlantPigmentHue.None;
 
             for (int i = 0; i < types.Length; ++i)
             {
-                CraftRes craftRes = m_arCraftRes.GetAt(i);
+                CraftRes craftRes = Resources.GetAt(i);
                 Type type = craftRes.ItemType;
 
                 if (pack != null)
@@ -2239,7 +2277,7 @@ namespace Server.Engines.Craft
         {
             private CraftItem m_CraftItem;
             private CraftSystem m_CraftSystem;
-            private Type m_TypeRes;
+            private Type ItemTypeRes;
             private ITool m_Tool;
 
             public ChooseResTarget(Mobile from, CraftItem craftitem, CraftSystem craftSystem, Type typeRes, ITool tool)
@@ -2247,7 +2285,7 @@ namespace Server.Engines.Craft
             {
                 m_CraftItem = craftitem;
                 m_CraftSystem = craftSystem;
-                m_TypeRes = typeRes;
+                ItemTypeRes = typeRes;
                 m_Tool = tool;
 
                 CraftItem.AddResTarget(from);
@@ -2263,7 +2301,7 @@ namespace Server.Engines.Craft
                     context.RequiredPigmentHue = ((IPigmentHue)targeted).PigmentHue;
 
                 from.EndAction(typeof(CraftSystem));
-                m_CraftItem.Craft(from, m_CraftSystem, m_TypeRes, m_Tool);
+                m_CraftItem.Craft(from, m_CraftSystem, ItemTypeRes, m_Tool);
             }
 
             protected override void OnTargetCancel(Mobile from, Server.Targeting.TargetCancelType cancelType)

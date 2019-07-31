@@ -1,14 +1,16 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+
 using Server;
 using Server.Items;
 using Server.Mobiles;
-using System.Linq;
-using System.Collections.Generic;
 using Server.Engines.CityLoyalty;
 using Server.Engines.VvV;
 using Server.Engines.ArenaSystem;
 using Server.Engines.SorcerersDungeon;
+using Server.Misc;
 
 namespace Server.Engines.Points
 {
@@ -45,7 +47,12 @@ namespace Server.Engines.Points
 
         Khaldun,
         Doom,
-        SorcerersDungeon
+        SorcerersDungeon,
+        RisingTide,
+
+        GauntletPoints,
+        TOT,
+        VAS,
     }
 
     public abstract class PointsSystem
@@ -347,6 +354,10 @@ namespace Server.Engines.Points
         public static KhaldunData Khaldun { get; set; }
         public static DoomData TreasuresOfDoom { get; set; }
         public static SorcerersDungeonData SorcerersDungeon { get; set; }
+        public static RisingTide RisingTide { get; set; }
+        public static DoomGauntlet DoomGauntlet { get; set; }
+        public static TreasuresOfTokuno TreasuresOfTokuno { get; set; }
+        public static VirtueArtifactsSystem VirtueArtifacts { get; set; }
 
         public static void Configure()
         {
@@ -372,6 +383,10 @@ namespace Server.Engines.Points
             Khaldun = new KhaldunData();
             TreasuresOfDoom = new DoomData();
             SorcerersDungeon = new SorcerersDungeonData();
+            RisingTide = new RisingTide();
+            DoomGauntlet = new DoomGauntlet();
+            TreasuresOfTokuno = new TreasuresOfTokuno();
+            VirtueArtifacts = new VirtueArtifactsSystem();
         }
 
         public static void OnKilledBy(OnKilledByEventArgs e)

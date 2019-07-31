@@ -159,9 +159,8 @@ namespace Server.SkillHandlers
 				{
 					Mobile targ = (Mobile)target;
 
-					if (targ == from ||
-						(targ is BaseCreature && (((BaseCreature)targ).BardImmune || !from.CanBeHarmful(targ, false)) &&
-						 ((BaseCreature)targ).ControlMaster != from))
+					if (targ == from || !from.CanBeHarmful(targ, false) || 
+                        (targ is BaseCreature && ((BaseCreature)targ).BardImmune && ((BaseCreature)targ).ControlMaster != from))
 					{
 						from.SendLocalizedMessage(1049535); // A song of discord would have no effect on that.
 					}
@@ -203,7 +202,11 @@ namespace Server.SkillHandlers
 						else if (from.CheckTargetSkill(SkillName.Discordance, target, diff - 25.0, diff + 25.0))
 						{
 							from.SendLocalizedMessage(1049539); // You play the song surpressing your targets strength
-							m_Instrument.PlayInstrumentWell(from);
+
+                            if (targ.Player)
+                                targ.SendLocalizedMessage(1072061); // You hear jarring music, suppressing your strength.
+
+                            m_Instrument.PlayInstrumentWell(from);
 							m_Instrument.ConsumeUse(from);
 
                             DiscordanceInfo info;
@@ -291,6 +294,10 @@ namespace Server.SkillHandlers
                                 from.CheckSkill(SkillName.Discordance, 0, from.Skills[SkillName.Discordance].Cap);
 
 							from.SendLocalizedMessage(1049540); // You attempt to disrupt your target, but fail.
+
+                            if (targ.Player)
+                                targ.SendLocalizedMessage(1072064); // You hear jarring music, but it fails to disrupt you.
+
                             m_Instrument.PlayInstrumentBadly(from);
 							m_Instrument.ConsumeUse(from);
 
