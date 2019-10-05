@@ -91,7 +91,14 @@ namespace Server.Gumps
 				if (Points >= item.Points)
                 {
                     AddButton(35, offset + (int)(height / 2) - 5, 0x837, 0x838, 200 + Index, GumpButtonType.Reply, 0);
+					if (item.Tooltip2 == null)
+					{
                     AddTooltip(item.Tooltip);
+					}
+						else 
+						{
+						AddTooltip(item.Tooltip2);
+						}
                 }
 				
 				int y = offset - item.Y;
@@ -110,8 +117,12 @@ namespace Server.Gumps
 
                 if (i != null)
                     AddItemProperty(i.Serial);
-                else if (item.Tooltip > 0)
+                else if (item.Tooltip > 0 && (item.Tooltip2 == null)){
                     AddTooltip(item.Tooltip);
+				}
+				else if ((item.Tooltip2 != null)){
+						AddTooltip(item.Tooltip2);
+						}
 
                 AddLabel(80 + max, offset + (int)(height / 2) - 10, Points >= item.Points ? 0x64 : 0x21, item.Points.ToString("N0"));
 

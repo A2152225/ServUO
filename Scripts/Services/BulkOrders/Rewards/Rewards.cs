@@ -99,7 +99,7 @@ namespace Server.Engines.BulkOrders
     }
 
     public class BODCollectionItem : CollectionItem
-    {
+    { 
         public ConstructCallback Constructor { get; set; }
         public int RewardType { get; set; }
 
@@ -109,6 +109,22 @@ namespace Server.Engines.BulkOrders
             Constructor = constructor;
             RewardType = type;
         }
+		
+		
+    }
+	
+	 public class BODCollectionItemS : CollectionItem
+    { 
+        public ConstructCallback Constructor { get; set; }
+        public int RewardType { get; set; }
+
+          public BODCollectionItemS(int itemID, string tooltip, int hue, double points, ConstructCallback constructor, int type = 0)
+            : base(null, itemID, tooltip, hue, points, false)
+        {
+            Constructor = constructor;
+            RewardType = type;
+        }
+		
     }
 
     public sealed class RewardGroup
@@ -410,6 +426,9 @@ namespace Server.Engines.BulkOrders
         private static readonly ConstructCallback PowerScroll = new ConstructCallback(CreatePowerScroll);
         private static readonly ConstructCallback ColoredAnvil = new ConstructCallback(CreateColoredAnvil);
         private static readonly ConstructCallback AncientHammer = new ConstructCallback(CreateAncientHammer);
+		
+		
+		
 
         private static Item CreateSmithHammer(int type)
         {
@@ -1436,16 +1455,27 @@ namespace Server.Engines.BulkOrders
             RewardCollection.Add(new BODCollectionItem(0x182B, 1157205, 2731, 450, NaturalDye, 6));
             RewardCollection.Add(new BODCollectionItem(0x182B, 1157205, 2735, 475, NaturalDye, 7));
             RewardCollection.Add(new BODCollectionItem(0x9E28, 1157291, 0, 500, ImprovementTalisman, 10));
+			RewardCollection.Add(new BODCollectionItem(0x22C5, 6000001, 0, 1000, MCBook));
+			RewardCollection.Add(new BODCollectionItemS(0x22C5, "Monster Contract Book used to store monster contracts in the same way that a Bulk Order Book works for BODs.", 0, 1000, MCBook));
+
         }
 
-        #region Constructors
-
+  #region Constructors
+        private static readonly ConstructCallback  MCBook = new ConstructCallback(CreateMonsterContractBook);
+		
         private static Item ScribesPen(int type)
         {
             BaseTool tool = new ScribesPen();
             tool.UsesRemaining = 250;
 
             return tool;
+        }
+		   private static Item CreateMonsterContractBook(int type)
+        {
+            MCBook mcb = new MCBook();
+            //tool.UsesRemaining = 250;
+
+            return mcb;
         }
 
         private static Item CraftsmanTalisman(int type)
@@ -1490,7 +1520,8 @@ namespace Server.Engines.BulkOrders
             new RewardType(300, typeof(BladeSpiritsScroll), typeof(DispelFieldScroll), typeof(MagicReflectScroll), typeof(ParalyzeScroll), typeof(SummonCreatureScroll)),
             new RewardType(350, typeof(ChainLightningScroll), typeof(FlamestrikeScroll), typeof(ManaVampireScroll), typeof(MeteorSwarmScroll), typeof(PolymorphScroll)),
             new RewardType(400, typeof(SummonAirElementalScroll), typeof(SummonDaemonScroll), typeof(SummonEarthElementalScroll), typeof(SummonFireElementalScroll), typeof(SummonWaterElementalScroll)),
-            new RewardType(450, typeof(Spellbook), typeof(NecromancerSpellbook), typeof(Runebook), typeof(RunicAtlas))
+            new RewardType(450, typeof(Spellbook), typeof(NecromancerSpellbook), typeof(Runebook), typeof(RunicAtlas)),
+			new RewardType(1000, typeof(MCBook))
         };
 
         private static readonly int[][] m_GoldTable = new int[][]

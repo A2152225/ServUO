@@ -182,7 +182,11 @@ namespace Server.Gumps
 		{
 			Add(new GumpTooltip(number));
 		}
-
+		
+		public void AddTooltip(string text)
+		{
+			Add(new GumpTooltip(text));
+		}
 		public void AddHtml(int x, int y, int width, int height, string text, bool background, bool scrollbar)
 		{
 			Add(new GumpHtml(x, y, width, height, text, background, scrollbar));

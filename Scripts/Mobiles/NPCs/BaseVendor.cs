@@ -329,7 +329,7 @@ namespace Server.Mobiles
 			pack.Visible = false;
 			AddItem(pack);
 
-            BribeMultiplier = Utility.Random(10);
+            BribeMultiplier = Utility.Random(20);
 
 			m_LastRestock = DateTime.UtcNow;
 		}
@@ -1401,7 +1401,7 @@ namespace Server.Mobiles
                     if (BulkOrderSystem.CanExchangeBOD(from, this, bod, -1))
                     {
                         int amount = BulkOrderSystem.GetBribe(bod);
-                        amount *= BribeMultiplier;
+                        amount *= (8 + BribeMultiplier);
 
                         if (Bribes == null)
                             Bribes = new Dictionary<Mobile, PendingBribe>();
@@ -2416,7 +2416,7 @@ namespace Server.Mobiles
 
             if (version == 1)
             {
-                BribeMultiplier = Utility.Random(10);
+                BribeMultiplier = Utility.Random(20);
             }
 
 			Timer.DelayCall(TimeSpan.Zero, CheckMorph);

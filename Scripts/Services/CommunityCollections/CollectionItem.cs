@@ -13,6 +13,7 @@ namespace Server
         private readonly int m_Width;
         private readonly int m_Height;
         private readonly int m_Tooltip;
+		private readonly string m_Tooltip2;
         private readonly int m_Hue;
         private readonly double m_Points;
         private readonly bool m_QuestItem;
@@ -21,8 +22,8 @@ namespace Server
         {
             m_Type = type;
             m_ItemID = itemID;
-            m_Tooltip = tooltip;
-            m_Hue = hue;
+			m_Tooltip = tooltip; 
+			m_Hue = hue;
             m_Points = points;
             m_QuestItem = questitem;
 
@@ -55,7 +56,51 @@ namespace Server
                 m_Height = rec.Height;
             }
         }
+  
+    public CollectionItem(Type type, int itemID, string tooltip, int hue, double points, bool questitem = false)
+        {
+            m_Type = type;
+            m_ItemID = itemID;
+			m_Tooltip = 0;//tooltip; 
+			m_Tooltip2 = tooltip;
+		    m_Hue = hue;
+            m_Points = points;
+            m_QuestItem = questitem;
 
+            Rectangle2D rec;
+
+            try
+            {
+                rec = ItemBounds.Table[m_ItemID];
+            }
+            catch
+            {
+                rec = new Rectangle2D(0, 0, 0, 0);
+            }
+
+            if (rec.X == 0 && rec.Y == 0 && rec.Width == 0 && rec.Height == 0)
+            {
+                int mx, my;
+                mx = my = 0;
+
+                Item.Measure(Item.GetBitmap(m_ItemID), out m_X, out m_Y, out mx, out my);
+
+                m_Width = mx - m_X;
+                m_Height = my - m_Y;
+            }
+            else
+            {
+                m_X = rec.X;
+                m_Y = rec.Y;
+                m_Width = rec.Width;
+                m_Height = rec.Height;
+            }
+        }
+	
+  
+	
+		
+		
         public Type Type { get { return m_Type; } } // image info
         public int ItemID { get { return m_ItemID; } }
         public int X { get { return m_X; } }
@@ -63,6 +108,8 @@ namespace Server
         public int Width { get { return m_Width; } }
         public int Height { get { return m_Height; } }
         public int Tooltip { get { return m_Tooltip; } }
+		public string Tooltip2 { get { return m_Tooltip2; } }
+		
         public int Hue { get { return m_Hue; } }
         public double Points { get { return m_Points; } }
         public bool QuestItem { get { return m_QuestItem; } }
@@ -92,8 +139,17 @@ namespace Server
             m_Hues = hues;
         }
 
+		public CollectionHuedItem(Type type, int itemID, string tooltip2, int hue, double points, int[] hues)
+            : base(type, itemID, tooltip2, hue, points)
+        {
+            m_Hues = hues;
+        }
+
+
         public int[] Hues { get { return m_Hues; } }
     }
+
+
 
     public class CollectionTitle : CollectionItem
     { 
