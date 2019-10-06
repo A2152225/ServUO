@@ -1261,14 +1261,7 @@ namespace Server
         public virtual void AddLootTypeProperty(ObjectPropertyList list)
         {
             if (DisplayLootType)
-            {
-                Mobile blessedFor = BlessedFor;
-
-                if (blessedFor != null && !blessedFor.Deleted)
-                {
-                    AddBlessedForProperty(list, blessedFor);
-                }
-
+            {               
                 if (m_LootType == LootType.Blessed)
                 {
                     list.Add(1038021); // blessed
@@ -6271,6 +6264,19 @@ namespace Server
 			InvalidateProperties();
 		}
 
+        public bool RemoveSocket<T>()
+        {
+            var socket = GetSocket(typeof(T));
+
+            if (socket != null)
+            {
+                RemoveItemSocket(socket);
+                return true;
+            }
+
+            return false;
+        }
+
         public void RemoveItemSocket(ItemSocket socket)
         {
             if (Sockets == null)
@@ -6279,6 +6285,7 @@ namespace Server
             }
 
             Sockets.Remove(socket);
+            socket.OnRemoved();
 
             if (Sockets.Count == 0)
             {
@@ -6397,8 +6404,6 @@ namespace Server
 			EndTimer();
 			
 			Owner.RemoveItemSocket(this);
-			
-			OnRemoved();
 		}
 		
 		public virtual void OnRemoved()

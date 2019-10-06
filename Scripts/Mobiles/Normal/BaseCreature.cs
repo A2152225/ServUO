@@ -764,9 +764,11 @@ namespace Server.Mobiles
 			{
 				var old = _Mastery;
 				_Mastery = value;
-				
-				if(old != _Mastery)
-					UpdateMasteryInfo();
+
+                if (old != _Mastery)
+                {
+                    UpdateMasteryInfo();
+                }
 			}
 		}
 		
@@ -781,7 +783,7 @@ namespace Server.Mobiles
             }
             else
             {
-                var masteries = MasteryInfo.Infos.Where(i => i.MasterySkill == _Mastery && !i.Passive && i.SpellType != typeof(BodyGuardSpell)).ToArray();
+                var masteries = MasteryInfo.Infos.Where(i => i.MasterySkill == _Mastery && !i.Passive && (i.SpellType != typeof(BodyGuardSpell) || Controlled)).ToArray();
 
                 if (masteries != null && masteries.Length > 0)
                 {
@@ -6643,8 +6645,6 @@ public string CType = "default";  //Declare variable for use of transferring to 
                             givenFactionKill = true;
                             Faction.HandleDeath(this, ds.m_Mobile);
                         }
-
-                        Region region = ds.m_Mobile.Region;
                     }
 
                     for (int i = 0; i < titles.Count; ++i)
@@ -6832,6 +6832,8 @@ public string CType = "default";  //Declare variable for use of transferring to 
                 ControlOrder = OrderType.None;
                 Guild = null;
 
+                UpdateMasteryInfo();
+
                 Delta(MobileDelta.Noto);
             }
             else
@@ -6859,6 +6861,8 @@ public string CType = "default";  //Declare variable for use of transferring to 
                 ControlTarget = null;
                 ControlOrder = OrderType.Come;
                 Guild = null;
+
+                UpdateMasteryInfo();
 
                 AdjustSpeeds();
                 CurrentSpeed = m_dActiveSpeed;
@@ -7179,7 +7183,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
                     if (info.Defender.InRange(Location, Core.GlobalMaxUpdateRange) && info.Defender.DamageEntries.Any(de => de.Damager == this))
                     {
-                        info.Defender.RegisterDamage(amount / 2, from);
+                        info.Defender.RegisterDamage(amount, from);
                     }
 
                     if (info.Defender.Player && from.CanBeHarmful(info.Defender))
@@ -7194,7 +7198,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
                     if (info.Attacker.InRange(Location, Core.GlobalMaxUpdateRange) && info.Attacker.DamageEntries.Any(de => de.Damager == this))
                     {
-                        info.Attacker.RegisterDamage(amount / 2, from);
+                        info.Attacker.RegisterDamage(amount, from);
                     }
 
                     if (info.Attacker.Player && from.CanBeHarmful(info.Attacker))

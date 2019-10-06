@@ -2791,7 +2791,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                     if (info.Defender.InRange(Location, Core.GlobalMaxUpdateRange) && info.Defender.DamageEntries.Any(de => de.Damager == this))
                     {
-                        info.Defender.RegisterDamage(amount / 2, from);
+                        info.Defender.RegisterDamage(amount, from);
                     }
 
                     if (info.Defender.Player && from.CanBeHarmful(info.Defender, false))
@@ -2806,7 +2806,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                     if (info.Attacker.InRange(Location, Core.GlobalMaxUpdateRange) && info.Attacker.DamageEntries.Any(de => de.Damager == this))
                     {
-                        info.Attacker.RegisterDamage(amount / 2, from);
+                        info.Attacker.RegisterDamage(amount, from);
                     }
 
                     if (info.Attacker.Player && from.CanBeHarmful(info.Attacker, false))
@@ -3059,7 +3059,15 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			}
 			else
 			{
-				if (Alive && Core.AOS)
+                if (Core.HS)
+                {
+                    BaseGalleon galleon = BaseGalleon.FindGalleonAt(from.Location, from.Map);
+
+                    if (galleon != null && galleon.IsOwner(from))
+                        list.Add(new ShipAccessEntry(this, from, galleon));
+                }
+
+                if (Alive && Core.AOS)
 				{
 					Party theirParty = from.Party as Party;
 					Party ourParty = Party as Party;
@@ -6648,14 +6656,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		}
 
         public override void AddNameProperties(ObjectPropertyList list)
-        {
-            string name = Name;
-
-            if (name == null)
-            {
-                name = String.Empty;
-            }
-
+        {           
             string prefix = "";
 
 /*
@@ -6745,6 +6746,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             }
 
             suffix = ApplyNameSuffix(suffix);
+			string name = Name;
 
             list.Add(1050045, "{0} \t{1}\t {2}", prefix, name, suffix); // ~1_PREFIX~~2_NAME~~3_SUFFIX~
 

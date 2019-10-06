@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<cleanup>
+	<cups>
+		<cup notnull="True" owner="43" cmcc="True">
+			<items>
+				<item notnull="True" cont="1073746033" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="MelisandesHairDye" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="43461" cmcc="False">
+			<items />
+		</cup>
+		<cup notnull="True" owner="45715" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="42" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="1651" cmcc="True">
+			<items>
+				<item notnull="True" cont="1073755301" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="IronOre" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Saltpeter" />
+				<item notnull="False" inotnull="True" type="FertileDirt" />
+				<item notnull="False" inotnull="True" type="StarSapphire" />
+				<item notnull="False" inotnull="True" type="Sapphire" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="50205" cmcc="True">
+			<items>
+				<item notnull="True" cont="1074016915" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Static" />
+				<item notnull="False" inotnull="True" type="Static" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="7201" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="830" cmcc="False">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Lockpick" />
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="48134" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="38524" cmcc="True">
+			<items>
+				<item notnull="True" cont="1074147468" inotnull="True" type="Gold" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="97904" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Ruby" />
+				<item notnull="False" inotnull="True" type="Tourmaline" />
+				<item notnull="False" inotnull="True" type="Citrine" />
+				<item notnull="False" inotnull="True" type="Diamond" />
+				<item notnull="False" inotnull="True" type="Emerald" />
+				<item notnull="False" inotnull="True" type="Sapphire" />
+				<item notnull="False" inotnull="True" type="StarSapphire" />
+				<item notnull="False" inotnull="True" type="Amber" />
+			</items>
+		</cup>
+	</cups>
+</cleanup>

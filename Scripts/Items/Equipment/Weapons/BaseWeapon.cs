@@ -262,10 +262,6 @@ namespace Server.Items
         private bool m_DImodded;
         #endregion
 
-        #region High Seas
-        private bool m_SearingWeapon;
-        #endregion
-
         #region Runic Reforging
         private ItemPower m_ItemPower;
         private ReforgedPrefix m_ReforgedPrefix;
@@ -771,14 +767,22 @@ namespace Server.Items
         }
         #endregion
 
-        #region High Seas
         [CommandProperty(AccessLevel.GameMaster)]
         public bool SearingWeapon
         {
-            get { return m_SearingWeapon; }
-            set { m_SearingWeapon = value; InvalidateProperties(); }
+            get { return HasSocket<SearingWeapon>(); }
+            set
+            {
+                if (!value)
+                {
+                    RemoveSocket<SearingWeapon>();
+                }
+                else if (!SearingWeapon)
+                {
+                    AttachSocket(new SearingWeapon(this));
+                }
+            }
         }
-        #endregion
 
         #region Runic Reforging
 
@@ -808,6 +812,11 @@ namespace Server.Items
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
 		{
 			base.GetContextMenuEntries(from, list);
+
+            if (SearingWeapon && Parent == from)
+            {
+                list.Add(new SearingWeapon.ToggleExtinguishEntry(from, this));
+            }
 
 			if (BlessedFor == from && BlessedBy == from && RootParent == from)
 			{
@@ -1083,7 +1092,7 @@ namespace Server.Items
 			}
 			else if (from.Dex < DexRequirement)
 			{
-				from.SendMessage("You are not nimble enough to equip that.");
+				from.SendLocalizedMessage(1071936); // You cannot equip that.
 				return false;
 			}
 			else if (from.Str < AOS.Scale(StrRequirement, 100 - GetLowerStatReq()))
@@ -1093,7 +1102,7 @@ namespace Server.Items
 			}
 			else if (from.Int < IntRequirement)
 			{
-				from.SendMessage("You are not smart enough to equip that.");
+				from.SendLocalizedMessage(1071936); // You cannot equip that.
 				return false;
 			}
 			else if (!from.CanBeginAction(typeof(BaseWeapon)))
@@ -1268,7 +1277,6 @@ namespace Server.Items
                 if (FocusWeilder != null)
                     FocusWeilder = null;
 
-                //Skill Masteries
                 SkillMasterySpell.OnWeaponRemoved(m, this);
 
 				#region Mondain's Legacy Sets
@@ -1281,6 +1289,11 @@ namespace Server.Items
                 if (HasSocket<Caddellite>())
                 {
                     Caddellite.UpdateBuff(m);
+                }
+
+                if (SearingWeapon)
+                {
+                    Server.Items.SearingWeapon.OnWeaponRemoved(this);
                 }
 
                 if (ExtendedWeaponAttributes.Focus > 0)
@@ -1883,7 +1896,7 @@ namespace Server.Items
 					// Successful block removes the Honorable Execution penalty.
 					HonorableExecution.RemovePenalty(defender);
 
-					if (CounterAttack.IsCountering(defender))
+					if (CounterAttack.IsCountering(defender) && defender.InRange(attacker.Location, 1))
 					{
 						if (weapon != null)
 						{
@@ -2611,7 +2624,7 @@ namespace Server.Items
 			#endregion
 
             #region SA
-            if (defender != null && m_SearingWeapon && attacker.Mana > 0)
+            if (defender != null && Server.Items.SearingWeapon.CanSear(this) && attacker.Mana > 0)
             {
                 int d = SearingWeaponContext.Damage;
 
@@ -4118,8 +4131,9 @@ namespace Server.Items
 		{
 			base.Serialize(writer);
 
-			writer.Write(18); // version
+			writer.Write(19); // version
 
+            // Version 19 - Removes m_SearingWeapon as its handled as a socket now
             // Version 18 - removed VvV Item (handled in VvV System) and BlockRepair (Handled as negative attribute)
 
             writer.Write(m_UsesRemaining);
@@ -4142,15 +4156,10 @@ namespace Server.Items
             writer.Write((int)m_ItemPower);
             #endregion
 
-            #region Stygian Abyss
             writer.Write(m_DImodded);
-            writer.Write(m_SearingWeapon);
 
 			// Version 11
 			writer.Write(m_TimesImbued);
-
-            #endregion
-
             // Version 10
 			writer.Write(m_BlessedBy); // Bless Deed
 
@@ -4521,6 +4530,7 @@ namespace Server.Items
 
 			switch (version)
 			{
+                case 19: // Removed SearingWeapon
                 case 18:
                 case 17:
                     {
@@ -4562,7 +4572,17 @@ namespace Server.Items
 
                         #region Stygian Abyss
                         m_DImodded = reader.ReadBool();
-                        m_SearingWeapon = reader.ReadBool();
+
+                        if (version == 18)
+                        {
+                            if (reader.ReadBool())
+                            {
+                                Timer.DelayCall(TimeSpan.FromSeconds(1), () =>
+                                {
+                                    AttachSocket(new SearingWeapon(this));
+                                });
+                            }
+                        }
                         goto case 11;
                     }
 				case 11:
@@ -5426,7 +5446,7 @@ namespace Server.Items
 				list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
             }
             #region High Seas
-            else if (m_SearingWeapon)
+            else if (SearingWeapon)
             {
                 list.Add(1151318, String.Format("#{0}", LabelNumber));
             }
@@ -5704,7 +5724,7 @@ namespace Server.Items
 
             if ((prop = m_AosWeaponAttributes.DurabilityBonus) != 0)
             {
-                list.Add(1060410, prop.ToString()); // durability ~1_val~%
+                list.Add(1151780, prop.ToString()); // durability +~1_VAL~%
             }
 
             if (Core.TOL)
@@ -5781,7 +5801,7 @@ namespace Server.Items
                 list.Add(1158922, ((int)fprop).ToString()); // hit explosion ~1_val~%
             }
 
-            if (m_SearingWeapon)
+            if (SearingWeapon)
             {
                 list.Add(1151183); // Searing Weapon
             }
