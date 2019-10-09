@@ -606,37 +606,42 @@ namespace Server.Mobiles
 					{
 						ResExp = 5;
 					}
+				//	else if (Res.ItemType == typeof(Log)) //Add mana? 
+			//		{
+			//			ResExp = 5;
+			//		}
+					
 					else if (Res.ItemType == typeof(Garlic))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(BlackPearl))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(Bloodmoss))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(Ginseng))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(MandrakeRoot))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(Nightshade))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(SulfurousAsh))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(SpidersSilk))
 					{
-						ResExp = 4;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(Bottle))
 					{
@@ -782,27 +787,27 @@ namespace Server.Mobiles
 					}
 					else if (Res.ItemType == typeof(BatWing))
 					{
-						ResExp = 3;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(GraveDust))
 					{
-						ResExp = 3;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(DaemonBlood))
 					{
-						ResExp = 3;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(NoxCrystal))
 					{
-						ResExp = 3;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(PigIron))
 					{
-						ResExp = 3;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(BlankScroll))
 					{
-						ResExp = 5;
+						ResExp = 7;
 					}
 					else if (Res.ItemType == typeof(Cloth))
 					{
@@ -876,11 +881,11 @@ namespace Server.Mobiles
 					}
 					else if (Res.ItemType == typeof(DaemonBone))
 					{
-						ResExp = 5;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(DaemonBlood))
 					{
-						ResExp = 3;
+						ResExp = 11;
 					}
 					else if (Res.ItemType == typeof(Cotton))
 					{

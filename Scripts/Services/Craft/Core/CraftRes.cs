@@ -5,6 +5,9 @@ namespace Server.Engines.Craft
     public class CraftRes
     {
         private readonly Type m_Type;
+		/*	private readonly String m_TypeM;
+		private readonly int m_TypeC;
+		*/
         private readonly int m_Amount;
         private readonly string m_MessageString;
         private readonly int m_MessageNumber;
@@ -15,6 +18,13 @@ namespace Server.Engines.Craft
             this.m_Type = type;
             this.m_Amount = amount;
         }
+		 
+		/*public CraftRes(string typem, int typec, int amount)
+        {
+            this.m_TypeM = "Mana";
+			this.m_TypeC = typec;
+            this.m_Amount = amount;
+        }*/
 
         public CraftRes(Type type, TextDefinition name, int amount, TextDefinition message)
             : this(type, amount)

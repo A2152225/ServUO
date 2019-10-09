@@ -5320,9 +5320,102 @@ namespace Server.Items
                 list.Add(1152207); // Assassin's Edge
                 return;
             }
+			 int oreType = 0;
+string rname = "0";
+string aname = this.GetNameString();
+            switch ( m_Resource )
+            {
+                case CraftResource.DullCopper: oreType = 1053108; break; // dull copper
+                case CraftResource.ShadowIron: oreType = 1053107; break; // shadow iron
+                case CraftResource.Copper: oreType = 1053106; break; // copper
+                case CraftResource.Bronze: oreType = 1053105; break; // bronze
+                case CraftResource.Gold: oreType = 1053104; break; // golden
+                case CraftResource.Agapite: oreType = 1053103; break; // agapite
+                case CraftResource.Verite: oreType = 1053102; break; // verite
+                case CraftResource.Valorite: oreType = 1053101; break; // valorite
+                case CraftResource.SpinedLeather: oreType = 1061118; break; // spined
+                case CraftResource.HornedLeather: oreType = 1061117; break; // horned
+                case CraftResource.BarbedLeather: oreType = 1061116; break; // barbed
+                case CraftResource.RedScales: oreType = 1060814; break; // red
+                case CraftResource.YellowScales: oreType = 1060818; break; // yellow
+                case CraftResource.BlackScales: oreType = 1060820; break; // black
+                case CraftResource.GreenScales: oreType = 1060819; break; // green
+                case CraftResource.WhiteScales: oreType = 1060821; break; // white
+                case CraftResource.BlueScales: oreType = 1060815; break; // blue
+                case CraftResource.OakWood: oreType = 1072533;  break; // oak
+                case CraftResource.AshWood: oreType = 1072534; break; // ash
+                case CraftResource.YewWood: oreType = 1072535; break; // yew
+                case CraftResource.Heartwood: oreType = 1072536; break; // heartwood
+                case CraftResource.Bloodwood: oreType = 1072538; break; // bloodwood
+                case CraftResource.Frostwood: oreType = 1072539; break; // frostwood
+				case CraftResource.Blaze: rname = "Blaze"; break;
+				case CraftResource.Ice:	rname = "Ice"; break;
+				case CraftResource.Toxic: rname = "Toxic"; break;
+				case CraftResource.Electrum: rname = "Electrum"; break;
+				case CraftResource.Platinum: rname = "Platinum"; break;
+				case CraftResource.Royalite: rname = "Royalite"; break;
+				case CraftResource.Danite: rname = "Danite"; break;
+				case CraftResource.PolarLeather: rname = "Polar"; break;
+				case CraftResource.SyntheticLeather: rname = "Synthetic"; break;
+				case CraftResource.BlazeLeather: rname = "BlazeL"; break;
+				case CraftResource.DaemonicLeather: rname = "Daemonic"; break;
+				case CraftResource.ShadowLeather: rname = "Shadow"; break;
+				case CraftResource.FrostLeather: rname = "Frost"; break;
+				case CraftResource.EtherealLeather: rname = "Ethereal"; break;
+				case CraftResource.Ebony: rname = "Ebony"; break;
+				case CraftResource.Bamboo: rname = "Bamboo"; break;
+				case CraftResource.PurpleHeart: rname = "PurpleHeart"; break;
+				case CraftResource.Redwood: rname = "Redwood"; break;
+				case CraftResource.Petrified: rname = "Petrified"; break;
+                default: oreType = 0; break;
+            }
+			
+            if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
+            {
+                if (m_ReforgedPrefix != ReforgedPrefix.None)
+                {
+                    int prefix = RunicReforging.GetPrefixName(m_ReforgedPrefix);
+
+                    if (m_ReforgedSuffix == ReforgedSuffix.None)
+                        list.Add(1151757, String.Format("#{0}\t{1}", prefix, GetNameString())); // ~1_PREFIX~ ~2_ITEM~
+                    else
+                        list.Add(1151756, String.Format("#{0}\t{1}\t#{2}", prefix, GetNameString(), RunicReforging.GetSuffixName(m_ReforgedSuffix))); // ~1_PREFIX~ ~2_ITEM~ of ~3_SUFFIX~
+                }
+                else if (m_ReforgedSuffix != ReforgedSuffix.None)
+                {
+                    RunicReforging.AddSuffixName(list, m_ReforgedSuffix, GetNameString());
+                }
+            }
+            else
+            {
+                if (oreType != 0)
+                    list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
+                else if (rname != "0") 
+			        list.Add(1053099, "{0}\t{1}", rname, GetNameString()); // ~1_oretype~ ~2_armortype~  1053099,
+				else if (Name == null)
+                    list.Add(LabelNumber);
+                else
+                    list.Add(Name);
+            }
 		//daat99 OWLTR start - add custom resources to name
-			string oreType = CraftResources.GetName(m_Resource);
+	/*		string oreType = CraftResources.GetName(m_Resource);
 			int level = CraftResources.GetIndex(m_Resource)+1;
+			  if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
+            {
+                if (m_ReforgedPrefix != ReforgedPrefix.None)
+                {
+                    int prefix = RunicReforging.GetPrefixName(m_ReforgedPrefix);
+
+                    if (m_ReforgedSuffix == ReforgedSuffix.None)
+                        list.Add(1151757, String.Format("#{0}\t{1}", prefix, GetNameString())); // ~1_PREFIX~ ~2_ITEM~
+                    else
+                        list.Add(1151756, String.Format("#{0}\t{1}\t#{2}", prefix, GetNameString(), RunicReforging.GetSuffixName(m_ReforgedSuffix))); // ~1_PREFIX~ ~2_ITEM~ of ~3_SUFFIX~
+                }
+                else if (m_ReforgedSuffix != ReforgedSuffix.None)
+                {
+                    RunicReforging.AddSuffixName(list, m_ReforgedSuffix, GetNameString());
+                }
+            }
 			
 			if ( m_Quality == ItemQuality.Exceptional )
 			{
@@ -5341,7 +5434,7 @@ namespace Server.Items
 			}
 			//daat99 OWLTR end - add custom resources to name
 			
-			
+			*/
 			/*
 			int oreType;
 

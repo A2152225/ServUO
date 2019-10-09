@@ -2751,8 +2751,9 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            int oreType;
-
+            int oreType = 0;
+string rname = "0";
+string aname = this.GetNameString();
             switch ( m_Resource )
             {
                 case CraftResource.DullCopper: oreType = 1053108; break; // dull copper
@@ -2778,9 +2779,28 @@ namespace Server.Items
                 case CraftResource.Heartwood: oreType = 1072536; break; // heartwood
                 case CraftResource.Bloodwood: oreType = 1072538; break; // bloodwood
                 case CraftResource.Frostwood: oreType = 1072539; break; // frostwood
+				case CraftResource.Blaze: rname = "Blaze"; break;
+				case CraftResource.Ice:	rname = "Ice"; break;
+				case CraftResource.Toxic: rname = "Toxic"; break;
+				case CraftResource.Electrum: rname = "Electrum"; break;
+				case CraftResource.Platinum: rname = "Platinum"; break;
+				case CraftResource.Royalite: rname = "Royalite"; break;
+				case CraftResource.Danite: rname = "Danite"; break;
+				case CraftResource.PolarLeather: rname = "Polar"; break;
+				case CraftResource.SyntheticLeather: rname = "Synthetic"; break;
+				case CraftResource.BlazeLeather: rname = "BlazeL"; break;
+				case CraftResource.DaemonicLeather: rname = "Daemonic"; break;
+				case CraftResource.ShadowLeather: rname = "Shadow"; break;
+				case CraftResource.FrostLeather: rname = "Frost"; break;
+				case CraftResource.EtherealLeather: rname = "Ethereal"; break;
+				case CraftResource.Ebony: rname = "Ebony"; break;
+				case CraftResource.Bamboo: rname = "Bamboo"; break;
+				case CraftResource.PurpleHeart: rname = "PurpleHeart"; break;
+				case CraftResource.Redwood: rname = "Redwood"; break;
+				case CraftResource.Petrified: rname = "Petrified"; break;
                 default: oreType = 0; break;
             }
-
+			
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -2801,7 +2821,9 @@ namespace Server.Items
             {
                 if (oreType != 0)
                     list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
-                else if (Name == null)
+                else if (rname != "0") 
+			        list.Add(1053099, "{0}\t{1}", rname, GetNameString()); // ~1_oretype~ ~2_armortype~  1053099,
+				else if (Name == null)
                     list.Add(LabelNumber);
                 else
                     list.Add(Name);
