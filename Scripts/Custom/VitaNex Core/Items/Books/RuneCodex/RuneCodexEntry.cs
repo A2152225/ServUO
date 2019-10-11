@@ -116,7 +116,7 @@ namespace VitaNex.Items
 				var spell = new RecallSpell(
 					m,
 					null,
-					new RunebookEntry(_Location.Location, _Location.Map, _Description, null),
+					new RunebookEntry(_Location.Location, _Location.Map, _Description, null,RecallRuneType.Normal ),
 					null);
 
 				if (!spell.Cast())
@@ -157,7 +157,7 @@ namespace VitaNex.Items
 					return false;
 				}
 
-				var spell = new GateTravelSpell(m, null, new RunebookEntry(_Location.Location, _Location.Map, _Description, null));
+				var spell = new GateTravelSpell(m, null, new RunebookEntry(_Location.Location, _Location.Map, _Description, null, RecallRuneType.Normal));
 
 				if (!spell.Cast())
 				{

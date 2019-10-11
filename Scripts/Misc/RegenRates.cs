@@ -152,7 +152,9 @@ namespace Server.Misc
                     intensityBonus = 5.5;
 
                 double itemBonus = ((itemBase * intensityBonus) - (itemBase - 1)) / 10;
-
+			if (from is PlayerMobile)
+				itemBonus+=((PlayerMobile)from).Paragon_1ManaRegen;	
+			
                 rate = 1.0 / (0.2 + focusBonus + medBonus + itemBonus);
             }
             else if (Core.AOS)
@@ -208,7 +210,8 @@ namespace Server.Misc
             {
                 return Mobile.DefaultManaRate;
             }
-
+			
+			
             return TimeSpan.FromSeconds(rate);
         }
 
@@ -242,6 +245,9 @@ namespace Server.Misc
                 foreach (RegenBonusHandler handler in HitsBonusHandlers)
                     points += handler(from);
 
+				if (from is PlayerMobile)
+				points+=((PlayerMobile)from).Paragon_1HealthRegen;	
+
 				if (points < 0)
 					points = 1; 
             return points;
@@ -268,13 +274,16 @@ namespace Server.Misc
 
             if (points < -1)
                 points = -1;
+	
 
             if (Core.AOS)
                 foreach (RegenBonusHandler handler in StamBonusHandlers)
                     points += handler(from);
-
+			
 				   if (points < 0)
 					points = 1; 
+						if (from is PlayerMobile)
+				points+=((PlayerMobile)from).Paragon_1StaminaRegen;
             return points;
         }
 

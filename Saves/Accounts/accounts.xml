@@ -26190,8 +26190,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2019-10-08T04:18:15.4162439Z</lastLogin>
-		<totalGameTime>P994DT8H47M17.3364526S</totalGameTime>
+		<lastLogin>2019-10-11T05:07:15.3917398Z</lastLogin>
+		<totalGameTime>P994DT21H34M44.8647704S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -27873,8 +27873,8 @@
 		<accessLevel>Seer</accessLevel>
 		<flags>2</flags>
 		<created>2012-10-05T22:57:24.1384917Z</created>
-		<lastLogin>2019-10-08T18:30:44.4579016Z</lastLogin>
-		<totalGameTime>P568DT6H11M18.6248045S</totalGameTime>
+		<lastLogin>2019-10-10T07:13:49.6829453Z</lastLogin>
+		<totalGameTime>P569DT7H23M53.2168494S</totalGameTime>
 		<chars>
 			<char index="0">43</char>
 		</chars>
@@ -27933,8 +27933,8 @@
 		<newCryptPassword>BB-9D-4C-19-5A-1A-13-B8-57-B3-EB-86-CE-03-72-D8-C4-D3-2E-AD</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2019-10-08T03:51:43.9908828Z</lastLogin>
-		<totalGameTime>P269DT1H49M35.9186322S</totalGameTime>
+		<lastLogin>2019-10-10T07:12:53.788426Z</lastLogin>
+		<totalGameTime>P270DT3H12M59.3540021S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 		</chars>
@@ -27952,7 +27952,7 @@
 			<ip>172.220.34.26</ip>
 			<ip>47.34.9.231</ip>
 		</addressList>
-		<totalCurrency>0.0015444539999998569</totalCurrency>
+		<totalCurrency>0.0015457249999998542</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -40673,8 +40673,8 @@
 		<newCryptPassword>A0-35-C8-63-85-94-5E-78-7C-B7-1B-5F-A7-5F-41-2E-2E-E0-F0-A0</newCryptPassword>
 		<flags>2</flags>
 		<created>2014-04-29T16:43:02.4978822Z</created>
-		<lastLogin>2019-10-08T03:58:15.7718259Z</lastLogin>
-		<totalGameTime>P21DT17H56M3.8394921S</totalGameTime>
+		<lastLogin>2019-10-10T01:54:18.6081869Z</lastLogin>
+		<totalGameTime>P22DT2H21M15.1728761S</totalGameTime>
 		<chars>
 			<char index="0">75116</char>
 			<char index="1">75587</char>

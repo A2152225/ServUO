@@ -1860,15 +1860,77 @@ namespace Server.Mobiles
                 return false;
             }
         }
+		public  int ParagonDamageBuff(int damage)
+		{	
+		 int PMx = 0;
+			if (this.ControlMaster != null)
+			{
+				Mobile CM = this.ControlMaster;
+				if (CM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)CM);
+					PMx=(pm.Paragon_1PetMinMaxDamage); 
+				}
+			} 
+		return (damage + PMx); 
+		}  
+		
+		public  int ParagonStatBuff(int damage)
+		{	
+		 int PMx = 0;
+			if (this.ControlMaster != null)
+			{
+				Mobile CM = this.ControlMaster;
+				if (CM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)CM);
+					PMx=(pm.Paragon_PetStats); 
+				}
+			} 
+		return (damage + PMx); 
+		}  
+		
+			public  int ParagonDamageRBuff(int damage)
+		{	
+		 int PMx = 0;
+			if (this.ControlMaster != null)
+			{
+				Mobile CM = this.ControlMaster;
+				if (CM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)CM);
+					PMx=(pm.Paragon_PetStats); 
+				}
+				damage -= PMx*2;
+				if (damage < 1)
+					damage = 1;
+			} 
+		return (damage); 
+		}  
+		
+		public  int ParagonHitsStamManaBuff(int damage)
+		{	
+		 int PMx = 0;
+			if (this.ControlMaster != null)
+			{
+				Mobile CM = this.ControlMaster;
+				if (CM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)CM);
+					PMx=(pm.Paragon_PetStats*10); 
+				}
+			} 
+		return (damage + PMx); 
+		}  
 
         public virtual bool HoldSmartSpawning { get { return IsParagon; } }
         public virtual bool UseSmartAI { get { return false; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual int DamageMin { get { return m_DamageMin; } set { m_DamageMin = value; } }
+        public virtual int DamageMin { get { return ParagonDamageBuff(m_DamageMin); } set { m_DamageMin = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual int DamageMax { get { return m_DamageMax; } set { m_DamageMax = value; } }
+        public virtual int DamageMax { get { return ParagonDamageBuff(m_DamageMax); } set { m_DamageMax = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public override int HitsMax
@@ -1898,12 +1960,12 @@ namespace Server.Mobiles
                     value += InvigorateSpell.GetHPBonus(this);
                 }
 
-                return value;
+                return ParagonHitsStamManaBuff(value);
             }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int HitsMaxSeed { get { return m_HitsMax; } set { m_HitsMax = value; } }
+        public int HitsMaxSeed { get { return (m_HitsMax); } set { m_HitsMax = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public override int StamMax
@@ -1918,20 +1980,21 @@ namespace Server.Mobiles
                     {
                         value = 1;
                     }
+					
                     else if (value > 1000000)
                     {
                                           value = value; ///// 10000000;
                     }
 
-                    return value;
+                    return ParagonHitsStamManaBuff(value);
                 }
 
-                return Dex;
+                return ParagonHitsStamManaBuff(Dex);
             }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int StamMaxSeed { get { return m_StamMax; } set { m_StamMax = value; } }
+        public int StamMaxSeed { get { return ParagonHitsStamManaBuff(m_StamMax); } set { m_StamMax = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public override int ManaMax
@@ -1951,15 +2014,15 @@ namespace Server.Mobiles
                                        value = value; ///// 10000000;
                     }
 
-                    return value;
+                    return ParagonHitsStamManaBuff(value);
                 }
 
-                return Int;
+                return ParagonHitsStamManaBuff(Int);
             }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int ManaMaxSeed { get { return m_ManaMax; } set { m_ManaMax = value; } }
+        public int ManaMaxSeed { get { return ParagonHitsStamManaBuff(m_ManaMax); } set { m_ManaMax = value; } }
 
         public virtual bool CanOpenDoors { get { return !Body.IsAnimal && !Body.IsSea; } }
 
@@ -2077,7 +2140,7 @@ namespace Server.Mobiles
                 Timer.DelayCall(TimeSpan.FromSeconds(10), ((PlayerMobile)@from).RecoverAmmo);
             }
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
         }
 
         public virtual void OnDamagedBySpell(Mobile from)
@@ -2100,6 +2163,7 @@ namespace Server.Mobiles
 
         public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
         {
+			damage=ParagonDamageRBuff(damage);
             if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
                 damage -= damage / m_TempDamageAbsorb;
         }
@@ -2109,6 +2173,7 @@ namespace Server.Mobiles
 
         public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
         {
+			damage=ParagonDamageRBuff(damage);
             #region Mondain's Legacy
             if (from != null && from.Talisman is BaseTalisman)
             {
@@ -5127,11 +5192,12 @@ namespace Server.Mobiles
             m_ManaMax = Utility.RandomMinMax(min, max);
             Mana = ManaMax;
             SetAverage(min, max, m_ManaMax);
+			
         }
 
         public void SetStr(int val)
         {
-            RawStr = val;
+            RawStr = ParagonStatBuff(val);
             Hits = HitsMax;
         }
 
@@ -5140,11 +5206,12 @@ namespace Server.Mobiles
             RawStr = Utility.RandomMinMax(min, max);
             Hits = HitsMax;
             SetAverage(min, max, RawStr);
+			RawStr = ParagonStatBuff(RawStr);
         }
 
         public void SetDex(int val)
         {
-            RawDex = val;
+            RawDex = ParagonStatBuff(val);
             Stam = StamMax;
         }
 
@@ -5153,12 +5220,14 @@ namespace Server.Mobiles
             RawDex = Utility.RandomMinMax(min, max);
             Stam = StamMax;
             SetAverage(min, max, RawDex);
+			RawDex = ParagonStatBuff(RawDex);
         }
 
         public void SetInt(int val)
         {
-            RawInt = val;
+            RawInt = ParagonStatBuff(val);
             Mana = ManaMax;
+
         }
 
         public void SetInt(int min, int max)
@@ -5166,6 +5235,7 @@ namespace Server.Mobiles
             RawInt = Utility.RandomMinMax(min, max);
             Mana = ManaMax;
             SetAverage(min, max, RawInt);
+			RawInt = ParagonStatBuff(RawInt);
         }
 
         public void SetDamageType(ResistanceType type, int min, int max)

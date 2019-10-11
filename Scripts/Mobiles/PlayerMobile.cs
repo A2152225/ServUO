@@ -131,7 +131,11 @@ namespace Server.Mobiles
 		Torment9,
 		Torment10,
 		Torment11,
-		Torment12
+		Torment12,
+		Torment13,
+		Torment14,
+		Torment15,
+		Torment16
 	}
 	
 	
@@ -445,8 +449,21 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		private int m_ParagonPoints14 =0;
 		private int m_ParagonPoints15 =0;
 		private int m_ParagonPoints16 =0;
+		private int m_ParagonPoints17 =0;
+		private int m_ParagonPoints18 =0;
+		private int m_ParagonPoints19 =0;
+		private int m_ParagonPoints20 =0;
+		private int m_ParagonPoints21 =0;
+		private int m_ParagonPoints22 =0;
+		private int m_ParagonPoints23 =0;
+		private int m_ParagonPoints24 =0;
+		private int m_ParagonPoints25 =0;
+		private int m_ParagonPoints26 =0;		
+		private int m_ParagonPoints27 =0;
+		private int m_ParagonPoints28 =0;
+		private int m_ParagonPoints29 =0;
+		private int m_ParagonPoints30 =0;
 		
-			
 		/////Level/////
 		[CommandProperty(AccessLevel.Administrator)]
         public double XPIncrease
@@ -471,14 +488,14 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         }
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints0
+        public int Paragon_10Health
         {
             get { return m_ParagonPoints0; }
             set { m_ParagonPoints0 = value; }
         }
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints1
+        public int Paragon_10Stamina
         {
             get { return m_ParagonPoints1; }
             set { m_ParagonPoints1 = value; }
@@ -486,7 +503,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints2
+        public int Paragon_10Mana
         {
             get { return m_ParagonPoints2; }
             set { m_ParagonPoints2 = value; }
@@ -494,7 +511,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints3
+        public int Paragon_1HealthRegen
         {
             get { return m_ParagonPoints3; }
             set { m_ParagonPoints3 = value; }
@@ -502,7 +519,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints4
+        public int Paragon_1StaminaRegen
         {
             get { return m_ParagonPoints4; }
             set { m_ParagonPoints4 = value; }
@@ -510,7 +527,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints5
+        public int Paragon_1ManaRegen
         {
             get { return m_ParagonPoints5; }
             set { m_ParagonPoints5 = value; }
@@ -518,7 +535,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints6
+        public int Paragon_5HealingInc
         {
             get { return m_ParagonPoints6; }
             set { m_ParagonPoints6 = value; }
@@ -526,7 +543,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints7
+        public int Paragon_3MaxCarryCapacity
         {
             get { return m_ParagonPoints7; }
             set { m_ParagonPoints7 = value; }
@@ -534,7 +551,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints8
+        public int Paragon_2ResistPhysical
         {
             get { return m_ParagonPoints8; }
             set { m_ParagonPoints8 = value; }
@@ -542,7 +559,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints9
+        public int Paragon_2ResistFire
         {
             get { return m_ParagonPoints9; }
             set { m_ParagonPoints9 = value; }
@@ -550,7 +567,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints10
+        public int Paragon_2ResistCold
         {
             get { return m_ParagonPoints10; }
             set { m_ParagonPoints10 = value; }
@@ -558,7 +575,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints11
+        public int Paragon_2ResistPoison
         {
             get { return m_ParagonPoints11; }
             set { m_ParagonPoints11 = value; }
@@ -566,7 +583,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints12
+        public int Paragon_2ResistEnergy
         {
             get { return m_ParagonPoints12; }
             set { m_ParagonPoints12 = value; }
@@ -574,7 +591,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints13
+        public int Paragon_1SDI
         {
             get { return m_ParagonPoints13; }
             set { m_ParagonPoints13 = value; }
@@ -582,7 +599,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints14
+        public int Paragon_1WDI
         {
             get { return m_ParagonPoints14; }
             set { m_ParagonPoints14 = value; }
@@ -590,7 +607,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints15
+        public int Paragon_1SSI
         {
             get { return m_ParagonPoints15; }
             set { m_ParagonPoints15 = value; }
@@ -598,14 +615,121 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		
 		
 		[CommandProperty(AccessLevel.Administrator)]
-        public int ParagonPoints16
+        public int Paragon_1FC
         {
             get { return m_ParagonPoints16; }
             set { m_ParagonPoints16 = value; }
         }
+	//new Paragon counters added 
+	
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1FCR
+        {
+            get { return m_ParagonPoints17; }
+            set { m_ParagonPoints17 = value; }
+        }
 		
 		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1ControlSlot
+        {
+            get { return m_ParagonPoints18; }
+            set { m_ParagonPoints18 = value; }
+        }
 		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_PetStats
+        {
+            get { return m_ParagonPoints19; }
+            set { m_ParagonPoints19 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_2PetDamageReduction
+        {
+            get { return m_ParagonPoints20; }
+            set { m_ParagonPoints20 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1PetMinMaxDamage
+        {
+            get { return m_ParagonPoints21; }
+            set { m_ParagonPoints21 = value; }
+        }	
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1Str
+        {
+            get { return m_ParagonPoints22; }
+            set { m_ParagonPoints22 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1Dex
+        {
+            get { return m_ParagonPoints23; }
+            set { m_ParagonPoints23 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1Int
+        {
+            get { return m_ParagonPoints24; }
+            set { m_ParagonPoints24 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int Paragon_1SkillsCap
+        {
+            get { return m_ParagonPoints25; }
+            set { m_ParagonPoints25 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints26
+        {
+            get { return m_ParagonPoints26; }
+            set { m_ParagonPoints26 = value; }
+        }	
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints27
+        {
+            get { return m_ParagonPoints27; }
+            set { m_ParagonPoints12 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints28
+        {
+            get { return m_ParagonPoints28; }
+            set { m_ParagonPoints28 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints29
+        {
+            get { return m_ParagonPoints29; }
+            set { m_ParagonPoints29 = value; }
+        }
+		
+		
+		[CommandProperty(AccessLevel.Administrator)]
+        public int ParagonPoints30
+        {
+            get { return m_ParagonPoints30; }
+            set { m_ParagonPoints30 = value; }
+        }	
+		
+		//end paragon point counters
 		
 		
 		[CommandProperty(AccessLevel.Seer)]
@@ -1570,13 +1694,20 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             {
                 Resistances[i] = 0;
             }
+						//Paragon Resist Add
+			Resistances[0] += this.Paragon_2ResistPhysical*2;
+            Resistances[1] += this.Paragon_2ResistFire*2;
+            Resistances[2] += this.Paragon_2ResistCold*2;
+            Resistances[3] += this.Paragon_2ResistPoison*2;
+		    Resistances[4] += this.Paragon_2ResistEnergy*2;
+			//End Paragon Resist Additions
 
             Resistances[0] += BasePhysicalResistance;
             Resistances[1] += BaseFireResistance;
             Resistances[2] += BaseColdResistance;
             Resistances[3] += BasePoisonResistance;
             Resistances[4] += BaseEnergyResistance;
-
+			
             for (int i = 0; ResistanceMods != null && i < ResistanceMods.Count; ++i)
             {
                 ResistanceMod mod = ResistanceMods[i];
@@ -1624,6 +1755,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 {
                     Resistances[i] = min;
                 }
+				
+				
+
             }
         }
 
@@ -2563,12 +2697,12 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 					strBase = RawStr;
 				}
 
-				return (strBase / 2) + 50 + strOffs;
+				return (strBase / 2) + 50 + strOffs +(Paragon_10Health*10);
 			}
 		}
 
 		[CommandProperty(AccessLevel.GameMaster)]
-		public override int StamMax { get { return base.StamMax + AosAttributes.GetValue(this, AosAttribute.BonusStam); } }
+		public override int StamMax { get { return base.StamMax + AosAttributes.GetValue(this, AosAttribute.BonusStam)+(Paragon_10Stamina*10); } }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public override int ManaMax { get
@@ -2576,7 +2710,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			return base.ManaMax + AosAttributes.GetValue(this, AosAttribute.BonusMana) +
 				   ((Core.ML && Race == Race.Elf) ? 20 : 0) +
                    MasteryInfo.IntuitionBonus(this) +
-                   UraliTranceTonic.GetManaBuff(this);
+                   UraliTranceTonic.GetManaBuff(this)+(Paragon_10Mana*10);
 		} }
 		#endregion
 
@@ -5229,8 +5363,21 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		m_ParagonPoints13 = reader.ReadInt();
 		m_ParagonPoints14 = reader.ReadInt();
 		m_ParagonPoints15 = reader.ReadInt();
-		m_ParagonPoints16 = reader.ReadInt();
-			
+		m_ParagonPoints16 = reader.ReadInt(); 
+	m_ParagonPoints17 = reader.ReadInt();
+		m_ParagonPoints18 = reader.ReadInt();
+		m_ParagonPoints19 = reader.ReadInt();
+		m_ParagonPoints20 = reader.ReadInt();
+		m_ParagonPoints21 = reader.ReadInt();
+		m_ParagonPoints22 = reader.ReadInt();
+		m_ParagonPoints23 = reader.ReadInt();
+		m_ParagonPoints24 = reader.ReadInt();
+		m_ParagonPoints25 = reader.ReadInt();
+		m_ParagonPoints26 = reader.ReadInt();			
+		m_ParagonPoints27 = reader.ReadInt();
+		m_ParagonPoints28 = reader.ReadInt();
+		m_ParagonPoints29 = reader.ReadInt();
+		m_ParagonPoints30 = reader.ReadInt();
 				
 			m_YoungSaves = reader.ReadInt();
 				
@@ -5803,7 +5950,21 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		writer.Write((int)m_ParagonPoints14);
 		writer.Write((int)m_ParagonPoints15);
 		writer.Write((int)m_ParagonPoints16);
-			
+		writer.Write((int)m_ParagonPoints17);
+		writer.Write((int)m_ParagonPoints18);
+		writer.Write((int)m_ParagonPoints19);
+		writer.Write((int)m_ParagonPoints20);
+		writer.Write((int)m_ParagonPoints21);
+		writer.Write((int)m_ParagonPoints22);
+		writer.Write((int)m_ParagonPoints23);
+		writer.Write((int)m_ParagonPoints24);
+		writer.Write((int)m_ParagonPoints25);
+		writer.Write((int)m_ParagonPoints26);
+		writer.Write((int)m_ParagonPoints27);
+		writer.Write((int)m_ParagonPoints28);
+		writer.Write((int)m_ParagonPoints29);
+		writer.Write((int)m_ParagonPoints30);		
+		
 			
 			
 			

@@ -502,8 +502,8 @@ namespace Server.Mobiles
 				for ( int i = 0; i < item.Resources.Count; ++i )
 				{
 					Res = item.Resources.GetAt(i);
-					Console.WriteLine(item.Resources.GetAt(i));
-					Console.WriteLine(item.HoldResource);
+					Console.WriteLine($"Which resource are we at? {item.Resources.GetAt(i)}");
+				Console.WriteLine($"Holding this resource: {item.HoldResource}");
 			
 				//	Console.WriteLine(item.typeRes);
 			/*		Type resourceType = typeRes;
