@@ -76,13 +76,14 @@ namespace Server.Gumps
 
 			int Level = pm.LvL;
 			long LastLevel = pm.LastLevelExp;
-			long ExpRequired =   ((long)(LastLevel*1.2)) ; //(long)(((Math.Pow((Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+LastLevel;
+		/*	long ExpRequired =   ((long)(LastLevel*1.2)) ; //(long)(((Math.Pow((Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+LastLevel;
 			if (ExpRequired == 0)
-				ExpRequired = 100;
+				ExpRequired = 200;
 			if (LastLevel == 0)
-				ExpRequired = 100;
+				ExpRequired = 200;
 			if (pm.LvL == 1 || pm.PrestigeLvl == 1)
-						ExpRequired = 220;
+						ExpRequired = 220;*/
+					long ExpRequired = Experience.GetNextLevelXP(pm);
 					
 			if ( pm.LvL < pm.MaxLvl ) // Changed from 200 to 500 March 20th 2006 -{Rahvin the Evil}  //Changed from 500 to 2000 7-12-07 {RE}
 			{

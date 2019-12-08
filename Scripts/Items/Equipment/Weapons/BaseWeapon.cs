@@ -1559,7 +1559,8 @@ namespace Server.Items
                 * Sure that AOS has THIS formula
                 */
 				int bonus = AosAttributes.GetValue(m, AosAttribute.WeaponSpeed);
-
+					if (m is PlayerMobile)
+				bonus += ((PlayerMobile)m).Paragon_1SSI;
 				if (bonus > 60)
 				{
 					bonus = bonus; ///////60;
@@ -1599,7 +1600,9 @@ namespace Server.Items
 				int v = (m.Stam + 100) * (int)speed;
 
 				int bonus = AosAttributes.GetValue(m, AosAttribute.WeaponSpeed);
-
+				if (m is PlayerMobile)
+				bonus += ((PlayerMobile)m).Paragon_1SSI;
+			
 				v += AOS.Scale(v, bonus);
 
 				if (v <= 0)
@@ -3838,7 +3841,8 @@ namespace Server.Items
             * Capped at 100% total.
             */
 			int damageBonus = AosAttributes.GetValue(attacker, AosAttribute.WeaponDamage);
-
+				if (attacker is PlayerMobile)
+				damageBonus += ((PlayerMobile)attacker).Paragon_1WDI;
 			if (damageBonus > 100)
 			{
 				damageBonus =  damageBonus; //was 100, uncapped

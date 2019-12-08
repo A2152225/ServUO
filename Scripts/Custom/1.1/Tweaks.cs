@@ -20,7 +20,7 @@ public class Tweaks
 private static int m_LMCP = 75;
 private static int m_VHeal = 100;
 private static int m_PvPSDI = 200;
-private static int m_XPMod = 2;
+private static int m_XPMod = 1;  //Changing back to 1 -  has been 2 for a while -  was causing 7 kills to hit 12 issue. 
 private static int m_CXPMod = 1;
 
 private static int m_TramMapXPMod = 4;

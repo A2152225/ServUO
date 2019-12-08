@@ -195,7 +195,15 @@ namespace Server.Items
         public int HealedPoisonOrBleed { get { return m_HealedPoisonOrBleed; } set { m_HealedPoisonOrBleed = value; } }
 		public Timer Timer { get { return m_Timer; } }
         public int HealingBonus { get { return m_HealingBonus; } }
-
+		
+		public int ParaHeal(int bonus)
+		{
+		if (m_Healer is PlayerMobile)
+			bonus+=((PlayerMobile)m_Healer).Paragon_5HealingInc*5;
+			return bonus;
+		}
+		
+		
 		public void Slip()
 		{
 			m_Healer.SendLocalizedMessage(500961); // Your fingers slip!
@@ -488,7 +496,7 @@ namespace Server.Items
                 double anatomy = m_Healer.Skills[secondarySkill].Value;
 
                 FirstAidBelt belt = m_Healer.FindItemOnLayer(Layer.Waist) as FirstAidBelt;
-
+					
                 if (belt != null)
                     m_HealingBonus += belt.HealingBonus;
 
@@ -560,8 +568,8 @@ namespace Server.Items
                     {
                         SpiritualityVirtue.OnHeal(m_Healer, Math.Min((int)toHeal, m_Patient.HitsMax - m_Patient.Hits));
                     }
-
-                    m_Patient.Heal((int)toHeal, m_Healer, false);
+					
+                    m_Patient.Heal((int)ParaHeal((int)toHeal), m_Healer, false);
                 }
                 else
                 {

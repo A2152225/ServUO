@@ -24,11 +24,11 @@ namespace Server.Gumps
 		//	this.AddAlphaRegion(1, 0, 1040, 517);
 			this.AddLabel(507, 6,500, @PPoints);
 			this.AddLabel(15, 41,500, @"1 Point");
-			this.AddLabel(370, 4,500, @"Paragon Points");
+			this.AddLabel(395, 6,500, @"Paragon Points:");
 			this.AddLabel(235, 222,500, @"3 Points");
 			this.AddLabel(130, 27,500, @"Self");
 			this.AddLabel(235, 347,500, @"4 Points");
-			this.AddLabel(611, 28,500, @"Pets: Applies to all Currently Controlled Pets");
+			this.AddLabel(611, 27,500, @"Pets: Applies to all Controlled Pets");
 			this.AddButton(950, 460, 241, 243, (int)Buttons.Close, GumpButtonType.Reply, 0);
 			this.AddButton(15, 70, 210, 211, (int)Buttons.P1Str, GumpButtonType.Reply, 0);
 			this.AddButton(15, 100, 210, 211, (int)Buttons.P1Dex, GumpButtonType.Reply, 0);
@@ -42,46 +42,46 @@ namespace Server.Gumps
 			this.AddButton(15, 400, 210, 211, (int)Buttons.P1SkillCap, GumpButtonType.Reply, 0);
 			this.AddButton(15, 430, 210, 211, (int)Buttons.P5Healing, GumpButtonType.Reply, 0);
 			this.AddButton(15, 460, 210, 211, (int)Buttons.P3Carry, GumpButtonType.Reply, 0);
-			this.AddLabel(36, 70,500, @"+1 Str");
-			this.AddLabel(36, 130,500, @"+1 Int");
-			this.AddLabel(36, 100,500, @"+1 Dex");
-			this.AddLabel(36, 180,500, @"+10 Health");
-			this.AddLabel(36, 210,500, @"+10 Stamina");
-			this.AddLabel(36, 240,500, @"+10 Mana");
-			this.AddLabel(36, 290,500, @"+1 Health Regen");
-			this.AddLabel(36, 320,500, @"+1 Stamina Regen");
-			this.AddLabel(36, 350,500, @"+1 Mana Regen");
-			this.AddLabel(36, 460,500, @"+3 Max Carry Capacity");
-			this.AddLabel(36, 430,500, @"+5 Increased Healing");
-			this.AddLabel(36, 400,500, @"+1 Total Skill Cap");
-			this.AddLabel(257, 454,500, @"+1 Control/Follower Slot");
+			this.AddLabel(36, 70,500,  "+1 Str ("+Convert.ToString(pm.Paragon_1Str)+")");
+			this.AddLabel(36, 130,500, "+1 Int ("+Convert.ToString(pm.Paragon_1Int)+")");
+			this.AddLabel(36, 100,500, "+1 Dex ("+Convert.ToString(pm.Paragon_1Dex)+")");
+			this.AddLabel(36, 180,500, "+10 Health ("+Convert.ToString(pm.Paragon_10Health)+")");
+			this.AddLabel(36, 210,500, "+10 Stamina ("+Convert.ToString(pm.Paragon_10Stamina)+")");
+			this.AddLabel(36, 240,500, "+10 Mana ("+Convert.ToString(pm.Paragon_10Mana)+")");
+			this.AddLabel(36, 290,500, "+1 Health Regen ("+Convert.ToString(pm.Paragon_1HealthRegen)+")");
+			this.AddLabel(36, 320,500, "+1 Stamina Regen ("+Convert.ToString(pm.Paragon_1StaminaRegen)+")");
+			this.AddLabel(36, 350,500, "+1 Mana Regen ("+Convert.ToString(pm.Paragon_1ManaRegen)+")");
+			this.AddLabel(36, 460,500, "+3 Bag Item Capacity ("+Convert.ToString(pm.Paragon_3MaxCarryCapacity)+")");
+			this.AddLabel(36, 430,500, "+5 Increased Healing ("+Convert.ToString(pm.Paragon_5HealingInc)+")");
+			this.AddLabel(36, 400,500, "+1 Total Skill Cap ("+Convert.ToString(pm.Paragon_1SkillsCap)+")");
+			this.AddLabel(257, 454,500, "+1 Control/Follower Slot ("+Convert.ToString(pm.Paragon_1ControlSlot)+")");
 			this.AddButton(236, 66, 210, 211, (int)Buttons.P2Physical, GumpButtonType.Reply, 0);
 			this.AddButton(236, 96, 210, 211, (int)Buttons.P2Fire, GumpButtonType.Reply, 0);
 			this.AddButton(236, 126, 210, 211, (int)Buttons.P2Cold, GumpButtonType.Reply, 0);
-			this.AddLabel(257, 66,500, @"+2 Resist: Physical");
-			this.AddLabel(258, 96,500, @"+2 Resist: Fire");
-			this.AddLabel(257, 126,500, @"+2 Resist: Cold");
+			this.AddLabel(257, 66,500, @"+2 Resist: Physical ("+Convert.ToString(pm.Paragon_2ResistPhysical)+")");
+			this.AddLabel(258, 96,500, @"+2 Resist: Fire ("+Convert.ToString(pm.Paragon_2ResistFire)+")");
+			this.AddLabel(257, 126,500, @"+2 Resist: Cold ("+Convert.ToString(pm.Paragon_2ResistCold)+")");
 			this.AddButton(236, 156, 210, 211, (int)Buttons.P2Poison, GumpButtonType.Reply, 0);
 			this.AddButton(236, 186, 210, 211, (int)Buttons.P2Energy, GumpButtonType.Reply, 0);
-			this.AddLabel(257, 186,500, @"+2 Resist: Energy");
-			this.AddLabel(257, 156,500, @"+2 Resist: Poison");
+			this.AddLabel(257, 186,500, @"+2 Resist: Energy ("+Convert.ToString(pm.Paragon_2ResistEnergy)+")");
+			this.AddLabel(257, 156,500, @"+2 Resist: Poison ("+Convert.ToString(pm.Paragon_2ResistPoison)+")");
 			this.AddButton(236, 249, 210, 211, (int)Buttons.P1SDI, GumpButtonType.Reply, 0);
 			this.AddButton(236, 279, 210, 211, (int)Buttons.P1WDI, GumpButtonType.Reply, 0);
 			this.AddButton(235, 308, 210, 211, (int)Buttons.P1SSI, GumpButtonType.Reply, 0);
-			this.AddLabel(256, 249,500, @"+1 Spell Damage Increase");
-			this.AddLabel(257, 279,500, @"+1 Weapon Damage Increase");			
-			this.AddLabel(256, 308,500, @"+1 Swing Speed Increase");
+			this.AddLabel(256, 249,500, @"+1 Spell Damage Increase ("+Convert.ToString(pm.Paragon_1SDI)+")");
+			this.AddLabel(257, 279,500, @"+1 Weapon Damage Increase ("+Convert.ToString(pm.Paragon_1WDI)+")");
+			this.AddLabel(256, 308,500, @"+1 Swing Speed Increase ("+Convert.ToString(pm.Paragon_1SSI)+")");
 			this.AddButton(236, 370, 210, 211, (int)Buttons.P1FC, GumpButtonType.Reply, 0);
 			this.AddButton(236, 400, 210, 211, (int)Buttons.P1FCR, GumpButtonType.Reply, 0);
-			this.AddLabel(257, 370,500, @"+1 Faster Casting Speed");
-			this.AddLabel(257, 400,500, @"+1 Faster Casting Recovery");
+			this.AddLabel(257, 370,500, @"+1 Faster Casting Speed ("+Convert.ToString(pm.Paragon_1FC)+")");
+			this.AddLabel(257, 400,500, @"+1 Faster Casting Recovery ("+Convert.ToString(pm.Paragon_1FCR)+")");
 			this.AddButton(237, 455, 210, 211, (int)Buttons.P1Control, GumpButtonType.Reply, 0);
 			this.AddButton(559, 72, 210, 211, (int)Buttons.PetStats, GumpButtonType.Reply, 0);
 			this.AddButton(559, 102, 210, 211, (int)Buttons.Pet2DR, GumpButtonType.Reply, 0);
-			this.AddLabel(579, 72,500, @"+10 Health, +10 Mana, +10 Stam, 1 Str, 1 Dex, 1 Int");
-			this.AddLabel(580, 102,500, @"+2 Damage Reduction: Reduces Dmaage After Resists");
+			this.AddLabel(579, 72,500, @"+10 Health, +10 Mana, +10 Stam ("+Convert.ToString(pm.Paragon_PetStats)+")");
+			this.AddLabel(580, 102,500, @"+2 Damage Reduction: Reduces Dmaage After Resists ("+Convert.ToString(pm.Paragon_2PetDamageReduction)+")");
 			this.AddButton(559, 188, 210, 211, (int)Buttons.Pet1Damage, GumpButtonType.Reply, 0);
-			this.AddLabel(579, 186,500, @"+1 Min & Max Damage");
+			this.AddLabel(579, 186,500, @"+1 Min & Max Damage ("+Convert.ToString(pm.Paragon_1PetMinMaxDamage)+")");
 			this.AddLabel(557, 45,500, @"1 Point");
 			this.AddLabel(235, 430,500, @"10 Points");
 			this.AddLabel(559, 159,500, @"5 Points");
@@ -222,7 +222,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.SkillsCap++; pm.Paragon_1SkillsCap++;}
+				pm.SkillsCap+=10; pm.Paragon_1SkillsCap++;}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;
@@ -249,7 +249,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.Paragon_2ResistPhysical++;}
+				pm.Paragon_2ResistPhysical++;pm.InvalidateProperties();}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;
@@ -258,7 +258,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.Paragon_2ResistFire++;}
+				pm.Paragon_2ResistFire++;pm.InvalidateProperties();}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;
@@ -267,7 +267,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.Paragon_2ResistCold++;}
+				pm.Paragon_2ResistCold++;pm.InvalidateProperties();}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;
@@ -276,7 +276,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.Paragon_2ResistPoison++;}
+				pm.Paragon_2ResistPoison++;pm.InvalidateProperties();}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;
@@ -285,7 +285,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.Paragon_2ResistEnergy++;}
+				pm.Paragon_2ResistEnergy++; pm.InvalidateProperties();}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;

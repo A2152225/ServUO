@@ -343,7 +343,7 @@ namespace Server.Mobiles
         /* Do not serialize this till the code is finalized */
 
         private bool m_SeeksHome;
-
+		
         [CommandProperty(AccessLevel.GameMaster)]
         public bool SeeksHome { get { return m_SeeksHome; } set { m_SeeksHome = value; } }
 
@@ -394,6 +394,7 @@ namespace Server.Mobiles
                 return regen;
             }
         }
+	
 
         public virtual int DefaultStamRegen
         {
@@ -1899,7 +1900,7 @@ namespace Server.Mobiles
 				if (CM is PlayerMobile)
 				{
 					PlayerMobile pm = ((PlayerMobile)CM);
-					PMx=(pm.Paragon_PetStats); 
+					PMx=(pm.Paragon_2PetDamageReduction); 
 				}
 				damage -= PMx*2;
 				if (damage < 1)
@@ -1994,7 +1995,7 @@ namespace Server.Mobiles
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int StamMaxSeed { get { return ParagonHitsStamManaBuff(m_StamMax); } set { m_StamMax = value; } }
+        public int StamMaxSeed { get { return (m_StamMax); } set { m_StamMax = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public override int ManaMax
@@ -2022,7 +2023,17 @@ namespace Server.Mobiles
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int ManaMaxSeed { get { return ParagonHitsStamManaBuff(m_ManaMax); } set { m_ManaMax = value; } }
+        public int ManaMaxSeed { get { return (m_ManaMax); } set { m_ManaMax = value; } }
+		
+		//STart RAW STAT Override 
+		//failed 
+		
+		
+		
+		
+		
+		
+		//END raw stat override 
 
         public virtual bool CanOpenDoors { get { return !Body.IsAnimal && !Body.IsSea; } }
 
@@ -2159,7 +2170,9 @@ namespace Server.Mobiles
         { }
 
         public virtual void AlterDamageScalarTo(Mobile target, ref double scalar)
-        { }
+        { 
+		
+		}
 
         public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
         {
@@ -2169,7 +2182,11 @@ namespace Server.Mobiles
         }
 
         public virtual void AlterSpellDamageTo(Mobile to, ref int damage)
-        { }
+        {
+
+
+
+		}
 
         public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
         {
@@ -2199,6 +2216,8 @@ namespace Server.Mobiles
         {
             if (m_TempDamageBonus > 0 && TastyTreat.UnderInfluence(this))
                 damage += damage / m_TempDamageBonus;
+			
+			
         }
         #endregion
 
@@ -5197,7 +5216,7 @@ namespace Server.Mobiles
 
         public void SetStr(int val)
         {
-            RawStr = ParagonStatBuff(val);
+            RawStr = (val);
             Hits = HitsMax;
         }
 
@@ -5206,12 +5225,12 @@ namespace Server.Mobiles
             RawStr = Utility.RandomMinMax(min, max);
             Hits = HitsMax;
             SetAverage(min, max, RawStr);
-			RawStr = ParagonStatBuff(RawStr);
+			//RawStr = ParagonStatBuff(RawStr);
         }
 
         public void SetDex(int val)
         {
-            RawDex = ParagonStatBuff(val);
+            RawDex = (val);
             Stam = StamMax;
         }
 
@@ -5220,12 +5239,12 @@ namespace Server.Mobiles
             RawDex = Utility.RandomMinMax(min, max);
             Stam = StamMax;
             SetAverage(min, max, RawDex);
-			RawDex = ParagonStatBuff(RawDex);
+			//RawDex = ParagonStatBuff(RawDex);
         }
 
         public void SetInt(int val)
         {
-            RawInt = ParagonStatBuff(val);
+            RawInt = (val);
             Mana = ManaMax;
 
         }
@@ -5235,7 +5254,7 @@ namespace Server.Mobiles
             RawInt = Utility.RandomMinMax(min, max);
             Mana = ManaMax;
             SetAverage(min, max, RawInt);
-			RawInt = ParagonStatBuff(RawInt);
+			//RawInt = ParagonStatBuff(RawInt);
         }
 
         public void SetDamageType(ResistanceType type, int min, int max)

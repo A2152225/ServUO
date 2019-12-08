@@ -6,6 +6,7 @@ using System.Linq;
 using Server;
 using Server.Commands;
 using Server.Items;
+using Server.Engines.BulkOrders;
 
 #endregion
 
@@ -205,7 +206,7 @@ namespace Arya.Auction
 
                 while ((controller.NumberOfAuctions + 1) <= controller.MaxAuctions)
                 {
-                    switch (Utility.Random(16))
+                    switch (Utility.Random(21))
                     {                 
                         case 0:
                         {
@@ -786,7 +787,157 @@ namespace Arya.Auction
                             refreshed = true;
 
                             break;
-                        }                       
+                        }
+						case 16:
+                        {
+                        //    if (Utility.RandomDouble() < 0.30)
+                        //        goto case 0;
+
+                          
+                            Item ai = new SmallInscriptionBOD();
+                            ai.Hue = 0;//                     
+                            AuctionItem auction = new AuctionItem(ai, controller.AuctionBot)
+                            {
+                                MinBid = 2000,
+                                Reserve = 0,
+                                Duration = controller.AuctionTimeSpan,
+                                Description = String.Format("{0} A small scribe BOD.", 1),
+                                WebLink = "",
+                                BuyNow = 3500
+                            };
+
+                            auction.Confirm();
+
+                            controller.NumberOfAuctions++;
+                            refreshed = true;
+
+                            break;
+                        }						
+						case 17:
+                        {
+                        //    if (Utility.RandomDouble() < 0.30)
+                        //        goto case 0;
+
+                          
+                            Item ai = new SmallTailorBOD();
+                            ai.Hue = 0;//                     
+                            AuctionItem auction = new AuctionItem(ai, controller.AuctionBot)
+                            {
+                                MinBid = 2000,
+                                Reserve = 0,
+                                Duration = controller.AuctionTimeSpan,
+                                Description = String.Format("{0} A small tailor BOD.", 1),
+                                WebLink = "",
+                                BuyNow = 3500
+                            };
+
+                            auction.Confirm();
+
+                            controller.NumberOfAuctions++;
+                            refreshed = true;
+
+                            break;
+                        }						
+						case 18:
+                        {
+                        //    if (Utility.RandomDouble() < 0.30)
+                        //        goto case 0;
+
+                          
+                            Item ai = new SmallSmithBOD();
+                            ai.Hue = 0;//                     
+                            AuctionItem auction = new AuctionItem(ai, controller.AuctionBot)
+                            {
+                                MinBid = 2000,
+                                Reserve = 0,
+                                Duration = controller.AuctionTimeSpan,
+                                Description = String.Format("{0} A small smith BOD.", 1),
+                                WebLink = "",
+                                BuyNow = 3500
+                            };
+
+                            auction.Confirm();
+
+                            controller.NumberOfAuctions++;
+                            refreshed = true;
+
+                            break;
+                        }						
+						case 19:
+                        {
+                        //    if (Utility.RandomDouble() < 0.30)
+                        //        goto case 0;
+
+                          
+                            Item ai = new LargeInscriptionBOD();
+                            ai.Hue = 0;//                     
+                            AuctionItem auction = new AuctionItem(ai, controller.AuctionBot)
+                            {
+                                MinBid = 3500,
+                                Reserve = 0,
+                                Duration = controller.AuctionTimeSpan,
+                                Description = String.Format("{0} A Large scribe BOD.", 1),
+                                WebLink = "",
+                                BuyNow = 5000
+                            };
+
+                            auction.Confirm();
+
+                            controller.NumberOfAuctions++;
+                            refreshed = true;
+
+                            break;
+                        }						
+						case 20:
+                        {
+                        //    if (Utility.RandomDouble() < 0.30)
+                        //        goto case 0;
+
+                          
+                            Item ai = new LargeTailorBOD();
+                            ai.Hue = 0;//                     
+                            AuctionItem auction = new AuctionItem(ai, controller.AuctionBot)
+                            {
+                                MinBid = 3500,
+                                Reserve = 0,
+                                Duration = controller.AuctionTimeSpan,
+                                Description = String.Format("{0} A Large tailor BOD.", 1),
+                                WebLink = "",
+                                BuyNow = 5000
+                            };
+
+                            auction.Confirm();
+
+                            controller.NumberOfAuctions++;
+                            refreshed = true;
+
+                            break;
+                        }						
+						case 21:
+                        {
+                        //    if (Utility.RandomDouble() < 0.30)
+                        //        goto case 0;
+
+                          
+                            Item ai = new LargeSmithBOD();
+                            ai.Hue = 0;//                     
+                            AuctionItem auction = new AuctionItem(ai, controller.AuctionBot)
+                            {
+                                MinBid = 3500,
+                                Reserve = 0,
+                                Duration = controller.AuctionTimeSpan,
+                                Description = String.Format("{0} A Large smith BOD.", 1),
+                                WebLink = "",
+                                BuyNow = 5000
+                            };
+
+                            auction.Confirm();
+
+                            controller.NumberOfAuctions++;
+                            refreshed = true;
+
+                            break;
+                        }												
                     }
                 }
             }

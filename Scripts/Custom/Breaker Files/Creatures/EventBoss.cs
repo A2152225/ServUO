@@ -78,27 +78,7 @@ namespace Server.Mobiles
 		
 	public override int Damage(int amount, Mobile from)
 		{
-		/*
-////////////////////////RUNE SPELL
-                        if ( from != null )
-                        {
-                                if ( !from.CanBeginAction( typeof(FrostBite) ) )
-                                        amount -= (int)(amount*0.4);
-                                if ( !from.CanBeginAction( typeof(Hallucinogen) ) )
-                                        amount -= (int)(amount*0.3);
-////////////////////////BLOW DART GUN
-                                if ( !from.CanBeginAction( typeof(HallucinationDart) ) )
-                                        amount -= (int)(amount*0.1);
-////////////////////////End BLOW DART GUN
-                        }
-                        if ( !this.CanBeginAction( typeof(Hallucinogen) ) )
-                                amount += (int)(amount*0.1);
-////////////////////////End RUNE SPELL
-////////////////////////BLOW DART GUN
-                        if ( !this.CanBeginAction( typeof(HallucinationDart) ) )
-                                amount += (int)(amount*0.1);
-////////////////////////End BLOW DART GUN
-*/
+
 			int oldHits = this.Hits;
 
 			if (Core.AOS && !this.Summoned && this.Controlled && 0.2 > Utility.RandomDouble())
@@ -128,7 +108,7 @@ namespace Server.Mobiles
 				if (from == null)
 					return 0;
 					
-				if (from.Dex >= 1000)
+			/*	if (from.Dex >= 1000)
 				{
 				if (from.Dex >= 2000)
 				HMD = 15;
@@ -162,7 +142,7 @@ namespace Server.Mobiles
 				}
 				//SayTo(from, "The crit chance number was {0}!",critchance);
 				
-				}
+				} */
 			
 			
 			
@@ -186,11 +166,7 @@ namespace Server.Mobiles
 		if (Hits == 30)
 		Enrage(this);
 
-			if (SubdueBeforeTame && !Controlled)
-			{
-				if ((oldHits > (this.HitsMax / 10)) && (this.Hits <= (this.HitsMax / 10)))
-					PublicOverheadMessage(MessageType.Regular, 0x3B2, false, "* The creature has been beaten into subjugation! *");
-			}
+		
 			return 1;
 		}
 		

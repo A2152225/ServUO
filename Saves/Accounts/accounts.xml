@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<accounts count="1933">
+<accounts count="1935">
 	<account>
 		<username>ThomasF</username>
 		<newCryptPassword>85-18-68-31-86-94-61-9D-A9-BA-DA-6A-58-01-B8-52-78-F8-66-3F</newCryptPassword>
@@ -25828,9 +25828,12 @@
 		<newCryptPassword>A5-C8-5F-16-4B-BC-EF-9D-5A-B6-99-50-33-6B-E4-48-44-6D-E2-EB</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-09-08T11:06:31.3325167Z</created>
-		<lastLogin>2018-08-23T16:28:22.4747338Z</lastLogin>
-		<totalGameTime>P460DT19H15M49.2511348S</totalGameTime>
-		<chars />
+		<lastLogin>2019-11-27T06:55:07.9844597Z</lastLogin>
+		<totalGameTime>P472DT18H35M22.3187169S</totalGameTime>
+		<chars>
+			<char index="0">69842</char>
+			<char index="1">2863</char>
+		</chars>
 		<tags>
 			<tag name="motd">false</tag>
 			<tag name="ChatName">no</tag>
@@ -26190,8 +26193,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2019-10-11T05:07:15.3917398Z</lastLogin>
-		<totalGameTime>P994DT21H34M44.8647704S</totalGameTime>
+		<lastLogin>2019-12-06T23:01:57.7994994Z</lastLogin>
+		<totalGameTime>P1043DT18H53M1.4807311S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -26200,7 +26203,7 @@
 			<tag name="ChatName">ShardCrasher</tag>
 			<tag name="numRewardsChosen">2</tag>
 		</tags>
-		<addressList count="23">
+		<addressList count="24">
 			<ip>174.59.235.117</ip>
 			<ip>174.60.76.174</ip>
 			<ip>174.60.75.177</ip>
@@ -26224,6 +26227,7 @@
 			<ip>64.20.56.212</ip>
 			<ip>100.19.60.109</ip>
 			<ip>47.34.9.231</ip>
+			<ip>100.34.148.65</ip>
 		</addressList>
 		<totalCurrency>1.1107083680000005</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -27623,8 +27627,8 @@
 		<newCryptPassword>20-04-06-07-51-A5-98-50-A0-F3-87-01-70-70-7A-33-68-CC-83-35</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-10-03T19:08:16.8724466Z</created>
-		<lastLogin>2019-04-10T08:56:29.8521683Z</lastLogin>
-		<totalGameTime>P12DT7H48M49.0422966S</totalGameTime>
+		<lastLogin>2019-11-08T19:46:56.3557905Z</lastLogin>
+		<totalGameTime>P13DT23H45M15.4907181S</totalGameTime>
 		<chars>
 			<char index="0">968</char>
 		</chars>
@@ -27632,7 +27636,7 @@
 			<tag name="motd">false</tag>
 			<tag name="numRewardsChosen">7</tag>
 		</tags>
-		<addressList count="14">
+		<addressList count="15">
 			<ip>24.240.68.11</ip>
 			<ip>66.189.142.35</ip>
 			<ip>184.61.214.69</ip>
@@ -27647,6 +27651,7 @@
 			<ip>75.135.71.57</ip>
 			<ip>47.12.77.232</ip>
 			<ip>172.220.34.26</ip>
+			<ip>47.34.9.231</ip>
 		</addressList>
 		<totalCurrency>6.469699999999998E-05</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -27873,8 +27878,8 @@
 		<accessLevel>Seer</accessLevel>
 		<flags>2</flags>
 		<created>2012-10-05T22:57:24.1384917Z</created>
-		<lastLogin>2019-10-10T07:13:49.6829453Z</lastLogin>
-		<totalGameTime>P569DT7H23M53.2168494S</totalGameTime>
+		<lastLogin>2019-12-07T08:00:23.9419537Z</lastLogin>
+		<totalGameTime>P620DT19H7M8.3254566S</totalGameTime>
 		<chars>
 			<char index="0">43</char>
 		</chars>
@@ -27892,7 +27897,7 @@
 			<ip>47.12.77.232</ip>
 			<ip>47.34.9.231</ip>
 		</addressList>
-		<totalCurrency>0.030044433000011094</totalCurrency>
+		<totalCurrency>0.033744071000011026</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -27900,8 +27905,8 @@
 		<newCryptPassword>29-A6-6E-9B-51-F4-86-46-8C-83-DC-40-D5-8A-D8-88-BD-13-89-52</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-10-05T23:59:21.0634201Z</created>
-		<lastLogin>2019-10-04T19:10:24.6933034Z</lastLogin>
-		<totalGameTime>P134DT25M8.6986973S</totalGameTime>
+		<lastLogin>2019-12-01T16:08:45.8955702Z</lastLogin>
+		<totalGameTime>P141DT6H46M10.2741541S</totalGameTime>
 		<chars>
 			<char index="0">45715</char>
 			<char index="1">50205</char>
@@ -27925,7 +27930,7 @@
 			<ip>47.12.77.232</ip>
 			<ip>47.34.9.231</ip>
 		</addressList>
-		<totalCurrency>0.00023566999999999393</totalCurrency>
+		<totalCurrency>0.00022563899999999393</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -27933,10 +27938,14 @@
 		<newCryptPassword>BB-9D-4C-19-5A-1A-13-B8-57-B3-EB-86-CE-03-72-D8-C4-D3-2E-AD</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2019-10-10T07:12:53.788426Z</lastLogin>
-		<totalGameTime>P270DT3H12M59.3540021S</totalGameTime>
+		<lastLogin>2019-12-08T15:45:37.5859996Z</lastLogin>
+		<totalGameTime>P318DT5H12M24.8140215S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
+			<char index="1">67366</char>
+			<char index="2">67429</char>
+			<char index="3">111697</char>
+			<char index="4">35973</char>
 		</chars>
 		<tags>
 			<tag name="motd">false</tag>
@@ -27952,7 +27961,7 @@
 			<ip>172.220.34.26</ip>
 			<ip>47.34.9.231</ip>
 		</addressList>
-		<totalCurrency>0.0015457249999998542</totalCurrency>
+		<totalCurrency>0.0018876599999998189</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -27973,20 +27982,22 @@
 		<newCryptPassword>6D-9E-78-25-F4-CF-7C-E4-61-00-8C-91-0A-2B-4C-41-68-20-F6-AD</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-10-06T01:32:55.7176819Z</created>
-		<lastLogin>2019-10-04T21:53:24.1597758Z</lastLogin>
-		<totalGameTime>P11DT19H32M58.515566S</totalGameTime>
+		<lastLogin>2019-12-07T20:17:18.327717Z</lastLogin>
+		<totalGameTime>P22DT13H7M36.1903891S</totalGameTime>
 		<chars>
 			<char index="0">97904</char>
+			<char index="1">15173</char>
 		</chars>
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="3">
+		<addressList count="4">
 			<ip>66.189.142.35</ip>
 			<ip>71.82.244.230</ip>
 			<ip>47.34.9.231</ip>
+			<ip>47.12.77.232</ip>
 		</addressList>
-		<totalCurrency>0</totalCurrency>
+		<totalCurrency>3.214100000000001E-05</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -29250,9 +29261,11 @@
 		<newCryptPassword>11-52-34-D0-E1-0C-B9-B7-B5-53-95-ED-25-E5-EE-5A-7B-5B-53-3B</newCryptPassword>
 		<flags>2</flags>
 		<created>2012-11-09T13:35:08.797451Z</created>
-		<lastLogin>2018-07-15T23:37:23.436559Z</lastLogin>
-		<totalGameTime>P19DT3H56M38.4037376S</totalGameTime>
-		<chars />
+		<lastLogin>2019-11-09T20:25:32.950469Z</lastLogin>
+		<totalGameTime>P24DT14H24M57.5834091S</totalGameTime>
+		<chars>
+			<char index="0">97484</char>
+		</chars>
 		<tags>
 			<tag name="motd">false</tag>
 			<tag name="BanDealer">0x17E "The Ancient Shard-Breaker"</tag>
@@ -40673,8 +40686,8 @@
 		<newCryptPassword>A0-35-C8-63-85-94-5E-78-7C-B7-1B-5F-A7-5F-41-2E-2E-E0-F0-A0</newCryptPassword>
 		<flags>2</flags>
 		<created>2014-04-29T16:43:02.4978822Z</created>
-		<lastLogin>2019-10-10T01:54:18.6081869Z</lastLogin>
-		<totalGameTime>P22DT2H21M15.1728761S</totalGameTime>
+		<lastLogin>2019-11-01T21:30:11.5732495Z</lastLogin>
+		<totalGameTime>P26DT10H39M47.6416331S</totalGameTime>
 		<chars>
 			<char index="0">75116</char>
 			<char index="1">75587</char>
@@ -40682,6 +40695,7 @@
 			<char index="3">73310</char>
 			<char index="4">88819</char>
 			<char index="5">31573</char>
+			<char index="6">43841</char>
 		</chars>
 		<tags>
 			<tag name="motd">false</tag>
@@ -40691,7 +40705,7 @@
 			<ip>47.34.9.231</ip>
 			<ip>47.12.77.232</ip>
 		</addressList>
-		<totalCurrency>7.5199999999999992E-06</totalCurrency>
+		<totalCurrency>1.6676E-05</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -41861,8 +41875,8 @@
 		<newCryptPassword>54-7D-84-9D-4F-28-E6-19-65-C3-E7-8F-E2-99-BB-74-B7-A8-2A-11</newCryptPassword>
 		<flags>2</flags>
 		<created>2014-06-15T03:50:11.4843647Z</created>
-		<lastLogin>2019-08-09T15:24:46.9170491Z</lastLogin>
-		<totalGameTime>P7DT23H39M58.1110058S</totalGameTime>
+		<lastLogin>2019-11-03T18:54:31.3853859Z</lastLogin>
+		<totalGameTime>P7DT23H42M11.9886742S</totalGameTime>
 		<chars>
 			<char index="0">830</char>
 		</chars>
@@ -46577,6 +46591,45 @@
 		<addressList count="1">
 			<ip>47.34.9.231</ip>
 		</addressList>
+		<totalCurrency>0</totalCurrency>
+		<sovereigns>0</sovereigns>
+	</account>
+	<account>
+		<username>sammibug</username>
+		<newCryptPassword>66-D8-68-94-0D-4C-18-D5-52-0D-71-BE-AD-E4-70-77-1F-DC-EF-4B</newCryptPassword>
+		<flags>2</flags>
+		<created>2019-11-02T01:27:04.2921406Z</created>
+		<lastLogin>2019-12-08T16:37:17.2147068Z</lastLogin>
+		<totalGameTime>P7DT15H6M23.0414366S</totalGameTime>
+		<chars>
+			<char index="0">67040</char>
+			<char index="1">67106</char>
+			<char index="2">67120</char>
+			<char index="3">111707</char>
+			<char index="4">36073</char>
+		</chars>
+		<tags>
+			<tag name="motd">false</tag>
+		</tags>
+		<addressList count="2">
+			<ip>72.49.137.2</ip>
+			<ip>72.49.134.246</ip>
+		</addressList>
+		<totalCurrency>0.00034199099999998784</totalCurrency>
+		<sovereigns>0</sovereigns>
+	</account>
+	<account>
+		<username>Auction</username>
+		<newCryptPassword>9E-4C-E6-D4-2E-FA-A7-AB-62-ED-38-BC-1F-5E-DE-86-87-46-D2-EC</newCryptPassword>
+		<created>2019-11-27T06:31:54.9696987Z</created>
+		<lastLogin>2019-11-27T06:49:38.6030406Z</lastLogin>
+		<totalGameTime>PT4M1.6808148S</totalGameTime>
+		<chars>
+			<char index="0">1002</char>
+		</chars>
+		<tags>
+			<tag name="motd">false</tag>
+		</tags>
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>

@@ -8222,7 +8222,7 @@ namespace Server
 		///     <seealso cref="OnRawStatChange" />
 		/// </summary>
 		[CommandProperty(AccessLevel.GameMaster)]
-		public int RawStr
+		public virtual int RawStr
 		{
 			get { return m_Str; }
 			set
@@ -8306,7 +8306,7 @@ namespace Server
 		///     <seealso cref="OnRawStatChange" />
 		/// </summary>
 		[CommandProperty(AccessLevel.GameMaster)]
-		public int RawDex
+		public virtual int RawDex
 		{
 			get { return m_Dex; }
 			set
@@ -8390,7 +8390,7 @@ namespace Server
 		///     <seealso cref="OnRawStatChange" />
 		/// </summary>
 		[CommandProperty(AccessLevel.GameMaster)]
-		public int RawInt
+		public virtual int RawInt
 		{
 			get { return m_Int; }
 			set

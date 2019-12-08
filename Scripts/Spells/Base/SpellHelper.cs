@@ -1390,11 +1390,31 @@ namespace Server.Spells
             if (delay == TimeSpan.Zero)
             {
                 if (from is BaseCreature)
+				{
                     ((BaseCreature)from).AlterSpellDamageTo(target, ref iDamage);
-
+									//pet damage reduction
+		
+				if (((BaseCreature)from).ControlMaster != null)	
+				{
+					if (((BaseCreature)from).ControlMaster is PlayerMobile)
+					{
+						PlayerMobile pm = ((PlayerMobile)((BaseCreature)from).ControlMaster);
+						
+					damage += (pm.Paragon_1PetMinMaxDamage);
+					
+					}
+				}
+			
+		
+				}
                 if (target is BaseCreature)
+				{
                     ((BaseCreature)target).AlterSpellDamageFrom(from, ref iDamage);
-
+			
+				
+				}
+				
+				
                 target.Damage(iDamage, from);
             }
             else
@@ -1503,12 +1523,17 @@ namespace Server.Spells
 
         public static void Heal(int amount, Mobile target, Mobile from)
         {
+		//	if (from is PlayerMobile){
+		//	amount+=(((PlayerMobile)from).Paragon_5HealingInc*5);			}
             Heal(amount, target, from, true);
         }
 
         public static void Heal(int amount, Mobile target, Mobile from, bool message)
         {
             Spellweaving.ArcaneEmpowermentSpell.AddHealBonus(from, ref amount);
+			
+			if (from is PlayerMobile)
+				amount+=(((PlayerMobile)from).Paragon_5HealingInc*5);
 
             if (amount > 0 && target != from && from is PlayerMobile && target is PlayerMobile)
             {

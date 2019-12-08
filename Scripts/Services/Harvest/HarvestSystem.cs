@@ -238,13 +238,13 @@ namespace Server.Engines.Harvest
 							
 							}
 												
-							Experience.HarvestExp( from, resource, true );//EXP SYSTEM
+							Experience.HarvestExp( from, resource, true, amount );//EXP SYSTEM
 
                         }
                         else
                         {
                             SendPackFullTo(from, item, def, resource);
-							Experience.HarvestExp( from, resource, false );//EXP SYSTEM
+							Experience.HarvestExp( from, resource, false, amount );//EXP SYSTEM
 
                             item.Delete();
                         }

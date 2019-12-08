@@ -18,101 +18,102 @@ namespace Server.Mobiles
     	public class Experience
     	{ 
 		public static int AvgMonsterExp = 10;//Exp gained from monster same level in normal circumstances (//was 10)
+		public static long EXP2 = 0;
 		public static void CheckLevel( PlayerMobile pm ) 
-        	{
+        {
 			PlayerMobile from = pm;
 			long Exp = from.EXP;
+			
 			int Level = from.LvL;
 			long LastLevel = from.LastLevelExp;
-			long ExpRequired = ((long)(LastLevel *1.2));     // (int)(((Math.Pow((Level*2.5), 1.5)*1.5)+20)*AvgMonsterExp)+LastLevel;
-			if (ExpRequired == 0)
-				ExpRequired = 100;
-			
-			//from.SendMessage("You have {0} XP, and needed {1} XP to level up last level, this level you need {2}: check 1",from.EXP,from.LastLevelExp,ExpRequired);
-			
-			if (LastLevel == 0)
-				ExpRequired = 100;
-			if (from.LvL == 1 || from.PrestigeLvl == 1)
-						ExpRequired = 220;
-					
-			if ( Exp >= ExpRequired )
+			long ExpRequired = GetNextLevelXP(from);   ///((long)(LastLevel *1.2));     // (int)(((Math.Pow((Level*2.5), 1.5)*1.5)+20)*AvgMonsterExp)+LastLevel;
+	
+				
+			if ( Exp > ExpRequired )
 			{
 				
-			
+			EXP2 = from.EXP - ExpRequired;
 				
-				
-				
-					//from.EXP -= ExpRequired;
-		
-				
-				
-				
-
-			if ( Level < from.MaxLvl )		//changed 12-12-14 breaker, MaxLvl  prop	/////// Changed from 500 on 7-12-07 {RE} to 2000 ////
+		from.EXP = EXP2; 
+				if ( Level < from.MaxLvl )		//changed 12-12-14 breaker, MaxLvl  prop	/////// Changed from 500 on 7-12-07 {RE} to 2000 ////
 				{
-
-					
-					
-					LevelUp(from);
-					
-
-
-						if (from.LvL == from.MaxLvl && from.PrestigeLvl == 0)	
-						{
-							
+						LevelUp(from);  //normal level up check below max level 
+						
+					if (from.LvL == from.MaxLvl && from.PrestigeLvl == 0)	// after max level reached , reset XP values for Paragon Leveling calculations
+					{
 						from.LastLevelExp = 0;
 						from.EXP = 0;
-							from.SendMessage("You have reached the maximum level at this time, additional experience will go into paragon levels.");
-						}
-				
-				//	CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
-				//ExpRequired = ((long)(ExpRequired * 1.2));
-
-				
+						if (EXP2 >= 1)
+						from.EXP += EXP2; 
+						from.SendMessage("You have reached the maximum level at this time, additional experience will go into paragon levels.");
+					}
+						
+						//	CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
+						//ExpRequired = ((long)(ExpRequired * 1.2));
 				}
-
-			if (from.LvL == from.MaxLvl)
-				{
 				
-				from.PrestigeLvl++;
 				
-					Effects.SendTargetParticles( from, 14170, 1, 17, 2924-1, 2, 0, EffectLayer.Waist, 0 );//Blue/gold sparkles
-			from.Say( "*Has gained a paragon level*" ); 
-			from.PlaySound( 61 );//Flute
-			from.Hits = from.HitsMax;
-			from.Mana = from.ManaMax;
-			from.Stam = from.StamMax;
-			pm.InvalidateProperties();
-		//	CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
-	//	ExpRequired = ((long)(ExpRequired * 1.2));
+					if (from.LvL == from.MaxLvl)
+					{
+						from.PrestigeLvl++;
+						Effects.SendTargetParticles( from, 14170, 1, 17, 2924-1, 2, 0, EffectLayer.Waist, 0 );//Blue/gold sparkles
+						from.Say( "*Has gained a paragon level*" ); 
+						from.PlaySound( 61 );//Flute
+						from.Hits = from.HitsMax;
+						from.Mana = from.ManaMax;
+						from.Stam = from.StamMax;
+						from.ParagonPoints++;
+						pm.InvalidateProperties();
+					}
 
-				}
-		Exp = Exp - ExpRequired;
-		from.LastLevelExp = ExpRequired;
+	//	Exp = Exp - ExpRequired;
+			
+			if (EXP2 >= 1)
 			CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
 				
-			}
+			}  //end Enough XP to Level 
 			
 			if ( from.ShowExpBar == true )
 				from.SendGump( new ExpBarGump(from));
 		}
+		
+		public static long GetNextLevelXP(PlayerMobile pm)
+		{
+		int lvl = pm.LvL;
+		if (pm.PrestigeLvl >= 1) 
+			{
+			lvl = pm.PrestigeLvl; 
+			}
+		double XP = 100;
+		int counter = 0;
+		
+		while (counter < lvl)
+			{
+			XP = (XP * 1.2);
+			counter++;
+			}
+		return ((long)XP);  //returns the amount of xp needed for the Next Level Up.
+		
+			
+		}
+		
 		public static void LevelUp( PlayerMobile pm )
 		{
 			PlayerMobile from = pm;
-			
+			from.LastLevelExp = GetNextLevelXP(pm);
 			from.LvL += 1;
 			
-			   if (pm.Young && pm.LvL == 15)
-            {
-                Account acc = pm.Account as Account;
 
-                if (acc != null)
-                    acc.RemoveYoungStatus(0);
-				pm.Young = false;
-				pm.YoungSaves = 0;
-				pm.SendMessage("You have reached a point where you are no longer considered to be young, you will no longer have the protection from death that has been afforded to you up till this point. Good Luck.");
-					
-			}
+			
+				if (pm.Young && pm.LvL == 20)  //remove young protection at 20
+				{
+					Account acc = pm.Account as Account;
+					if (acc != null)
+					acc.RemoveYoungStatus(0);
+					pm.Young = false;
+					pm.YoungSaves = 0;
+					pm.SendMessage("You have reached a point where you are no longer considered to be young, you will no longer have the protection from death that has been afforded to you until this point. Good Luck.");
+				}
 			
 			if (from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
 			from.StatCap += 8; //= 1200 + from.LvL;  //stat cap should be set to 1200 base on character creation, no need to redefine with every level, just increase
@@ -129,70 +130,14 @@ namespace Server.Mobiles
 
 			if ( Level >= 1 && from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
 				from.SkillsCap += 80;
-
-			if ( Level <= 500 )
-			{
-				from.SP += 5;
-			}
-
-			if ( Level > 500 )
-			{
-				from.SP += 3;
-				if ( from.LvL % 5 == 0)
-					from.SP += 1;
-			}
-			
-										
-			/*if ( Level >= 100 )
-				from.NameMod = "Elder "+ from.RawName;
-			if ( Level >= 300 )
-				from.NameMod = "Veteran "+ from.RawName;
-			if ( Level >= 500 )
-				from.NameMod = "The Elite "+ from.RawName;
-			if ( Level >= 1100 )
-				from.NameMod = "The Eternal "+ from.RawName;
-			if ( Level >= 1800 )
-				from.NameMod = "The Ancient "+ from.RawName;
-
-			if ( Level == 100 )
-				from.SendMessage( "You are now an Elder of your race." );
-			if ( Level == 300 )
-				from.SendMessage( "You are now a Veteran Player." );
-			if ( Level == 500 )
-				from.SendMessage( "You are now an Elite Player." );
-			if ( Level == 1100 )
-				from.SendMessage( "You are now an Eternal Player." );
-			if ( Level == 1800 )
-				from.SendMessage( "You are now an Ancient Player." );
-
-			if ( Level >= 1500 )
-			{
-					if ( pm.Following == Following.Good )
-						from.Title = "The Enlightened";
-					else if ( pm.Following == Following.Evil )
-						from.Title = "The Vicious";
-			}
-			if ( Level >= 750 )
-			{
-					if ( pm.Following == Following.Good )
-						from.Title = "The High";
-					else if ( pm.Following == Following.Evil )
-						from.Title = "The Chaotic";
-			}
-			else if ( Level >= 500 )
-			{
-					if ( from.Following == Following.Good )
-						from.Title = "The Noble";
-					else if ( from.Following == Following.Evil )
-						from.Title = "The Evil";
-			}*/
+				
 			from.SendMessage("You have gained a level! You are now level " + Level);
-			if ( from.SP > 0 )
+/*			if ( from.SP > 0 )
 			{
 				from.SendMessage("You have " + from.SP + " specialization points to allocate");
 				from.SendGump( new StatGump(from) );
 			}
-
+*/
 			Effects.SendTargetParticles( from, 14170, 1, 17, 2924-1, 2, 0, EffectLayer.Waist, 0 );//Blue/gold sparkles
 			from.Say( "*Has gained a level*" ); 
 			from.PlaySound( 61 );//Flute
@@ -223,7 +168,7 @@ namespace Server.Mobiles
 				long LastLevel = from.LastLevelExp;
 				long ExpRequired;
 				if (LastLevel == 0)
-				 ExpRequired = 100;
+				 ExpRequired = 100;  //Was 100, ended up lvl 12 with 7 kills -  XP mod was also at 2, changing to 1. 
 			 else
 				  ExpRequired = ((long)(LastLevel*1.2));
 				int mapb = 0;
@@ -241,16 +186,7 @@ namespace Server.Mobiles
 				if ( Monster.MinTameSkill > 0 )
 					monsterstats += (int)Monster.MinTameSkill;
 
-	/*			if ( Monster.Level <= 0 )
-					if ( from.LvL <= 0 )
-						ExpGained = monsterstats;
-					else
-						ExpGained = monsterstats / from.LvL;
-				else
-					if ( from.LvL <= 0 )
-						ExpGained = ( Monster.Level * monsterstats );
-					else
-						*/
+	
 					
 						ExpGained = (  monsterstats );
 					ExpGained = XPAMOUNT;
@@ -299,25 +235,6 @@ namespace Server.Mobiles
 				long minexp = 0;
 				long maxexp = 0;
 
-	/*			if ( LevelDifference > 0 )
-				{
-					minexp = 5+(ExpGained/9);  // Changed from 60 to 9 by RE 6-19-07
-					maxexp = 5+(ExpGained/5);  // Changed from 40 to 5 by RE 6-19-07
-				}
-				else
-				{
-					minexp = 5+(ExpGained/15);  // Changed from 120 to 15 by RE 6-19-07
-					maxexp = 5+(ExpGained/9);  // Changed from 100 to 9 by RE 6-19-07
-				}
-		*/	
-			/*	Paragon/Prestige levels added - no more XP cap
-			if ( from.LvL >= from.MaxLvl )          // Commented Section out until can be further tested 6-19-07  HUNTER LOOK AT THIS PLEASE LET ME KNOW IF WE CAN USE IT!!
-				 {
-					minexp *= 0;
-					maxexp *= 0;
-				 }
-				 */
-			
 			
 				
 	//if (from.Map != Map.TerMur)
@@ -325,11 +242,7 @@ namespace Server.Mobiles
 				 
 				long finalexp = (long)((double)( Utility.RandomMinMax( (int)minexp, (int)maxexp ) )*Percent*(Tweaks.XPMod+mapb));
 
-			/*	if ( finalexp > ( ExpRequired - LastLevel ) )
-				{
-					finalexp = (long)( ( ExpRequired - LastLevel ) / 2 );
-				}
-*/
+
 				Region re = Region.Find( from.Location, from.Map );
 				string regname = re.ToString().ToLower();
 				
@@ -351,83 +264,83 @@ namespace Server.Mobiles
 					finalexp *= 2;
 
 				from.EXP += ExpGained ;//finalexp;
-				
+				//if (EXP2 >= 1)
 			CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
 			}
 		}
-		public static void HarvestExp( Mobile m, HarvestResource resource, bool success )
+		public static void HarvestExp( Mobile m, HarvestResource resource, bool success, int amount )
 		{
 			PlayerMobile from = m as PlayerMobile;
+			int oremodifier = 4;
 			if ( from != null )
 			{
 				HarvestResource Res = resource;
 				int ExpGained = new int();
 				if (Res.Types[0] == typeof(IronOre))
 				{
-					ExpGained = 3;
+					ExpGained = 3 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(DullCopperOre))
 				{
-					ExpGained = 5;
+					ExpGained = 5 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(ShadowIronOre))
 				{
-					ExpGained = 6;
+					ExpGained = 6 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(CopperOre))
 				{
-					ExpGained = 7;
+					ExpGained = 7 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(BronzeOre))
 				{
-					ExpGained = 8;
+					ExpGained = 8 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(GoldOre))
 				{
-					ExpGained = 9;
+					ExpGained = 9 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(AgapiteOre))
 				{
-					ExpGained = 10;
+					ExpGained = 10 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(VeriteOre))
 				{
-					ExpGained = 12;
+					ExpGained = 12 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(ValoriteOre))
 				{
-					ExpGained = 13;
+					ExpGained = 13 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(BlazeOre))
 				{
-					ExpGained = 12;
+					ExpGained = 12 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(IceOre))
 				{
-					ExpGained = 13;
+					ExpGained = 13 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(ToxicOre))
 				{
-					ExpGained = 14;
+					ExpGained = 14 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(ElectrumOre))
 				{
-					ExpGained = 15;
+					ExpGained = 15 * oremodifier;
 				}
-					
 				if (Res.Types[0] == typeof(PlatinumOre))
 				{
-					ExpGained = 16;
+					ExpGained = 16 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(RoyaliteOre))
 				{
-					ExpGained = 17;
+					ExpGained = 17 * oremodifier;
 				}
 				if (Res.Types[0] == typeof(DaniteOre))
 				{
-					ExpGained = 18;
+					ExpGained = 18 * oremodifier;
 				}		
-				
+				//end ore 
 				if (Res.Types[0] == typeof(Log))
 				{
 					ExpGained = 3;
@@ -480,14 +393,15 @@ namespace Server.Mobiles
 
 				if (Res.Types[0] == typeof(Fish))
 				{
-					ExpGained = Utility.RandomMinMax(1,4);//to vary fishing a bit
+					ExpGained = Utility.RandomMinMax(1,100);//to vary fishing a bit
 				}
 				if ( success == false )
 					ExpGained -= ExpGained/2;
 				if ( ExpGained > 0 )
 				{
-				int finalexp = (ExpGained * Tweaks.XPMod * 2);  //12
-					from.EXP += (ExpGained * Tweaks.XPMod * 2) ; //4  //12
+				from.EXP += (ExpGained * Tweaks.XPMod * amount) ; //4  //12  //2  //scale with amount harvested.
+				//int finalexp = (ExpGained * Tweaks.XPMod * 1);  //12  //2 
+					
 				//	GearUp(from, finalexp);
 				}
 			}
@@ -934,11 +848,11 @@ namespace Server.Mobiles
 					
 
 					if ( quality == 0 )//low quality
-						ExpGained = (int)((decimal.Divide(ExpGained,4))*2);
+						ExpGained = (int)((decimal.Divide(ExpGained,5))*2);
 					else if ( quality == 2 )//exceptional
-						ExpGained = (int)((decimal.Divide(ExpGained,4))*4);
+						ExpGained = (int)((decimal.Divide(ExpGained,5))*3);
 					if ( failed == true )//Quarter exp on fail
-						ExpGained = (int)(decimal.Divide(ExpGained,4));
+						ExpGained = (int)(decimal.Divide(ExpGained,5));
 					if ( ExpGained > 0 )
 					{
 				if (ExpGained > 6000)

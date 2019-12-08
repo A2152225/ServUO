@@ -1009,7 +1009,8 @@ namespace Server.Spells
 			}
 
 			int fcr = AosAttributes.GetValue(m_Caster, AosAttribute.CastRecovery);
-
+			if (m_Caster is PlayerMobile)
+				fcr += ((PlayerMobile)m_Caster).Paragon_1FCR;
 			int fcrDelay = -(CastRecoveryFastScalar * fcr);
 
 			int delay = CastRecoveryBase + fcrDelay;
@@ -1053,6 +1054,8 @@ namespace Server.Spells
 			}
 
 			int fc = AosAttributes.GetValue(m_Caster, AosAttribute.CastSpeed);
+			if (m_Caster is PlayerMobile)
+				fc += ((PlayerMobile)m_Caster).Paragon_1FC;
 
 			/*if (fc > fcMax)
 			{

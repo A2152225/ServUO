@@ -14,14 +14,14 @@ namespace Server.Mobiles
             Body = 95;
 //            [COLOR=rgb(255, 0, 0)]//BaseSoundID = ;//Not Known[/COLOR]
 
-            SetStr( 324, 414 );
+            SetStr( 224, 314 );
             SetDex( 122, 188 );
             SetInt( 175, 357 );
 
-            SetHits( 1500, 3500 );
+            SetHits( 500, 1250 );
             SetMana( 1000 );
 
-            SetDamage( 10, 20 );
+            SetDamage( 5, 15 );
 
             SetDamageType( ResistanceType.Physical, 100 );
 
@@ -70,8 +70,9 @@ namespace Server.Mobiles
 		
         public override void GenerateLoot()
         {
+						AddLoot( LootPack.Rich, 1 );
+
 			 AddToBackpack(new Gold(1000));
-			//AddLoot( LootPack.SuperBoss, 1 );
               // not sure on lootpack I'd venture to guess nothing
         }
 
