@@ -1,0 +1,79 @@
+using System;
+using Server;
+
+namespace Server.Items
+{
+    public class PowerRed : Item
+    {
+        
+        
+        [Constructable]
+        public PowerRed() :  base(0x1F1C)
+        {
+            Name = "Power Distributor";
+        }
+
+        public PowerRed(Serial serial)
+            : base(serial)
+        {
+        }
+
+        public override void OnDoubleClick(Mobile from)
+        {
+           if (this.IsAccessibleTo(from) && from.InRange(this.GetWorldLocation(), 3))
+            {
+                from.SendMessage("Select the Arch-Hath to redistribute the power of."); 
+                from.BeginTarget(3, false, Server.Targeting.TargetFlags.None, new TargetStateCallback(InternalCallback), this);
+            }
+            else
+                from.SendLocalizedMessage(502436); // That is not accessible.
+  
+        }
+		
+		private void InternalCallback(Mobile from, object targeted, object state)
+        {
+         
+		 Item i = targeted as Item;
+
+			if (i == null || !(i is ArcHath))
+			return;
+           
+        ArcHath ah = targeted as ArcHath;      
+		
+			int power = ah.Gems.GetPower();
+			double newvalue = power/9;
+              ah.Gems.Citrine = newvalue;
+				 ah.Gems.Amber = newvalue;
+				 ah.Gems.Ruby = newvalue;
+				 ah.Gems.Tourmaline = newvalue;
+				ah.Gems.Amethyst = newvalue;
+				ah.Gems.Emerald = newvalue;
+				ah.Gems.Sapphire = newvalue;
+				ah.Gems.StarSapphire = newvalue;
+				ah.Gems.Diamond = newvalue;
+				
+			  
+			  this.Delete();
+
+              
+        
+        }
+		  public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.Write((int)0); // version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadInt();
+        }
+      
+    }
+	
+	
+	
+}

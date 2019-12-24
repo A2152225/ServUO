@@ -79,6 +79,7 @@
 				<item notnull="False" inotnull="True" type="Sapphire" />
 				<item notnull="False" inotnull="True" type="StarSapphire" />
 				<item notnull="False" inotnull="True" type="Amber" />
+				<item notnull="False" inotnull="True" type="IronOre" />
 			</items>
 		</cup>
 		<cup notnull="True" owner="67429" cmcc="True">
@@ -122,6 +123,8 @@
 				<item notnull="False" inotnull="True" type="Citrine" />
 				<item notnull="False" inotnull="True" type="Ruby" />
 				<item notnull="False" inotnull="True" type="Diamond" />
+				<item notnull="False" inotnull="True" type="IronOre" />
+				<item notnull="False" inotnull="True" type="Amber" />
 			</items>
 		</cup>
 		<cup notnull="True" owner="67120" cmcc="False">
@@ -186,8 +189,32 @@
 				<item notnull="False" inotnull="True" type="TreasureMap" />
 			</items>
 		</cup>
-		<cup notnull="True" owner="35973" cmcc="False">
-			<items />
+		<cup notnull="True" owner="35973" cmcc="True">
+			<items>
+				<item notnull="False" inotnull="True" type="ZoogiFungus" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="8138" cmcc="False">
+			<items>
+				<item notnull="True" cont="1073906014" inotnull="True" type="Gold" />
+				<item notnull="False" inotnull="True" type="Nightshade" />
+				<item notnull="False" inotnull="True" type="BlackPearl" />
+				<item notnull="False" inotnull="True" type="Ruby" />
+				<item notnull="False" inotnull="True" type="Tourmaline" />
+				<item notnull="False" inotnull="True" type="Citrine" />
+				<item notnull="False" inotnull="True" type="Emerald" />
+				<item notnull="False" inotnull="True" type="Amber" />
+				<item notnull="False" inotnull="True" type="Diamond" />
+				<item notnull="False" inotnull="True" type="Sapphire" />
+				<item notnull="False" inotnull="True" type="StarSapphire" />
+				<item notnull="False" inotnull="True" type="Amethyst" />
+				<item notnull="False" inotnull="True" type="ZoogiFungus" />
+			</items>
+		</cup>
+		<cup notnull="True" owner="67040" cmcc="False">
+			<items>
+				<item notnull="True" cont="1074609089" inotnull="True" type="Gold" />
+			</items>
 		</cup>
 	</cups>
 </cleanup>

@@ -1,0 +1,217 @@
+using System; 
+using System.Collections; 
+using Server.Spells;
+using Server.Items; 
+using Server.Targeting; 
+using Server.Spells.Necromancy;
+using Server.Spells.Chivalry;
+using Server.Spells.Custom;
+
+namespace Server.Items 
+{ 
+   	public class OathWard: BaseTalisman
+   	{ 
+		private bool m_InUse;
+		private bool m_UsePower;
+		private int m_Charges;
+
+
+		[CommandProperty( AccessLevel.GameMaster )]
+		public bool InUse{ get{ return m_InUse; } set{ m_InUse = value; InvalidateProperties(); } }
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public bool UsePower{ get{ return m_UsePower; } set{ m_UsePower = value; InvalidateProperties(); } }
+
+		[CommandProperty( AccessLevel.GameMaster )]
+		public int Charges{ get{ return m_Charges; } set{ m_Charges = value; InvalidateProperties(); } }
+
+		
+		
+		
+		[Constructable]
+		public OathWard() : base( 0x2F59 )
+		{
+			Weight = 0.1;
+			Name = "Oath Ward";
+			Layer = Layer.Talisman;
+			LootType = LootType.Blessed;
+			UsePower = false;
+			Charges = 10;
+		}
+			[Constructable]
+		public OathWard(int cha) : base( 0x2F59 )
+		{
+			Weight = 0.1;
+			Name = "Oath Ward";
+			Layer = Layer.Talisman;
+			LootType = LootType.Blessed;
+			UsePower = false;
+			Charges = cha;
+		}
+
+
+		public static bool BreakSpell( Mobile target, Mobile caster, Spell spell )
+		{
+			if ( target == null || caster == null || spell == null )
+				return false;
+
+			OathWard sb = target.FindItemOnLayer( Layer.Talisman ) as OathWard;
+
+			if ( sb == null || !sb.InUse )
+				return false;
+
+			int inscribe = (int)caster.Skills[SkillName.Inscribe].Value;
+
+			int magery = (int)caster.Skills[SkillName.Magery].Value;
+			int evalint = (int)caster.Skills[SkillName.EvalInt].Value;
+
+			int necro = (int)caster.Skills[SkillName.Necromancy].Value;
+			int ss = (int)caster.Skills[SkillName.SpiritSpeak].Value;
+
+			int chivalry = (int)caster.Skills[SkillName.Chivalry].Value;
+			int karma = caster.Karma;
+
+			
+			int powerdrain = 0;
+			int tdb = 1;
+
+			SpellCircle circle = (spell as MagerySpell).Circle;
+			if ( circle == SpellCircle.First )
+				tdb = 10;
+			else if ( circle == SpellCircle.Second )
+				tdb = 9;
+			else if ( circle == SpellCircle.Third )
+				tdb = 8;
+			else if ( circle == SpellCircle.Fourth )
+				tdb = 7;
+			else if ( circle == SpellCircle.Fifth )
+				tdb = 6;
+			else if ( circle == SpellCircle.Sixth )
+				tdb = 5;
+			else if ( circle == SpellCircle.Seventh )
+				tdb = 4;
+			else if ( circle == SpellCircle.Eighth )
+				tdb = 3;
+
+			if ( spell is NecromancerSpell )
+				powerdrain = (int)((necro+ss)/tdb);
+			else if ( spell is PaladinSpell )
+				powerdrain = (int)((chivalry+(karma/100))/tdb);
+			else if ( spell is RuneSpell )
+				powerdrain = (int)((necro+ss)/tdb);
+			else if ( spell is ClericSpell )
+				powerdrain = (int)((magery+ss)/tdb);
+			else
+				powerdrain = (int)((magery+evalint)/tdb);
+			
+			 if (!(sb).UsePower)
+			{
+				caster.SendMessage( target.Name+"'s Oath Ward breaks through the spell you cast at them." );
+				target.SendMessage( "Oath Ward breaks through the "+spell.Name+" spell cast at you by "+caster.Name+"." );
+				target.PlaySound( 0x201 );
+				return true;
+			} 
+			else
+			{	
+				return false;
+			}
+	
+		return false;
+		}
+
+		public override void OnDoubleClick( Mobile from )
+		{
+			if ( InUse )
+			{
+				InUse = false;
+				from.SendMessage( "Oath Ward is no longer in use." );
+			}
+			else if ( Parent == from )
+			{
+				InUse = true;
+				from.SendMessage( "Oath Ward is now in use." );
+			}
+			else
+				from.SendMessage( "You must have Oath Ward equipped to use it." );
+		}
+
+	
+		
+		public override void OnRemoved( object parent )
+		{
+			if ( parent is Mobile )
+			{
+				Mobile from = (Mobile) parent;
+
+				if ( InUse )
+				{
+					InUse = false;
+					from.SendMessage( "Oath Ward is no longer in use." );
+				}
+			}
+
+			base.OnRemoved( parent );
+		}
+
+		
+		public  void ChargeCheck(Mobile from)
+		{
+			//from.SendMessage("Proof that the code block was reached");
+				if ( InUse && Charges > 1)
+				{
+					Charges--;
+				}
+				else if (InUse && Charges ==1)
+				{
+					Charges--;
+					from.SendMessage("Your Oath Ward has used its' last charge protecting you and was destroyed as a result");
+					this.Delete();
+					
+				}
+				else if (InUse && Charges <= -1)
+				{
+				
+				}
+				
+				
+				
+		
+			
+
+			
+		}
+		
+		public override void GetProperties( ObjectPropertyList list )
+		{
+			base.GetProperties( list );
+
+			if ( InUse )
+				list.Add( 1060742 ); // active
+			else
+				list.Add( 1060743 ); // inactive
+			if (Charges > 0)	
+				list.Add("Charges: {0}",Charges);
+		
+		}
+
+		public OathWard( Serial serial ) : base ( serial ) 
+		{             
+		}
+
+		public override void Serialize( GenericWriter writer ) 
+		{
+			base.Serialize( writer ); 
+			writer.Write( (int) 0 ); 
+			writer.Write( (bool) m_InUse ); 
+			writer.Write( (bool) m_UsePower);
+ 		}
+
+		public override void Deserialize( GenericReader reader ) 
+		{
+			base.Deserialize( reader ); 
+			int version = reader.ReadInt(); 
+				m_InUse = reader.ReadBool(); 
+			m_UsePower = reader.ReadBool();
+		}
+	}
+}

@@ -1,1 +1,1 @@
-C:\UOServer\GloryUO\WorldFiles
+C:\UOServer\GloryDev\WorldFiles
