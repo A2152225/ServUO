@@ -53,7 +53,7 @@ namespace Server.Mobiles
 
 	#region Enums
 	[Flags]
-	public enum PlayerFlag : ulong // First 16 bits are reserved for default-distro use, start custom flags at 0x00010000
+	public enum PlayerFlag
 	{
 		None = 0x00000000,
 		Glassblowing = 0x00000001,
@@ -85,7 +85,6 @@ namespace Server.Mobiles
         ToggleCutTopiaries = 0x10000000,
         HasValiantStatReward = 0x20000000,
         RefuseTrades = 0x40000000,
-        DisabledPvpWarning = 0x80000000,
     }
 
     [Flags]
@@ -95,6 +94,7 @@ namespace Server.Mobiles
         ToggleStoneOnly             = 0x00000002,
         CanBuyCarpets               = 0x00000004,
         VoidPool                    = 0x00000008,
+        DisabledPvpWarning          = 0x00000010,
     }
 
 	public enum NpcGuild
@@ -339,6 +339,7 @@ namespace Server.Mobiles
 		private List<Mobile> m_RecentlyReported;
 
         public bool UseSummoningRite { get; set; }
+
 
 		private int m_YoungSaves;
 		private int m_MaxLvl;
@@ -1159,8 +1160,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         [CommandProperty(AccessLevel.GameMaster)]
         public bool DisabledPvpWarning
         {
-            get { return GetFlag(PlayerFlag.DisabledPvpWarning); }
-            set { SetFlag(PlayerFlag.DisabledPvpWarning, value); }
+            get { return GetFlag(ExtendedPlayerFlag.DisabledPvpWarning); }
+            set { SetFlag(ExtendedPlayerFlag.DisabledPvpWarning, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -3084,6 +3085,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				}
 
                 if (Alive && Core.SA)
+
                 {
                     list.Add(new Engines.Points.LoyaltyRating(this));
                 }
@@ -3092,6 +3094,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                 if (Alive && InsuranceEnabled)
                 {
+
                     if (Core.SA)
                     {
                         list.Add(new CallbackEntry(1114299, OpenItemInsuranceMenu));
@@ -7030,9 +7033,12 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			TransformContext context = TransformationSpellHelper.GetContext(this);
 
-			if (context != null && context.Type == typeof(ReaperFormSpell))
+			if (context != null)
 			{
-				return WalkFoot;
+                if ((!Core.SA && context.Type == typeof(ReaperFormSpell)) || (!Core.HS && context.Type == typeof(Server.Spells.Mysticism.StoneFormSpell)))
+                {
+                    return WalkFoot;
+                }
 			}
 
 			bool running = ((dir & Direction.Running) != 0);

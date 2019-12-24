@@ -1002,6 +1002,11 @@ namespace Server.Mobiles
                 }
 
                 base.Combatant = value;
+
+                if (Controlled)
+                {
+                    AdjustSpeeds();
+                }
             }
         }
 
@@ -2276,7 +2281,7 @@ namespace Server.Mobiles
                     }
                 }
 
-                if (with is HarvestersBlade)
+                if (special)
                 {
                     feathers = (int)Math.Ceiling((double)feathers * 1.1);
                     wool = (int)Math.Ceiling((double)wool * 1.1);
@@ -2344,17 +2349,30 @@ namespace Server.Mobiles
                 if (hides != 0)
                 {
                     Item leather = null;
+                    var cutHides = (with is SkinningKnife && from.FindItemOnLayer(Layer.OneHanded) == with) || special || with is ButchersWarCleaver;
 
                     switch (HideType)
                     {
                         default:
-                        case HideType.Regular: leather = new Leather(hides); break;
-                        case HideType.Spined: leather = new SpinedLeather(hides); break;
-                        case HideType.Horned: leather = new HornedLeather(hides); break;
-                        case HideType.Barbed: leather = new BarbedLeather(hides); break;
+                        case HideType.Regular:
+                            if (cutHides) leather = new Leather(hides);
+                            else leather = new Hides(hides);
+                            break;
+                        case HideType.Spined:
+                            if (cutHides) leather = new SpinedLeather(hides);
+                            else leather = new SpinedHides(hides);
+                            break;
+                        case HideType.Horned:
+                            if (cutHides) leather = new HornedLeather(hides);
+                            else leather = new HornedHides(hides);
+                            break;
+                        case HideType.Barbed:
+                            if (cutHides) leather = new BarbedLeather(hides);
+                            else leather = new BarbedHides(hides);
+                            break;
                     }
 
-                    if (!Core.AOS || (!special && !(with is ButchersWarCleaver)) || !from.AddToBackpack(leather))
+                    if (!Core.AOS || !cutHides || !from.AddToBackpack(leather))
                     {
                         corpse.AddCarvedItem(leather, from);
                         from.SendLocalizedMessage(500471); // You skin it, and the hides are now in the corpse.
@@ -4662,14 +4680,11 @@ namespace Server.Mobiles
         public virtual void AddCustomContextEntries(Mobile from, List<ContextMenuEntry> list)
         { }
 
-        public virtual bool CanDrop { get { return IsBonded; } }
-        public virtual bool OwnerCanRename { get { return true; } }
-
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
             base.GetContextMenuEntries(from, list);
 
-            if (m_bControlled && m_ControlMaster == from && !m_bSummoned && OwnerCanRename)
+            if (CanBeRenamedBy(from) && m_bControlled && m_ControlMaster == from && !m_bSummoned)
             {
                 list.Add(new RenameEntry(from, this));
             }
@@ -7365,10 +7380,6 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
         public virtual bool PlayInstrumentSound { get { return true; } }
 
-        public virtual TimeSpan DiscordInterval { get { return TimeSpan.FromSeconds(Utility.RandomMinMax(60, 120)); } }
-        public virtual TimeSpan PeaceInterval { get { return TimeSpan.FromSeconds(Utility.RandomMinMax(60, 120)); } }
-        public virtual TimeSpan ProvokeInterval { get { return TimeSpan.FromSeconds(Utility.RandomMinMax(60, 120)); } }
-
         public virtual bool DoDiscord()
         {
             Mobile target = GetBardTarget(Controlled);
@@ -7495,7 +7506,14 @@ public string CType = "default";  //Declare variable for use of transferring to 
             Mobile m = Combatant as Mobile;
 
             if (m == null && GetMaster() is PlayerMobile)
+            {
                 m = GetMaster().Combatant as Mobile;
+            }
+
+            if (creaturesOnly && m is PlayerMobile)
+            {
+                return null;
+            }
 
             if (m == null || m == this || !CanBeHarmful(m, false) || (creaturesOnly && !(m is BaseCreature)))
             {
@@ -7503,12 +7521,15 @@ public string CType = "default";  //Declare variable for use of transferring to 
                 list.AddRange(Aggressors.Where(info => !creaturesOnly || info.Attacker is PlayerMobile));
 
                 if (list.Count > 0)
+                {
                     m = list[Utility.Random(list.Count)].Attacker;
+                }
                 else
+                {
                     m = null;
+                }
 
-                list.Clear();
-                list.TrimExcess();
+                ColUtility.Free(list);
             }
 
             return m;
@@ -7771,10 +7792,8 @@ public string CType = "default";  //Declare variable for use of transferring to 
             }
             else if (combatant != null && CanProvoke && tc >= m_NextProvoke && 0.33 > Utility.RandomDouble())
             {
-                if (DoProvoke())
-                    m_NextProvoke = tc + (int)ProvokeInterval.TotalMilliseconds;
-                else
-                    m_NextProvoke = tc + (int)TimeSpan.FromSeconds(15).TotalMilliseconds;
+                DoProvoke();
+                m_NextProvoke = tc + Utility.RandomMinMax(5000, 12500);
             }
 
             if (combatant != null && TeleportsTo && tc >= m_NextTeleport)
@@ -8214,7 +8233,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
                         {
                             Mobile owner = c.ControlMaster;
 
-                            if (!c.IsStabled &&
+                            if (!c.IsStabled && !(c is BaseVendor) &&
                                 (owner == null || owner.Deleted || owner.Map != c.Map || !owner.InRange(c, 12) || !c.CanSee(owner) ||
                                  !c.InLOS(owner)))
                             {
