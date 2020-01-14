@@ -111,11 +111,7 @@ namespace Server.Mobiles
         Triceratops = Bashing | Poisoning | Slashing | WrestlingMastery,
         TsukiWolf = Tokuno | Chivalry | Discordance | Mysticism | Necromage | Necromancy | Poisoning | Spellweaving | WrestlingMastery,
         Triton = Chivalry | Discordance | MageryMastery | Mysticism | Poisoning | Spellweaving | Bushido | Ninjitsu | BattleDefense | Bashing | Piercing | Slashing | WrestlingMastery,
-<<<<<<< HEAD
-        CoconutCrab = GreaterDragon | BattleDefense | Bashing | Piercing | Slashing | WrestlingMastery
-=======
         CoconutCrab = GreaterDragon | BattleDefense | Bashing | Piercing | Slashing | WrestlingMastery,
->>>>>>> upstream/master
     }
 
     public static class PetTrainingHelper
@@ -286,10 +282,7 @@ namespace Server.Mobiles
         public static SpecialAbility[] SpecialAbilityGrizzledMare;
         public static SpecialAbility[] SpecialAbilitySkeletalCat;
         public static SpecialAbility[] SpecialAbilityCoconutCrab;
-<<<<<<< HEAD
-=======
         public static SpecialAbility[] SpecialAbilityPhoenix;
->>>>>>> upstream/master
         #endregion
 
         #region AreaEffect Defs
@@ -1150,8 +1143,10 @@ namespace Server.Mobiles
                                 for(int i = 0; i < _DamageTable.Length; i++)
                                 {
                                     int[] list = _DamageTable[i];
-
-                                    if (list[0] >= bc.DamageMin && bc.DamageMin <= list[1])
+									//if (bc.ControlMaster is PlayerMobile)
+										PlayerMobile pm = (PlayerMobile)bc.ControlMaster;
+									
+                                    if (list[0] >= (bc.DamageMin - pm.Paragon_1PetMinMaxDamage)  && (bc.DamageMin  - pm.Paragon_1PetMinMaxDamage)<= list[1])
                                     {
                                         value = i + 1;
                                         return;

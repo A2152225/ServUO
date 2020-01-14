@@ -15,6 +15,7 @@ using Server.Network;
 using Server.Regions;
 using Server.Services.Virtues;
 using Server.Targeting;
+using daat99;
 #endregion
 
 namespace Server.Mobiles
@@ -1273,6 +1274,10 @@ namespace Server.Mobiles
 
                     Banker.Deposit(from, gold, true);
                 }
+				//daat99 OWLTR start - give tokens for bods
+				if (OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.BOD_GIVE_TOKENS) && gold > 100)
+					TokenSystem.GiveTokensToPlayer(from as PlayerMobile, (int)(gold / 100));
+				//daat99 OWLTR end - give tokens for bods				 
 
 				Titles.AwardFame(from, fame, true);
 

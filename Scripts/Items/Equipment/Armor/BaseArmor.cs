@@ -2682,7 +2682,7 @@ namespace Server.Items
                 {
                     HitPoints += selfRepair;
 
-                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(60);
+                    NextSelfRepair = DateTime.UtcNow + TimeSpan.FromSeconds(20);
                 }
                 else
                 {

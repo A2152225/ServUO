@@ -28,7 +28,7 @@ namespace Server.Gumps
 			this.AddLabel(235, 222,500, @"3 Points");
 			this.AddLabel(130, 27,500, @"Self");
 			this.AddLabel(235, 347,500, @"4 Points");
-			this.AddLabel(611, 27,500, @"Pets: Applies to all Controlled Pets");
+			this.AddLabel(611, 27,500, @"Pets: Applies to all Actively Controlled Pets");
 			this.AddButton(950, 460, 241, 243, (int)Buttons.Close, GumpButtonType.Reply, 0);
 			this.AddButton(15, 70, 210, 211, (int)Buttons.P1Str, GumpButtonType.Reply, 0);
 			this.AddButton(15, 100, 210, 211, (int)Buttons.P1Dex, GumpButtonType.Reply, 0);
@@ -79,7 +79,7 @@ namespace Server.Gumps
 			this.AddButton(559, 72, 210, 211, (int)Buttons.PetStats, GumpButtonType.Reply, 0);
 			this.AddButton(559, 102, 210, 211, (int)Buttons.Pet2DR, GumpButtonType.Reply, 0);
 			this.AddLabel(579, 72,500, @"+10 Health, +10 Mana, +10 Stam ("+Convert.ToString(pm.Paragon_PetStats)+")");
-			this.AddLabel(580, 102,500, @"+2 Damage Reduction: Reduces Dmaage After Resists ("+Convert.ToString(pm.Paragon_2PetDamageReduction)+")");
+			this.AddLabel(580, 102,500, @"+2 Damage Reduction: Reduces Damage After Resists ("+Convert.ToString(pm.Paragon_2PetDamageReduction)+")");
 			this.AddButton(559, 188, 210, 211, (int)Buttons.Pet1Damage, GumpButtonType.Reply, 0);
 			this.AddLabel(579, 186,500, @"+1 Min & Max Damage ("+Convert.ToString(pm.Paragon_1PetMinMaxDamage)+")");
 			this.AddLabel(557, 45,500, @"1 Point");

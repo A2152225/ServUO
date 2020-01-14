@@ -21,39 +21,39 @@ namespace Server.Mobiles
 		public static long EXP2 = 0;
 		public static void CheckLevel( PlayerMobile pm ) 
         {
+			EXP2 = 0;
 			PlayerMobile from = pm;
 			long Exp = from.EXP;
 			
 			int Level = from.LvL;
+			if (from.LvL >= from.MaxLvl) 
+			Level = from.PrestigeLvl; 
 			long LastLevel = from.LastLevelExp;
-			long ExpRequired = GetNextLevelXP(from);   ///((long)(LastLevel *1.2));     // (int)(((Math.Pow((Level*2.5), 1.5)*1.5)+20)*AvgMonsterExp)+LastLevel;
+			double XP = (100 * Math.Pow(1.2,from.LvL));
+			if (XP < 100) XP = 100;
+			long XPO = 0;
+			
+			if (from.LvL > from.MaxLvl)
+			{
+			while (from.LvL> from.MaxLvl)
+			{
+				 XPO += (long)((100 * Math.Pow(1.2,from.LvL)));
+				from.LvL--;
+			}
+			XP -= XPO; 
+			//from.EXP += XPO;
+			}
+	//	Console.WriteLine(" lvl at start of GetNextLevelXP method {0}",lvl);
+			long ExpRequired = (long)XP;//GetNextLevelXP(from);   ///((long)(LastLevel *1.2));     // (int)(((Math.Pow((Level*2.5), 1.5)*1.5)+20)*AvgMonsterExp)+LastLevel;
 	
-				
-			if ( Exp > ExpRequired )
+			if ( Exp > XP) //ExpRequired )
 			{
 				
-			EXP2 = from.EXP - ExpRequired;
+			//EXP2 = (from.EXP - ExpRequired);
 				
-		from.EXP = EXP2; 
-				if ( Level < from.MaxLvl )		//changed 12-12-14 breaker, MaxLvl  prop	/////// Changed from 500 on 7-12-07 {RE} to 2000 ////
-				{
-						LevelUp(from);  //normal level up check below max level 
-						
-					if (from.LvL == from.MaxLvl && from.PrestigeLvl == 0)	// after max level reached , reset XP values for Paragon Leveling calculations
-					{
-						from.LastLevelExp = 0;
-						from.EXP = 0;
-						if (EXP2 >= 1)
-						from.EXP += EXP2; 
-						from.SendMessage("You have reached the maximum level at this time, additional experience will go into paragon levels.");
-					}
-						
-						//	CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
-						//ExpRequired = ((long)(ExpRequired * 1.2));
-				}
-				
-				
-					if (from.LvL == from.MaxLvl)
+	
+		
+		if (from.LvL == from.MaxLvl)
 					{
 						from.PrestigeLvl++;
 						Effects.SendTargetParticles( from, 14170, 1, 17, 2924-1, 2, 0, EffectLayer.Waist, 0 );//Blue/gold sparkles
@@ -65,59 +65,77 @@ namespace Server.Mobiles
 						from.ParagonPoints++;
 						pm.InvalidateProperties();
 					}
+					
+					
+				if ( Level < from.MaxLvl )		//changed 12-12-14 breaker, MaxLvl  prop	/////// Changed from 500 on 7-12-07 {RE} to 2000 ////
+				{
+						LevelUp(from);  //normal level up check below max level 
+						
+						
+					if (from.LvL == from.MaxLvl && from.PrestigeLvl == 0)	// after max level reached , reset XP values for Paragon Leveling calculations
+					{
+						from.LastLevelExp = 0;
+					//	from.EXP = 0;
+					//	if (EXP2 >= 1)
+					//	from.EXP += EXP2; 
+						from.SendMessage("You have reached the maximum level at this time, additional experience will go into paragon levels.");
+					}
+				//	if (from.EXP > 0)
+					//5555555555555555555555555555from) ;//Re-triggers levelup if exp is more than 1 level ahead
+						
+						//	CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
+						//ExpRequired = ((long)(ExpRequired * 1.2));
+				}
+				
+				
+					
 
 	//	Exp = Exp - ExpRequired;
 			
-			if (EXP2 >= 1)
-			CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
-				
+		//	if (EXP2 >= 1)
+					from.EXP -= (long)XP; // EXP2; 
 			}  //end Enough XP to Level 
 			
 			if ( from.ShowExpBar == true )
 				from.SendGump( new ExpBarGump(from));
 		}
 		
-		public static long GetNextLevelXP(PlayerMobile pm)
+		public static long GetNextLevelXP( PlayerMobile from )
 		{
-		int lvl = pm.LvL;
-		if (pm.PrestigeLvl >= 1) 
-			{
-			lvl = pm.PrestigeLvl; 
-			}
-		double XP = 100;
-		int counter = 0;
-		
-		while (counter < lvl)
-			{
-			XP = (XP * 1.2);
-			counter++;
-			}
-		return ((long)XP);  //returns the amount of xp needed for the Next Level Up.
-		
-			
+				int Level = from.LvL;
+			if (from.LvL >= from.MaxLvl) 
+			Level = from.PrestigeLvl; 
+			long LastLevel = from.LastLevelExp;
+			double XP = (100 * Math.Pow(1.2,from.LvL));
+			if (XP <= 100) XP = 100;
+			return (long)XP;
 		}
 		
-		public static void LevelUp( PlayerMobile pm )
+		public static void LevelUp( PlayerMobile from )
 		{
-			PlayerMobile from = pm;
-			from.LastLevelExp = GetNextLevelXP(pm);
-			from.LvL += 1;
+			//PlayerMobile from = pm;
 			
+			double XP = (100 * Math.Pow(1.2,from.LvL));
+			if (XP <= 100) XP = 100;
+			from.LastLevelExp = (long)XP;
+			from.LvL++;// 1;
+			from.InvalidateProperties();
+
 
 			
-				if (pm.Young && pm.LvL == 20)  //remove young protection at 20
+				if (from.Young && from.LvL == 20)  //remove young protection at 20
 				{
-					Account acc = pm.Account as Account;
+					Account acc = from.Account as Account;
 					if (acc != null)
 					acc.RemoveYoungStatus(0);
-					pm.Young = false;
-					pm.YoungSaves = 0;
-					pm.SendMessage("You have reached a point where you are no longer considered to be young, you will no longer have the protection from death that has been afforded to you until this point. Good Luck.");
+					from.Young = false;
+					from.YoungSaves = 0;
+					from.SendMessage("You have reached a point where you are no longer considered to be young, you will no longer have the protection from death that has been afforded to you until this point. Good Luck.");
 				}
 			
 			if (from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
 			from.StatCap += 8; //= 1200 + from.LvL;  //stat cap should be set to 1200 base on character creation, no need to redefine with every level, just increase
-			
+			from.SP+=4;
 			from.RawStr ++;
 			from.RawStr ++;
 			from.RawDex ++;
@@ -126,12 +144,12 @@ namespace Server.Mobiles
 			from.RawInt ++;
 			
 			
-			int Level = from.LvL;
+			//int Level = from.LvL;
 
-			if ( Level >= 1 && from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
+			if ( from.LvL >= 1 && from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
 				from.SkillsCap += 80;
 				
-			from.SendMessage("You have gained a level! You are now level " + Level);
+			from.SendMessage("You have gained a level! You are now level " + from.LvL);
 /*			if ( from.SP > 0 )
 			{
 				from.SendMessage("You have " + from.SP + " specialization points to allocate");
@@ -144,9 +162,9 @@ namespace Server.Mobiles
 			from.Hits = from.HitsMax;
 			from.Mana = from.ManaMax;
 			from.Stam = from.StamMax;
-			pm.InvalidateProperties();
+			from.InvalidateProperties();
 
-		//	CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
+			
 		}
 		public static void MonsterExp( Mobile killer, Mobile monster, Point3D loc, double Percent, long XPAMOUNT )
 		{
@@ -220,7 +238,7 @@ namespace Server.Mobiles
 					}
 				}
 				
-				ExpGained = (long)(ExpGained * xpbonus);
+				ExpGained  = (long)(ExpGained * xpbonus);
 			}
 				
 
@@ -271,7 +289,7 @@ namespace Server.Mobiles
 		public static void HarvestExp( Mobile m, HarvestResource resource, bool success, int amount )
 		{
 			PlayerMobile from = m as PlayerMobile;
-			int oremodifier = 4;
+			int oremodifier = 8;
 			if ( from != null )
 			{
 				HarvestResource Res = resource;
@@ -849,9 +867,11 @@ namespace Server.Mobiles
 
 					if ( quality == 0 )//low quality
 						ExpGained = (int)((decimal.Divide(ExpGained,5))*2);
+					else if ( quality == 1 )//normal quality
+						ExpGained = (int)((decimal.Divide(ExpGained,5))*5);
 					else if ( quality == 2 )//exceptional
-						ExpGained = (int)((decimal.Divide(ExpGained,5))*3);
-					if ( failed == true )//Quarter exp on fail
+						ExpGained = (int)((decimal.Divide(ExpGained,5))*6);
+					if ( failed == true )//20% exp on fail
 						ExpGained = (int)(decimal.Divide(ExpGained,5));
 					if ( ExpGained > 0 )
 					{

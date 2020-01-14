@@ -1,3 +1,9 @@
+Merry Christmas
+
+I've added in the (non dan related) additional resources, so those should be working now.  Feel free to play around with them, Added the animal bod system too, but it seems to not be showing up on the vendors --  I haven't made any changes to that system yet, so brush is available, as are the dyes at this time.
+
+
+
 Happy Thanksgiving
 
 

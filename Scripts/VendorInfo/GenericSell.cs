@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Server.Items;
 using System.Linq;
+using daat99;
 
 namespace Server.Mobiles
 {
@@ -68,7 +69,23 @@ namespace Server.Mobiles
 
                 price += 100 * (int)armor.ProtectionLevel;
 
-                if (price < 1)
+				//daat99 OWLTR start - resources cost more
+				if ( OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.RESOURCE_COST) )
+				{
+					double d_Mult = (int)armor.Resource;
+					if ( d_Mult > 1 && d_Mult < 101 )
+						d_Mult = 10+(d_Mult - 1);
+					else if ( d_Mult > 101 && d_Mult < 201 )
+						d_Mult = 10+(d_Mult - 101);
+					else if ( d_Mult > 201 && d_Mult < 300 )
+						d_Mult = 10+(d_Mult - 201);
+					else
+						d_Mult = 10;
+					price = (int)((d_Mult*price)/10);
+				}
+				//daat99 OWLTR end - resources cost more
+
+				if (price < 1)
                     price = 1;
             }
             else if (item is BaseWeapon)
@@ -82,7 +99,21 @@ namespace Server.Mobiles
 
                 price += 100 * (int)weapon.DurabilityLevel;
 
-                price += 100 * (int)weapon.DamageLevel;
+				price += 100 * (int)weapon.DamageLevel;
+
+				//daat99 OWLTR start - resources cost more
+				if ( OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.RESOURCE_COST) )
+				{
+					double d_Mult = (int)weapon.Resource;
+					if ( d_Mult > 1 && d_Mult < 101 )
+						d_Mult = 10+(d_Mult - 1);
+					else if ( d_Mult > 300 && d_Mult < 400 )
+						d_Mult = 10+(d_Mult - 300);
+					else
+						d_Mult = 10;
+					price = (int)((d_Mult*price)/10);
+				}
+				//daat99 OWLTR end - resources cost more
 
                 if (price < 1)
                     price = 1;

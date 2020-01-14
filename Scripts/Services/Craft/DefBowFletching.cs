@@ -1,6 +1,7 @@
 using System;
 using Server.Items;
-using Server.Mobiles; 
+using daat99;
+using Server.Mobiles;
 
 namespace Server.Engines.Craft
 {
@@ -89,7 +90,7 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-				Experience.CraftExp( from, quality, failed, item );
+			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -148,7 +149,7 @@ namespace Server.Engines.Craft
 
             if (Core.SE)
             {
-                index = AddCraft(typeof(FukiyaDarts), 1044565, 1030246, 50.0, 73.8, typeof(Board), 1044041, 1, 1044351);
+                index = AddCraft(typeof(FukiyaDarts), 1044565, 1030246, 50.0, 90.0, typeof(Board), 1044041, 1, 1044351);
                 this.SetUseAllRes(index, true);
             }
 
@@ -245,7 +246,6 @@ namespace Server.Engines.Craft
 
             this.SetSubRes(typeof(Board), 1072643);
 
-
             // Add every material you want the player to be able to choose from
             // This will override the overridable material	TODO: Verify the required skill amount
             this.AddSubRes(typeof(Board), 1072643, 00.0, 1044041, 1072652);
@@ -254,12 +254,22 @@ namespace Server.Engines.Craft
             this.AddSubRes(typeof(YewBoard), 1072646, 85.0, 1044041, 1072652);
             this.AddSubRes(typeof(HeartwoodBoard), 1072647, 95.0, 1044041, 1072652);
             this.AddSubRes(typeof(BloodwoodBoard), 1072648, 95.0, 1044041, 1072652);
+            
             this.AddSubRes(typeof(FrostwoodBoard), 1072649, 95.0, 1044041, 1072652);
+			this.AddSubRes(typeof(EbonyBoard), "Ebony", 80.0, 1072652);
+			this.AddSubRes(typeof(BambooBoard), "Bamboo", 90.0, 1072652);
+			this.AddSubRes(typeof(PurpleHeartBoard), "PurpleHeart", 100.0,  1072652);
+			this.AddSubRes(typeof(RedwoodBoard), "Redwood", 110.0, 1072652);
+			this.AddSubRes(typeof(PetrifiedBoard), "Petrified", 119.0, 1072652);
             #endregion
+			
+			//daat99 OWLTR start - custom Wood
+            //daat99.ResourceHelper.AddWoodResources(this);
+            //daat99 OWLTR end - custom Wood 
 
             this.MarkOption = true;
             this.Repair = Core.AOS;
-			this.CanEnhance = Core.ML;
+			this.CanEnhance = Core.ML;        
         }
     }
 }

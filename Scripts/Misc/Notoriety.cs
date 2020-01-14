@@ -209,7 +209,7 @@ namespace Server.Misc
 		public static int CorpseNotoriety(Mobile source, Corpse target)
 		{
 			if (target.AccessLevel > AccessLevel.VIP)
-				return Notoriety.CanBeAttacked;
+				return Notoriety.Innocent;  //stop attacking staff with aoe spells please
 
 			Body body = target.Amount;
 
@@ -355,7 +355,7 @@ namespace Server.Misc
 				return Notoriety.Ally;
 
 			if (target.IsStaff())
-				return Notoriety.CanBeAttacked;
+				return Notoriety.Innocent;
 
 			if (source.Player && target is BaseCreature)
 			{
@@ -364,7 +364,7 @@ namespace Server.Misc
 				var master = bc.GetMaster();
 
 				if (master != null && master.IsStaff())
-					return Notoriety.CanBeAttacked;
+					return Notoriety.Innocent;
 
 				master = bc.ControlMaster;
 

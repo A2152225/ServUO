@@ -44,6 +44,14 @@ namespace Server.Items
         Urali,
         Sakkhra,
         #endregion,
+		#region FS:ATS Edits
+        PetResurrect,
+        PetShrink,
+        PetHeal,
+        PetGreaterHeal,
+        PetCure,
+        PetGreaterCure,
+        #endregion
         Shatter,
         FearEssence
     }

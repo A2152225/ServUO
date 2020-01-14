@@ -704,6 +704,26 @@ namespace Server.Items
             }
         }
 
+        //daat99 OWLTR start - Jewlery resources
+        public void ApplyAttributesTo(BaseJewel jewelry)
+        {
+            CraftResourceInfo resInfo = CraftResources.GetInfo(Resource);
+
+            if (resInfo == null)
+                return;
+
+            CraftAttributeInfo attrs = resInfo.AttributeInfo;
+
+            if (attrs == null)
+                return;
+
+            int attributeCount = Utility.RandomMinMax(attrs.RunicMinAttributes, attrs.RunicMaxAttributes);
+            int min = attrs.RunicMinIntensity;
+            int max = attrs.RunicMaxIntensity;
+
+            ApplyAttributesTo(jewelry, true, 0, attributeCount, min, max);
+        }
+        //daat99 OWLTR end - Jewlery resources
         public static void ApplyAttributesTo(BaseJewel jewelry, int attributeCount, int min, int max)
         {
             ApplyAttributesTo(jewelry, false, 0, attributeCount, min, max);
@@ -1124,5 +1144,11 @@ namespace Server.Items
 
             return (totalDamage - random);
         }
+		         //daat99 OWTLR start - runic storage
+        public virtual Type GetCraftableType()
+        {
+            return null;
+        }
+        //daat99 OWTLR end - runic storage 
     }
 }

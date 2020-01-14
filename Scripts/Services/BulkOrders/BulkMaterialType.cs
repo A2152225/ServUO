@@ -15,34 +15,35 @@ namespace Server.Engines.BulkOrders
         Agapite,
         Verite,
         Valorite,
-		Blaze,
-		Ice,
-		Toxic,
-		Electrum,
-		Platinum,
+        Blaze,
+        Ice,
+        Toxic,
+        Electrum,
+        Platinum,
 		Royalite,
 		Danite,
         Spined,
-		Horned,
-		Barbed,
-		Polar,
-		Synthetic,
-		BlazeL,
-		Daemonic,
-		Shadow,
-		Frost,
-		Ethereal,
-		Heartwood,
-		Bloodwood,
-		Frostwood,
-		OakWood,
-		AshWood,
-		YewWood,
-		Ebony,
-		Bamboo,
-		PurpleHeart,
-		Redwood,
-		Petrified
+        Horned,
+        Barbed,
+        Polar,
+        Synthetic,
+        BlazeL,
+        Daemonic,
+        Shadow,
+        Frost,
+        Ethereal,
+        OakWood,
+        AshWood,
+        YewWood,
+        Heartwood,
+        Bloodwood,
+        Frostwood,
+        Ebony,
+        Bamboo,
+        PurpleHeart,
+        Redwood,
+        Petrified
+        //daat99 OWLTR end - custom resources
     }
 
     public enum BulkGenericType
@@ -51,6 +52,7 @@ namespace Server.Engines.BulkOrders
         Cloth,
         Leather,
         Wood
+        //RegularWood
     }
 
     public class BGTClassifier
@@ -82,6 +84,7 @@ namespace Server.Engines.BulkOrders
             else if (deedType == BODType.Fletching || deedType == BODType.Carpentry)
             {
                 return BulkGenericType.Wood;
+                //return BulkGenericType.RegularWood;
             }
 
             return BulkGenericType.Iron;

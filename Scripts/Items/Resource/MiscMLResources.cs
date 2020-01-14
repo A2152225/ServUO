@@ -933,7 +933,7 @@ namespace Server.Items
         }
     }
 
-    [TypeAlias("Server.Items.Putrefication")]
+    [TypeAlias("Server.Items.Putrefaction")]
     public class Putrefaction : Item, ICommodity
     {
         [Constructable]

@@ -2164,7 +2164,7 @@ namespace Server.Items
 
 			if (inPack >= 5)
 			{
-				return 100;
+				return (25 * inPack); //was 100 ---  Added support for larger packs 
 			}
 			else if (inPack >= 4)
 			{
@@ -2178,6 +2178,7 @@ namespace Server.Items
 			{
 				return 25;
 			}
+			
 
 			return 0;
 		}
