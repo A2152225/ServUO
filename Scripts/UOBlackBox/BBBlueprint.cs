@@ -1,5 +1,5 @@
  //UO Black Box - By GoldDraco13
-//1.0.0.93
+//1.0.0.99
 
 using Server.Mobiles;
 using Server.Items;
@@ -29,13 +29,16 @@ namespace Server.UOBlackBox
 
             if (PM != null)
             {
-                if (!IsChildOf(PM.Backpack))
+               if (File.Exists(@"C:\BlackBox\SAVE\Builds\Blueprints\Breaker\" + fileName))
                 {
-                    LoadFromBlueprints(PM, @"C:\BlackBox\SAVE\Builds\Blueprints\" + fileName, X, Y, Z, Map, Name);
-                }
-                else
-                {
-                    LoadFromBlueprints(PM, @"C:\BlackBox\SAVE\Builds\Blueprints\" + fileName, PM.X, PM.Y, PM.Z, PM.Map, Name);
+                    if (!IsChildOf(PM.Backpack))
+                    {
+                       LoadFromBlueprints(PM, @"C:\UOBlackBox\UOBlackBoxServer\SAVE\Builds\Blueprints\Breaker\" + fileName, X, Y, Z, Map, Name);
+                    }
+                    else
+                    {
+                       LoadFromBlueprints(PM, @"C:\UOBlackBox\UOBlackBoxServer\SAVE\Builds\Blueprints\Breaker\" + fileName, PM.X, PM.Y, PM.Z, PM.Map, Name);
+                    }
                 }
             }
         }

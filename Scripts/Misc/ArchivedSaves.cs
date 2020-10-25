@@ -15,6 +15,7 @@ namespace Server.Misc
             Months,
             Days,
             Hours,
+			SixHours,
             Minutes
         }
 
@@ -168,7 +169,16 @@ namespace Server.Misc
 
                 var ampm = now.Hour < 12 ? "AM" : "PM";
                 var hour12 = now.Hour > 12 ? now.Hour - 12 : now.Hour <= 0 ? 12 : now.Hour;
-
+				var hour6 =0;
+				if (now.Hour >= 0 && now.Hour < 6)
+					hour6 = 5;
+				if (now.Hour >= 6 && now.Hour < 12)
+					hour6 = 11;
+				if (now.Hour >= 12 && now.Hour < 18)
+					hour6 = 5;
+				if (now.Hour >= 18 && now.Hour < 24)
+					hour6 = 11;
+				
                 string date;
 
                 switch (Merge)
@@ -176,6 +186,7 @@ namespace Server.Misc
                     case MergeType.Months: date = string.Format("{0}-{1}", now.Month, now.Year); break;
                     case MergeType.Days: date = string.Format("{0}-{1}-{2}", now.Day, now.Month, now.Year); break;
                     case MergeType.Hours: date = string.Format("{0}-{1}-{2} {3:D2} {4}", now.Day, now.Month, now.Year, hour12, ampm); break;
+					case MergeType.SixHours: date = string.Format("{0}-{1}-{2} {3:D2} {4}", now.Day, now.Month, now.Year, hour6, ampm); break;
                     case MergeType.Minutes: default: date = string.Format("{0}-{1}-{2} {3:D2}-{4:D2} {5}", now.Day, now.Month, now.Year, hour12, now.Minute, ampm); break;
                 }
 

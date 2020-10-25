@@ -1,5 +1,5 @@
  //UO Black Box - By GoldDraco13
-//1.0.0.93
+//1.0.0.99
 
 using Server.Mobiles;
 using System;
@@ -8,7 +8,7 @@ namespace Server.UOBlackBox
 {
     class BlackBoxTravel : Item
     {
-        public bool CheckCleanUp = false;
+        public string Owner;
 
         private Map old_Map;
         private Map new_Map = Map.Trammel;
@@ -37,9 +37,10 @@ namespace Server.UOBlackBox
         private int hue;
 
         [Constructable]
-        public BlackBoxTravel()
+        public BlackBoxTravel(string owner)
         {
-            Name = "Black Box Moongate";
+            Name = "Black Box Portal";
+            Owner = owner;
 
             Movable = false;
             ItemID = 0xF6C;
@@ -54,9 +55,10 @@ namespace Server.UOBlackBox
         }
 
         [Constructable]
-        public BlackBoxTravel(Map map, int x, int y, int z, string pass)
+        public BlackBoxTravel(string owner, Map map, int x, int y, int z, string pass)
         {
-            Name = "Black Box Moongate";
+            Name = "Black Box Portal";
+            Owner = owner;
 
             Movable = false;
             ItemID = 0xF6C;
@@ -82,9 +84,10 @@ namespace Server.UOBlackBox
         }
 
         [Constructable]
-        public BlackBoxTravel(Map map, int x, int y, int z, string pass, bool isSpecial)
+        public BlackBoxTravel(string owner, Map map, int x, int y, int z, string pass, bool isSpecial)
         {
             Name = "Black Box SoulStone";
+            Owner = owner;
 
             IsSpecial = isSpecial;
 
@@ -359,7 +362,7 @@ namespace Server.UOBlackBox
                 }
                 else
                 {
-                    BlackBoxTravelEnd i_BlackBoxEnd = new BlackBoxTravelEnd(i_Gate.hue);
+                    BlackBoxTravelEnd i_BlackBoxEnd = new BlackBoxTravelEnd(i_Gate.hue, pm.Name);
 
                     i_BlackBoxEnd.MoveToWorld(i_Gate.new_Location, i_Gate.new_Map);
                     Effects.SendLocationEffect(i_Gate.new_Location, i_Gate.new_Map, 0x3728, 13);
@@ -442,7 +445,7 @@ namespace Server.UOBlackBox
 
     class BlackBoxTravelEnd : Item
     {
-        public bool CheckCleanUp = false;
+        public string Owner;
 
         private DeleteTimer deleteTimer;
         private static int deleteDelay = 10;
@@ -451,9 +454,10 @@ namespace Server.UOBlackBox
         private static int soundDelay = 50;
 
         [Constructable]
-        public BlackBoxTravelEnd(int hue)
+        public BlackBoxTravelEnd(int hue, string owner)
         {
-            Name = "Black Box Portal";
+            Name = "Black Box Portal Exit";
+            Owner = owner;
 
             Movable = false;
             ItemID = 0xF6C;

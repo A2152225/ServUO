@@ -62,8 +62,9 @@ namespace Server.Gumps
 				AddLabel(60, 175, 1149, @"Hit Points");
 				AddLabel(60, 200, 1149, @"Stamina");
 				AddLabel(60, 225, 1149, @"Mana");
-
-				AddLabel(330, 175, 1149, bc.HitsMax.ToString() + "/" + FSATS.NormalHITS.ToString() );
+				int NewMaxHealth = (FSATS.NormalHITS + Convert.ToInt32(((FSATS.NormalHITS  * bc.Generation))/3));
+				Console.WriteLine("Time To Load Variables: {0}",NewMaxHealth );
+				AddLabel(330, 175, 1149, bc.HitsMax.ToString() + "/" + (FSATS.NormalHITS + Convert.ToInt32(((FSATS.NormalHITS  * bc.Generation))/3)).ToString() );
 				AddLabel(330, 200, 1149, bc.StamMax.ToString() + "/" + FSATS.NormalSTAM.ToString() );
 				AddLabel(330, 225, 1149, bc.ManaMax.ToString() + "/" + FSATS.NormalMANA.ToString() );
 
@@ -218,8 +219,8 @@ namespace Server.Gumps
 
 			if ( info.ButtonID == 1 )
 			{
-				if ( bc.HitsMax - (pm.Paragon_PetStats*10) >= FSATS.NormalHITS )
-				{
+				if ( bc.HitsMax - (pm.Paragon_PetStats*10) >= (FSATS.NormalHITS + Convert.ToInt32(((FSATS.NormalHITS  * bc.Generation))/3)))
+				{											//int --   5000+ (5000*2)/3
 					from.SendMessage( "This cannot gain any farther." );
 
 					if ( bc.AbilityPoints != 0 )
@@ -230,9 +231,9 @@ namespace Server.Gumps
 					bc.AbilityPoints -= 1;
 
 					if ( bc.HitsMaxSeed != -1 )
-						bc.HitsMaxSeed += 1;
+						bc.HitsMaxSeed += 3;
 					else
-						bc.HitsMaxSeed = bc.HitsMax + 1;
+						bc.HitsMaxSeed = bc.HitsMax + 3;
 
 					if ( bc.AbilityPoints != 0 )
 						from.SendGump( new PetLevelGump( bc ) );

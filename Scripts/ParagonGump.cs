@@ -53,7 +53,7 @@ namespace Server.Gumps
 			this.AddLabel(36, 350,500, "+1 Mana Regen ("+Convert.ToString(pm.Paragon_1ManaRegen)+")");
 			this.AddLabel(36, 460,500, "+3 Bag Item Capacity ("+Convert.ToString(pm.Paragon_3MaxCarryCapacity)+")");
 			this.AddLabel(36, 430,500, "+5 Increased Healing ("+Convert.ToString(pm.Paragon_5HealingInc)+")");
-			this.AddLabel(36, 400,500, "+1 Total Skill Cap ("+Convert.ToString(pm.Paragon_1SkillsCap)+")");
+			this.AddLabel(36, 400,500, "+5 Total Skill Cap ("+Convert.ToString(pm.Paragon_1SkillsCap)+")");
 			this.AddLabel(257, 454,500, "+1 Control/Follower Slot ("+Convert.ToString(pm.Paragon_1ControlSlot)+")");
 			this.AddButton(236, 66, 210, 211, (int)Buttons.P2Physical, GumpButtonType.Reply, 0);
 			this.AddButton(236, 96, 210, 211, (int)Buttons.P2Fire, GumpButtonType.Reply, 0);
@@ -71,8 +71,11 @@ namespace Server.Gumps
 			this.AddLabel(256, 249,500, @"+1 Spell Damage Increase ("+Convert.ToString(pm.Paragon_1SDI)+")");
 			this.AddLabel(257, 279,500, @"+1 Weapon Damage Increase ("+Convert.ToString(pm.Paragon_1WDI)+")");
 			this.AddLabel(256, 308,500, @"+1 Swing Speed Increase ("+Convert.ToString(pm.Paragon_1SSI)+")");
+			if ( pm.Paragon_1FC < 14)
 			this.AddButton(236, 370, 210, 211, (int)Buttons.P1FC, GumpButtonType.Reply, 0);
+			if ( pm.Paragon_1FCR < 6)
 			this.AddButton(236, 400, 210, 211, (int)Buttons.P1FCR, GumpButtonType.Reply, 0);
+			
 			this.AddLabel(257, 370,500, @"+1 Faster Casting Speed ("+Convert.ToString(pm.Paragon_1FC)+")");
 			this.AddLabel(257, 400,500, @"+1 Faster Casting Recovery ("+Convert.ToString(pm.Paragon_1FCR)+")");
 			this.AddButton(237, 455, 210, 211, (int)Buttons.P1Control, GumpButtonType.Reply, 0);
@@ -222,7 +225,7 @@ try{
 				{
 			//	Console.WriteLine("++ Int");
 				if (pm.ParagonPoints>0){ pm.ParagonPoints--;
-				pm.SkillsCap+=10; pm.Paragon_1SkillsCap++;}
+				pm.SkillsCap+=50; pm.Paragon_1SkillsCap++;}
 				pm.SendGump( new ParagonGump(pm));	
 
 					break;

@@ -77,7 +77,7 @@ namespace Xanthos.Utilities
 		private const string kFileSuffix	= ".txt";
 		private const string kPathMotd		= "Motd/";
 		private const string kPathArchive	= kPathMotd + "Archive/";
-		private const string kGreeting	= "Welcome to: Akara Essex Ultima Online Shard";
+		private const string kGreeting	= "Welcome to: Glory";
 		private const string kDefaultBody	= "There is no current news.";
 		private const string kDefaultTitle	= "Current News";
 		private const string kNewMotdMessage= "The message of the day has been updated. To see it, type motd.";

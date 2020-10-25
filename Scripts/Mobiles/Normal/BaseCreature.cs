@@ -2548,6 +2548,16 @@ public virtual void OnDrainLife(Mobile victim)
 		public  int ParagonDamageBuff(int damage)
 		{	
 		 int PMx = 0;
+			if (this.SummonMaster != null)
+			{
+				Mobile SM = this.SummonMaster;
+				if (SM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)SM);
+					PMx=(pm.Paragon_1PetMinMaxDamage); 
+				}
+			}
+			
 			if (this.ControlMaster != null)
 			{
 				Mobile CM = this.ControlMaster;
@@ -2563,6 +2573,16 @@ public virtual void OnDrainLife(Mobile victim)
 		public  int ParagonStatBuff(int damage)
 		{	
 		 int PMx = 0;
+		 		if (this.SummonMaster != null)
+			{
+				Mobile SM = this.SummonMaster;
+				if (SM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)SM);
+					PMx=(pm.Paragon_1PetMinMaxDamage); 
+				}
+			}
+			
 			if (this.ControlMaster != null)
 			{
 				Mobile CM = this.ControlMaster;
@@ -2578,6 +2598,20 @@ public virtual void OnDrainLife(Mobile victim)
 			public  int ParagonDamageRBuff(int damage)
 		{	
 		 int PMx = 0;
+		 		if (this.SummonMaster != null)
+			{
+				Mobile SM = this.SummonMaster;
+				if (SM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)SM);
+					PMx=(pm.Paragon_1PetMinMaxDamage); 
+				}
+							damage -= PMx*2;
+				if (damage < 1)
+					damage = 1;
+			}
+			
+			
 			if (this.ControlMaster != null)
 			{
 				Mobile CM = this.ControlMaster;
@@ -2596,6 +2630,15 @@ public virtual void OnDrainLife(Mobile victim)
 		public  int ParagonHitsStamManaBuff(int damage)
 		{	
 		 int PMx = 0;
+		 	if (this.SummonMaster != null)
+			{
+				Mobile SM = this.SummonMaster;
+				if (SM is PlayerMobile)
+				{
+					PlayerMobile pm = ((PlayerMobile)SM);
+					PMx=(pm.Paragon_1PetMinMaxDamage); 
+				}
+			}
 			if (this.ControlMaster != null)
 			{
 				Mobile CM = this.ControlMaster;
@@ -4889,9 +4932,23 @@ public virtual void OnDrainLife(Mobile victim)
 
         public virtual void OnGotMeleeAttack(Mobile attacker)
         {
-            if (AutoDispel && attacker is BaseCreature && ((BaseCreature)attacker).IsDispellable &&
-                AutoDispelChance > Utility.RandomDouble())
+            	int DispelProtection = 0;
+				if (attacker is BaseCreature)
+				{
+					BaseCreature BC = (BaseCreature)attacker;
+					if (BC.SummonMaster is PlayerMobile)
+					{
+					PlayerMobile SM = (PlayerMobile)(BC.SummonMaster);
+					DispelProtection += (SM.ParagonPoints26);
+					}
+					
+				}
+				DispelProtection /= 100;
+				
+			if (AutoDispel && attacker is BaseCreature && ((BaseCreature)attacker).IsDispellable &&
+                (AutoDispelChance - DispelProtection)    > Utility.RandomDouble())
             {
+			
                 Dispel(attacker);
             }
 			 if (!m_InRage && CanDoRage)						   
@@ -8108,6 +8165,17 @@ public string CType = "default";  //Declare variable for use of transferring to 
             // Skill Masteries
             creature.HitsMaxSeed += MasteryInfo.EnchantedSummoningBonus(creature);
             creature.Hits = creature.HitsMaxSeed;
+			
+			
+			//Paragon point summoned health/stam/mana fix 
+			if (creature.Hits < creature.HitsMax)
+				creature.Hits = creature.HitsMax;
+			
+			if (creature.Stam < creature.StamMax)
+				creature.Stam = creature.StamMax;
+			
+			if (creature.Mana < creature.ManaMax)
+				creature.Mana = creature.ManaMax;
 
             return true;
         }        

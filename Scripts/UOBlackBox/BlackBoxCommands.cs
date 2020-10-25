@@ -1,8 +1,9 @@
  //UO Black Box - By GoldDraco13
-//1.0.0.93
+//1.0.0.99
 
 using Server.Commands;
 using Server.Commands.Generic;
+using Server.Mobiles;
 
 namespace Server.UOBlackBox
 {
@@ -43,13 +44,15 @@ namespace Server.UOBlackBox
                     {
                         AddResponse(result);
 
+                        PlayerMobile pm = e.Mobile as PlayerMobile;
+
                         if (result.Contains("("))
                         {
                             string[] getVal = result.TrimEnd(')').Split('(');
 
                             string nameID = getVal[1];
 
-                            BlackBoxSender.SendBBCMD(nameID, "0");
+                            BlackBoxSender.SendBBCMD(nameID, "0", pm);
                         }
                     }
                 }
@@ -89,6 +92,8 @@ namespace Server.UOBlackBox
                     {
                         AddResponse(result);
 
+                        PlayerMobile pm = e.Mobile as PlayerMobile;
+
                         if (result.Contains(" = "))
                         {
                             string[] getVal = result.Split('(');
@@ -100,7 +105,7 @@ namespace Server.UOBlackBox
                                 hue = getHue[1].Trim(' ');
                             }
 
-                            BlackBoxSender.SendBBCMD("0", hue);
+                            BlackBoxSender.SendBBCMD("0", hue, pm);
                         }
                     }
                 }

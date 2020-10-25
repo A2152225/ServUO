@@ -1,9 +1,10 @@
  //Origonal Base Script by ArteGordon
 //UO Black Box - Revised - By GoldDraco13
-//1.0.0.93
+//1.0.0.99
 
 using System.IO;
 using System.Collections;
+using System.Text;
 using Server.Items;
 using Server.Commands;
 
@@ -26,7 +27,7 @@ namespace Server.UOBlackBox
                 Z = z;
             }
         }
-        private static readonly string SaveBuildDir = @"C:\UOBlackBox\SAVE\Builds\Blueprints\";
+        private static readonly string SaveBuildDir = @"C:\UOBlackBox\UOBlackBoxServer\SAVE\Builds\Blueprints\Breaker\";
 
         public static void Initialize()
         {
@@ -265,25 +266,39 @@ namespace Server.UOBlackBox
                 try
                 {
                     StreamWriter op = new StreamWriter(dirname, false);
+                    StringBuilder sb = new StringBuilder();
 
-                    if (op != null)
+                    string convertString = $"#:{dirname}:";
+                    sb.Append(convertString);
+
+                    if (sb != null)
                     {
                         op.WriteLine("1 version {0}", from.Name);
+                        convertString = ("1 version " + from.Name + "?");
+                        sb.Append(convertString);
+
                         op.WriteLine("{0} num components", ntotal);
+                        convertString = (ntotal + " num components?");
+                        sb.Append(convertString);
 
                         foreach (Item item in itemlist)
                         {
                             int x = item.X - from.X;
                             int y = item.Y - from.Y;
                             int z = item.Z - from.Z;
+                            int Vis = item.Visible ? 1 : 0;
 
                             if (item.Hue > 0)
                             {
                                 op.WriteLine("{0} {1} {2} {3} {4} {5}", item.ItemID, x, y, z, item.Visible ? 1 : 0, item.Hue);
+                                convertString = (item.ItemID + " " + x + " " + y + " " + z + " " + Vis + " " + item.Hue + "?");
+                                sb.Append(convertString);
                             }
                             else
                             {
                                 op.WriteLine("{0} {1} {2} {3} {4}", item.ItemID, x, y, z, item.Visible ? 1 : 0);
+                                convertString = (item.ItemID + " " + x + " " + y + " " + z + " " + Vis + "?");
+                                sb.Append(convertString);
                             }
                         }
 
@@ -296,6 +311,8 @@ namespace Server.UOBlackBox
                                 int z = s.Z - from.Z;
                                 int ID = s.ID;
                                 op.WriteLine("{0} {1} {2} {3} {4}", ID, x, y, z, 1);
+                                convertString = (ID + " " + x + " " + y + " " + z + " " + "1" + "?");
+                                sb.Append(convertString);
                             }
                         }
 
@@ -308,10 +325,14 @@ namespace Server.UOBlackBox
                                 int z = s.Z - from.Z;
                                 int ID = s.ID;
                                 op.WriteLine("{0} {1} {2} {3} {4}", ID, x, y, z, 1);
+                                convertString = (ID + " " + x + " " + y + " " + z + " " + "1" + "?");
+                                sb.Append(convertString);
                             }
                         }
                     }
                     op.Close();
+                    BlackBoxSender.SendBBCMD(sb.ToString(), from);
+
                 }
                 catch
                 {

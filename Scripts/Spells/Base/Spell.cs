@@ -1027,7 +1027,7 @@ namespace Server.Spells
 
 		public virtual double CastDelayFastScalar { get { return 1; } }
 		public virtual double CastDelaySecondsPerTick { get { return 0.25; } }
-		public virtual TimeSpan CastDelayMinimum { get { return TimeSpan.FromSeconds(0.25); } }
+		public virtual TimeSpan CastDelayMinimum { get { return TimeSpan.FromSeconds(0.25); } } //0.25
 
 		public virtual TimeSpan GetCastDelay()
 		{
@@ -1081,7 +1081,7 @@ namespace Server.Spells
 
 			if (delay < CastDelayMinimum)
 			{
-				delay = TimeSpan.FromSeconds(0.5);//delay;//CastDelayMinimum; lets try not capping
+				delay = TimeSpan.FromSeconds(0.1);//delay;//CastDelayMinimum; lets try not capping
 			}
 
             if (DreadHorn.IsUnderInfluence(m_Caster))

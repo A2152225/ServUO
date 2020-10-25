@@ -140,7 +140,7 @@ namespace Server.Mobiles
 
                 eable.Free();
 
-                while (spirtsOrVortexes.Count > 6)
+                while (spirtsOrVortexes.Count > 12)//was 6 limit
                 {
                     int index = Utility.Random(spirtsOrVortexes.Count);
                     //TODO: Confim if it's the dispel with all the pretty effects or just a Deletion of it.

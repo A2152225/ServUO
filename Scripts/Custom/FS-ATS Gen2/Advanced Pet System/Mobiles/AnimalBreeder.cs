@@ -107,7 +107,7 @@ namespace Server.Mobiles
 									baby.PoisonResistSeed = pct.Pois;
 									baby.DamageMin = pct.Dmin;
 									baby.DamageMax = pct.Dmax;
-									baby.MaxLevel = pct.Mlev;
+									baby.MaxLevel = pct.Mlev + 3;
 									baby.Generation = pct.Gen + 1;
 
         							baby.Controlled = true;

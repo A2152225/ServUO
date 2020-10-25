@@ -1,121 +1,217 @@
-  //UO Black Box - By GoldDraco13
- //1.0.0.93
+ //UO Black Box - By GoldDraco13
+//1.0.0.99
 
-  using System.IO;
-  using Server.Mobiles;
+using System.IO;
+using System.Text;
+using Server.Mobiles;
 
-  namespace Server.UOBlackBox
-  {
-      class BlackBoxSender
-      {
-          private static readonly string BaseDir = @"C:\UOBlackBox";
+namespace Server.UOBlackBox
+{
+    class BlackBoxSender
+    {
+        private static readonly string BaseDir = @"C:\UOBlackBox\UOBlackBoxServer";
 
-          private static readonly string DataFileLoc = BaseDir + @"\DATA";
+        private static readonly string DataFileLoc = BaseDir + @"\DATA";
 
-          private static readonly string DataFile = DataFileLoc + @"\BBDATA.BlackCmd";
+        private static string DataFile;
 
-          public static void SendBBCMD(string itemID, string hue)
-          {
-              if (Directory.Exists(DataFileLoc))
-              {
-                  WriteCommand(itemID, hue);
-              }
-              else
-              {
-                  Directory.CreateDirectory(DataFileLoc);
+        public static void SendBBCMD(string itemID, string hue, PlayerMobile pm)
+        {
+            DataFile = DataFileLoc + @"\" + pm.Name + "BBDATA.BlackCmd";
 
-                  WriteCommand(itemID, hue);
-              }
-          }
+            if (Directory.Exists(DataFileLoc))
+            {
+                WriteCommand(itemID, hue, pm);
+            }
+            else
+            {
+                Directory.CreateDirectory(DataFileLoc);
 
-          public static void SendBBCMD(string map, string x, string y, string z, PlayerMobile pm)
-          {
-              if (Directory.Exists(DataFileLoc))
-              {
-                  WriteCommand(map, x, y, z, pm);
-              }
-              else
-              {
-                  Directory.CreateDirectory(DataFileLoc);
+                WriteCommand(itemID, hue, pm);
+            }
+        }
 
-                  WriteCommand(map, x, y, z, pm);
-              }
-          }
+        public static void SendBBCMD(string map, string x, string y, string z, PlayerMobile pm)
+        {
+            DataFile = DataFileLoc + @"\" + pm.Name + "BBDATA.BlackCmd";
 
-          public static void SendBBCMD(string map, PlayerMobile pm)
-          {
-              if (Directory.Exists(DataFileLoc))
-              {
-                  WriteCommand(map, pm);
-              }
-              else
-              {
-                  Directory.CreateDirectory(DataFileLoc);
+            if (Directory.Exists(DataFileLoc))
+            {
+                WriteCommand(map, x, y, z, pm);
+            }
+            else
+            {
+                Directory.CreateDirectory(DataFileLoc);
 
-                  WriteCommand(map, pm);
-              }
-          }
+                WriteCommand(map, x, y, z, pm);
+            }
+        }
 
-          private static void WriteCommand(string itemID, string hue)
-          {
-              if (Directory.Exists(DataFileLoc))
-              {
-                  StreamWriter sw = new StreamWriter(DataFile, false);
+        public static void SendBBCMD(string map, PlayerMobile pm)
+        {
+            DataFile = DataFileLoc + @"\" + pm.Name + "BBDATA.BlackCmd";
 
-                  sw.WriteLine((itemID + ":" + hue));
-                  sw.Close();
-              }
-              else
-              {
-                  //Add Warning Message?
-              }
-          }
+            if (Directory.Exists(DataFileLoc))
+            {
+                WriteCommand(map, pm);
+            }
+            else
+            {
+                Directory.CreateDirectory(DataFileLoc);
 
-          private static void WriteCommand(string map, string x, string y, string z, PlayerMobile pm)
-          {
-              if (Directory.Exists(DataFileLoc))
-              {
-                  StreamWriter sw = new StreamWriter(DataFile, false);
+                WriteCommand(map, pm);
+            }
+        }
 
-                  sw.WriteLine(("*" + map + ":" + x + ":" + y + ":" + z));
-                  sw.Close();
+        public static void SendBBCMD(PlayerMobile pm)
+        {
+            DataFile = DataFileLoc + @"\" + pm.Name + "BBDATA.BlackCmd";
 
-                  pm.SendMessage(pm.Map.Name + " Marked...Sending!");
-              }
-              else
-              {
-                  //Add Warning Message?
-              }
-          }
+            if (Directory.Exists(DataFileLoc))
+            {
+                WriteCommand(pm);
+            }
+            else
+            {
+                Directory.CreateDirectory(DataFileLoc);
 
-          private static void WriteCommand(string map, PlayerMobile player)
-          {
-              if (Directory.Exists(DataFileLoc))
-              {
-                  StreamWriter sw = new StreamWriter(DataFile, false);
+                WriteCommand(pm);
+            }
+        }
 
-                  sw.WriteLine(("$" + player.Name + ":" + player.X + ":" + player.Y));
+        public static void SendBBCMD(string build, Mobile from)
+        {
+            PlayerMobile pm = from as PlayerMobile;
 
-                  foreach (Mobile mob in World.Mobiles.Values)
-                  {
-                      PlayerMobile pm = mob as PlayerMobile;
+            DataFile = DataFileLoc + @"\" + pm.Name + "BBDATA.BlackCmd";
 
-                      if (pm != null)
-                      {
-                          if (map == pm.Map.Name)
-                          {
-                              sw.WriteLine(("$" + pm.Name + ":" + pm.X + ":" + pm.Y));
-                          }
-                      }
-                  }
-                  sw.Close();
+            if (Directory.Exists(DataFileLoc))
+            {
+                WriteCommand(pm, build);
+            }
+            else
+            {
+                Directory.CreateDirectory(DataFileLoc);
 
-                  player.SendMessage("Found Players in " + player.Map.Name + "...Finished!");
-              }
-              else
-              {
-                  //Add Warning Message?
-              }
-          }
-      }
-  }
+                WriteCommand(pm, build);
+            }
+        }
+
+        private static void WriteCommand(string itemID, string hue, PlayerMobile pm)
+        {
+            if (Directory.Exists(DataFileLoc))
+            {
+                StreamWriter sw = new StreamWriter(DataFile, false);
+
+                sw.WriteLine((itemID + ":" + hue));
+
+                sw.Close();
+
+                if (hue != "0")
+                {
+                    pm.SendMessage("Hue = " + hue + " ...Sending!");
+                }
+                else
+                {
+                    pm.SendMessage("ItemID = " + itemID + " ...Sending!");
+                }
+            }
+            else
+            {
+                //Add Warning Message?
+            }
+        }
+
+        private static void WriteCommand(string map, string x, string y, string z, PlayerMobile pm)
+        {
+            if (Directory.Exists(DataFileLoc))
+            {
+                StreamWriter sw = new StreamWriter(DataFile, false);
+
+                sw.WriteLine(("*" + map + ":" + x + ":" + y + ":" + z));
+
+                sw.Close();
+
+                pm.SendMessage(pm.Map.Name + " : " + x + " : " + y + " : " + z + " - Marked ...Sending!");
+            }
+            else
+            {
+                //Add Warning Message?
+            }
+        }
+
+        private static void WriteCommand(string map, PlayerMobile player)
+        {
+            if (Directory.Exists(DataFileLoc))
+            {
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append(("$" + player.Name + ":" + player.X + ":" + player.Y + ";"));
+
+                int count = 0;
+
+                foreach (Mobile mob in World.Mobiles.Values)
+                {
+                    PlayerMobile pm = mob as PlayerMobile;
+
+                    if (pm != null && pm.Name != player.Name)
+                    {
+                        if (map == pm.Map.Name)
+                        {
+                            sb.Append(("$" + pm.Name + ":" + pm.X + ":" + pm.Y + ";"));
+
+                            count++;
+                        }
+                    }
+                }
+                StreamWriter sw = new StreamWriter(DataFile, false);
+
+                sw.WriteLine(sb);
+
+                sw.Close();
+
+                player.SendMessage("Found " + count + " Players in " + map + " ...Sending!");
+            }
+            else
+            {
+                //Add Warning Message?
+            }
+        }
+
+        private static void WriteCommand(PlayerMobile pm)
+        {
+            if (Directory.Exists(DataFileLoc))
+            {
+                StreamWriter sw = new StreamWriter(DataFile, false);
+
+                sw.WriteLine("Finished");
+
+                sw.Close();
+
+                pm.SendMessage("...");
+            }
+            else
+            {
+                //Add Warning Message?
+            }
+        }
+
+        private static void WriteCommand(PlayerMobile pm, string build)
+        {
+            if (Directory.Exists(DataFileLoc))
+            {
+                StreamWriter sw = new StreamWriter(DataFile, false);
+
+                sw.WriteLine(build);
+
+                sw.Close();
+
+                pm.SendMessage(pm.Name + " : Save Blueprint ...Sending!");
+            }
+            else
+            {
+                //Add Warning Message?
+            }
+        }
+    }
+}

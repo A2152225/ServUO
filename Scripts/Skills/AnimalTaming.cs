@@ -452,11 +452,13 @@ namespace Server.SkillHandlers
 								
 								}
 							}
-
+					
 							m_Creature.SetControlMaster(m_Tamer);
 							m_Creature.IsBonded = false;
 
                             m_Creature.OnAfterTame(m_Tamer);
+							
+							
 
                             if (!m_Creature.Owners.Contains(m_Tamer))
                             {
@@ -466,6 +468,13 @@ namespace Server.SkillHandlers
                             PetTrainingHelper.GetAbilityProfile(m_Creature, true).OnTame();
 
                             EventSink.InvokeTameCreature(new TameCreatureEventArgs(m_Tamer, m_Creature));
+							
+							if (m_Tamer is PlayerMobile)
+								{
+									m_Creature.Hits += (((PlayerMobile)m_Tamer).Paragon_PetStats*10);
+									m_Creature.Stam += (((PlayerMobile)m_Tamer).Paragon_PetStats*10);
+									m_Creature.Mana += (((PlayerMobile)m_Tamer).Paragon_PetStats*10);
+								}
 
                         }
 						else

@@ -14,21 +14,21 @@ namespace Server
 			{
 				if ( from.IsBonded == true )
 				{
-					if ( Utility.Random( 100 ) < 5 )
+					if ( Utility.Random( 100 ) < 2 )//5
 					{
-						int strloss = from.Str / 20;
-						int dexloss = from.Dex / 20;
-						int intloss = from.Int / 20;
-						int hitsloss = from.Hits / 20;
-						int stamloss = from.Stam / 20;
-						int manaloss = from.Mana / 20;
-						int physloss = from.PhysicalResistance / 20;
-						int fireloss = from.FireResistance / 20;
-						int coldloss = from.ColdResistance / 20;
-						int energyloss = from.EnergyResistance / 20;
-						int poisonloss = from.PoisonResistance / 20;
-						int dminloss = from.DamageMin / 20;
-						int dmaxloss = from.DamageMax / 20;
+						int strloss = from.Str / 25;
+						int dexloss = from.Dex / 25;
+						int intloss = from.Int / 25;
+						int hitsloss = from.Hits / 25;
+						int stamloss = from.Stam / 25;
+						int manaloss = from.Mana / 25;
+						int physloss = from.PhysicalResistance / 30;
+						int fireloss = from.FireResistance / 30;
+						int coldloss = from.ColdResistance / 30;
+						int energyloss = from.EnergyResistance / 30;
+						int poisonloss = from.PoisonResistance / 30;
+						int dminloss = from.DamageMin / 30;
+						int dmaxloss = from.DamageMax / 30;
 
 						if ( from.Str > strloss )
 							from.Str -= strloss;
@@ -83,7 +83,7 @@ namespace Server
 			{
 				if ( from.IsBonded == true )
 				{
-					if ( Utility.Random( 100 ) < 25 )
+					if ( Utility.Random( 100 ) < 10 )//25
 					{
 						int strloss = from.Str / 20;
 						int dexloss = from.Dex / 20;
@@ -168,9 +168,9 @@ namespace Server
 			
 			if ( chance < 35 )
 			{
-				attacker.Str += Utility.RandomMinMax( 1, 3 );
-				attacker.Dex += Utility.RandomMinMax( 1, 3 );
-				attacker.Int += Utility.RandomMinMax( 1, 3 );
+				attacker.Str += Utility.RandomMinMax( 3, 6 );
+				attacker.Dex += Utility.RandomMinMax( 3, 6 );
+				attacker.Int += Utility.RandomMinMax( 3, 6 );
 			}
 		}
 
@@ -227,13 +227,13 @@ namespace Server
 						attacker.PlaySound( 503 );
 						cm.SendMessage( 38, "Your pets level has increased to {0}.", attacker.Level );
 
-						int gain = Utility.RandomMinMax( 10, 50 );
+						int gain = Utility.RandomMinMax( 30, 60 );
 
 						attacker.AbilityPoints += gain;
 
 						if ( attacker.ControlMaster != null )
 						{
-							attacker.ControlMaster.SendMessage( 38, "Your pet {0} has gained some ability points.", gain );
+							attacker.ControlMaster.SendMessage( 38, "Your pet {0} has gained {1} ability points.",attacker.Name, gain );
 						}
 
 						if ( attacker.Level == 9 )
