@@ -9449,7 +9449,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
                             if (!c.IsStabled && !(c is BaseVendor) &&
                                 (owner == null || owner.Deleted || owner.Map != c.Map || !owner.InRange(c, 12) || !c.CanSee(owner) ||
-                                 !c.InLOS(owner)))
+                                 !c.InLOS(owner)) && (owner.Skills.AnimalTaming.Value < 120 && owner.Skills.AnimalLore.Value < 100) )
                             {
                                 if (c.OwnerAbandonTime == DateTime.MinValue)
                                 {
@@ -9468,10 +9468,11 @@ public string CType = "default";  //Declare variable for use of transferring to 
                         else if (c.Controlled && c.Commandable)
                         {
                             c.OwnerAbandonTime = DateTime.MinValue;
+							Mobile owner = c.ControlMaster;
 
                             if (c.Map != Map.Internal)
                             {
-                                c.Loyalty -= (BaseCreature.MaxLoyalty / 10);
+                                c.Loyalty -= ((BaseCreature.MaxLoyalty / 10 ) + (int)(owner.Skills.AnimalTaming.Value / 12));
 
                                 if (c.Loyalty < (BaseCreature.MaxLoyalty / 10))
                                 {

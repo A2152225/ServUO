@@ -22,9 +22,9 @@ namespace Server.Gumps
         public static void Initialize()
         {
 #if(RunUo2_0)
-            CommandSystem.Register("item", AccessLevel.Administrator, new CommandEventHandler(item_OnCommand));
+            CommandSystem.Register("item", AccessLevel.Seer, new CommandEventHandler(item_OnCommand));
 #else
-            Register("item", AccessLevel.Administrator, new CommandEventHandler(item_OnCommand));
+            Register("item", AccessLevel.Seer, new CommandEventHandler(item_OnCommand));
 #endif
         }
 
