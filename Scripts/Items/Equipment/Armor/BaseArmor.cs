@@ -45,7 +45,8 @@ namespace Server.Items
         private bool _VvVItem;
         private Mobile _Owner;
         private string _OwnerName;
-
+		private int _ItemRank;
+		
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsVvVItem
         {
@@ -66,6 +67,12 @@ namespace Server.Items
             set { _OwnerName = value; InvalidateProperties(); }
         }
 
+        [CommandProperty(AccessLevel.Administrator)]
+        public int ItemRank
+        {
+            get { return _ItemRank; }
+            set { _ItemRank = value; InvalidateProperties(); }
+        }
         /* Armor internals work differently now (Jun 19 2003)
         * 
         * The attributes defined below default to -1.
@@ -84,6 +91,7 @@ namespace Server.Items
         // Instance values. These values must are unique to each armor piece.
         private int m_MaxHitPoints;
         private int m_HitPoints;
+	
         private Mobile m_Crafter;
         private ItemQuality m_Quality;
         private ArmorDurabilityLevel m_Durability;
@@ -127,7 +135,7 @@ namespace Server.Items
         private int m_StrBonus = -1, m_DexBonus = -1, m_IntBonus = -1;
         private int m_StrReq = -1, m_DexReq = -1, m_IntReq = -1;
         private AMA m_Meditate = (AMA)(-1);
-
+		
         public virtual bool AllowMaleWearer
         {
             get
@@ -1755,10 +1763,12 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)15); // version
+            writer.Write((int)16); // version
+			//version  16
+			writer.Write(_ItemRank);
+
 
             // Version 14 - removed VvV Item (handled in VvV System) and BlockRepair (Handled as negative attribute)
-
             writer.Write(_Owner);
             writer.Write(_OwnerName);
 
@@ -1976,6 +1986,10 @@ namespace Server.Items
 
             switch ( version )
             {
+				case 16:
+				{
+					_ItemRank = reader.ReadInt();
+				}
                 case 15:
                 case 14:
                 case 13:

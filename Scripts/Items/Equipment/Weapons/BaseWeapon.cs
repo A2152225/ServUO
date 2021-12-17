@@ -332,7 +332,13 @@ namespace Server.Items
                 return 50;
             }
         }
-
+		private int _ItemRank;
+        [CommandProperty(AccessLevel.Administrator)]
+        public int ItemRank
+        {
+            get { return _ItemRank; }
+            set { _ItemRank = value; InvalidateProperties(); }
+        }
 		#region Personal Bless Deed
 		private Mobile m_BlessedBy;
 
@@ -4138,7 +4144,9 @@ namespace Server.Items
 		{
 			base.Serialize(writer);
 
-			writer.Write(19); // version
+			writer.Write(20); // version
+			//version 20 -  add ItemRanks 
+			writer.Write(_ItemRank);
 
             // Version 19 - Removes m_SearingWeapon as its handled as a socket now
             // Version 18 - removed VvV Item (handled in VvV System) and BlockRepair (Handled as negative attribute)
@@ -4537,6 +4545,10 @@ namespace Server.Items
 
 			switch (version)
 			{
+				case 20: 
+				{
+					_ItemRank = reader.ReadInt();
+				}
                 case 19: // Removed SearingWeapon
                 case 18:
                 case 17:
