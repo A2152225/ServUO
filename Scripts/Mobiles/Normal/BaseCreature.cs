@@ -6507,7 +6507,8 @@ public virtual void OnDrainLife(Mobile victim)
 
         public virtual void GenerateLoot()
         { }
-
+		
+		
         public virtual void AddLoot(LootPack pack, int amount)
         {
             for (int i = 0; i < amount; ++i)

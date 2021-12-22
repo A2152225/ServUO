@@ -336,7 +336,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.Administrator)]
         public int ItemRank
         {
-            get { return _ItemRank; }
+            get {  return _ItemRank;  }
             set { _ItemRank = value; InvalidateProperties(); }
         }
 		#region Personal Bless Deed
@@ -2798,6 +2798,7 @@ namespace Server.Items
 				if (stamLeech != 0)
 				{
 					attacker.Stam += AOS.Scale(damageGiven, stamLeech);
+					
 				}
 
 				if (Core.SA) // New formulas
@@ -2885,26 +2886,66 @@ namespace Server.Items
 				if (physChance != 0 && physChance > Utility.Random(100))
 				{
 					DoAreaAttack(attacker, defender, damageGiven, 0x10E, 50, 100, 0, 0, 0, 0);
+					physChance -= 100;
+					while ( physChance > 0)
+					{
+						if ( physChance > Utility.Random(100) )
+							DoAreaAttack(attacker, defender, damageGiven, 0x10E, 50, 100, 0, 0, 0, 0);				
+						physChance -= 100;
+					}					
 				}
 
 				if (fireChance != 0 && fireChance > Utility.Random(100))
 				{
 					DoAreaAttack(attacker, defender, damageGiven, 0x11D, 1160, 0, 100, 0, 0, 0);
+					fireChance -= 100;
+					while ( fireChance > 0)
+					{
+						if ( fireChance > Utility.Random(100) )
+					DoAreaAttack(attacker, defender, damageGiven, 0x11D, 1160, 0, 100, 0, 0, 0);
+						fireChance -= 100;
+					}					
+					
 				}
 
 				if (coldChance != 0 && coldChance > Utility.Random(100))
 				{
 					DoAreaAttack(attacker, defender, damageGiven, 0x0FC, 2100, 0, 0, 100, 0, 0);
+					coldChance -= 100;
+					while ( coldChance > 0)
+					{
+						if ( coldChance > Utility.Random(100) )
+						DoAreaAttack(attacker, defender, damageGiven, 0x0FC, 2100, 0, 0, 100, 0, 0);	
+						coldChance -= 100;
+					}					
+					
 				}
 
 				if (poisChance != 0 && poisChance > Utility.Random(100))
 				{
 					DoAreaAttack(attacker, defender, damageGiven, 0x205, 1166, 0, 0, 0, 100, 0);
+					poisChance -= 100;
+					while ( poisChance > 0)
+					{
+						if ( poisChance > Utility.Random(100) )
+						DoAreaAttack(attacker, defender, damageGiven, 0x205, 1166, 0, 0, 0, 100, 0);		
+						poisChance -= 100;
+					}					
+					
 				}
 
 				if (nrgyChance != 0 && nrgyChance > Utility.Random(100))
 				{
 					DoAreaAttack(attacker, defender, damageGiven, 0x1F1, 120, 0, 0, 0, 0, 100);
+					nrgyChance -= 100;
+					while ( nrgyChance > 0)
+					{
+						if ( nrgyChance > Utility.Random(100) )
+					DoAreaAttack(attacker, defender, damageGiven, 0x1F1, 120, 0, 0, 0, 0, 100);
+						nrgyChance -= 100;
+					}					
+					
+					
 				}
 
 				int maChance = (int)(AosWeaponAttributes.GetValue(attacker, AosWeaponAttribute.HitMagicArrow) * propertyBonus);
@@ -2927,37 +2968,87 @@ namespace Server.Items
 				if (maChance != 0 && maChance > Utility.Random(100))
 				{
 					DoMagicArrow(attacker, defender);
+									maChance -= 100;
+					while ( maChance > 0)
+					{
+						if ( maChance > Utility.Random(100) )
+							DoMagicArrow(attacker, defender);					
+						maChance -= 100;
+					}
 				}
 
 				if (harmChance != 0 && harmChance > Utility.Random(100))
 				{
 					DoHarm(attacker, defender);
+									harmChance -= 100;
+					while ( harmChance > 0)
+					{
+						if ( harmChance > Utility.Random(100) )
+							DoHarm(attacker, defender);					
+						harmChance -= 100;
+					}
 				}
 
 				if (fireballChance != 0 && fireballChance > Utility.Random(100))
 				{
-					DoFireball(attacker, defender);
+					DoFireball(attacker, defender);					
+					fireballChance -= 100;
+					while ( fireballChance > 0)
+					{
+						if ( fireballChance > Utility.Random(100) )
+							DoFireball(attacker, defender);					
+						fireballChance -= 100;
+					}
+							
 				}
 
 				if (lightningChance != 0 && lightningChance > Utility.Random(100))
 				{
 					DoLightning(attacker, defender);
+					lightningChance -= 100;
+					while ( lightningChance > 0)
+					{
+						if ( lightningChance > Utility.Random(100) )
+							DoLightning(attacker, defender);					
+						lightningChance -= 100;
+					}					
 				}
 
 				if (dispelChance != 0 && dispelChance > Utility.Random(100))
 				{
 					DoDispel(attacker, defender);
+					dispelChance -= 100;
+					while ( dispelChance > 0)
+					{
+						if ( dispelChance > Utility.Random(100) )
+							DoDispel(attacker, defender);					
+						dispelChance -= 100;
+					}										
                 }
 
                 if (explosChance != 0 && explosChance > Utility.Random(100))
                 {
                     DoExplosion(attacker, defender);
+					explosChance -= 100;
+					while ( explosChance > 0)
+					{
+						if ( explosChance > Utility.Random(100) )
+							DoExplosion(attacker, defender);					
+						explosChance -= 100;
+					}										
                 }
 
                 #region Mondains Legacy
                 if (Core.ML && velocityChance != 0 && velocityChance > Utility.Random(100))
                 {
                     DoHitVelocity(attacker, damageable);
+					velocityChance -= 100;
+					while ( velocityChance > 0)
+					{
+						if ( velocityChance > Utility.Random(100) )
+                    DoHitVelocity(attacker, damageable);
+						velocityChance -= 100;
+					}							
                 }
                 #endregion
 
@@ -2965,16 +3056,37 @@ namespace Server.Items
                 if (curseChance != 0 && curseChance > Utility.Random(100))
 				{
 					DoCurse(attacker, defender);
+					curseChance -= 100;
+					while ( curseChance > 0)
+					{
+						if ( curseChance > Utility.Random(100) )
+					DoCurse(attacker, defender);
+						curseChance -= 100;
+					}											
 				}
 
 				if (fatigueChance != 0 && fatigueChance > Utility.Random(100))
 				{
 					DoFatigue(attacker, defender, damageGiven);
+					fatigueChance -= 100;
+					while ( fatigueChance > 0)
+					{
+						if ( fatigueChance > Utility.Random(100) )
+					DoFatigue(attacker, defender, damageGiven);
+						fatigueChance -= 100;
+					}											
 				}
 
 				if (manadrainChance != 0 && manadrainChance > Utility.Random(100))
 				{
 					DoManaDrain(attacker, defender, damageGiven);
+					manadrainChance -= 100;
+					while ( manadrainChance > 0)
+					{
+						if ( manadrainChance > Utility.Random(100) )
+					DoManaDrain(attacker, defender, damageGiven);
+						manadrainChance -= 100;
+					}											
 				}
 				#endregion
 
@@ -2983,6 +3095,13 @@ namespace Server.Items
 				if (laChance != 0 && laChance > Utility.Random(100))
 				{
 					DoLowerAttack(attacker, defender);
+					laChance -= 100;
+					while ( laChance > 0)
+					{
+						if ( laChance > Utility.Random(100) )
+					DoLowerAttack(attacker, defender);
+						laChance -= 100;
+					}											
 				}
 
                 if (!Core.HS)
@@ -2992,6 +3111,13 @@ namespace Server.Items
                     if (ldChance != 0 && ldChance > Utility.Random(100))
                     {
                         DoLowerDefense(attacker, defender);
+					ldChance -= 100;
+					while ( ldChance > 0)
+					{
+						if ( ldChance > Utility.Random(100) )
+                        DoLowerDefense(attacker, defender);
+						ldChance -= 100;
+					}												
                     }
                 }
                 else
@@ -3012,6 +3138,16 @@ namespace Server.Items
                     if ((hldWep > 0 && hldWep > Utility.Random(100)) || (hldGlasses > 0 && hldGlasses > Utility.Random(100)))
                     {
                         DoLowerDefense(attacker, defender);
+					hldWep -= 100;
+						hldGlasses -= 100;
+					while ( hldWep > 0 || hldGlasses > 0)
+					{
+						if ( hldWep > Utility.Random(100) || hldGlasses > Utility.Random(100) )
+                    DoHitVelocity(attacker, damageable);
+						hldWep -= 100;
+						hldGlasses -= 100;
+					}						
+					
                     }
                 }
 			}
@@ -4548,6 +4684,7 @@ namespace Server.Items
 				case 20: 
 				{
 					_ItemRank = reader.ReadInt();
+					goto case 17;
 				}
                 case 19: // Removed SearingWeapon
                 case 18:
@@ -5688,7 +5825,8 @@ string aname = this.GetNameString();
         public override void AddNameProperties(ObjectPropertyList list)
         {
             base.AddNameProperties(list);
-
+			if (_ItemRank != null)
+			list.Add("Rank: {0}",ItemRank ); 
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
 			#endregion
@@ -6344,7 +6482,7 @@ string aname = this.GetNameString();
                         break;
                 }
 			}
-
+			
 			XmlAttach.AddAttachmentProperties(this, list);
 
 			if (m_Hits >= 0 && m_MaxHits > 0)

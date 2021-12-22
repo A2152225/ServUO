@@ -45,7 +45,7 @@ namespace Server.Items
         private bool _VvVItem;
         private Mobile _Owner;
         private string _OwnerName;
-		private int _ItemRank;
+		
 		
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsVvVItem
@@ -66,7 +66,8 @@ namespace Server.Items
             get { return _OwnerName; }
             set { _OwnerName = value; InvalidateProperties(); }
         }
-
+		
+		private int _ItemRank;
         [CommandProperty(AccessLevel.Administrator)]
         public int ItemRank
         {
@@ -1989,6 +1990,7 @@ namespace Server.Items
 				case 16:
 				{
 					_ItemRank = reader.ReadInt();
+					goto case 12;
 				}
                 case 15:
                 case 14:
@@ -2901,7 +2903,8 @@ string aname = this.GetNameString();
         public override void AddNameProperties(ObjectPropertyList list)
         {
             base.AddNameProperties(list);
-
+			if (_ItemRank != null)
+			list.Add("Rank: {0}",ItemRank ); 
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
             #endregion
@@ -3626,8 +3629,9 @@ string aname = this.GetNameString();
 
         public virtual void GetSetProperties(ObjectPropertyList list)
         {
+			
             SetHelper.GetSetProperties(list, this);
-
+			
             if (!m_SetEquipped)
             {
                 if (m_SetPhysicalBonus != 0)
@@ -3686,6 +3690,8 @@ string aname = this.GetNameString();
 
             if ((prop = m_SetSelfRepair) != 0 && m_AosArmorAttributes.SelfRepair == 0)
                 list.Add(1060450, prop.ToString()); // self repair ~1_val~
+			
+
         }
 
         public int SetResistBonus(ResistanceType resist)
