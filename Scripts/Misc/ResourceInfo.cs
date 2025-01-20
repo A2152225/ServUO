@@ -14,16 +14,24 @@ namespace Server.Items
 		Gold,
 		Agapite,
 		Verite,
-		Valorite,
-		//daat99 OWLTR start - custom ores
+		Valorite, 		//daat99 OWLTR start - custom ores
 		Blaze,
 		Ice,
 		Toxic,
 		Electrum,
 		Platinum,
-		//daat99 OWLTR end - custom ores
+		Barite,
+		Wulfenite,
+		Dragonite,
+		Bunterite,
+		Pineite,
+		Samite,
+		Toberite,
+		Lisite,
+		Marite, //daat99 OWLTR end - custom ores
 		Royalite,
-		Danite, 
+		Danite,
+		Teal,
 
 		RegularLeather = 101,
 		SpinedLeather,
@@ -195,7 +203,7 @@ namespace Server.Items
         }
 
         public static readonly CraftAttributeInfo Blank;
-        public static readonly CraftAttributeInfo DullCopper, ShadowIron, Copper, Bronze, Golden, Agapite, Verite, Valorite, Blaze, Ice, Toxic, Electrum, Platinum, Royalite, Danite;
+        public static readonly CraftAttributeInfo DullCopper, ShadowIron, Copper, Bronze, Golden, Agapite, Verite, Valorite, Blaze, Ice, Toxic, Electrum, Platinum, Barite, Wulfenite, Dragonite ,Bunterite,Pineite,Samite,Toberite, Lisite,Marite, Royalite, Danite, Teal;
 		public static readonly CraftAttributeInfo Spined, Horned, Barbed, Polar, Synthetic, BlazeL, Daemonic, Shadow, Frost, Ethereal;
 		public static readonly CraftAttributeInfo RedScales, YellowScales, BlackScales, GreenScales, WhiteScales, BlueScales, CopperScales, SilverScales, GoldScales;
         public static readonly CraftAttributeInfo OakWood, AshWood, YewWood, Heartwood, Bloodwood, Frostwood, Ebony, Bamboo, PurpleHeart, Redwood, Petrified;
@@ -207,7 +215,6 @@ namespace Server.Items
             //daat99 OWLTR start - custom resources
 			bool Uber = true;// OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.UBBER_RESOURCES);
 			CraftAttributeInfo dullCopper = DullCopper = new CraftAttributeInfo();
-
 			dullCopper.ArmorPhysicalResist = Uber ? 1 : Utility.Random(2);
 			dullCopper.ArmorFireResist = Uber ? 1 : Utility.Random(2);
 			dullCopper.ArmorColdResist = Uber ? 1 : Utility.Random(2);
@@ -223,16 +230,7 @@ namespace Server.Items
 			dullCopper.RunicMaxIntensity = Uber ? 100 : 25;
 
 			CraftAttributeInfo shadowIron = ShadowIron = new CraftAttributeInfo();
-			 
-												  
-												   
-			 
-				
-			 
-												  
-												  
-			 
-
+		
 			shadowIron.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
 			shadowIron.ArmorFireResist = Uber ? 1 : Utility.Random(2);
 			shadowIron.ArmorColdResist = Uber ? 1 : Utility.Random(2);
@@ -249,10 +247,7 @@ namespace Server.Items
 			shadowIron.RunicMaxIntensity = Uber ? 100 : 30;
 
 			CraftAttributeInfo copper = Copper = new CraftAttributeInfo();
-										   
-											 
-											 
-
+			
 			copper.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
 			copper.ArmorFireResist = Uber ? 2 : Utility.Random(3);
 			copper.ArmorColdResist = Uber ? 2 : Utility.Random(3);
@@ -270,18 +265,7 @@ namespace Server.Items
 			copper.RunicMaxIntensity = Uber ? 100 : 40;
 
 			CraftAttributeInfo bronze = Bronze = new CraftAttributeInfo();
-											  
-						
-			 
-												  
-												   
-			 
-				
-			 
-												  
-												  
-			 
-
+		
 			bronze.ArmorPhysicalResist = Uber ? 2 : Utility.Random(3);
 			bronze.ArmorFireResist = Uber ? 3 : Utility.Random(4);
 			bronze.ArmorColdResist = Uber ? 2 : Utility.Random(3);
@@ -298,24 +282,6 @@ namespace Server.Items
 			bronze.RunicMaxIntensity = Uber ? 100 : 45;
 
 			CraftAttributeInfo golden = Golden = new CraftAttributeInfo();
-									   
-										 
-										 
-										   
-										   
-										  
-										  
-						
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											  
-			 
-
 			golden.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
 			golden.ArmorFireResist = Uber ? 3 : Utility.Random(4);
 			golden.ArmorColdResist = Uber ? 3 : Utility.Random(4);
@@ -336,22 +302,6 @@ namespace Server.Items
 
 			CraftAttributeInfo agapite = Agapite = new CraftAttributeInfo();
 									   
-										 
-										 
-										 
-										  
-										  
-						
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											  
-			 
-
 			agapite.ArmorPhysicalResist = Uber ? 3 : Utility.Random(4);
 			agapite.ArmorFireResist = Uber ? 3 : Utility.Random(4);
 			agapite.ArmorColdResist = Uber ? 4 : Utility.Random(5);
@@ -369,26 +319,7 @@ namespace Server.Items
 			agapite.RunicMaxIntensity = Uber ? 100 : 55;
 
 			CraftAttributeInfo verite = Verite = new CraftAttributeInfo();
-									   
-									   
-										 
-								  
-											   
-								   
-												
-										  
-										  
-						
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											  
-			 
-
+	
 			verite.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
 			verite.ArmorFireResist = Uber ? 4 : Utility.Random(5);
 			verite.ArmorColdResist = Uber ? 4 : Utility.Random(5);
@@ -407,24 +338,7 @@ namespace Server.Items
 
 			CraftAttributeInfo valorite = Valorite = new CraftAttributeInfo();
 										
-										
-										  
-										  
-										  
-											
-										   
-										   
-						
-			 
-											   
-												
-			 
-				
-			 
-											   
-											   
-			 
-
+		
 			valorite.ArmorPhysicalResist = Uber ? 4 : Utility.Random(5);
 			valorite.ArmorFireResist = Uber ? 4 : Utility.Random(5);
 			valorite.ArmorColdResist = Uber ? 4 : Utility.Random(5);
@@ -444,25 +358,6 @@ namespace Server.Items
 			valorite.RunicMaxIntensity = Uber ? 100 : 70;
 
 CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
-									   
-									   
-										 
-										 
-										   
-										   
-										  
-										  
-						
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											  
-			 
-
 			blaze.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
 			blaze.ArmorFireResist = Uber ? 5 : Utility.Random(6);
 			blaze.ArmorColdResist = Uber ? 5 : Utility.Random(6);
@@ -480,25 +375,6 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 
 			CraftAttributeInfo ice = Ice = new CraftAttributeInfo();
 										 
-										   
-										   
-										  
-										   
-										   
-											 
-											 
-											
-											
-						
-			 
-												
-												 
-			 
-				
-			 
-												
-												 
-			 
 
 			ice.ArmorPhysicalResist = Uber ? 5 : Utility.Random(6);
 			ice.ArmorFireResist = Uber ? 5 : Utility.Random(6);
@@ -516,7 +392,6 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			ice.RunicMaxIntensity = Uber ? 100 : 80;
 		
 			CraftAttributeInfo toxic = Toxic = new CraftAttributeInfo();
-
 			toxic.ArmorPhysicalResist = Uber ? 6 : Utility.Random(7);
 			toxic.ArmorFireResist = Uber ? 6 : Utility.Random(7);
 			toxic.ArmorColdResist = Uber ? 6 : Utility.Random(7);
@@ -533,16 +408,6 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			toxic.RunicMaxIntensity = Uber ? 100 : 90;
 
 			CraftAttributeInfo electrum = Electrum = new CraftAttributeInfo();
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											  
-			 
-
 			electrum.ArmorPhysicalResist = Uber ? 7 : Utility.Random(8);
 			electrum.ArmorFireResist = Uber ? 7 : Utility.Random(8);
 			electrum.ArmorColdResist = Uber ? 7 : Utility.Random(8);
@@ -559,23 +424,6 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			electrum.RunicMaxIntensity = Uber ? 100 : 100;
 
 			CraftAttributeInfo platinum = Platinum = new CraftAttributeInfo();
-									   
-									   
-										 
-										 
-										  
-										  
-						
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											  
-			 
-
 			platinum.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
 			platinum.ArmorFireResist = Uber ? 8 : Utility.Random(9);
 			platinum.ArmorColdResist = Uber ? 8 : Utility.Random(9);
@@ -590,25 +438,153 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			platinum.RunicMinIntensity = Uber ? 105 : 70;
 			platinum.RunicMaxIntensity = Uber ? 110 : 105;
 
+			CraftAttributeInfo barite = Barite = new CraftAttributeInfo();
+			barite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			barite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			barite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			barite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			barite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			barite.ArmorDurability = 250;
+			barite.WeaponDurability = 250;
+			barite.ArmorLowerRequirements = 100;
+			barite.WeaponLowerRequirements = 100;
+			barite.RunicMinAttributes = 6;
+			barite.RunicMaxAttributes = Uber ? 9 : 7;
+			barite.RunicMinIntensity = Uber ? 105 : 70;
+			barite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			CraftAttributeInfo wulfenite = Wulfenite = new CraftAttributeInfo();
+			wulfenite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			wulfenite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			wulfenite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			wulfenite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			wulfenite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			wulfenite.ArmorDurability = 250;
+			wulfenite.WeaponDurability = 250;
+			wulfenite.ArmorLowerRequirements = 100;
+			wulfenite.WeaponLowerRequirements = 100;
+			wulfenite.RunicMinAttributes = 6;
+			wulfenite.RunicMaxAttributes = Uber ? 9 : 7;
+			wulfenite.RunicMinIntensity = Uber ? 105 : 70;
+			wulfenite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+			CraftAttributeInfo dragonite = Dragonite = new CraftAttributeInfo();
+			dragonite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			dragonite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			dragonite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			dragonite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			dragonite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			dragonite.ArmorDurability = 250;
+			dragonite.WeaponDurability = 250;
+			dragonite.ArmorLowerRequirements = 100;
+			dragonite.WeaponLowerRequirements = 100;
+			dragonite.RunicMinAttributes = 6;
+			dragonite.RunicMaxAttributes = Uber ? 9 : 7;
+			dragonite.RunicMinIntensity = Uber ? 105 : 70;
+			dragonite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+			CraftAttributeInfo bunterite = Bunterite = new CraftAttributeInfo();
+			bunterite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			bunterite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			bunterite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			bunterite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			bunterite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			bunterite.ArmorDurability = 250;
+			bunterite.WeaponDurability = 250;
+			bunterite.ArmorLowerRequirements = 100;
+			bunterite.WeaponLowerRequirements = 100;
+			bunterite.RunicMinAttributes = 6;
+			bunterite.RunicMaxAttributes = Uber ? 9 : 7;
+			bunterite.RunicMinIntensity = Uber ? 105 : 70;
+			bunterite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+				CraftAttributeInfo pineite = Pineite = new CraftAttributeInfo();
+			pineite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			pineite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			pineite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			pineite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			pineite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			pineite.ArmorDurability = 250;
+			pineite.WeaponDurability = 250;
+			pineite.ArmorLowerRequirements = 100;
+			pineite.WeaponLowerRequirements = 100;
+			pineite.RunicMinAttributes = 6;
+			pineite.RunicMaxAttributes = Uber ? 9 : 7;
+			pineite.RunicMinIntensity = Uber ? 105 : 70;
+			pineite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+				CraftAttributeInfo samite = Samite = new CraftAttributeInfo();
+				samite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			samite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			samite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			samite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			samite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			samite.ArmorDurability = 250;
+			samite.WeaponDurability = 250;
+			samite.ArmorLowerRequirements = 100;
+			samite.WeaponLowerRequirements = 100;
+			samite.RunicMinAttributes = 6;
+			samite.RunicMaxAttributes = Uber ? 9 : 7;
+			samite.RunicMinIntensity = Uber ? 105 : 70;
+			samite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+				CraftAttributeInfo toberite = Toberite = new CraftAttributeInfo();
+					toberite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			toberite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			toberite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			toberite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			toberite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			toberite.ArmorDurability = 250;
+			toberite.WeaponDurability = 250;
+			toberite.ArmorLowerRequirements = 100;
+			toberite.WeaponLowerRequirements = 100;
+			toberite.RunicMinAttributes = 6;
+			toberite.RunicMaxAttributes = Uber ? 9 : 7;
+			toberite.RunicMinIntensity = Uber ? 105 : 70;
+			toberite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+				CraftAttributeInfo lisite = Lisite = new CraftAttributeInfo();
+			lisite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			lisite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			lisite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			lisite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			lisite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			lisite.ArmorDurability = 250;
+			lisite.WeaponDurability = 250;
+			lisite.ArmorLowerRequirements = 100;
+			lisite.WeaponLowerRequirements = 100;
+			lisite.RunicMinAttributes = 6;
+			lisite.RunicMaxAttributes = Uber ? 9 : 7;
+			lisite.RunicMinIntensity = Uber ? 105 : 70;
+			lisite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+				CraftAttributeInfo marite = Marite = new CraftAttributeInfo();
+			marite.ArmorPhysicalResist = Uber ? 8 : Utility.Random(9);
+			marite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			marite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
+			marite.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			marite.ArmorEnergyResist = Uber ? 8 : Utility.Random(9);
+			marite.ArmorDurability = 250;
+			marite.WeaponDurability = 250;
+			marite.ArmorLowerRequirements = 100;
+			marite.WeaponLowerRequirements = 100;
+			marite.RunicMinAttributes = 6;
+			marite.RunicMaxAttributes = Uber ? 9 : 7;
+			marite.RunicMinIntensity = Uber ? 105 : 70;
+			marite.RunicMaxIntensity = Uber ? 110 : 105;
+
+			
+			
 			
 				CraftAttributeInfo royalite = Royalite = new CraftAttributeInfo();
-									   
-										 
-										 
-										  
-										  
-						
-			 
-											  
-											   
-			 
-				
-			 
-											  
-											   
-			 
-
-			royalite.ArmorPhysicalResist = Uber ? 9 : Utility.Random(9);
+					royalite.ArmorPhysicalResist = Uber ? 9 : Utility.Random(9);
 			royalite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
 			royalite.ArmorColdResist = Uber ? 8 : Utility.Random(9);
 			royalite.ArmorPoisonResist = Uber ? 9 : Utility.Random(9);
@@ -625,7 +601,6 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			
 			
 				CraftAttributeInfo danite = Danite = new CraftAttributeInfo();
-
 			danite.ArmorPhysicalResist = Uber ? 10 : Utility.Random(9);
 			danite.ArmorFireResist = Uber ? 8 : Utility.Random(9);
 			danite.ArmorColdResist = Uber ? 10 : Utility.Random(9);
@@ -641,9 +616,24 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 			danite.RunicMaxIntensity = Uber ? 120 : 125;
 
 			
+				CraftAttributeInfo teal = Teal = new CraftAttributeInfo();
+			teal.ArmorPhysicalResist = Uber ? 10 : Utility.Random(9);
+			teal.ArmorFireResist = Uber ? 8 : Utility.Random(9);
+			teal.ArmorColdResist = Uber ? 10 : Utility.Random(9);
+			teal.ArmorPoisonResist = Uber ? 8 : Utility.Random(9);
+			teal.ArmorEnergyResist = Uber ? 10 : Utility.Random(9);
+			teal.ArmorDurability = 250;
+			teal.WeaponDurability = 250;
+			teal.ArmorLowerRequirements = 100;
+			teal.WeaponLowerRequirements = 100;
+			teal.RunicMinAttributes = 8;
+			teal.RunicMaxAttributes = Uber ? 11 : 9;
+			teal.RunicMinIntensity = Uber ? 115 : 90;
+			teal.RunicMaxIntensity = Uber ? 120 : 125;
+
+						
 			
 			CraftAttributeInfo spined = Spined = new CraftAttributeInfo();
-
 			spined.ArmorPhysicalResist = Uber ? 1 : Utility.Random(2);
 			spined.ArmorFireResist = Uber ? 1 : Utility.Random(2);
 			spined.ArmorColdResist = Uber ? 1 : Utility.Random(2);
@@ -1082,8 +1072,24 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 				new CraftResourceInfo( 1272,	0,		"Toxic",		CraftAttributeInfo.Toxic,		CraftResource.Toxic,			typeof( ToxicIngot ),		typeof( ToxicOre ),			typeof( ToxicGranite ) ),
 				new CraftResourceInfo( 1278,	0,		"Electrum",		CraftAttributeInfo.Electrum,	CraftResource.Electrum,			typeof( ElectrumIngot ),	typeof( ElectrumOre ),		typeof( ElectrumGranite ) ),
 				new CraftResourceInfo( 1153,	0,		"Platinum",		CraftAttributeInfo.Platinum,	CraftResource.Platinum,			typeof( PlatinumIngot ),	typeof( PlatinumOre ),		typeof( PlatinumGranite ) ),
+
+				new CraftResourceInfo( 2392,	0,		"Barite",		CraftAttributeInfo.Barite,	CraftResource.Barite,			typeof( BariteIngot ),	typeof( BariteOre ),		typeof( BariteGranite ) ),
+				new CraftResourceInfo( 1171,	0,		"Wulfenite",		CraftAttributeInfo.Wulfenite,	CraftResource.Wulfenite,			typeof( WulfeniteIngot ),	typeof( WulfeniteOre ),		typeof( WulfeniteGranite ) ),
+
+				new CraftResourceInfo( 2998,	0,		"Dragonite",		CraftAttributeInfo.Dragonite,	CraftResource.Dragonite,			typeof( DragoniteIngot ),	typeof( DragoniteOre ),		typeof( DragoniteGranite ) ),
+				
+				new CraftResourceInfo( 2887,	0,		"Bunterite",		CraftAttributeInfo.Bunterite,	CraftResource.Bunterite,			typeof( BunteriteIngot ),	typeof( BunteriteOre ),		typeof( BunteriteGranite ) ),
+				new CraftResourceInfo( 2999,	0,		"Pineite",		CraftAttributeInfo.Pineite,	CraftResource.Pineite,			typeof( PineiteIngot ),	typeof( PineiteOre ),		typeof( PineiteGranite ) ),
+				new CraftResourceInfo( 2890,	0,		"Samite",		CraftAttributeInfo.Samite,	CraftResource.Samite,			typeof( SamiteIngot ),	typeof( SamiteOre ),		typeof( SamiteGranite ) ),
+				new CraftResourceInfo( 2353,	0,		"Toberite",		CraftAttributeInfo.Toberite,	CraftResource.Toberite,			typeof( ToberiteIngot ),	typeof( ToberiteOre ),		typeof( ToberiteGranite ) ),
+				new CraftResourceInfo( 2974,	0,		"Lisite",		CraftAttributeInfo.Lisite,	CraftResource.Lisite,			typeof( LisiteIngot ),	typeof( LisiteOre ),		typeof( LisiteGranite ) ),
+				new CraftResourceInfo( 2352,	0,		"Marite",		CraftAttributeInfo.Marite,	CraftResource.Marite,			typeof( MariteIngot ),	typeof( MariteOre ),		typeof( MariteGranite ) ),
+				
+				
+				
 				new CraftResourceInfo( 1973,	0,		"Royalite",		CraftAttributeInfo.Royalite,	CraftResource.Royalite,			typeof( RoyaliteIngot ),	typeof( RoyaliteOre ),		typeof( RoyaliteGranite ) ),
 				new CraftResourceInfo( 2990,	0,		"Danite",		CraftAttributeInfo.Danite,	CraftResource.Danite,			typeof( DaniteIngot ),	typeof( DaniteOre ),		typeof( DaniteGranite ) ),
+			new CraftResourceInfo( 1675,	0,		"Teal",		CraftAttributeInfo.Teal,	CraftResource.Teal,			typeof( TealIngot ),	typeof( TealOre ),		typeof( TealGranite ) ),					
  };
 
         private static readonly CraftResourceInfo[] m_ScaleInfo = new CraftResourceInfo[]
@@ -1224,7 +1230,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
         /// </summary>
         public static CraftResourceType GetType(CraftResource resource)
         {
-            if (resource >= CraftResource.Iron && resource <= CraftResource.Danite)
+            if (resource >= CraftResource.Iron && resource <= CraftResource.Teal)
                 return CraftResourceType.Metal;
 
             if (resource >= CraftResource.RegularLeather && resource <= CraftResource.EtherealLeather)
@@ -1344,11 +1350,31 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
                 return CraftResource.Electrum;
 			else if (info.Level == 13)
                 return CraftResource.Platinum;
-				else if (info.Level == 14)
-                return CraftResource.Royalite;
-				else if (info.Level == 15)
+			else if (info.Level == 14)
+                return CraftResource.Barite;
+			else if (info.Level == 15)
+                return CraftResource.Wulfenite;
+			else if (info.Level == 16)
+                return CraftResource.Dragonite;
+			else if (info.Level == 17)
+                return CraftResource.Bunterite;
+			else if (info.Level == 18)
+                return CraftResource.Pineite;
+			else if (info.Level == 19)
+                return CraftResource.Samite;
+			else if (info.Level == 20)
+                return CraftResource.Toberite;
+			else if (info.Level == 21)
+                return CraftResource.Lisite;
+			else if (info.Level == 22)
+				return CraftResource.Marite;
+			else if (info.Level == 23)
+				return CraftResource.Royalite;
+			else if (info.Level == 24)
                 return CraftResource.Danite;
-
+			else if (info.Level == 25)
+                return CraftResource.Teal;
+			
             return CraftResource.None;
         }
 
@@ -1395,9 +1421,23 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 		public static readonly OreInfo Toxic		= new OreInfo( 11, 1272, "Toxic" );
 		public static readonly OreInfo Electrum		= new OreInfo( 12, 1278, "Electrum" );
 		public static readonly OreInfo Platinum		= new OreInfo( 13, 1153, "Platinum" );
-		public static readonly OreInfo Royalite		= new OreInfo( 14, 1973, "Royalite" );
-		public static readonly OreInfo Danite		= new OreInfo( 15, 2990, "Danite" );
 		
+		public static readonly OreInfo Barite		= new OreInfo( 14, 2998, "Barite" );
+		public static readonly OreInfo Wulfenite		= new OreInfo( 15, 2998, "Wulfenite" );
+		public static readonly OreInfo Dragonite		= new OreInfo( 16, 2998, "Dragonite" );
+			public static readonly OreInfo Bunterite		= new OreInfo( 17, 2887, "Bunterite" );	
+					public static readonly OreInfo Pineite		= new OreInfo( 18, 2999, "Pineite" );
+						public static readonly OreInfo Samite		= new OreInfo( 19, 2890, "Samite" );
+				public static readonly OreInfo Toberite		= new OreInfo( 20, 2353, "Toberite" );				
+		public static readonly OreInfo Lisite		= new OreInfo( 21, 2974, "Lisite" );
+		public static readonly OreInfo Marite		= new OreInfo( 22, 2352, "Marite" );
+
+
+	
+		
+		public static readonly OreInfo Royalite		= new OreInfo( 23, 1973, "Royalite" );
+		public static readonly OreInfo Danite		= new OreInfo( 24, 2990, "Danite" );
+		public static readonly OreInfo Teal		= new OreInfo( 25, 1675, "Teal" );		
 
         private readonly int m_Level;
         private readonly int m_Hue;

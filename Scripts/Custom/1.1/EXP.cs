@@ -1,4 +1,5 @@
 using System; 
+using System; 
 using System.ComponentModel;
 using System.Collections; 
 using Server.Network;
@@ -336,6 +337,46 @@ while (from.EXP > GetNextLevelXP(pm))
 			{
 				ExpGained = 16 * oremodifier;
 			}
+			if (Res.Types[0] == typeof(BariteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(WulfeniteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(DragoniteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(BunteriteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(PineiteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(SamiteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(ToberiteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(LisiteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(MariteOre))
+			{
+				ExpGained = 16 * oremodifier;
+			}
+			if (Res.Types[0] == typeof(TealOre))
+			{
+				ExpGained = 18 * oremodifier;
+			}		
 			if (Res.Types[0] == typeof(RoyaliteOre))
 			{
 				ExpGained = 17 * oremodifier;
@@ -477,6 +518,9 @@ while (from.EXP > GetNextLevelXP(pm))
 				else if (item.HoldResource ==  typeof( PlatinumIngot)){	
 					ResExp = 17;
 					}
+				else if (item.HoldResource ==  typeof( TealIngot)){	
+					ResExp = 17;
+					}					
 				else if (item.HoldResource ==  typeof( RoyaliteIngot)){	
 					ResExp = 18;
 					}
@@ -656,6 +700,9 @@ while (from.EXP > GetNextLevelXP(pm))
 				else if (item.HoldResource ==  typeof( PlatinumGranite)){	
 					ResExp = 27;
 					}
+				else if (item.HoldResource ==  typeof( TealGranite)){	
+					ResExp = 28;
+					}					
 				else if (item.HoldResource ==  typeof( RoyaliteGranite)){	
 					ResExp = 28;
 					}

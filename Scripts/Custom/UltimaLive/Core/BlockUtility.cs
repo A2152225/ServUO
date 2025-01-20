@@ -38,7 +38,7 @@ namespace UltimaLive
         public static byte[] GetLandData(Point2D blockCoordinates, Int32 mapNumber)
         {
             byte[] landData = new byte[192];
-
+			try{
             Map map = Map.Maps[mapNumber];
             TileMatrix tm = map.Tiles;
             LandTile[] land = tm.GetLandBlock(blockCoordinates.X, blockCoordinates.Y);
@@ -48,6 +48,7 @@ namespace UltimaLive
                 landData[(i * 3) + 1] = (byte)((((ushort)land[i].ID) & 0xFF00) >> 8);
                 landData[(i * 3) + 2] = (byte)land[i].Z;
             }
+			}catch(Exception err){Console.Write("Crashed getting map Number: "+mapNumber); Console.Write(err.Message); Console.WriteLine("Map.Maps length= "+Map.Maps.Length);foreach(Map m in Map.Maps){ if(m == Map.Maps[mapNumber])Console.Write("We Broke Here: "); Console.WriteLine("Map "+m); }Console.ReadLine();}
             return landData;
         }
 
