@@ -34,6 +34,8 @@ namespace Server.Misc
             {
                 Server.Engines.Help.PageQueue.Pages_OnCalled(m);
             }
+		//	Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(e.Mobile); // This will initialize if needed
+
         }
     }
 }

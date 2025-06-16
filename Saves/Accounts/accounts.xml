@@ -26213,8 +26213,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2025-01-20T18:32:29.7269185Z</lastLogin>
-		<totalGameTime>P1271DT3H43M54.8107447S</totalGameTime>
+		<lastLogin>2025-06-13T15:55:14.9160551Z</lastLogin>
+		<totalGameTime>P1271DT6H33M31.7373148S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -26223,7 +26223,7 @@
 			<tag name="ChatName">ShardCrasher</tag>
 			<tag name="numRewardsChosen">2</tag>
 		</tags>
-		<addressList count="38">
+		<addressList count="40">
 			<ip>174.59.235.117</ip>
 			<ip>174.60.76.174</ip>
 			<ip>174.60.75.177</ip>
@@ -26262,6 +26262,8 @@
 			<ip>151.197.206.138</ip>
 			<ip>100.19.63.191</ip>
 			<ip>74.103.135.217</ip>
+			<ip>100.11.166.99</ip>
+			<ip>100.19.60.56</ip>
 		</addressList>
 		<totalCurrency>1.1158844179999969</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -27984,8 +27986,8 @@
 		<password>winski2</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2025-01-19T14:33:29.4041501Z</lastLogin>
-		<totalGameTime>P1779DT5H23M14.7947735S</totalGameTime>
+		<lastLogin>2025-06-14T00:46:37.9931701Z</lastLogin>
+		<totalGameTime>P1833DT11H16M24.4182192S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 			<char index="1">67366</char>
@@ -27998,7 +28000,7 @@
 			<tag name="motd">false</tag>
 			<tag name="numRewardsChosen">1</tag>
 		</tags>
-		<addressList count="15">
+		<addressList count="16">
 			<ip>66.189.142.35</ip>
 			<ip>71.82.244.230</ip>
 			<ip>75.135.71.57</ip>
@@ -28014,8 +28016,9 @@
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
 			<ip>97.83.211.11</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
-		<totalCurrency>0.014092203000012708</totalCurrency>
+		<totalCurrency>0.014406377000013071</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>

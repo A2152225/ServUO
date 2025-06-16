@@ -2878,8 +2878,50 @@ public virtual void OnDrainLife(Mobile victim)
                 Timer.DelayCall(TimeSpan.FromSeconds(10), ((PlayerMobile)@from).RecoverAmmo);
             }
 
+
+// Handle difficulty-based damage calculation
+    if (from != null && !this.IsDeadBondedPet)
+    {
+        Mobile actualPlayer = Server.Systems.Difficulty.DifficultyTracker.GetActualPlayer(from);
+        if (actualPlayer != null)
+        {
+            int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(actualPlayer);
+            
+            // Calculate actual damage (reduced by difficulty)
+            int actualDamage = Math.Max(1, amount / difficulty);
+            
+            // Track damage contribution (use original amount for contribution)
+            Server.Systems.Difficulty.DifficultyTracker.AddDamageContribution(this, from, amount);
+            
+            // Update perceived health for all nearby players
+            UpdatePerceivedHealthForNearbyPlayers();
+            
+            // Call base with actual damage
+            base.OnDamage(actualDamage, from, willKill);
+            return;
+        }
+    }
+
+
             base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
         }
+		
+		private void UpdatePerceivedHealthForNearbyPlayers()
+{
+    IPooledEnumerable eable = this.Map.GetClientsInRange(this.Location, 18);
+    
+    foreach (NetState state in eable)
+    {
+        if (state.Mobile != null)
+        {
+            state.Send(new Server.Network.DifficultyHealthPacket(this, state.Mobile));
+        }
+    }
+    
+    eable.Free();
+}
+
+
 
         public virtual void OnDamagedBySpell(Mobile from)
         {
@@ -7651,6 +7693,15 @@ public string CType = "default";  //Declare variable for use of transferring to 
         public override void OnDeath(Container c)
         {
             MeerMage.StopEffect(this, false);
+			
+			  // Handle difficulty-based loot distribution
+    HandleDifficultyLoot(c);
+    
+    // Cleanup tracking
+    Server.Systems.Difficulty.DifficultyTracker.CleanupCreature(this);
+    base.OnDeath(c);
+	/*
+	
 
             if (IsBonded)
             {
@@ -7911,7 +7962,72 @@ public string CType = "default";  //Declare variable for use of transferring to 
                     c.Delete();
                 }
             }
+			*/
+			    
+			
         }
+		
+		private void HandleDifficultyLoot(Container corpse)
+{
+    var contributions = Server.Systems.Difficulty.DifficultyTracker.GetContributions(this);
+    
+    if (contributions.Count == 0)
+        return;
+
+    // Calculate total contribution score
+    double totalScore = contributions.Values.Sum(c => c.GetContributionScore());
+    
+    if (totalScore <= 0)
+        return;
+
+    // Create individual loot for each contributor
+    foreach (var kvp in contributions)
+    {
+        Mobile player = kvp.Key;
+        var contribution = kvp.Value;
+        
+        if (player == null || player.Deleted || !player.Alive)
+            continue;
+        
+        double contributionPercent = contribution.GetContributionScore() / totalScore;
+        
+        if (contributionPercent < 0.01) // Less than 1% contribution
+            continue;
+        
+        CreateInstancedLoot(player, contribution, contributionPercent);
+    }
+}
+
+private void CreateInstancedLoot(Mobile player, Server.Systems.Difficulty.DamageContribution contribution, double contributionPercent)
+{
+    if (player.Backpack == null)
+        return;
+
+    // Base loot multiplier
+    double lootMultiplier = contribution.DifficultyLevel * contributionPercent;
+    
+    // Generate gold based on difficulty and this creature's worth
+    int baseGold = 50; // Adjust based on creature type
+    if (this is Dragon) baseGold = 500;
+    else if (this is Daemon) baseGold = 300;
+    // Add more creature types as needed
+    
+    int goldAmount = (int)(baseGold * lootMultiplier);
+    if (goldAmount > 0)
+    {
+        player.Backpack.DropItem(new Server.Items.Gold(goldAmount));
+        player.SendMessage($"You receive {goldAmount} gold for your contribution!");
+    }
+    
+    // Chance for bonus items
+    if (Utility.RandomDouble() < (lootMultiplier * 0.05)) // 5% base chance * multiplier
+    {
+        player.SendMessage("You find something special due to your difficulty contribution!");
+        // Add rare items here
+    }
+}
+
+
 
         public bool GivenSpecialArtifact { get; set; }
 

@@ -201,7 +201,10 @@ namespace Server.SkillHandlers
 						}
 						else if (from.CheckTargetSkill(SkillName.Discordance, target, diff - 25.0, diff + 25.0))
 						{
+							
 							from.SendLocalizedMessage(1049539); // You play the song surpressing your targets strength
+// After successful discordance
+Server.Systems.Difficulty.DifficultyTracker.AddUtilityContribution(target, from, 12);
 
                             if (targ.Player)
                                 targ.SendLocalizedMessage(1072061); // You hear jarring music, suppressing your strength.
