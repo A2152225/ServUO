@@ -4,6 +4,7 @@ using Server.ContextMenus;
 using Server.Engines.Craft;
 using Server.Mobiles;
 using Server.Factions;
+using daat99;
 
 namespace Server.Items
 {
@@ -795,22 +796,6 @@ namespace Server.Items
             return name;
         }
 
-        public override void AddCraftedProperties(ObjectPropertyList list)
-        {
-	
-            if (OwnerName != null)
-                list.Add(1153213, OwnerName);
-
-            if (m_Crafter != null)
-                list.Add(1050043, m_Crafter.TitleName); // crafted by ~1_NAME~
-
-            if (m_Quality == ItemQuality.Exceptional)
-                list.Add(1063341); // exceptional
-
-            if (IsImbued)
-                list.Add(1080418); // (Imbued)
-        }
-
         public override void AddWeightProperty(ObjectPropertyList list)
         {
             base.AddWeightProperty(list);
@@ -821,7 +806,34 @@ namespace Server.Items
 
         public override void AddNameProperties(ObjectPropertyList list)
         {
-            base.AddNameProperties(list);           
+            base.AddNameProperties(list);
+
+            if (OwnerName != null)
+            {
+                list.Add(1153213, OwnerName);
+            }
+
+            if (m_Crafter != null)
+                list.Add(1050043, m_Crafter.TitleName); // crafted by ~1_NAME~
+
+            if (m_Quality == ItemQuality.Exceptional)
+                list.Add(1063341); // exceptional
+
+            if (IsImbued)
+                list.Add(1080418); // (Imbued)            
+		 
+
+																	   
+		 
+										 
+
+						  
+											  
+		 
+
+																	   
+		 
+													
 
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
@@ -1265,6 +1277,11 @@ namespace Server.Items
 
             if (!craftItem.ForceNonExceptional)
                 Resource = CraftResources.GetFromType(resourceType);
+
+            //daat99 OWLTR start - runic jewels
+            if (Core.AOS && tool is BaseRunicTool && OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.CRAFT_RUNIC_JEWELRY))
+                ((BaseRunicTool)tool).ApplyAttributesTo(this);
+            //daat99 OWLTR end - reunic jewels
 
             if (1 < craftItem.Resources.Count)
             {

@@ -27,7 +27,7 @@ namespace Server
 					if ( p.NetState != null  )
 					{
 						if ( p2.AccessLevel < AccessLevel.Seer) 
-							p.SendMessage(353, "{0} has logged into the world.", p2.Name);
+							p.SendMessage(11, "{0} has logged into the world.", p2.Name); //was 353 - yellow   --try 11 light blue/purple
 					}
 				}
 			}

@@ -99,34 +99,56 @@ namespace Server.Engines.Harvest
                 new HarvestResource(85.0, 45.0, 125.0, 1007077, typeof(GoldOre), typeof(GoldGranite), typeof(GoldenElemental)),
                 new HarvestResource(90.0, 50.0, 130.0, 1007078, typeof(AgapiteOre), typeof(AgapiteGranite), typeof(AgapiteElemental)),
                 new HarvestResource(95.0, 55.0, 135.0, 1007079, typeof(VeriteOre), typeof(VeriteGranite), typeof(VeriteElemental)),
-                new HarvestResource(99.0, 59.0, 139.0, 1007080, typeof(ValoriteOre), typeof(ValoriteGranite), typeof(ValoriteElemental)),
-				new HarvestResource( 100.0, 60.0, 140.0, "You put some Blaze ore in your backpack",			typeof( BlazeOre ),				typeof( BlazeGranite ),			typeof( BlazeOreElemental ) ),
-				new HarvestResource( 105.0, 65.0, 145.0, "You put some Ice ore in your backpack", 			typeof( IceOre ),				typeof( IceGranite ),			typeof( IceOreElemental ) ),
-				new HarvestResource( 110.0, 70.0, 150.0, "You put some Toxic ore in your backpack",			typeof( ToxicOre ),				typeof( ToxicGranite ),			typeof( ToxicOreElemental ) ),
-				new HarvestResource( 112.0, 75.0, 155.0, "You put some Electrum ore in your backpack",		typeof( ElectrumOre ),			typeof( ElectrumGranite ),		typeof( ElectrumOreElemental ) ),
-				new HarvestResource( 115.0, 79.0, 159.0, "You put some Platinum ore in your backpack",		typeof( PlatinumOre ),			typeof( PlatinumGranite ),		typeof( PlatinumOreElemental ) ),
-          		new HarvestResource( 117.0, 75.0, 159.0, "You put some Royalite ore in your backpack",		typeof( RoyaliteOre ),			typeof( RoyaliteGranite ),		typeof( RoyaliteOreElemental ) ),
-				new HarvestResource( 119.0, 79.0, 159.0, "You put some Danite ore in your backpack",		typeof( DaniteOre ),			typeof( DaniteGranite ),		typeof( DaniteOreElemental ) )
+				new HarvestResource(99.0, 59.0, 139.0, 1007080, typeof(ValoriteOre), typeof(ValoriteGranite), typeof(ValoriteElemental)),
+				new HarvestResource( 100.0, 60.0, 140.0, "You put some Blaze ore in your backpack",	typeof( BlazeOre ),typeof( BlazeGranite ),	typeof( BlazeOreElemental ) ),
+				new HarvestResource( 105.0, 65.0, 145.0, "You put some Ice ore in your backpack", 	typeof( IceOre ),typeof( IceGranite ),	typeof( IceOreElemental ) ),
+				new HarvestResource( 110.0, 70.0, 150.0, "You put some Toxic ore in your backpack",	typeof( ToxicOre ),typeof( ToxicGranite ),	typeof( ToxicOreElemental ) ),
+				new HarvestResource( 112.0, 75.0, 155.0, "You put some Electrum ore in your backpack",typeof( ElectrumOre ),	typeof( ElectrumGranite ),typeof( ElectrumOreElemental ) ),
+				new HarvestResource( 115.0, 79.0, 159.0, "You put some Platinum ore in your backpack",typeof( PlatinumOre ),	typeof( PlatinumGranite ),typeof( PlatinumOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Barite ore in your backpack",typeof( BariteOre ),	typeof( BariteGranite ),typeof( BariteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Wulfenite ore in your backpack",typeof( WulfeniteOre ),	typeof( WulfeniteGranite ),typeof( WulfeniteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Dragonite ore in your backpack",typeof( DragoniteOre ),	typeof( DragoniteGranite ),typeof( DragoniteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Bunterite ore in your backpack",typeof( BunteriteOre ),	typeof( BunteriteGranite ),typeof( BunteriteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Pineite ore in your backpack",typeof( PineiteOre ),	typeof( PineiteGranite ),typeof( PineiteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Samite ore in your backpack",typeof( SamiteOre ),	typeof( SamiteGranite ),typeof( SamiteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Toberite ore in your backpack",typeof( ToberiteOre ),	typeof( ToberiteGranite ),typeof( ToberiteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Lisite ore in your backpack",typeof( LisiteOre ),	typeof( LisiteGranite ),typeof( LisiteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Marite ore in your backpack",typeof( MariteOre ),	typeof( MariteGranite ),typeof( MariteOreElemental ) ),
+				new HarvestResource( 117.0, 75.0, 159.0, "You put some Royalite ore in your backpack",typeof( RoyaliteOre ),	typeof( RoyaliteGranite ),typeof( RoyaliteOreElemental ) ),
+				new HarvestResource( 119.0, 79.0, 159.0, "You put some Danite ore in your backpack",typeof( DaniteOre ),	typeof( DaniteGranite ),typeof( DaniteOreElemental ) ),
+				new HarvestResource( 119.0, 79.0, 159.0, "You put some Teal ore in your backpack",typeof( TealOre ),	typeof( TealGranite ),typeof( TealOreElemental ) )
             };
 
             veins = new HarvestVein[]
             {
-					new HarvestVein( 47.0, 0.0, res[0], null   ), // Iron
-					new HarvestVein( 07.0, 0.5, res[1], res[0] ), // Dull Copper
-					new HarvestVein( 06.5, 0.5, res[2], res[0] ), // Shadow Iron
+					new HarvestVein( 38.5, 0.0, res[0], null   ), // Iron
+					new HarvestVein( 06.5, 0.5, res[1], res[0] ), // Dull Copper
+					new HarvestVein( 06.25, 0.5, res[2], res[0] ), // Shadow Iron
 					new HarvestVein( 06.0, 0.5, res[3], res[0] ), // Copper
 					new HarvestVein( 05.5, 0.5, res[4], res[0] ), // Bronze
 					new HarvestVein( 05.0, 0.5, res[5], res[0] ), // Gold
 					new HarvestVein( 04.5, 0.5, res[6], res[0] ), // Agapite
 					new HarvestVein( 04.0, 0.5, res[7], res[0] ), // Verite
 					new HarvestVein( 03.5, 0.5, res[8], res[0] ),  // Valorite
-					new HarvestVein( 03.0, 0.5, res[9], res[0] ), // Blaze
-					new HarvestVein( 02.5, 0.5, res[10], res[0] ), // Ice
-					new HarvestVein( 02.0, 0.5, res[11], res[0] ), // Toxic
-					new HarvestVein( 01.5, 0.5, res[12], res[0] ), // Electrum
-					new HarvestVein( 01.0, 0.5, res[13], res[0] ), // Platinum
-					new HarvestVein( 00.75, 0.5, res[14], res[0] ), // Royalite
-					new HarvestVein( 00.25, 0.5, res[15], res[0] ) // Danite											   
+                    new HarvestVein( 03.0, 0.5, res[9], res[0] ), // Blaze
+                    new HarvestVein( 02.5, 0.5, res[10], res[0] ), // Ice
+                    new HarvestVein( 02.0, 0.5, res[11], res[0] ), // Toxic
+                    new HarvestVein( 01.5, 0.5, res[12], res[0] ), // Electrum
+                    new HarvestVein( 01.0, 0.5, res[13], res[0] ), // Platinum
+
+                    new HarvestVein( 01.0, 0.5, res[14], res[0] ), // Barite
+                    new HarvestVein( 01, 0.5, res[15], res[0] ), // Wulfenite
+                    new HarvestVein( 01.0, 0.5, res[16], res[0] ), // Dragonite
+                    new HarvestVein( 01, 0.5, res[17], res[0] ), // Bunterite
+                    new HarvestVein( 01, 0.5, res[18], res[0] ), // Pineite                                               
+                    new HarvestVein( 01.0, 0.5, res[19], res[0] ), // Samite
+                    new HarvestVein( 01, 0.5, res[20], res[0] ), // Toberite                                               
+                    new HarvestVein( 01, 0.5, res[21], res[0] ), // Lisite                                               
+                    new HarvestVein( 0.75, 0.5, res[22], res[0] ), // Marite
+                    
+                    new HarvestVein( 00.5, 0.5, res[23], res[0] ), // Royalite
+                    new HarvestVein( 00.25, 0.5, res[24], res[0] ), // Danite										   
+					new HarvestVein( 00.75, 0.5, res[25], res[0] ) // Teal				
             };
 
             oreAndStone.Resources = res;
@@ -406,6 +428,114 @@ namespace Server.Engines.Harvest
                     }
                 }
             }
+			else
+			{
+				Random rnd = new Random();
+				var randomDouble = rnd.NextDouble();
+				var utilityDouble = Utility.RandomDouble();
+			if ( def == this.m_OreAndStone && 0.00015 >= randomDouble && HarvestMap.CheckMapOnHarvest(from, harvested, def) == null)
+				{
+					  try
+                    {
+                        Map map = from.Map;
+
+                        if (map == null)
+                            return;
+
+						BaseCreature spawned = new Rat() as BaseCreature;
+						string critter = Utility.RandomList("rat","snake","bird", "rabbit", "squirrel", "ferret");
+			switch (critter)
+			{
+				case "rat":
+				{
+					 spawned = new Rat() as BaseCreature;
+					break;
+				}
+				case "snake":
+				{
+					 spawned = new Snake() as BaseCreature;
+					break;
+				}
+				case "bird":
+				{
+					 spawned = new Bird() as BaseCreature;
+					break;
+				}
+				case "rabbit":
+				{
+					 spawned = new Rabbit() as BaseCreature;
+					break;
+				}
+				case "squirrel":
+				{
+					 spawned = new Squirrel() as BaseCreature;
+					break;
+				}
+				case "ferret":
+				{
+					 spawned = new Ferret() as BaseCreature;
+					break;
+				}				
+				default:
+				{
+					spawned = new Rat() as BaseCreature;
+					break;
+				}
+				
+			}
+
+							
+                        if (spawned != null)
+                        {
+							spawned.Name = "an adorable baby "+critter;
+							spawned.HitsMaxSeed = 150;
+							
+							spawned.Hits = 150;
+							spawned.Tamable = false;
+							 spawned.Hue =  Utility.RandomList( 1157, 1175, 1172, 1171, 1170, 1169, 1168, 1167, 1166, 1165 );
+							Diamond reward = new Diamond(2);
+							Console.WriteLine("Debug!:Creature spawned with  utility = {0}  rnd = {1} ",utilityDouble,  randomDouble);
+							from.SendMessage("While mining, you destroyed the home of a poor critter.  It stares at you with its sad little eyes, pleading for its life , knowing that it is probably not long for this world...");
+							
+							spawned.PackItem(reward);
+                            int offset = Utility.Random(8) * 2;
+
+                            for (int i = 0; i < m_Offsets.Length; i += 2)
+                            {
+                                int x = from.X + m_Offsets[(offset + i) % m_Offsets.Length];
+                                int y = from.Y + m_Offsets[(offset + i + 1) % m_Offsets.Length];
+
+                                if (map.CanSpawnMobile(x, y, from.Z))
+                                {
+                                    spawned.OnBeforeSpawn(new Point3D(x, y, from.Z), map);
+                                    spawned.MoveToWorld(new Point3D(x, y, from.Z), map);
+                                    spawned.Combatant = from;
+                                    return;
+                                }
+                                else
+                                {
+                                    int z = map.GetAverageZ(x, y);
+
+                                    if (Math.Abs(z - from.Z) < 10 && map.CanSpawnMobile(x, y, z))
+                                    {
+                                        spawned.OnBeforeSpawn(new Point3D(x, y, z), map);
+                                        spawned.MoveToWorld(new Point3D(x, y, z), map);
+                                        spawned.Combatant = from;
+                                        return;
+                                    }
+                                }
+                            }
+
+                            spawned.OnBeforeSpawn(from.Location, from.Map);
+                            spawned.MoveToWorld(from.Location, from.Map);
+                            spawned.Combatant = from;
+                        }
+                    }
+                    catch
+                    {
+                    }
+				}				
+			}
         }
 
         #region High Seas

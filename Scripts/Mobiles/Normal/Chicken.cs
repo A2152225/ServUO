@@ -52,6 +52,13 @@ namespace Server.Mobiles
                 return 1;
             }
         }
+		   public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Chicken;
+            }
+        }
         public override MeatType MeatType
         {
             get

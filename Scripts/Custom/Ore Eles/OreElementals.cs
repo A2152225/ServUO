@@ -898,7 +898,620 @@ namespace Server.Mobiles
 		}
 	}
 	
+
 	
+	[CorpseName( "an ore elemental corpse" )]
+	public class LisiteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public LisiteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Lisite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new LisiteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public LisiteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class BariteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public BariteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Barite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new BariteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public BariteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class WulfeniteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public WulfeniteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Wulfenite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new WulfeniteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public WulfeniteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class DragoniteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public DragoniteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Dragonite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new DragoniteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public DragoniteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class PineiteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public PineiteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Pineite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new PineiteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public PineiteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class MariteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public MariteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Marite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new MariteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public MariteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class ToberiteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public ToberiteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Toberite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new ToberiteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public ToberiteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class BunteriteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public BunteriteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Bunterite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new BunteriteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public BunteriteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	
+	[CorpseName( "an ore elemental corpse" )]
+	public class SamiteOreElemental : BaseCreature
+	{
+		[Constructable]
+		public SamiteOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Samite ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1153;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new SamiteOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public SamiteOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}
+	
+		
 	
 	
 	[CorpseName( "an ore elemental corpse" )]
@@ -1033,4 +1646,69 @@ namespace Server.Mobiles
 			int version = reader.ReadInt();
 		}
 	}
+	[CorpseName( "an ore elemental corpse" )]
+	public class TealOreElemental : BaseCreature
+	{
+		[Constructable]
+		public TealOreElemental() : base( AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4 )
+		{
+			// TODO: Gas attack
+			Name = "a Teal ore elemental";
+			Body = 108;
+			BaseSoundID = 268;
+			Hue = 1675;
+
+			SetStr( 270, 320 );
+			SetDex( 220, 240 );
+			SetInt( 170, 180 );
+
+			SetHits( 220, 240 );
+
+			SetDamage( 65, 70 );
+
+			SetDamageType( ResistanceType.Physical, 70 );
+			SetDamageType( ResistanceType.Poison, 65 );
+			SetDamageType( ResistanceType.Energy, 65 );
+			SetDamageType( ResistanceType.Fire, 65 );
+			SetDamageType( ResistanceType.Cold, 65 );
+
+			SetResistance( ResistanceType.Physical, 70, 80 );
+			SetResistance( ResistanceType.Poison, 65, 70 );
+			SetResistance( ResistanceType.Energy, 65, 70 );
+			SetResistance( ResistanceType.Fire, 65, 70 );
+			SetResistance( ResistanceType.Cold, 65, 70 );
+
+			SetSkill( SkillName.MagicResist, 70.0 );
+			SetSkill( SkillName.Wrestling, 110.0 );
+			SetSkill( SkillName.Tactics, 110.0 );
+
+			Fame = 6500;
+			Karma = -6500;
+
+			VirtualArmor = 65;
+
+			PackGem();
+			PackGem();
+			//PackMagicItems( 2, 5 );
+			PackItem( new TealOre( 10 ) );
+		}
+
+		public override bool AutoDispel{ get{ return true; } }
+
+		public TealOreElemental( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
+		}
+	}	
 }

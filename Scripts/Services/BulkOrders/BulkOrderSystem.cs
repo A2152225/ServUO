@@ -467,7 +467,7 @@ namespace Server.Engines.BulkOrders
 
             if (bod.AmountMax == 20 && (!CanBeExceptional(bod) || bod.RequireExceptional) &&
                      (!CanUseMaterial(bod) ||
-                     (bod.Material == BulkMaterialType.Danite ||
+                     (bod.Material == BulkMaterialType.Valorite ||
                       bod.Material == BulkMaterialType.Frostwood ||
                       bod.Material == BulkMaterialType.Barbed)))
             {
@@ -564,7 +564,7 @@ namespace Server.Engines.BulkOrders
                 picker.Add(1);
             }
 
-            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Danite)
+            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Valorite)
             {
                 picker.Add(2);
             }

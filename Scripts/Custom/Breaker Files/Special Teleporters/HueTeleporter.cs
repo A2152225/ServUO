@@ -82,7 +82,7 @@ namespace Server.Items
 									foreach( Item R in list)
 									{
 									//m.SendMessage("{0}",R.Name);
-									if (value == R.Hue && R is Robe)
+									if (value == R.Hue && R is HueRoomItem)
 									{
 		//	Map map = m_MapDest;
 

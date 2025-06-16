@@ -8,12 +8,12 @@
 /Scripts/bin
 /Scripts/obj
 /Scripts/Output
-/Scripts/Custom
+
 /Save*
 /WorldFile*
 /Crash*
-
-
+/Scripts3*
+Save*
 /Honesty
 /Logs
 /Backups
@@ -46,4 +46,3 @@
 
 !/Data/*
 !/bin/rosyln/*
-

@@ -171,10 +171,55 @@ namespace Server.Engines.Craft
 						case CraftResource.Platinum:
                             difficulty = 95.0;
                             break;
+
+				case CraftResource.Barite:
+                            difficulty = 95.0;
+                            break;
+				case CraftResource.Wulfenite:
+                            difficulty = 95.0;
+                            break;
+							
+				case CraftResource.Dragonite:
+                            difficulty = 95.0;
+                            break;
+
+		case CraftResource.Pineite:
+                            difficulty = 95.0;
+                            break;
+
+						case CraftResource.Lisite:
+                            difficulty = 95.0;
+                            break;
+
+							
+						case CraftResource.Marite:
+                            difficulty = 95.0;
+                            break;
+
+							
+						case CraftResource.Toberite:
+                            difficulty = 95.0;
+                            break;
+
+							
+						case CraftResource.Bunterite:
+                            difficulty = 95.0;
+                            break;
+
+							
+						case CraftResource.Samite:
+                            difficulty = 95.0;
+                            break;
+
+												
 						case CraftResource.Royalite:
                             difficulty = 97.0;
                             break;
+							
 						case CraftResource.Danite:
+                            difficulty = 99.0;
+							break;
+						case CraftResource.Teal:
                             difficulty = 99.0;
                             break;
 						

@@ -43,7 +43,17 @@ namespace Server.Items
         Barako,
         Urali,
         Sakkhra,
+        #endregion,
+		#region FS:ATS Edits
+        PetResurrect,
+        PetShrink,
+        PetHeal,
+        PetGreaterHeal,
+        PetCure,
+        PetGreaterCure,
         #endregion
+        Shatter,
+        FearEssence
     }
 
     public abstract class BasePotion : Item, ICraftable, ICommodity

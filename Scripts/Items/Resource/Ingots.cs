@@ -146,11 +146,52 @@ namespace Server.Items
                                 info = OreInfo.Platinum;
                                 break;
                             case 14:
+                                info = OreInfo.Barite;
+                                break;
+                            case 15:
+                                info = OreInfo.Dragonite;
+                                break;
+							case 16:
+                                info = OreInfo.Dragonite;
+                                break;
+
+
+							case 17:
+                                info = OreInfo.Bunterite;
+                                break;
+
+                            case 18:
+                                info = OreInfo.Pineite;
+                                break;
+
+							case 19:
+                                info = OreInfo.Samite;
+                                break;
+
+                            case 20:
+                                info = OreInfo.Toberite;
+                                break;
+
+                            case 21:
+                                info = OreInfo.Lisite;
+                                break;
+
+                            case 22:
+                                info = OreInfo.Marite;
+                                break;
+
+                            case 23:
                                 info = OreInfo.Royalite;
                                 break;
-								  case 15:
+							case 24:
                                 info = OreInfo.Danite;
                                 break;
+							case 25:
+                                info = OreInfo.Teal;
+                                break;
+							case 26:
+                                info = OreInfo.Teal;
+                                break;								
                             default:
                                 info = null;
                                 break;
@@ -679,6 +720,304 @@ namespace Server.Items
 		}
 	}
 	
+	
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class LisiteIngot : BaseIngot
+	{
+		[Constructable]
+		public LisiteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public LisiteIngot( int amount ) : base( CraftResource.Lisite, amount )
+		{
+			Name = "Lisite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public LisiteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class MariteIngot : BaseIngot
+	{
+		[Constructable]
+		public MariteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public MariteIngot( int amount ) : base( CraftResource.Marite, amount )
+		{
+			Name = "Marite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public MariteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class ToberiteIngot : BaseIngot
+	{
+		[Constructable]
+		public ToberiteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public ToberiteIngot( int amount ) : base( CraftResource.Toberite, amount )
+		{
+			Name = "Toberite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public ToberiteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class BunteriteIngot : BaseIngot
+	{
+		[Constructable]
+		public BunteriteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public BunteriteIngot( int amount ) : base( CraftResource.Bunterite, amount )
+		{
+			Name = "Bunterite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public BunteriteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class SamiteIngot : BaseIngot
+	{
+		[Constructable]
+		public SamiteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public SamiteIngot( int amount ) : base( CraftResource.Samite, amount )
+		{
+			Name = "Samite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public SamiteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+		[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class PineiteIngot : BaseIngot
+	{
+		[Constructable]
+		public PineiteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public PineiteIngot( int amount ) : base( CraftResource.Pineite, amount )
+		{
+			Name = "Pineite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public PineiteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+	
+	
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class DragoniteIngot : BaseIngot
+	{
+		[Constructable]
+		public DragoniteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public DragoniteIngot( int amount ) : base( CraftResource.Dragonite, amount )
+		{
+			Name = "Dragonite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public DragoniteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+
+
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class BariteIngot : BaseIngot
+	{
+		[Constructable]
+		public BariteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public BariteIngot( int amount ) : base( CraftResource.Barite, amount )
+		{
+			Name = "Barite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public BariteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}
+
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class WulfeniteIngot : BaseIngot
+	{
+		[Constructable]
+		public WulfeniteIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public WulfeniteIngot( int amount ) : base( CraftResource.Wulfenite, amount )
+		{
+			Name = "Wulfenite Ingots"; //daat99 OWLTR - resource name
+		}
+
+		public WulfeniteIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}	
+	
 	[FlipableAttribute( 0x1BF2, 0x1BEF )]
 	public class RoyaliteIngot : BaseIngot
 	{
@@ -743,4 +1082,36 @@ namespace Server.Items
 			int version = reader.ReadInt();
 		}
 	}
+	[FlipableAttribute( 0x1BF2, 0x1BEF )]
+	public class TealIngot : BaseIngot
+	{
+		[Constructable]
+		public TealIngot() : this( 1 )
+		{
+		}
+
+		[Constructable]
+		public TealIngot( int amount ) : base( CraftResource.Teal, amount )
+		{
+			Name = "Teal Ingots"; // resource name
+		}
+
+		public TealIngot( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int) 0 ); // version
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+	}	
 }

@@ -278,13 +278,125 @@ namespace Server.Engines.Harvest
             else
                 from.SendLocalizedMessage(1005213); // You can't do that
         }
-
+        private static readonly int[] m_Offsets = new int[]
+        {
+            -1, -1,
+            -1, 0,
+            -1, 1,
+            0, -1,
+            0, 1,
+            1, -1,
+            1, 0,
+            1, 1
+        };
         public override void OnHarvestStarted(Mobile from, Item tool, HarvestDefinition def, object toHarvest)
         {
             base.OnHarvestStarted(from, tool, def, toHarvest);
-
+			
             if (Core.ML)
                 from.RevealingAction();
+			if (0.02 > Utility.RandomDouble())  //Start harvest Spawn 
+				{
+					  try
+                    {
+                        Map map = from.Map;
+
+                        if (map == null)
+                            return;
+
+						BaseCreature spawned = new Rat() as BaseCreature;
+						string critter = Utility.RandomList("rat","snake","bird", "rabbit", "squirrel", "ferret");
+			switch (critter)
+			{
+				case "rat":
+				{
+					 spawned = new Rat() as BaseCreature;
+					break;
+				}
+				case "snake":
+				{
+					 spawned = new Snake() as BaseCreature;
+					break;
+				}
+				case "bird":
+				{
+					 spawned = new Bird() as BaseCreature;
+					break;
+				}
+				case "rabbit":
+				{
+					 spawned = new Rabbit() as BaseCreature;
+					break;
+				}
+				case "squirrel":
+				{
+					 spawned = new Squirrel() as BaseCreature;
+					break;
+				}
+				case "ferret":
+				{
+					 spawned = new Ferret() as BaseCreature;
+					break;
+				}				
+				default:
+				{
+					spawned = new Rat() as BaseCreature;
+					break;
+				}
+				
+			}
+
+							
+                        if (spawned != null)
+                        {
+							spawned.Name = "an adorable baby "+critter;
+							spawned.HitsMaxSeed = 150;
+							
+							spawned.Hits = 150;
+							spawned.Tamable = false;
+							 spawned.Hue =  Utility.RandomList( 1157, 1175, 1172, 1171, 1170, 1169, 1168, 1167, 1166, 1165 );
+							Diamond reward = new Diamond(2);
+							
+							from.SendMessage("While chopping, you destroyed the home of a poor critter.  It stares at you with its sad little eyes, pleading for its life , knowing that it is probably not long for this world...");
+							
+							spawned.PackItem(reward);
+                            int offset = Utility.Random(8) * 2;
+
+                            for (int i = 0; i < m_Offsets.Length; i += 2)
+                            {
+                                int x = from.X + m_Offsets[(offset + i) % m_Offsets.Length];
+                                int y = from.Y + m_Offsets[(offset + i + 1) % m_Offsets.Length];
+
+                                if (map.CanSpawnMobile(x, y, from.Z))
+                                {
+                                    spawned.OnBeforeSpawn(new Point3D(x, y, from.Z), map);
+                                    spawned.MoveToWorld(new Point3D(x, y, from.Z), map);
+                                    spawned.Combatant = from;
+                                    return;
+                                }
+                                else
+                                {
+                                    int z = map.GetAverageZ(x, y);
+
+                                    if (Math.Abs(z - from.Z) < 10 && map.CanSpawnMobile(x, y, z))
+                                    {
+                                        spawned.OnBeforeSpawn(new Point3D(x, y, z), map);
+                                        spawned.MoveToWorld(new Point3D(x, y, z), map);
+                                        spawned.Combatant = from;
+                                        return;
+                                    }
+                                }
+                            }
+
+                            spawned.OnBeforeSpawn(from.Location, from.Map);
+                            spawned.MoveToWorld(from.Location, from.Map);
+                            spawned.Combatant = from;
+                        }
+                    }
+                    catch
+                    {
+                    }
+				} //end Harvest Spawns 
         }
 
         public static void Initialize()

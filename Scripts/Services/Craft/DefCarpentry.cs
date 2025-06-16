@@ -1,7 +1,7 @@
 using System;
 using Server.Items;
+using daat99;
 using Server.Mobiles;
-
 namespace Server.Engines.Craft
 {
     #region Mondain's Legacy
@@ -111,7 +111,7 @@ namespace Server.Engines.Craft
 
         public override int PlayEndingEffect(Mobile from, bool failed, bool lostMaterial, bool toolBroken, int quality, bool makersMark, CraftItem item)
         {
-				Experience.CraftExp( from, quality, failed, item );
+			Experience.CraftExp( from, quality, failed, item );
             if (toolBroken)
                 from.SendLocalizedMessage(1044038); // You have worn out your tool
 
@@ -988,23 +988,27 @@ namespace Server.Engines.Craft
 
             index = AddCraft(typeof(PickpocketDipSouthDeed), 1044297, 1044338, 73.6, 98.6, typeof(Board), 1044041, 65, 1044351);
             AddSkill(index, SkillName.Tailoring, 50.0, 55.0);
-            AddRes(index, typeof(Cloth), 1044286, 60, 1044287);
+            AddRes(index, typeof(Cloth), 1044286, 60, 1044287);	
 
             MarkOption = true;
             Repair = Core.AOS;
             CanEnhance = Core.ML;
-
-            SetSubRes(typeof(Board), 1072643);
+			
+			//SetSubRes(typeof(Board), 1072643);
+			
+			//daat99 OWLTR start - custom Wood
+            daat99.ResourceHelper.AddWoodResources(this);
+            //daat99 OWLTR end - custom Wood 
 
             // Add every material you want the player to be able to choose from
             // This will override the overridable material	TODO: Verify the required skill amount
-            AddSubRes(typeof(Board), 1072643, 00.0, 1044041, 1072652);
-            AddSubRes(typeof(OakBoard), 1072644, 65.0, 1044041, 1072652);
-            AddSubRes(typeof(AshBoard), 1072645, 75.0, 1044041, 1072652);
-            AddSubRes(typeof(YewBoard), 1072646, 85.0, 1044041, 1072652);
-            AddSubRes(typeof(HeartwoodBoard), 1072647, 95.0, 1044041, 1072652);
-            AddSubRes(typeof(BloodwoodBoard), 1072648, 95.0, 1044041, 1072652);
-            AddSubRes(typeof(FrostwoodBoard), 1072649, 95.0, 1044041, 1072652);
+            //AddSubRes(typeof(Board), 1072643, 00.0, 1044041, 1072652);
+            //AddSubRes(typeof(OakBoard), 1072644, 65.0, 1044041, 1072652);
+            //AddSubRes(typeof(AshBoard), 1072645, 75.0, 1044041, 1072652);
+            //AddSubRes(typeof(YewBoard), 1072646, 85.0, 1044041, 1072652);
+            //AddSubRes(typeof(HeartwoodBoard), 1072647, 95.0, 1044041, 1072652);
+            //AddSubRes(typeof(BloodwoodBoard), 1072648, 95.0, 1044041, 1072652);
+            //AddSubRes(typeof(FrostwoodBoard), 1072649, 95.0, 1044041, 1072652);
         }
     }
 }

@@ -441,13 +441,24 @@ namespace Server.SkillHandlers
 							else
 							{
 								m_Creature.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 502799, m_Tamer.NetState);
-									// It seems to accept you as master.
+								//It seems to accept you as master.
+								
+								if (m_Tamer is PlayerMobile)
+								{
+								double XP = 50+ (m_Creature.MinTameSkill+( m_Creature.HitsMaxSeed + m_Creature.RawDex + m_Creature.RawStr + m_Creature.RawInt + m_Creature.DamageMax + m_Creature.DamageMin ))	;
+								if ( XP < 60) XP = 60;
+								((PlayerMobile)m_Tamer).EXP += (long)XP;
+								
+								
+								}
 							}
-
+					
 							m_Creature.SetControlMaster(m_Tamer);
 							m_Creature.IsBonded = false;
 
                             m_Creature.OnAfterTame(m_Tamer);
+							
+							
 
                             if (!m_Creature.Owners.Contains(m_Tamer))
                             {
@@ -457,6 +468,13 @@ namespace Server.SkillHandlers
                             PetTrainingHelper.GetAbilityProfile(m_Creature, true).OnTame();
 
                             EventSink.InvokeTameCreature(new TameCreatureEventArgs(m_Tamer, m_Creature));
+							
+							if (m_Tamer is PlayerMobile)
+								{
+									m_Creature.Hits += (((PlayerMobile)m_Tamer).Paragon_PetStats*10);
+									m_Creature.Stam += (((PlayerMobile)m_Tamer).Paragon_PetStats*10);
+									m_Creature.Mana += (((PlayerMobile)m_Tamer).Paragon_PetStats*10);
+								}
 
                         }
 						else

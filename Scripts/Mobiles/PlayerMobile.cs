@@ -53,7 +53,7 @@ namespace Server.Mobiles
 
 	#region Enums
 	[Flags]
-	public enum PlayerFlag : ulong // First 16 bits are reserved for default-distro use, start custom flags at 0x00010000
+	public enum PlayerFlag
 	{
 		None = 0x00000000,
 		Glassblowing = 0x00000001,
@@ -85,7 +85,6 @@ namespace Server.Mobiles
         ToggleCutTopiaries = 0x10000000,
         HasValiantStatReward = 0x20000000,
         RefuseTrades = 0x40000000,
-        DisabledPvpWarning = 0x80000000,
     }
 
     [Flags]
@@ -95,6 +94,7 @@ namespace Server.Mobiles
         ToggleStoneOnly             = 0x00000002,
         CanBuyCarpets               = 0x00000004,
         VoidPool                    = 0x00000008,
+        DisabledPvpWarning          = 0x00000010,
     }
 
 	public enum NpcGuild
@@ -211,7 +211,38 @@ namespace Server.Mobiles
 		static PlayerMobile()
 		{
 			Instances = new List<PlayerMobile>(0x1000);
-		}
+		}		
+
+		#region FS:ATS Edtis
+        private DateTime m_NextTamingBulkOrder;
+        private bool m_Bioenginer;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public TimeSpan NextTamingBulkOrder
+        {
+            get
+            {
+                TimeSpan ts = m_NextTamingBulkOrder - DateTime.UtcNow;
+
+                if (ts < TimeSpan.Zero)
+                    ts = TimeSpan.Zero;
+
+                return ts;
+            }
+            set
+            {
+                try { m_NextTamingBulkOrder = DateTime.UtcNow + value; }
+                catch { }
+            }
+        }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool Bioenginer
+        {
+            get { return m_Bioenginer; }
+            set { m_Bioenginer = value; }
+        }
+        #endregion
 
 		#region Flying Carpet
 		public Item m_CarpetItem;
@@ -339,6 +370,7 @@ namespace Server.Mobiles
 		private List<Mobile> m_RecentlyReported;
 
         public bool UseSummoningRite { get; set; }
+
 
 		private int m_YoungSaves;
 		private int m_MaxLvl;
@@ -803,8 +835,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                         get{ return m_EXPL; } 
                         set
                         { 
-                                if ( m_EXPL > value)  
-                                        this.SendMessage( "You have lost " + (value-m_EXPL) + " experience." ); 
+                                //if ( m_EXPL > value)  
+                               //         this.SendMessage( "You have lost " + (value-m_EXPL) + " experience." ); 
                                 if ( m_EXPL < value)  
                                         this.SendMessage( "You have gained " + (value-m_EXPL) + " experience." );  
                                 m_EXPL = value;  
@@ -816,7 +848,12 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 public long LastLevelExp
                 { 
                         get{ return m_LastLevelExpL; } 
-                        set{ m_LastLevelExpL = value; }
+                        set
+						{
+						m_LastLevelExpL = value; 
+						Experience.GetNextLevelXP( (PlayerMobile)this );
+						
+						}
                 }
  
                 [CommandProperty( AccessLevel.Seer )]
@@ -1088,7 +1125,22 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		[CommandProperty(AccessLevel.GameMaster)]
 		public TimeSpan NpcGuildGameTime { get { return m_NpcGuildGameTime; } set { m_NpcGuildGameTime = value; } }
 
+		private int m_ToTItemsTurnedIn;
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int ToTItemsTurnedIn { get { return m_ToTItemsTurnedIn; } set { m_ToTItemsTurnedIn = value; } }
+
+		private int m_ToTTotalMonsterFame;
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int ToTTotalMonsterFame { get { return m_ToTTotalMonsterFame; } set { m_ToTTotalMonsterFame = value; } }
+
 		public int ExecutesLightningStrike { get { return m_ExecutesLightningStrike; } set { m_ExecutesLightningStrike = value; } }
+
+		private int m_VASTotalMonsterFame;
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int VASTotalMonsterFame { get { return m_VASTotalMonsterFame; } set { m_VASTotalMonsterFame = value; } }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public int ToothAche { get { return BaseSweet.GetToothAche(this); } set { BaseSweet.SetToothAche(this, value, true); } }
@@ -1159,8 +1211,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         [CommandProperty(AccessLevel.GameMaster)]
         public bool DisabledPvpWarning
         {
-            get { return GetFlag(PlayerFlag.DisabledPvpWarning); }
-            set { SetFlag(PlayerFlag.DisabledPvpWarning, value); }
+            get { return GetFlag(ExtendedPlayerFlag.DisabledPvpWarning); }
+            set { SetFlag(ExtendedPlayerFlag.DisabledPvpWarning, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -1682,8 +1734,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             {
                 max = CorpseSkinSpell.GetResistMalus(this);
             }
-
-            return max;
+			return 0;
+            //return max;
         }
 
         public override void ComputeResistances()
@@ -1707,6 +1759,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             Resistances[2] += BaseColdResistance;
             Resistances[3] += BasePoisonResistance;
             Resistances[4] += BaseEnergyResistance;
+			
+			
 			
             for (int i = 0; ResistanceMods != null && i < ResistanceMods.Count; ++i)
             {
@@ -1736,6 +1790,17 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 Resistances[3] += setItem != null && setItem.SetEquipped ? setItem.SetResistBonus(ResistanceType.Poison) : item.PoisonResistance;
                 Resistances[4] += setItem != null && setItem.SetEquipped ? setItem.SetResistBonus(ResistanceType.Energy) : item.EnergyResistance;
             }
+			//StoneForm Mod - add to actual resists instead
+			
+
+               int maxM = Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(this);
+            
+			Resistances[0] +=  (BaseArmor.GetRefinedResist(this, ResistanceType.Physical) + maxM);
+            Resistances[1] +=  (BaseArmor.GetRefinedResist(this, ResistanceType.Fire) + maxM);
+            Resistances[2] +=  (BaseArmor.GetRefinedResist(this, ResistanceType.Cold) + maxM);
+            Resistances[3] +=  (BaseArmor.GetRefinedResist(this, ResistanceType.Poison) + maxM);
+            Resistances[4] +=  (BaseArmor.GetRefinedResist(this, ResistanceType.Energy) + maxM);
+			// end StoneForm Mod - add to actual resists instead
 
             for (int i = 0; i < Resistances.Length; ++i)
             {
@@ -1749,7 +1814,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                 if (Resistances[i] > max)
                 {
-                    Resistances[i] = max;
+                    Resistances[i] = Resistances[i];//max;
                 }
                 else if (Resistances[i] < min)
                 {
@@ -3084,6 +3149,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				}
 
                 if (Alive && Core.SA)
+
                 {
                     list.Add(new Engines.Points.LoyaltyRating(this));
                 }
@@ -3092,6 +3158,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
                 if (Alive && InsuranceEnabled)
                 {
+
                     if (Core.SA)
                     {
                         list.Add(new CallbackEntry(1114299, OpenItemInsuranceMenu));
@@ -4837,6 +4904,10 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		private TimeSpan m_ShortTermElapse;
 		private TimeSpan m_LongTermElapse;
 		private DateTime m_SessionStart;
+		private DateTime m_NextSmithBulkOrder;
+		private DateTime m_NextTailorBulkOrder;
+		private DateTime m_NextFletcherBulkOrder;
+        private DateTime m_NextCarpenterBulkOrder;
 		private DateTime m_SavagePaintExpiration;
 		private SkillName m_Learning = (SkillName)(-1);
 
@@ -4964,6 +5035,44 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
         }
 
 		[CommandProperty(AccessLevel.GameMaster)]
+        public TimeSpan NextFletcherBulkOrder
+        {
+            get
+            {
+                TimeSpan ts = m_NextFletcherBulkOrder - DateTime.Now;
+
+                if (ts < TimeSpan.Zero)
+                    ts = TimeSpan.Zero;
+
+                return ts;
+            }
+            set
+            {
+                try { m_NextFletcherBulkOrder = DateTime.Now + value; }
+                catch { }
+            }
+        }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public TimeSpan NextCarpenterBulkOrder
+        {
+            get
+            {
+                TimeSpan ts = m_NextCarpenterBulkOrder - DateTime.Now;
+
+                if (ts < TimeSpan.Zero)
+                    ts = TimeSpan.Zero;
+
+                return ts;
+            }
+            set
+            {
+                try { m_NextCarpenterBulkOrder = DateTime.Now + value; }
+                catch { }
+            }
+        }
+
+		[CommandProperty(AccessLevel.GameMaster)]
 		public DateTime LastEscortTime { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -4990,7 +5099,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			m_AntiMacroTable = new Hashtable();
 			m_RecentlyReported = new List<Mobile>();
 
-			//m_BOBFilter = new BOBFilter();
+			this.m_BOBFilter = new Engines.BulkOrders.BOBFilter();
+
+			#region FS:ATS Edits
+			m_TamingBOBFilter = new Engines.BulkOrders.TamingBOBFilter();
+			#endregion
 
 			m_GameTime = TimeSpan.Zero;
 			m_ShortTermElapse = TimeSpan.FromHours(8.0);
@@ -5275,14 +5388,27 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			SetHairMods(-1, -1);
 		}
 
-		public BOBFilter BOBFilter
-        {
-            get
-            {
-                return BulkOrderSystem.GetBOBFilter(this);
-            }
-        }
+		private Engines.BulkOrders.BOBFilter m_BOBFilter;
+		
+		#region FS:ATS Edits
+		private Engines.BulkOrders.TamingBOBFilter m_TamingBOBFilter;
+		#endregion
 
+		public Engines.BulkOrders.BOBFilter BOBFilter
+		{
+			get
+			{
+				return this.m_BOBFilter;
+			}
+		}
+		
+		#region FS:ATS Edits
+		public Engines.BulkOrders.TamingBOBFilter TamingBOBFilter
+		{
+			get{ return m_TamingBOBFilter; }
+		}
+		#endregion
+		
 		public override void Deserialize(GenericReader reader)
 		{
 			base.Deserialize(reader);
@@ -5291,6 +5417,20 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			switch (version)
 			{
+				case 41:
+					#region FS:ATS Edits
+		
+					m_TamingBOBFilter = new Engines.BulkOrders.TamingBOBFilter( reader );
+			#endregion
+			
+					
+						m_Bioenginer = reader.ReadBool();
+						NextTamingBulkOrder = reader.ReadTimeSpan();
+						NextFletcherBulkOrder = reader.ReadTimeSpan();
+						NextCarpenterBulkOrder = reader.ReadTimeSpan();
+	
+				goto case 40;
+						
                 case 40: // Version 40, moved gauntlet points, virtua artys and TOT turn ins to PointsSystem
                 case 39: // Version 39, removed ML quest save/load
 
@@ -5883,7 +6023,24 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			base.Serialize(writer);
 
-			writer.Write(40); // version
+			writer.Write(41); // version
+
+
+		// Version 41 FS:ATS
+		if ( m_TamingBOBFilter == null )
+			{
+				m_TamingBOBFilter = new Engines.BulkOrders.TamingBOBFilter();
+			}
+			m_TamingBOBFilter.Serialize( writer );
+			
+			// Version 41 FS:ATS
+			writer.Write( m_Bioenginer );
+			writer.Write( NextTamingBulkOrder );
+			
+			//Version 41 
+			writer.Write(NextFletcherBulkOrder);
+            writer.Write(NextCarpenterBulkOrder);
+
 
             writer.Write((DateTime)NextGemOfSalvationUse);
 
@@ -6335,14 +6492,7 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		public override void GetProperties(ObjectPropertyList list)
 		{
 			base.GetProperties(list);
-			if (this.m_LvL < 50)
-			list.Add(String.Concat("Level: ",m_LvL));
-			if (this.m_LvL >= 50){
-			list.Add(String.Concat("Level: ", String.Format("<BASEFONT COLOR={0}>{1}", "#0FFF00", m_LvL)));
-		//list.Add(String.Concat("Level: ",m_LvL));			
-			list.Add(String.Concat("Paragon: ",m_PrestigeLvl));
-			
-			}
+
 			//InvalidateMyRunUO();
 
 
@@ -6354,6 +6504,8 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
                 if (m_CurrentVeteranTitle > 0)
                     list.Add(m_CurrentVeteranTitle);
             }
+			
+			
 
 			#region Mondain's Legacy Titles
 			if (Core.ML && m_RewardTitles != null && m_SelectedTitle > -1)
@@ -6446,6 +6598,18 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				PlayerProperties(new PlayerPropertiesEventArgs(this, list));
 			}
+		
+
+		#region Levels
+		if (this.m_LvL < 50)
+			list.Add(String.Concat("Level: ",m_LvL));
+			if (this.m_LvL >= 50){
+			list.Add(String.Concat("Level: ", String.Format("<BASEFONT COLOR={0}>{1}", "#0FFF00", m_LvL)));
+		//list.Add(String.Concat("Level: ",m_LvL));			
+			list.Add(String.Concat("Paragon: ",m_PrestigeLvl));
+			
+			}
+		#endregion
 		}
 
 		public override void OnSingleClick(Mobile from)
@@ -7030,9 +7194,12 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			TransformContext context = TransformationSpellHelper.GetContext(this);
 
-			if (context != null && context.Type == typeof(ReaperFormSpell))
+			if (context != null)
 			{
-				return WalkFoot;
+                if ((!Core.SA && context.Type == typeof(ReaperFormSpell)) || (!Core.HS && context.Type == typeof(Server.Spells.Mysticism.StoneFormSpell)))
+                {
+                    return WalkFoot;
+                }
 			}
 
 			bool running = ((dir & Direction.Running) != 0);
