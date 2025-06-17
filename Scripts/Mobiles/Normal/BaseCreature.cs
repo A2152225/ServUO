@@ -2938,17 +2938,39 @@ public virtual void OnDrainLife(Mobile victim)
         public virtual void AlterDamageScalarFrom(Mobile caster, ref double scalar)
         { }
 
+
+
         public virtual void AlterDamageScalarTo(Mobile target, ref double scalar)
         { 
 		
 		}
 
-        public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
+      /*  public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
         {
 			damage=ParagonDamageRBuff(damage);
             if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
                 damage -= damage / m_TempDamageAbsorb;
+        }*/
+		public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
+{
+    damage = ParagonDamageRBuff(damage);
+
+    Mobile source = Server.Systems.Difficulty.DifficultyTracker.GetActualPlayer(from);
+    if (source != null)
+    {
+        int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(source);
+        if (difficulty > 1)
+        {
+            double scale = 1.0 / difficulty;
+            damage = (int)(damage * scale);
+            source.SendMessage(38, $"[Difficulty] Your spell damage was scaled by {scale:F2}");
         }
+    }
+
+    if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
+        damage -= damage / m_TempDamageAbsorb;
+}
+
 
         public virtual void AlterSpellDamageTo(Mobile to, ref int damage)
         {
@@ -2957,7 +2979,7 @@ public virtual void OnDrainLife(Mobile victim)
 
 		}
 
-        public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
+       /* public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
         {
 			damage=ParagonDamageRBuff(damage);
             #region Mondain's Legacy
@@ -2979,7 +3001,33 @@ public virtual void OnDrainLife(Mobile victim)
 
             if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
                 damage -= damage / m_TempDamageAbsorb;
+        }*/
+		public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
+{
+    damage = ParagonDamageRBuff(damage);
+
+    Mobile source = Server.Systems.Difficulty.DifficultyTracker.GetActualPlayer(from);
+    if (source != null)
+    {
+        int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(source);
+        if (difficulty > 1)
+        {
+            double scale = 1.0 / difficulty;
+            damage = (int)(damage * scale);
+            source.SendMessage(38, $"[Difficulty] Your melee/pet damage was scaled by {scale:F2}");
         }
+    }
+
+    // Your existing Talisman killer bonus code remains unchanged
+    #region Mondain's Legacy
+    if (from != null && from.Talisman is BaseTalisman talisman &&
+        talisman.Killer?.Type != null &&
+        talisman.Killer.Type.IsAssignableFrom(GetType()))
+    {
+        damage = (int)(damage * (1 + (double)talisman.Killer.Amount / 100));
+    }
+    #endregion
+}
 
         public virtual void AlterMeleeDamageTo(Mobile to, ref int damage)
         {
@@ -2989,6 +3037,8 @@ public virtual void OnDrainLife(Mobile victim)
 			
         }
         #endregion
+		
+		
 
         #region SA / High Seas Tasty Treats/Vial of Armor Essense
         private int m_TempDamageBonus = 0;
