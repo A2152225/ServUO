@@ -4,16 +4,16 @@ using Server;
 using Server.Network;
 using Server.Mobiles;
 
-namespace Server.Custom.DifficultySystem
+namespace Server
 {
-    public class HealthScalingSystem
+    public class HealthScaling
     {
-        // This will keep track of packets we've already processed
+        // Track processed packets to avoid duplicates
         private static Dictionary<int, DateTime> _processedPackets = new Dictionary<int, DateTime>();
         
         public static void Initialize()
         {
-            // Hook into mobile movement events
+            // Hook into mobile events
             EventSink.Movement += new MovementEventHandler(OnMovement);
             EventSink.Login += new LoginEventHandler(OnLogin);
             
@@ -51,7 +51,7 @@ namespace Server.Custom.DifficultySystem
             if (player == null || player.NetState == null)
                 return;
                 
-            int difficultyLevel = DifficultySystem.GetPlayerDifficulty(player);
+            int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
             
             if (difficultyLevel <= 1) // No scaling needed
                 return;
@@ -62,7 +62,7 @@ namespace Server.Custom.DifficultySystem
                 if (m is BaseCreature && m != player && m.Alive)
                 {
                     // Calculate scaled health
-                    double healthMultiplier = Math.Pow(2, difficultyLevel - 1);
+                    double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
                     
                     // Calculate scaled values
                     int scaledMaxHits = (int)(m.HitsMax * healthMultiplier);
@@ -91,7 +91,7 @@ namespace Server.Custom.DifficultySystem
             _processedPackets[packetId] = DateTime.UtcNow;
             
             // Send health update packet
-            ns.Send(new CustomHealthPacket(creature, currentHits, maxHits));
+            ns.Send(new HealthUpdatePacket(creature, currentHits, maxHits));
         }
         
         private static void CleanupProcessedPackets()
@@ -111,27 +111,11 @@ namespace Server.Custom.DifficultySystem
                 _processedPackets.Remove(key);
             }
         }
-        
-        // Method to check for Animal Lore usage
-        public static void CheckAnimalLore(Mobile viewer, Mobile creature)
-        {
-            if (viewer == null || creature == null)
-                return;
-                
-            int difficultyLevel = DifficultySystem.GetPlayerDifficulty(viewer);
-            
-            if (difficultyLevel > 1 && creature is BaseCreature)
-            {
-                // Use our custom animal lore gump
-                double healthMultiplier = Math.Pow(2, difficultyLevel - 1);
-                viewer.SendGump(new ScaledAnimalLoreGump((BaseCreature)creature, healthMultiplier));
-            }
-        }
     }
     
-    public class CustomHealthPacket : Packet
+    public class HealthUpdatePacket : Packet
     {
-        public CustomHealthPacket(Mobile m, int currentHits, int maxHits) : base(0xA1, 9)
+        public HealthUpdatePacket(Mobile m, int currentHits, int maxHits) : base(0xA1, 9)
         {
             m_Stream.Write(m.Serial);
             m_Stream.Write((short)currentHits);  

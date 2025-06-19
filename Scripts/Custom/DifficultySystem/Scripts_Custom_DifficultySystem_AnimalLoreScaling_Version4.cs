@@ -1,12 +1,11 @@
 using System;
-using System.Reflection;
 using Server;
 using Server.Mobiles;
 using Server.Gumps;
-using Server.Network;
 using Server.Commands;
+using Server.Targeting;
 
-namespace Server.Custom.DifficultySystem
+namespace Server
 {
     public class AnimalLoreScaling
     {
@@ -14,43 +13,6 @@ namespace Server.Custom.DifficultySystem
         {
             // Register a command to test the scaling
             CommandSystem.Register("ScaleLore", AccessLevel.Player, new CommandEventHandler(OnCommand));
-            
-            // We'll use a timer-based approach to hook Animal Lore
-            EventSink.WorldLoad += OnWorldLoad;
-        }
-        
-        private static void OnWorldLoad()
-        {
-            // Start a timer to periodically check for Animal Lore gumps
-            Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), CheckAnimalLoreGumps);
-        }
-        
-        private static void CheckAnimalLoreGumps()
-        {
-            // Check all online players
-            foreach (Mobile m in World.Mobiles.Values)
-            {
-                if (m is PlayerMobile)
-                {
-                    PlayerMobile pm = (PlayerMobile)m;
-                    
-                    // If they're using Animal Lore and have a higher difficulty
-                    if (pm.LastSkillUsed == SkillName.AnimalLore && 
-                        pm.Target != null && 
-                        pm.Target.TargetObject is BaseCreature)
-                    {
-                        BaseCreature bc = (BaseCreature)pm.Target.TargetObject;
-                        int difficultyLevel = DifficultySystem.GetPlayerDifficulty(pm);
-                        
-                        if (difficultyLevel > 1)
-                        {
-                            // Replace with scaled gump
-                            double healthMultiplier = Math.Pow(2, difficultyLevel - 1);
-                            pm.SendGump(new ScaledAnimalLoreGump(bc, healthMultiplier));
-                        }
-                    }
-                }
-            }
         }
         
         [Usage("ScaleLore")]
@@ -61,9 +23,9 @@ namespace Server.Custom.DifficultySystem
             e.Mobile.SendMessage("Target a creature to view scaled stats.");
         }
         
-        private class AnimalLoreScalingTarget : Server.Targeting.Target
+        private class AnimalLoreScalingTarget : Target
         {
-            public AnimalLoreScalingTarget(Mobile from) : base(-1, false, Server.Targeting.TargetFlags.None)
+            public AnimalLoreScalingTarget(Mobile from) : base(-1, false, TargetFlags.None)
             {
             }
             
@@ -72,8 +34,8 @@ namespace Server.Custom.DifficultySystem
                 if (targeted is BaseCreature)
                 {
                     BaseCreature bc = (BaseCreature)targeted;
-                    int difficultyLevel = DifficultySystem.GetPlayerDifficulty(from);
-                    double healthMultiplier = Math.Pow(2, difficultyLevel - 1);
+                    int difficultyLevel = DifficultySettings.GetPlayerDifficulty(from);
+                    double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
                     
                     from.SendGump(new ScaledAnimalLoreGump(bc, healthMultiplier));
                 }
@@ -94,7 +56,7 @@ namespace Server.Custom.DifficultySystem
             
             // Create a customized Animal Lore gump with scaled health
             AddPage(0);
-            AddBackground(0, 0, 250, 170, 3500);
+            AddBackground(0, 0, 250, 260, 3500);
             
             AddHtmlLocalized(45, 15, 200, 20, 1049593, 0x7FFF, false, false); // Creature Properties
             
@@ -112,7 +74,7 @@ namespace Server.Custom.DifficultySystem
             AddHtml(150, 95, 100, 20, bc.Int.ToString(), false, false);
             
             // Special note about difficulty scaling
-            AddHtml(45, 130, 200, 40, "<i>*Health values shown are scaled based on your difficulty setting.</i>", false, false);
+            AddHtml(45, 205, 200, 40, "<i>*Health values shown are scaled based on your difficulty setting.</i>", false, false);
         }
     }
 }

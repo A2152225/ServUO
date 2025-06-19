@@ -2878,49 +2878,61 @@ public virtual void OnDrainLife(Mobile victim)
                 Timer.DelayCall(TimeSpan.FromSeconds(10), ((PlayerMobile)@from).RecoverAmmo);
             }
 
-
 // Handle difficulty-based damage calculation
-    if (from != null && !this.IsDeadBondedPet)
+if (from != null && !this.IsDeadBondedPet)
+{
+    Mobile actualPlayer = GetDamageSourcePlayer(from);
+    if (actualPlayer != null)
     {
-        Mobile actualPlayer = Server.Systems.Difficulty.DifficultyTracker.GetActualPlayer(from);
-        if (actualPlayer != null)
+        int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(actualPlayer);
+        
+        // Skip normal difficulty
+        if (difficultyLevel > 1)
         {
-            int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(actualPlayer);
-            
-            // Calculate actual damage (reduced by difficulty)
-            int actualDamage = Math.Max(1, amount / difficulty);
-            
-            // Track damage contribution (use original amount for contribution)
-            Server.Systems.Difficulty.DifficultyTracker.AddDamageContribution(this, from, amount);
+            // Calculate actual damage (reduced by difficulty scaling)
+            double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficultyLevel);
+            int actualDamage = Math.Max(1, (int)(amount / healthMultiplier));
             
             // Update perceived health for all nearby players
             UpdatePerceivedHealthForNearbyPlayers();
             
-            // Call base with actual damage
-            base.OnDamage(actualDamage, from, willKill);
+            // Call base with reduced damage
+            base.OnDamage(ParagonDamageRBuff(actualDamage), from, willKill);
             return;
         }
     }
+}
 
-
-            base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
-        }
-		
-		private void UpdatePerceivedHealthForNearbyPlayers()
+// Default case - no difficulty scaling
+base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
+		}
+private void UpdatePerceivedHealthForNearbyPlayers()
 {
     IPooledEnumerable eable = this.Map.GetClientsInRange(this.Location, 18);
     
     foreach (NetState state in eable)
     {
-        if (state.Mobile != null)
+        Mobile player = state.Mobile;
+        if (player != null && player is PlayerMobile)
         {
-            state.Send(new Server.Network.DifficultyHealthPacket(this, state.Mobile));
+            int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(player);
+            
+            if (difficultyLevel > 1)
+            {
+                // Calculate scaled health values
+                double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficultyLevel);
+                int scaledMaxHits = (int)(this.HitsMax * healthMultiplier);
+                double ratio = this.HitsMax > 0 ? (double)this.Hits / this.HitsMax : 0;
+                int scaledCurrentHits = Math.Max(1, (int)(scaledMaxHits * ratio));
+                
+                // Send custom health update
+                state.Send(new Server.HealthUpdatePacket(this, scaledCurrentHits, scaledMaxHits));
+            }
         }
     }
     
     eable.Free();
 }
-
 
 
         public virtual void OnDamagedBySpell(Mobile from)
@@ -2955,7 +2967,24 @@ public virtual void OnDrainLife(Mobile victim)
 {
     damage = ParagonDamageRBuff(damage);
 
-    Mobile source = Server.Systems.Difficulty.DifficultyTracker.GetActualPlayer(from);
+// Get the actual player behind this damage
+Mobile actualPlayer = GetDamageSourcePlayer(from);
+
+if (actualPlayer != null)
+{
+    int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(actualPlayer);
+    
+    // Apply scaling factor based on difficulty
+    if (difficultyLevel > 1)
+    {
+        // For difficulty level N, monsters take 1/N damage (they're effectively N times stronger)
+        double difficultyScalar = 1.0 / Server.DifficultySettings.GetHealthMultiplier(difficultyLevel);
+        scalar *= difficultyScalar;
+    }
+}
+
+
+
     if (source != null)
     {
         int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(source);
@@ -3028,7 +3057,32 @@ public virtual void OnDrainLife(Mobile victim)
     }
     #endregion
 }
-
+// Add this helper method somewhere in BaseCreature.cs:
+private Mobile GetDamageSourcePlayer(Mobile source)
+{
+    if (source == null)
+        return null;
+        
+    // Direct player attack
+    if (source is PlayerMobile)
+        return source;
+        
+    // Handle pets and summons
+    if (source is BaseCreature)
+    {
+        BaseCreature bc = (BaseCreature)source;
+        
+        // Check if it's a pet with a controlling player
+        if (bc.Controlled && bc.ControlMaster is PlayerMobile)
+            return bc.ControlMaster;
+            
+        // Check if it's a summoned creature
+        if (bc.Summoned && bc.SummonMaster is PlayerMobile)
+            return bc.SummonMaster;
+    }
+    
+    return null;
+}
         public virtual void AlterMeleeDamageTo(Mobile to, ref int damage)
         {
             if (m_TempDamageBonus > 0 && TastyTreat.UnderInfluence(this))
@@ -8010,73 +8064,118 @@ public string CType = "default";  //Declare variable for use of transferring to 
                 if (DeleteCorpseOnDeath && !e.PreventDelete)
                 {
                     c.Delete();
-                }
+                }*/
             }
-			*/
+			
 			    
 			
-        }
-		
-		private void HandleDifficultyLoot(Container corpse)
+    // Add this to BaseCreature.cs under the death-related methods
+private void HandleDifficultyLoot(Container corpse)
 {
-    var contributions = Server.Systems.Difficulty.DifficultyTracker.GetContributions(this);
+    // Get all players who contributed damage to this creature
+    List<Mobile> contributors = GetContributingPlayers();
     
-    if (contributions.Count == 0)
+    if (contributors.Count == 0)
         return;
 
-    // Calculate total contribution score
-    double totalScore = contributions.Values.Sum(c => c.GetContributionScore());
-    
-    if (totalScore <= 0)
-        return;
-
-    // Create individual loot for each contributor
-    foreach (var kvp in contributions)
+    // For simplicity, award loot to all contributors
+    foreach (Mobile player in contributors)
     {
-        Mobile player = kvp.Key;
-        var contribution = kvp.Value;
-        
-        if (player == null || player.Deleted || !player.Alive)
+        if (player == null || player.Deleted || !player.Alive || !(player is PlayerMobile))
             continue;
         
-        double contributionPercent = contribution.GetContributionScore() / totalScore;
-        
-        if (contributionPercent < 0.01) // Less than 1% contribution
-            continue;
-        
-        CreateInstancedLoot(player, contribution, contributionPercent);
+        // Create instanced loot based on player's difficulty
+        CreateInstancedLoot(player);
     }
 }
 
-private void CreateInstancedLoot(Mobile player, Server.Systems.Difficulty.DamageContribution contribution, double contributionPercent)
+// Helper method to get all players who contributed to killing this creature
+private List<Mobile> GetContributingPlayers()
 {
-    if (player.Backpack == null)
+    List<Mobile> contributors = new List<Mobile>();
+
+    // Get the last killer
+    Mobile killer = LastKiller;
+    
+    // Check if killer is a player
+    if (killer is PlayerMobile)
+        contributors.Add(killer);
+    
+    // Check if killer is a pet
+    else if (killer is BaseCreature bc)
+    {
+        if (bc.Controlled && bc.ControlMaster is PlayerMobile)
+            contributors.Add(bc.ControlMaster);
+        else if (bc.Summoned && bc.SummonMaster is PlayerMobile)
+            contributors.Add(bc.SummonMaster);
+    }
+    
+    // Optional: More advanced contribution tracking could be added here
+    // But for now, we just use the killer
+    
+    return contributors;
+}
+
+// Create personal loot for a player based on their difficulty level
+private void CreateInstancedLoot(Mobile player)
+{
+    if (player == null || player.Backpack == null)
         return;
 
-    // Base loot multiplier
-    double lootMultiplier = contribution.DifficultyLevel * contributionPercent;
+    // Get player's difficulty level
+    int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(player);
+    
+    // Calculate loot multiplier
+    double lootMultiplier = Server.DifficultySettings.CalculateRewardMultiplier(difficultyLevel);
+    
+    if (lootMultiplier <= 1.0)
+        return; // No bonus loot at normal difficulty
     
     // Generate gold based on difficulty and this creature's worth
-    int baseGold = 50; // Adjust based on creature type
+    int baseGold = 50; // Default gold value
+    
+    // Adjust based on creature type
     if (this is Dragon) baseGold = 500;
     else if (this is Daemon) baseGold = 300;
+    else if (Hits > 1000) baseGold = 200;
+    else if (Hits > 500) baseGold = 100;
     // Add more creature types as needed
     
-    int goldAmount = (int)(baseGold * lootMultiplier);
-    if (goldAmount > 0)
+    // Calculate bonus gold (only the bonus amount)
+    int bonusGoldAmount = (int)(baseGold * (lootMultiplier - 1.0));
+    
+    if (bonusGoldAmount > 0)
     {
-        player.Backpack.DropItem(new Server.Items.Gold(goldAmount));
-        player.SendMessage($"You receive {goldAmount} gold for your contribution!");
+        // Add to player's backpack
+        player.Backpack.DropItem(new Server.Items.Gold(bonusGoldAmount));
+        player.SendMessage($"You receive {bonusGoldAmount} bonus gold for your difficulty level!");
     }
     
-    // Chance for bonus items
-    if (Utility.RandomDouble() < (lootMultiplier * 0.05)) // 5% base chance * multiplier
+    // Chance for bonus items based on difficulty
+    double itemChance = 0.05 * (lootMultiplier - 1.0); // 5% per difficulty multiplier increment
+    
+    if (Utility.RandomDouble() < itemChance)
     {
-        player.SendMessage("You find something special due to your difficulty contribution!");
-        // Add rare items here
+        Item bonusItem = null;
+        
+        // Select an appropriate bonus item
+        switch (Utility.Random(5))
+        {
+            case 0: bonusItem = Loot.RandomGem(); break;
+            case 1: bonusItem = Loot.RandomJewelry(); break;
+            case 2: bonusItem = Loot.RandomPotion(); break;
+            case 3: bonusItem = new Server.Items.BagOfReagents(); break;
+            case 4: bonusItem = Loot.RandomScroll(); break;
+        }
+        
+        if (bonusItem != null)
+        {
+            // Add to player's backpack
+            player.Backpack.DropItem(bonusItem);
+            player.SendMessage("You find a bonus item due to your difficulty level!");
+        }
     }
 }
-
 
 
         public bool GivenSpecialArtifact { get; set; }
