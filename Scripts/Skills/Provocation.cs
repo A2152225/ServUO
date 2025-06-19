@@ -166,8 +166,8 @@ namespace Server.SkillHandlers
                                     m_Instrument.ConsumeUse(from);
                                     m_Creature.Provoke(from, target, true);
 						// After successful provocation
-					Server.Systems.Difficulty.DifficultyTracker.AddUtilityContribution(creature, from, 15);
-					Server.Systems.Difficulty.DifficultyTracker.AddUtilityContribution(target, from, 15);
+				DifficultySettings.ContributionTracker.AddUtilityContribution(creature, from, 15);
+				DifficultySettings.ContributionTracker.AddUtilityContribution(target, from, 15);
 					
                                     #region Bard Mastery Quest
                                     if (questTargets)

@@ -173,7 +173,7 @@ namespace Server.SkillHandlers
 						double diff = m_Instrument.GetDifficultyFor(targ) - 10.0;
 						double music = from.Skills[SkillName.Musicianship].Value;
 						// After successful discordance
-					Server.Systems.Difficulty.DifficultyTracker.AddUtilityContribution(targ, from, 12);
+					DifficultySettings.ContributionTracker.AddUtilityContribution(targ, from, 12);
 
                         if (from is BaseCreature)
                             music = 120.0;

@@ -2906,6 +2906,7 @@ if (from != null && !this.IsDeadBondedPet)
 // Default case - no difficulty scaling
 base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
 		}
+		
 private void UpdatePerceivedHealthForNearbyPlayers()
 {
     IPooledEnumerable eable = this.Map.GetClientsInRange(this.Location, 18);
@@ -2977,13 +2978,18 @@ public virtual void AlterDamageScalarTo(Mobile to, ref double scalar)
         }
     }
 }
+
+
+
+
       /*  public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
         {
 			damage=ParagonDamageRBuff(damage);
             if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
                 damage -= damage / m_TempDamageAbsorb;
         }*/
-		public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
+		
+	/*	public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
 {
     damage = ParagonDamageRBuff(damage);
 
@@ -3018,8 +3024,28 @@ int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(source);
 
     if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
         damage -= damage / m_TempDamageAbsorb;
-}
+}*/
+public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
+{
+    if (from != null)
+    {
+        // Get the actual player behind this damage
+        Mobile source = GetDamageSourcePlayer(from);
 
+        if (source != null)
+        {
+            int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
+            
+            // Apply scaling factor based on difficulty
+            if (difficulty > 1)
+            {
+                // For difficulty level N, monsters take 1/N damage (they're effectively N times stronger)
+                double difficultyScalar = 1.0 / Server.DifficultySettings.GetHealthMultiplier(difficulty);
+                damage = (int)(damage * difficultyScalar);
+            }
+        }
+    }
+}
 
         public virtual void AlterSpellDamageTo(Mobile to, ref int damage)
         {
@@ -3055,10 +3081,11 @@ int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(source);
 {
     damage = ParagonDamageRBuff(damage);
 
-Mobile actualPlayer = GetDamageSourcePlayer(from);
+Mobile source = GetDamageSourcePlayer(from);
     if (source != null)
     {
-int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(actualPlayer);
+		   int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
+//int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(source);
         if (difficulty > 1)
         {
             double scale = 1.0 / difficulty;
@@ -7814,300 +7841,321 @@ public string CType = "default";  //Declare variable for use of transferring to 
 			}
         }
 
-        public override void OnDeath(Container c)
+    public override void OnDeath(Container c)
+{
+    if (IsBonded)
+    {
+        int sound = GetDeathSound();
+
+        if (sound >= 0)
         {
-            MeerMage.StopEffect(this, false);
-			
-			  // Handle difficulty-based loot distribution
-    HandleDifficultyLoot(c);
-    
-    // Cleanup tracking
-    //Server.Systems.Difficulty.DifficultyTracker.CleanupCreature(this);
-    base.OnDeath(c);
-	/*
-	
+            Effects.PlaySound(this, Map, sound);
+        }
 
-            if (IsBonded)
+        Warmode = false;
+
+        Poison = null;
+        Combatant = null;
+
+        Hits = 0;
+        Stam = 0;
+        Mana = 0;
+
+        IsDeadPet = true;
+        ControlTarget = ControlMaster;
+        ControlOrder = OrderType.Follow;
+
+        ProcessDeltaQueue();
+        SendIncomingPacket();
+        SendIncomingPacket();
+
+        var aggressors = Aggressors;
+
+        for (int i = 0; i < aggressors.Count; ++i)
+        {
+            AggressorInfo info = aggressors[i];
+
+            if (info.Attacker.Combatant == this)
             {
-                int sound = GetDeathSound();
-
-                if (sound >= 0)
-                {
-                    Effects.PlaySound(this, Map, sound);
-                }
-
-                Warmode = false;
-
-                Poison = null;
-                Combatant = null;
-
-                Hits = 0;
-                Stam = 0;
-                Mana = 0;
-
-                IsDeadPet = true;
-                ControlTarget = ControlMaster;
-                ControlOrder = OrderType.Follow;
-
-                ProcessDeltaQueue();
-                SendIncomingPacket();
-                SendIncomingPacket();
-
-                var aggressors = Aggressors;
-
-                for (int i = 0; i < aggressors.Count; ++i)
-                {
-                    AggressorInfo info = aggressors[i];
-
-                    if (info.Attacker.Combatant == this)
-                    {
-                        info.Attacker.Combatant = null;
-                    }
-                }
-
-                var aggressed = Aggressed;
-
-                for (int i = 0; i < aggressed.Count; ++i)
-                {
-                    AggressorInfo info = aggressed[i];
-
-                    if (info.Defender.Combatant == this)
-                    {
-                        info.Defender.Combatant = null;
-                    }
-                }
-
-                Mobile owner = ControlMaster;
-
-                if (owner == null || owner.Deleted || owner.Map != Map || !owner.InRange(this, 12) || !CanSee(owner) ||
-                    !InLOS(owner))
-                {
-                    if (OwnerAbandonTime == DateTime.MinValue)
-                    {
-                        OwnerAbandonTime = DateTime.UtcNow;
-                    }
-                }
-                else
-                {
-                    OwnerAbandonTime = DateTime.MinValue;
-                }
-
-                GiftOfLifeSpell.HandleDeath(this);
-
-                CheckStatTimers();
+                info.Attacker.Combatant = null;
             }
-            else
+        }
+
+        var aggressed = Aggressed;
+
+        for (int i = 0; i < aggressed.Count; ++i)
+        {
+            AggressorInfo info = aggressed[i];
+
+            if (info.Defender.Combatant == this)
             {
-                LootingRights = null;
+                info.Defender.Combatant = null;
+            }
+        }
 
-                if (!Summoned && !m_NoKillAwards)
+        Mobile owner = ControlMaster;
+
+        if (owner == null || owner.Deleted || owner.Map != Map || !owner.InRange(this, 12) || !CanSee(owner) ||
+            !InLOS(owner))
+        {
+            if (OwnerAbandonTime == DateTime.MinValue)
+            {
+                OwnerAbandonTime = DateTime.UtcNow;
+            }
+        }
+        else
+        {
+            OwnerAbandonTime = DateTime.MinValue;
+        }
+
+        GiftOfLifeSpell.HandleDeath(this);
+
+        CheckStatTimers();
+    }
+    else
+    {
+        // Handle our difficulty loot BEFORE the normal loot generation
+        HandleDifficultyLoot(c);
+        
+        LootingRights = null;
+
+        if (!Summoned && !m_NoKillAwards)
+        {
+            int totalFame = Fame / 100;
+            int totalKarma = -Karma / 100;
+
+            if (Map == Map.Felucca)
+            {
+                totalFame += ((totalFame / 10) * 3);
+                totalKarma += ((totalKarma / 10) * 3);
+            }
+
+            var list = GetLootingRights();
+            var titles = new List<Mobile>();
+            var fame = new List<int>();
+            var karma = new List<int>();
+
+            bool givenFactionKill = false;
+            bool givenToTKill = false;
+            bool givenVASKill = false;				
+
+            for (int i = 0; i < list.Count; ++i)
+            {
+                DamageStore ds = list[i];
+
+                if (!ds.m_HasRight)
                 {
-                    int totalFame = Fame / 100;
-                    int totalKarma = -Karma / 100;
+                    continue;
+                }
+                //daat99 OWLTR start - add tokens on death
+                if (OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.MONSTER_GIVE_TOKENS))
+                    //daat99 Tokens start - add tokens on death
+                    GiveTokens.CalculateTokens(ds.m_Mobile, this);
+                //daat99 OWLTR/Tokens end - add tokens on death
 
-                    if (Map == Map.Felucca)
+                if (GivesFameAndKarmaAward)
+                {
+                    Party party = Engines.PartySystem.Party.Get(ds.m_Mobile);
+
+                    if (party != null)
                     {
-                        totalFame += ((totalFame / 10) * 3);
-                        totalKarma += ((totalKarma / 10) * 3);
-                    }
+                        int divedFame = totalFame / party.Members.Count;
+                        int divedKarma = totalKarma / party.Members.Count;
 
-                    var list = GetLootingRights();
-                    var titles = new List<Mobile>();
-                    var fame = new List<int>();
-                    var karma = new List<int>();
-
-                    bool givenFactionKill = false;
-					bool givenToTKill = false;
-                    bool givenVASKill = false;				
-
-                    for (int i = 0; i < list.Count; ++i)
-                    {
-                        DamageStore ds = list[i];
-
-                        if (!ds.m_HasRight)
+                        for (int j = 0; j < party.Members.Count; ++j)
                         {
-                            continue;
-                        }
-						//daat99 OWLTR start - add tokens on death
-						if (OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.MONSTER_GIVE_TOKENS))
-							//daat99 Tokens start - add tokens on death
-							GiveTokens.CalculateTokens(ds.m_Mobile, this);
-						//daat99 OWLTR/Tokens end - add tokens on death
+                            PartyMemberInfo info = party.Members[j];
 
-                     
-                        if (GivesFameAndKarmaAward)
-                        {
-                            Party party = Engines.PartySystem.Party.Get(ds.m_Mobile);
-
-                            if (party != null)
+                            if (info != null && info.Mobile != null)
                             {
-                                int divedFame = totalFame / party.Members.Count;
-                                int divedKarma = totalKarma / party.Members.Count;
+                                int index = titles.IndexOf(info.Mobile);
 
-                                for (int j = 0; j < party.Members.Count; ++j)
+                                if (index == -1)
                                 {
-                                    PartyMemberInfo info = party.Members[j];
-
-                                    if (info != null && info.Mobile != null)
-                                    {
-                                        int index = titles.IndexOf(info.Mobile);
-
-                                        if (index == -1)
-                                        {
-                                            titles.Add(info.Mobile);
-                                            fame.Add(divedFame);
-                                            karma.Add(divedKarma);
-                                        }
-                                        else
-                                        {
-                                            fame[index] += divedFame;
-                                            karma[index] += divedKarma;
-                                        }
-                                    }
+                                    titles.Add(info.Mobile);
+                                    fame.Add(divedFame);
+                                    karma.Add(divedKarma);
+                                }
+                                else
+                                {
+                                    fame[index] += divedFame;
+                                    karma[index] += divedKarma;
                                 }
                             }
-                            else
+                        }
+                    }
+                    else
+                    {
+                        if (PetTrainingHelper.Enabled && ds.m_Mobile is PlayerMobile)
+                        {
+                            foreach (var pet in ((PlayerMobile)ds.m_Mobile).AllFollowers.Where(p => DamageEntries.Any(de => de.Damager == p)))
                             {
-                                if (PetTrainingHelper.Enabled && ds.m_Mobile is PlayerMobile)
-                                {
-                                    foreach (var pet in ((PlayerMobile)ds.m_Mobile).AllFollowers.Where(p => DamageEntries.Any(de => de.Damager == p)))
-                                    {
-                                        titles.Add(pet);
-                                        fame.Add(totalFame);
-                                        karma.Add(totalKarma);
-                                    }
-                                }
-
-                                titles.Add(ds.m_Mobile);
+                                titles.Add(pet);
                                 fame.Add(totalFame);
                                 karma.Add(totalKarma);
                             }
                         }
 
-                        OnKilledBy(ds.m_Mobile);
-						        XmlQuest.RegisterKill(this, ds.m_Mobile);
-
-
-                        if (HumilityVirtue.IsInHunt(ds.m_Mobile) && Karma < 0)
-                            HumilityVirtue.RegisterKill(ds.m_Mobile, this, list.Count);
-
-                        if (!givenFactionKill)
-                        {
-                            givenFactionKill = true;
-                            Faction.HandleDeath(this, ds.m_Mobile);
-                        }
-                    }
-
-                    for (int i = 0; i < titles.Count; ++i)
-                    {
-                        Titles.AwardFame(titles[i], fame[i], true);
-                        Titles.AwardKarma(titles[i], karma[i], true);
+                        titles.Add(ds.m_Mobile);
+                        fame.Add(totalFame);
+                        karma.Add(totalKarma);
                     }
                 }
 
-                var e = new CreatureDeathEventArgs(this, LastKiller, c);
+                OnKilledBy(ds.m_Mobile);
+                XmlQuest.RegisterKill(this, ds.m_Mobile);
 
-                EventSink.InvokeCreatureDeath(e);
 
-                if (!c.Deleted)
+                if (HumilityVirtue.IsInHunt(ds.m_Mobile) && Karma < 0)
+                    HumilityVirtue.RegisterKill(ds.m_Mobile, this, list.Count);
+
+                if (!givenFactionKill)
                 {
-                    int i;
-
-                    if (e.ClearCorpse)
-                    {
-                        i = c.Items.Count;
-
-                        while (--i >= 0)
-                        {
-                            if (i >= c.Items.Count)
-                            {
-                                continue;
-                            }
-
-                            var o = c.Items[i];
-
-                            if (o != null && !o.Deleted)
-                            {
-                                o.Delete();
-                            }
-                        }
-                    }
-
-                    i = e.ForcedLoot.Count;
-
-                    while (--i >= 0)
-                    {
-                        if (i >= e.ForcedLoot.Count)
-                        {
-                            continue;
-                        }
-
-                        var o = e.ForcedLoot[i];
-
-                        if (o != null && !o.Deleted)
-                        {
-                            c.DropItem(o);
-                        }
-                    }
-
-                    e.ClearLoot(false);
+                    givenFactionKill = true;
+                    Faction.HandleDeath(this, ds.m_Mobile);
                 }
-                else
-                {
-                    var i = e.ForcedLoot.Count;
-
-                    while (--i >= 0)
-                    {
-                        if (i >= e.ForcedLoot.Count)
-                        {
-                            continue;
-                        }
-
-                        var o = e.ForcedLoot[i];
-
-                        if (o != null && !o.Deleted)
-                        {
-                            o.Delete();
-                        }
-                    }
-
-                    e.ClearLoot(true);
-                }
-
-                base.OnDeath(c);
-
-                if (e.PreventDefault)
-                {
-                    return;
-                }
-
-                if (DeleteCorpseOnDeath && !e.PreventDelete)
-                {
-                    c.Delete();
-                }*/
             }
+
+            for (int i = 0; i < titles.Count; ++i)
+            {
+                Titles.AwardFame(titles[i], fame[i], true);
+                Titles.AwardKarma(titles[i], karma[i], true);
+            }
+        }
+
+        var e = new CreatureDeathEventArgs(this, LastKiller, c);
+
+        EventSink.InvokeCreatureDeath(e);
+
+        if (!c.Deleted)
+        {
+            int i;
+
+            if (e.ClearCorpse)
+            {
+                i = c.Items.Count;
+
+                while (--i >= 0)
+                {
+                    if (i >= c.Items.Count)
+                    {
+                        continue;
+                    }
+
+                    var o = c.Items[i];
+
+                    if (o != null && !o.Deleted)
+                    {
+                        o.Delete();
+                    }
+                }
+            }
+
+            i = e.ForcedLoot.Count;
+
+            while (--i >= 0)
+            {
+                if (i >= e.ForcedLoot.Count)
+                {
+                    continue;
+                }
+
+                var o = e.ForcedLoot[i];
+
+                if (o != null && !o.Deleted)
+                {
+                    c.DropItem(o);
+                }
+            }
+
+            e.ClearLoot(false);
+        }
+        else
+        {
+            var i = e.ForcedLoot.Count;
+
+            while (--i >= 0)
+            {
+                if (i >= e.ForcedLoot.Count)
+                {
+                    continue;
+                }
+
+                var o = e.ForcedLoot[i];
+
+                if (o != null && !o.Deleted)
+                {
+                    o.Delete();
+                }
+            }
+
+            e.ClearLoot(true);
+        }
+        
+        // Clean up our difficulty tracking - add this right before the base call
+        DifficultySettings.ContributionTracker.CleanupCreature(this);
+        
+        base.OnDeath(c);
+
+        if (e.PreventDefault)
+        {
+            return;
+        }
+
+        if (DeleteCorpseOnDeath && !e.PreventDelete)
+        {
+            c.Delete();
+        }
+    }
+}
 			
 			    
 			
-    // Add this to BaseCreature.cs under the death-related methods
-private void HandleDifficultyLoot(Container corpse)
+  private void HandleDifficultyLoot(Container corpse)
 {
-    // Get all players who contributed damage to this creature
-    List<Mobile> contributors = GetContributingPlayers();
+    var contributions = DifficultySettings.ContributionTracker.GetContributions(this);
     
-    if (contributors.Count == 0)
+    if (contributions.Count == 0)
         return;
 
-    // For simplicity, award loot to all contributors
-    foreach (Mobile player in contributors)
+    // Calculate total contribution score
+    double totalScore = 0;
+    foreach (var kvp in contributions)
     {
-        if (player == null || player.Deleted || !player.Alive || !(player is PlayerMobile))
+        Mobile player = kvp.Key;
+        var contribution = kvp.Value;
+        
+        if (player == null || player.Deleted)
+            continue;
+            
+        // Pass the player parameter here
+        totalScore += contribution.GetContributionScore(player);
+    } // This closing brace was in the wrong place!
+    
+    if (totalScore <= 0)
+        return;
+
+    // Create individual loot for each contributor
+    foreach (var kvp2 in contributions) // Changed variable name to avoid conflict
+    {
+        Mobile playerToReward = kvp2.Key; // Changed variable name to avoid conflict
+        var contributionData = kvp2.Value; // Changed variable name to avoid conflict
+        
+        if (playerToReward == null || playerToReward.Deleted || !playerToReward.Alive)
             continue;
         
-        // Create instanced loot based on player's difficulty
-        CreateInstancedLoot(player);
+        double contributionPercent = contributionData.GetContributionScore(playerToReward) / totalScore;
+        
+        if (contributionPercent < 0.05) // Less than 5% contribution
+            continue;
+        
+        CreateInstancedLoot(playerToReward, contributionData, contributionPercent);
     }
+    
+    // Clean up tracking data
+    DifficultySettings.ContributionTracker.CleanupCreature(this);
 }
+
 
 // Helper method to get all players who contributed to killing this creature
 private List<Mobile> GetContributingPlayers()
@@ -8137,66 +8185,57 @@ private List<Mobile> GetContributingPlayers()
 }
 
 // Create personal loot for a player based on their difficulty level
-private void CreateInstancedLoot(Mobile player)
+private void CreateInstancedLoot(Mobile player, DifficultySettings.ContributionTracker.ContributionData contribution, double contributionPercent)
 {
-    if (player == null || player.Backpack == null)
+    if (player.Backpack == null)
         return;
 
     // Get player's difficulty level
-    int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(player);
+    int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
+    double rewardMultiplier = DifficultySettings.CalculateRewardMultiplier(difficultyLevel);
     
-    // Calculate loot multiplier
-    double lootMultiplier = Server.DifficultySettings.CalculateRewardMultiplier(difficultyLevel);
-    
-    if (lootMultiplier <= 1.0)
-        return; // No bonus loot at normal difficulty
+    // Base loot multiplier - affected by both contribution and difficulty
+    double lootMultiplier = rewardMultiplier * contributionPercent;
     
     // Generate gold based on difficulty and this creature's worth
-    int baseGold = 50; // Default gold value
+    int baseGold = DetermineBaseGoldValue();
+    int goldAmount = (int)(baseGold * lootMultiplier);
+    
+    if (goldAmount > 0)
+    {
+        player.Backpack.DropItem(new Server.Items.Gold(goldAmount));
+        player.SendMessage($"You receive {goldAmount} gold for your contribution!");
+    }
+    
+    // Chance for bonus items - higher for utility players to encourage support roles
+    double itemChance = lootMultiplier * 0.05; // 5% base chance * multiplier
+    
+    // If utility contribution is significant, boost chance for rewards
+    if (contribution.UtilityContribution > contribution.DamageContribution)
+    {
+        itemChance *= 1.5; // 50% bonus for utility specialists
+    }
+    
+    if (Utility.RandomDouble() < itemChance)
+    {
+        // Create reward item
+        player.SendMessage("You find something special due to your contribution!");
+        // Add rare items here
+    }
+}
+
+private int DetermineBaseGoldValue()
+{
+    int baseGold = 50; // Default value
     
     // Adjust based on creature type
     if (this is Dragon) baseGold = 500;
     else if (this is Daemon) baseGold = 300;
     else if (Hits > 1000) baseGold = 200;
     else if (Hits > 500) baseGold = 100;
-    // Add more creature types as needed
     
-    // Calculate bonus gold (only the bonus amount)
-    int bonusGoldAmount = (int)(baseGold * (lootMultiplier - 1.0));
-    
-    if (bonusGoldAmount > 0)
-    {
-        // Add to player's backpack
-        player.Backpack.DropItem(new Server.Items.Gold(bonusGoldAmount));
-        player.SendMessage($"You receive {bonusGoldAmount} bonus gold for your difficulty level!");
-    }
-    
-    // Chance for bonus items based on difficulty
-    double itemChance = 0.05 * (lootMultiplier - 1.0); // 5% per difficulty multiplier increment
-    
-    if (Utility.RandomDouble() < itemChance)
-    {
-        Item bonusItem = null;
-        
-        // Select an appropriate bonus item
-        switch (Utility.Random(5))
-        {
-            case 0: bonusItem = Loot.RandomGem(); break;
-            case 1: bonusItem = Loot.RandomJewelry(); break;
-            case 2: bonusItem = Loot.RandomPotion(); break;
-            case 3: bonusItem = new Server.Items.BagOfReagents(); break;
-            case 4: bonusItem = Loot.RandomScroll(); break;
-        }
-        
-        if (bonusItem != null)
-        {
-            // Add to player's backpack
-            player.Backpack.DropItem(bonusItem);
-            player.SendMessage("You find a bonus item due to your difficulty level!");
-        }
-    }
+    return baseGold;
 }
-
 
         public bool GivenSpecialArtifact { get; set; }
 

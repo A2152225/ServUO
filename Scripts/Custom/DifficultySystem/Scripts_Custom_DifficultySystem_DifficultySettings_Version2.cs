@@ -63,6 +63,13 @@ namespace Server
             return 1.0 + ((difficultyLevel - 1) * 0.25);
         }
         
+        // Helper method to get reward multiplier for a player
+        public static double GetRewardMultiplier(Mobile player)
+        {
+            int difficulty = GetPlayerDifficulty(player);
+            return CalculateRewardMultiplier(difficulty);
+        }
+        
         // Helper method to calculate health multiplier
         public static double GetHealthMultiplier(int difficultyLevel)
         {
@@ -139,6 +146,111 @@ namespace Server
             catch (Exception ex)
             {
                 Console.WriteLine("Error loading difficulty settings: " + ex.Message);
+            }
+        }
+
+        // Move ContributionTracker inside DifficultySettings as a nested class
+        public static class ContributionTracker
+        {
+            // Dictionary to track contributions: <Mobile creature, Dictionary<Mobile player, ContributionData>>
+            private static Dictionary<Mobile, Dictionary<Mobile, ContributionData>> _contributions = new Dictionary<Mobile, Dictionary<Mobile, ContributionData>>();
+            
+            // Track contribution data
+            public class ContributionData
+            {
+                public int DamageContribution { get; set; } = 0;
+                public int UtilityContribution { get; set; } = 0;
+                
+                public int TotalContribution => DamageContribution + UtilityContribution;
+                
+                // Calculate score, with difficulty factored in
+                public double GetContributionScore(Mobile player)
+                {
+                    return TotalContribution * DifficultySettings.GetRewardMultiplier(player);
+                }
+                
+                public ContributionData()
+                {
+                }
+            }
+            
+            // Add damage contribution
+            public static void AddDamageContribution(Mobile creature, Mobile source, int amount)
+            {
+                // Get actual player
+                Mobile player = GetActualPlayer(source);
+                if (player == null)
+                    return;
+                    
+                AddContribution(creature, player, amount, 0);
+            }
+            
+            // Add utility contribution (skills, healing, etc.)
+            public static void AddUtilityContribution(Mobile creature, Mobile source, int amount)
+            {
+                // Get actual player
+                Mobile player = GetActualPlayer(source);
+                if (player == null)
+                    return;
+                    
+                AddContribution(creature, player, 0, amount);
+            }
+            
+            // Core contribution tracking
+            private static void AddContribution(Mobile creature, Mobile player, int damageAmount, int utilityAmount)
+            {
+                if (creature == null || player == null)
+                    return;
+                    
+                // Initialize dictionaries if needed
+                if (!_contributions.ContainsKey(creature))
+                    _contributions[creature] = new Dictionary<Mobile, ContributionData>();
+                    
+                if (!_contributions[creature].ContainsKey(player))
+                    _contributions[creature][player] = new ContributionData();
+                    
+                // Add contributions
+                _contributions[creature][player].DamageContribution += damageAmount;
+                _contributions[creature][player].UtilityContribution += utilityAmount;
+            }
+            
+            // Get all contributions for a creature
+            public static Dictionary<Mobile, ContributionData> GetContributions(Mobile creature)
+            {
+                if (creature == null || !_contributions.ContainsKey(creature))
+                    return new Dictionary<Mobile, ContributionData>();
+                    
+                return _contributions[creature];
+            }
+            
+            // Clean up tracking data when creature dies
+            public static void CleanupCreature(Mobile creature)
+            {
+                if (creature != null && _contributions.ContainsKey(creature))
+                    _contributions.Remove(creature);
+            }
+            
+            // Helper to get actual player from a damage source
+            public static Mobile GetActualPlayer(Mobile source)
+            {
+                if (source == null)
+                    return null;
+                    
+                // Direct player
+                if (source is PlayerMobile)
+                    return source;
+                    
+                // Controlled creature
+                if (source is BaseCreature bc)
+                {
+                    if (bc.Controlled && bc.ControlMaster is PlayerMobile)
+                        return bc.ControlMaster;
+                        
+                    if (bc.Summoned && bc.SummonMaster is PlayerMobile)
+                        return bc.SummonMaster;
+                }
+                
+                return null;
             }
         }
     }

@@ -181,6 +181,22 @@ private readonly Mobile _viewer;
 public AnimalLoreGump(Mobile viewer, BaseCreature c) : base(250, 50)
 {
     _viewer = viewer;
+	// Get player's difficulty and show adjusted health perception
+int difficultyLevel = DifficultySettings.GetPlayerDifficulty(_viewer);
+double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
+
+// Adjust how health looks based on difficulty
+int perceivedMaxHits = c.HitsMax;
+int perceivedHits = c.Hits;
+
+if (difficultyLevel > 1)
+{
+    // For higher difficulty, creatures appear to have more health
+    perceivedMaxHits = (int)(c.HitsMax * healthMultiplier);
+    perceivedHits = (int)(c.Hits * healthMultiplier);
+}
+
+
             AddPage(0);
 
             AddImage(100, 100, 2080);
@@ -206,9 +222,7 @@ public AnimalLoreGump(Mobile viewer, BaseCreature c) : base(250, 50)
             AddHtmlLocalized(147, 150, 160, 18, 1049593, 200, false, false); // Attributes
 
             AddHtmlLocalized(153, 168, 160, 18, 1049578, LabelColor, false, false); // Hits
-AddHtml(280, 168, 75, 18, FormatAttributes(
-    Server.Systems.Difficulty.DifficultyTracker.GetPerceivedHealth(c, _viewer),
-    Server.Systems.Difficulty.DifficultyTracker.GetPerceivedMaxHealth(c, _viewer)), false, false);
+AddHtml(280, 168, 75, 18, FormatAttributes(perceivedHits, perceivedMaxHits), false, false);
 
 			
 
