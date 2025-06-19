@@ -222,7 +222,7 @@ if (difficultyLevel > 1)
             AddHtmlLocalized(147, 150, 160, 18, 1049593, 200, false, false); // Attributes
 
             AddHtmlLocalized(153, 168, 160, 18, 1049578, LabelColor, false, false); // Hits
-AddHtml(280, 168, 75, 18, FormatAttributes(perceivedHits, perceivedMaxHits), false, false);
+AddHtml(280, 168, 75, 18, String.Format("{0} / {1}", perceivedHits, perceivedMaxHits), false, false);//FormatAttributes(perceivedHits, perceivedMaxHits), false, false);
 
 			
 

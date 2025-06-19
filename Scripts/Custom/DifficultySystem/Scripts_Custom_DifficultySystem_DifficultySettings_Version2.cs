@@ -73,7 +73,9 @@ namespace Server
         // Helper method to calculate health multiplier
         public static double GetHealthMultiplier(int difficultyLevel)
         {
-            return Math.Pow(2, difficultyLevel - 1);
+             double multiplier = Math.Pow(2, difficultyLevel - 1);
+    Console.WriteLine("Difficulty: " + difficultyLevel + ", Health Multiplier: " + multiplier);
+    return multiplier;
         }
         
         // Save settings to disk

@@ -2895,7 +2895,11 @@ if (from != null && !this.IsDeadBondedPet)
             
             // Update perceived health for all nearby players
             UpdatePerceivedHealthForNearbyPlayers();
-            
+             if (from != null && !Deleted && !from.Deleted)
+    {
+        DifficultySettings.ContributionTracker.AddDamageContribution(this, from, amount);
+        Console.WriteLine($"{from.Name} did {amount} damage to {Name}");
+    }
             // Call base with reduced damage
             base.OnDamage(ParagonDamageRBuff(actualDamage), from, willKill);
             return;
@@ -3090,7 +3094,7 @@ Mobile source = GetDamageSourcePlayer(from);
         {
             double scale = 1.0 / difficulty;
             damage = (int)(damage * scale);
-            source.SendMessage(38, $"[Difficulty] Your melee/pet damage was scaled by {scale:F2}");
+            //source.SendMessage(38, $"[Difficulty] Your melee/pet damage was scaled by {scale:F2}");
         }
     }
 
@@ -8111,12 +8115,19 @@ public string CType = "default";  //Declare variable for use of transferring to 
 			
 			    
 			
-  private void HandleDifficultyLoot(Container corpse)
+private void HandleDifficultyLoot(Container corpse)
 {
+    Console.WriteLine($"=== HandleDifficultyLoot for {Name} ===");
+    
     var contributions = DifficultySettings.ContributionTracker.GetContributions(this);
     
+    Console.WriteLine($"Contributions found: {contributions.Count}");
+    
     if (contributions.Count == 0)
+    {
+        Console.WriteLine("No contributions found - did you add the OnDamage handler?");
         return;
+    }
 
     // Calculate total contribution score
     double totalScore = 0;
@@ -8127,35 +8138,117 @@ public string CType = "default";  //Declare variable for use of transferring to 
         
         if (player == null || player.Deleted)
             continue;
-            
-        // Pass the player parameter here
+        
+        Console.WriteLine($"Player {player.Name}: Damage={contribution.DamageContribution}, Utility={contribution.UtilityContribution}");
         totalScore += contribution.GetContributionScore(player);
-    } // This closing brace was in the wrong place!
+    }
+    
+    Console.WriteLine($"Total contribution score: {totalScore}");
     
     if (totalScore <= 0)
         return;
 
     // Create individual loot for each contributor
-    foreach (var kvp2 in contributions) // Changed variable name to avoid conflict
+    foreach (var kvp2 in contributions)
     {
-        Mobile playerToReward = kvp2.Key; // Changed variable name to avoid conflict
-        var contributionData = kvp2.Value; // Changed variable name to avoid conflict
+        Mobile playerToReward = kvp2.Key;
+        var contributionData = kvp2.Value;
         
         if (playerToReward == null || playerToReward.Deleted || !playerToReward.Alive)
             continue;
         
         double contributionPercent = contributionData.GetContributionScore(playerToReward) / totalScore;
         
+        Console.WriteLine($"Player {playerToReward.Name} contribution: {contributionPercent:P2}");
+        
         if (contributionPercent < 0.05) // Less than 5% contribution
+        {
+            Console.WriteLine($"Player {playerToReward.Name} contribution too small (<5%)");
             continue;
+        }
         
         CreateInstancedLoot(playerToReward, contributionData, contributionPercent);
     }
     
-    // Clean up tracking data
-    DifficultySettings.ContributionTracker.CleanupCreature(this);
+    Console.WriteLine("=== End HandleDifficultyLoot ===");
 }
 
+private void CreateInstancedLoot(Mobile player, DifficultySettings.ContributionTracker.ContributionData contribution, double contributionPercent)
+{
+    if (player.Backpack == null)
+    {
+        Console.WriteLine($"Player {player.Name} has no backpack");
+        return;
+    }
+
+    // Get player's difficulty level
+    int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
+    double rewardMultiplier = DifficultySettings.GetRewardMultiplier(player);
+    
+    Console.WriteLine($"Player {player.Name}: Difficulty={difficultyLevel}, Reward Multiplier={rewardMultiplier:F2}");
+    
+    // Base loot multiplier - affected by both contribution and difficulty
+    double lootMultiplier = rewardMultiplier * contributionPercent;
+    
+    // Generate gold based on difficulty and this creature's worth
+    int baseGold = DetermineBaseGoldValue();
+    int goldAmount = (int)(baseGold * lootMultiplier);
+    
+    Console.WriteLine($"Base gold: {baseGold}, Multiplier: {lootMultiplier:F2}, Final gold: {goldAmount}");
+    
+    if (goldAmount > 0)
+    {
+        try {
+            Item gold = new Server.Items.Gold(goldAmount);
+            
+            if (player.Backpack.TryDropItem(player, gold, false))
+            {
+                player.SendMessage($"You receive {goldAmount} gold for your contribution!");
+                Console.WriteLine($"Successfully added {goldAmount} gold to {player.Name}'s backpack");
+            }
+            else
+            {
+                gold.Delete();
+                Console.WriteLine($"Failed to add gold to {player.Name}'s backpack");
+            }
+        }
+        catch (Exception ex) {
+            Console.WriteLine($"Error creating gold: {ex.Message}");
+        }
+    }
+    
+    // Chance for bonus items - higher for utility players to encourage support roles
+    double itemChance = lootMultiplier * 0.05; // 5% base chance * multiplier
+    
+    // If utility contribution is significant, boost chance for rewards
+    if (contribution.UtilityContribution > contribution.DamageContribution)
+    {
+        itemChance *= 1.5; // 50% bonus for utility specialists
+    }
+    
+    Console.WriteLine($"Bonus item chance: {itemChance:P2}");
+    
+    if (Utility.RandomDouble() < itemChance)
+    {
+        // Create reward item based on difficulty
+        player.SendMessage("You find something special due to your contribution!");
+        Console.WriteLine($"Player {player.Name} received bonus item");
+        // Add rare items here - could be scrolls, gems, etc.
+    }
+}
+
+private int DetermineBaseGoldValue()
+{
+    int baseGold = 50; // Default value
+    
+    // Adjust based on creature type
+    if (this is Dragon) baseGold = 500;
+    else if (this is Daemon) baseGold = 300;
+    else if (Hits > 1000) baseGold = 200;
+    else if (Hits > 500) baseGold = 100;
+    
+    return baseGold;
+}
 
 // Helper method to get all players who contributed to killing this creature
 private List<Mobile> GetContributingPlayers()
@@ -8182,59 +8275,6 @@ private List<Mobile> GetContributingPlayers()
     // But for now, we just use the killer
     
     return contributors;
-}
-
-// Create personal loot for a player based on their difficulty level
-private void CreateInstancedLoot(Mobile player, DifficultySettings.ContributionTracker.ContributionData contribution, double contributionPercent)
-{
-    if (player.Backpack == null)
-        return;
-
-    // Get player's difficulty level
-    int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
-    double rewardMultiplier = DifficultySettings.CalculateRewardMultiplier(difficultyLevel);
-    
-    // Base loot multiplier - affected by both contribution and difficulty
-    double lootMultiplier = rewardMultiplier * contributionPercent;
-    
-    // Generate gold based on difficulty and this creature's worth
-    int baseGold = DetermineBaseGoldValue();
-    int goldAmount = (int)(baseGold * lootMultiplier);
-    
-    if (goldAmount > 0)
-    {
-        player.Backpack.DropItem(new Server.Items.Gold(goldAmount));
-        player.SendMessage($"You receive {goldAmount} gold for your contribution!");
-    }
-    
-    // Chance for bonus items - higher for utility players to encourage support roles
-    double itemChance = lootMultiplier * 0.05; // 5% base chance * multiplier
-    
-    // If utility contribution is significant, boost chance for rewards
-    if (contribution.UtilityContribution > contribution.DamageContribution)
-    {
-        itemChance *= 1.5; // 50% bonus for utility specialists
-    }
-    
-    if (Utility.RandomDouble() < itemChance)
-    {
-        // Create reward item
-        player.SendMessage("You find something special due to your contribution!");
-        // Add rare items here
-    }
-}
-
-private int DetermineBaseGoldValue()
-{
-    int baseGold = 50; // Default value
-    
-    // Adjust based on creature type
-    if (this is Dragon) baseGold = 500;
-    else if (this is Daemon) baseGold = 300;
-    else if (Hits > 1000) baseGold = 200;
-    else if (Hits > 500) baseGold = 100;
-    
-    return baseGold;
 }
 
         public bool GivenSpecialArtifact { get; set; }
