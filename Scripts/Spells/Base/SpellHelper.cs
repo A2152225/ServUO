@@ -1573,7 +1573,7 @@ private static void TrackHealingContribution(Mobile caster, Mobile target, int h
     {
         if (m is BaseCreature bc && (bc.Combatant == caster || bc.Combatant == target))
         {
-            Server.Systems.Difficulty.DifficultyTracker.AddHealingContribution(bc, caster, healAmount);
+		Server.DifficultySettings.GetPlayerDifficulty(caster);
         }
     }
     

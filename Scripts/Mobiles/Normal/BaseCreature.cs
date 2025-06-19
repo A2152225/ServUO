@@ -2881,16 +2881,16 @@ public virtual void OnDrainLife(Mobile victim)
 // Handle difficulty-based damage calculation
 if (from != null && !this.IsDeadBondedPet)
 {
-    Mobile actualPlayer = GetDamageSourcePlayer(from);
-    if (actualPlayer != null)
+    Mobile source = GetDamageSourcePlayer(from);
+    if (source != null)
     {
-        int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(actualPlayer);
+        int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
         
         // Skip normal difficulty
-        if (difficultyLevel > 1)
+        if (difficulty > 1)
         {
             // Calculate actual damage (reduced by difficulty scaling)
-            double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficultyLevel);
+            double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficulty);
             int actualDamage = Math.Max(1, (int)(amount / healthMultiplier));
             
             // Update perceived health for all nearby players
@@ -2952,11 +2952,31 @@ private void UpdatePerceivedHealthForNearbyPlayers()
 
 
 
-        public virtual void AlterDamageScalarTo(Mobile target, ref double scalar)
-        { 
+       // public virtual void AlterDamageScalarTo(Mobile target, ref double scalar)
+        //{ 
 		
-		}
+	//	}
+public virtual void AlterDamageScalarTo(Mobile to, ref double scalar)
+{
+    if (to != null)
+    {
+        // Get the actual player behind this damage
+        Mobile source = GetDamageSourcePlayer(to);
 
+        if (source != null)
+        {
+            int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
+            
+            // Apply scaling factor based on difficulty
+            if (difficulty > 1)
+            {
+                // For difficulty level N, monsters take 1/N damage (they're effectively N times stronger)
+                double difficultyScalar = 1.0 / Server.DifficultySettings.GetHealthMultiplier(difficulty);
+                scalar *= difficultyScalar;
+            }
+        }
+    }
+}
       /*  public virtual void AlterSpellDamageFrom(Mobile from, ref int damage)
         {
 			damage=ParagonDamageRBuff(damage);
@@ -2987,7 +3007,7 @@ if (actualPlayer != null)
 
     if (source != null)
     {
-        int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(source);
+int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(source);
         if (difficulty > 1)
         {
             double scale = 1.0 / difficulty;
@@ -3035,10 +3055,10 @@ if (actualPlayer != null)
 {
     damage = ParagonDamageRBuff(damage);
 
-    Mobile source = Server.Systems.Difficulty.DifficultyTracker.GetActualPlayer(from);
+Mobile actualPlayer = GetDamageSourcePlayer(from);
     if (source != null)
     {
-        int difficulty = Server.Systems.Difficulty.DifficultyTracker.GetPlayerDifficulty(source);
+int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(actualPlayer);
         if (difficulty > 1)
         {
             double scale = 1.0 / difficulty;
@@ -7802,7 +7822,7 @@ public string CType = "default";  //Declare variable for use of transferring to 
     HandleDifficultyLoot(c);
     
     // Cleanup tracking
-    Server.Systems.Difficulty.DifficultyTracker.CleanupCreature(this);
+    //Server.Systems.Difficulty.DifficultyTracker.CleanupCreature(this);
     base.OnDeath(c);
 	/*
 	
