@@ -61,7 +61,7 @@ if (defender is BaseCreature bc)
             }
         }
 		*/
-		public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
+		/*public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
 {
     if (attacker == null || defender == null || attacker.NetState == null)
         return;
@@ -81,8 +81,20 @@ if (defender is BaseCreature bc)
         int scaledDamage = (int)(damage * healthMultiplier);
         attacker.NetState.Send(new DamageNumberPacket(defender, scaledDamage));
     }
-}
+}*/
+	public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
+		{
+    if (attacker == null || defender == null || attacker.NetState == null)
+        return;
+
+    // Only show unscaled damage to the player and their controlled mobs (pets, summons, etc)
+    if (attacker is PlayerMobile || (attacker is BaseCreature bc && bc.Controlled && bc.ControlMaster is PlayerMobile))
+    {
+        attacker.NetState.Send(new DamageNumberPacket(defender, damage));
+        return;
     }
+
+		}
     
     // Custom packet for damage display
     public sealed class DamageNumberPacket : Packet
