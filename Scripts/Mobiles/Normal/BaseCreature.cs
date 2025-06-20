@@ -277,6 +277,14 @@ namespace Server.Mobiles
 		public bool m_F8;
 		public bool m_F9;
 
+		private int _lastUnscaledDamage;
+		
+		
+		public void SetLastUnscaledDamage(int amount)
+{
+    _lastUnscaledDamage = amount;
+}
+
 		[CommandProperty( AccessLevel.GameMaster )]
 		public int RoarAttack
 		{
@@ -2819,6 +2827,7 @@ public virtual void OnDrainLife(Mobile victim)
 
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
+					SetLastUnscaledDamage(amount);
             if (BardPacified && (HitsMax - Hits) * 0.001 > Utility.RandomDouble())
             {
                 Unpacify();
@@ -2962,7 +2971,8 @@ private void UpdatePerceivedHealthForNearbyPlayers()
 		
 	//	}
 public virtual void AlterDamageScalarTo(Mobile to, ref double scalar)
-{
+{ 
+
     if (to != null)
     {
         // Get the actual player behind this damage
@@ -5129,6 +5139,7 @@ private Mobile GetDamageSourcePlayer(Mobile source)
 
         public virtual void OnGotMeleeAttack(Mobile attacker)
         {
+			
             	int DispelProtection = 0;
 				if (attacker is BaseCreature)
 				{
@@ -8275,6 +8286,32 @@ private List<Mobile> GetContributingPlayers()
     // But for now, we just use the killer
     
     return contributors;
+}
+public override bool SuppressDamagePopup
+{
+    get
+    {
+        if (this.Controlled || this.Summoned)
+            return false;
+
+        // Uncomment if you only want to suppress for scaling mobs
+        // if (!this.IsScalingMob)
+        //     return false;
+
+        var lastDamager = this.FindMostRecentDamager(true);
+        if (lastDamager is PlayerMobile)
+            return false;
+        if (lastDamager is BaseCreature bc && (bc.Controlled || bc.Summoned))
+            return false;
+
+        return true;
+    }
+}
+protected override int GetDamagePopupValue(int amount, Server.Mobile from)
+{
+    if (SuppressDamagePopup && _lastUnscaledDamage > 0)
+        return _lastUnscaledDamage;
+    return base.GetDamagePopupValue(amount, from);
 }
 
         public bool GivenSpecialArtifact { get; set; }

@@ -39,7 +39,7 @@ namespace Server
 
 	public delegate void PromptStateCallback<T>(Mobile from, string text, T state);
 	#endregion
-
+	
 	#region [...]Mods
 	public class TimedSkillMod : SkillMod
 	{
@@ -146,7 +146,7 @@ namespace Server
 				}
 			}
 		}
-
+	
 		public void Remove()
 		{
 			Owner = null;
@@ -825,6 +825,7 @@ namespace Server
 		private DateTime m_LastDexGain;
 		private Race m_Race;
         #endregion
+			public virtual bool SuppressDamagePopup => false;
 
         private static readonly TimeSpan WarmodeSpamCatch = TimeSpan.FromSeconds((Core.SE ? 1.0 : 0.5));
 		private static readonly TimeSpan WarmodeSpamDelay = TimeSpan.FromSeconds((Core.SE ? 4.0 : 2.0));
@@ -5571,8 +5572,9 @@ namespace Server
 				DisruptiveAction();
 
 				Paralyzed = false;
-
-                SendDamagePacket(from, amount);
+				
+                //SendDamagePacket(from, amount);
+				SendDamagePacket(from, GetDamagePopupValue(amount, from));
 				OnDamage(amount, from, newHits < 0);
 
 				IMount m = Mount;
@@ -5603,9 +5605,14 @@ namespace Server
 
 			return amount;
 		}
-
+protected virtual int GetDamagePopupValue(int amount, Mobile from)
+{
+    return amount; // Default: show actual amount
+}
         public virtual void SendDamagePacket(Mobile from, int amount)
         {
+			    if (SuppressDamagePopup)
+				return;
             switch (m_VisibleDamageType)
             {
                 case VisibleDamageType.Related:
