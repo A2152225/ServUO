@@ -36,7 +36,7 @@ namespace Server
         }
         
         // Method to be called from AOS.Damage
-     /*   public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
+        public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
         {
 			return;
             if (attacker == null || defender == null || attacker.NetState == null)
@@ -54,13 +54,14 @@ if (defender is BaseCreature bc)
                 {
                     double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
                     int scaledDamage = (int)(damage * healthMultiplier);
+					int Damage = (int)(damage);
                     
                     // Send scaled damage
-             //       attacker.NetState.Send(new DamageNumberPacket(defender, scaledDamage));
+                    attacker.NetState.Send(new DamageNumberPacket(defender, Damage));
                 }
             }
         }
-		*/
+	}
 		/*public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
 {
     if (attacker == null || defender == null || attacker.NetState == null)
@@ -82,6 +83,7 @@ if (defender is BaseCreature bc)
         attacker.NetState.Send(new DamageNumberPacket(defender, scaledDamage));
     }
 }*/
+/*
 	public static void ShowScaledDamage(Mobile attacker, Mobile defender, int damage)
 		{
     if (attacker == null || defender == null || attacker.NetState == null)
@@ -95,7 +97,7 @@ if (defender is BaseCreature bc)
     }
 
 		}
-    
+    */
     // Custom packet for damage display
     public sealed class DamageNumberPacket : Packet
     {

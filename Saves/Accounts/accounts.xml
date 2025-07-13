@@ -26213,8 +26213,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2025-06-20T00:42:33.6074994Z</lastLogin>
-		<totalGameTime>P1274DT18H51M25.154852S</totalGameTime>
+		<lastLogin>2025-06-20T04:05:10.7684576Z</lastLogin>
+		<totalGameTime>P1274DT22H29M51.1186619S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -27986,8 +27986,8 @@
 		<password>winski2</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2025-06-19T02:43:50.899071Z</lastLogin>
-		<totalGameTime>P1835DT19H19M31.4971536S</totalGameTime>
+		<lastLogin>2025-07-09T17:30:48.8776977Z</lastLogin>
+		<totalGameTime>P1850DT3H43M39.3977743S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 			<char index="1">67366</char>
@@ -28018,7 +28018,7 @@
 			<ip>97.83.211.11</ip>
 			<ip>47.35.140.182</ip>
 		</addressList>
-		<totalCurrency>0.014437967000013114</totalCurrency>
+		<totalCurrency>0.014494625000013202</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -40315,7 +40315,7 @@
 	</account>
 	<account>
 		<username>lmpremke</username>
-		<newSecureCryptPassword>7A-A2-1E-2D-28-B9-1A-2E-5C-43-2B-7C-4D-CD-96-4C-69-FD-41-5B-1E-7D-A2-88-06-78-F6-DB-AD-D3-D2-DF-79-16-86-D1-93-A9-80-59-D5-D6-68-D9-CE-89-F3-17-54-9B-1A-EB-FA-C8-64-AE-C1-50-E1-C8-F4-0A-22-D7</newSecureCryptPassword>
+		<password>shortbutsweet</password>
 		<flags>2</flags>
 		<created>2014-04-08T03:49:55.0488829Z</created>
 		<lastLogin>2022-08-14T02:13:03.1804293Z</lastLogin>
@@ -40327,13 +40327,14 @@
 			<tag name="motd">false</tag>
 			<tag name="numRewardsChosen">1</tag>
 		</tags>
-		<addressList count="6">
+		<addressList count="7">
 			<ip>71.82.244.230</ip>
 			<ip>99.181.237.84</ip>
 			<ip>75.135.71.57</ip>
 			<ip>47.12.77.232</ip>
 			<ip>24.183.49.132</ip>
 			<ip>47.35.142.169</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>3.478E-06</totalCurrency>
 		<sovereigns>0</sovereigns>

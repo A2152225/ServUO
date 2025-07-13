@@ -8291,6 +8291,7 @@ public override bool SuppressDamagePopup
 {
     get
     {
+		//return true;
         if (this.Controlled || this.Summoned)
             return false;
 

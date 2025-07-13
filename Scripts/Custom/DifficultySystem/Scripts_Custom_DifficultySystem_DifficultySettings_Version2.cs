@@ -74,7 +74,7 @@ namespace Server
         public static double GetHealthMultiplier(int difficultyLevel)
         {
              double multiplier = Math.Pow(2, difficultyLevel - 1);
-    Console.WriteLine("Difficulty: " + difficultyLevel + ", Health Multiplier: " + multiplier);
+    //Console.WriteLine("Difficulty: " + difficultyLevel + ", Health Multiplier: " + multiplier);
     return multiplier;
         }
         
