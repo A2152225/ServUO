@@ -60,7 +60,7 @@ namespace Server
             if (difficultyLevel <= 1)
                 return 1.0;
                 
-            return 1.0 + ((difficultyLevel - 1) * 0.25);
+            return 1.0 + ((difficultyLevel - 1) * 25);
         }
         
         // Helper method to get reward multiplier for a player
@@ -253,6 +253,23 @@ namespace Server
                 }
                 
                 return null;
+            }
+        }
+
+        public static void ApplyScaledDamage(BaseCreature creature, Mobile player, double scaledDamage)
+        {
+            if (creature == null || player == null)
+                return;
+
+            creature.AddFractionalDamage(player, scaledDamage);
+
+            // Only reduce actual health when enough fractional damage has accumulated
+            double fractional = creature.GetFractionalDamage(player);
+            if (fractional >= 1.0)
+            {
+                int wholeDamage = (int)fractional;
+                creature.Hits -= wholeDamage;
+                creature._fractionalDamage[player] -= wholeDamage;
             }
         }
     }

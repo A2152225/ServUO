@@ -14,13 +14,13 @@ namespace Server
         public static void Initialize()
         {
             // Hook into mobile events
-            EventSink.Movement += new MovementEventHandler(OnMovement);
+            //EventSink.Movement += new MovementEventHandler(OnMovement);
             EventSink.Login += new LoginEventHandler(OnLogin);
             
             // Clean up processed packets periodically
             Timer.DelayCall(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5), CleanupProcessedPackets);
         }
-        
+    /*    
         private static void OnMovement(MovementEventArgs e)
         {
             Mobile m = e.Mobile;
@@ -31,7 +31,7 @@ namespace Server
             // When player moves, send updated health for nearby creatures
             UpdateNearbyCreatureHealth(m);
         }
-        
+     */   
         private static void OnLogin(LoginEventArgs e)
         {
             Mobile m = e.Mobile;
@@ -43,34 +43,29 @@ namespace Server
             m.SendMessage(0x35, "Type [difficulty to adjust your game's difficulty level.");
             
             // Schedule health update for nearby creatures
-            Timer.DelayCall(TimeSpan.FromSeconds(2), () => UpdateNearbyCreatureHealth(m));
+       //     Timer.DelayCall(TimeSpan.FromSeconds(2), () => UpdateNearbyCreatureHealth(m));
         }
         
         private static void UpdateNearbyCreatureHealth(Mobile player)
         {
             if (player == null || player.NetState == null)
                 return;
-                
+
             int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
-            
+
             if (difficultyLevel <= 1) // No scaling needed
                 return;
-                
-            // Find nearby creatures
+
+            double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
+
             foreach (Mobile m in player.GetMobilesInRange(18))
             {
-                if (m is BaseCreature && m != player && m.Alive)
+                if (m is BaseCreature bc && m != player && m.Alive)
                 {
-                    // Calculate scaled health
-                    double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
-                    
-                    // Calculate scaled values
-                    int scaledMaxHits = (int)(m.HitsMax * healthMultiplier);
-                    double ratio = m.HitsMax > 0 ? (double)m.Hits / m.HitsMax : 0;
-                    int scaledCurrentHits = Math.Max(1, (int)(scaledMaxHits * ratio));
-                    
-                    // Send custom health update
-                    SendCustomHealthUpdate(player.NetState, m, scaledCurrentHits, scaledMaxHits);
+                    int scaledMaxHits = (int)(bc.HitsMax * healthMultiplier);
+                    int scaledCurrentHits = bc.GetPerceivedCurrentHits(player, healthMultiplier);
+
+                   // SendCustomHealthUpdate(player.NetState, bc, scaledCurrentHits, scaledMaxHits);
                 }
             }
         }

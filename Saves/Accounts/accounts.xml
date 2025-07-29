@@ -26213,8 +26213,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2025-06-20T04:05:10.7684576Z</lastLogin>
-		<totalGameTime>P1274DT22H29M51.1186619S</totalGameTime>
+		<lastLogin>2025-07-19T19:38:58.897855Z</lastLogin>
+		<totalGameTime>P1279DT5H43M19.5523641S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -27986,8 +27986,8 @@
 		<password>winski2</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2025-07-09T17:30:48.8776977Z</lastLogin>
-		<totalGameTime>P1850DT3H43M39.3977743S</totalGameTime>
+		<lastLogin>2025-07-22T05:50:49.9654215Z</lastLogin>
+		<totalGameTime>P1863DT14H33M24.3805151S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 			<char index="1">67366</char>
@@ -28018,7 +28018,7 @@
 			<ip>97.83.211.11</ip>
 			<ip>47.35.140.182</ip>
 		</addressList>
-		<totalCurrency>0.014494625000013202</totalCurrency>
+		<totalCurrency>0.016515489000013539</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -28163,12 +28163,13 @@
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="5">
+		<addressList count="6">
 			<ip>66.189.142.35</ip>
 			<ip>71.82.244.230</ip>
 			<ip>47.12.77.232</ip>
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -40157,8 +40158,8 @@
 		<password>winski8</password>
 		<flags>2</flags>
 		<created>2014-03-24T17:00:01.2154248Z</created>
-		<lastLogin>2023-09-19T02:35:59.043489Z</lastLogin>
-		<totalGameTime>P22DT12H50M9.5556689S</totalGameTime>
+		<lastLogin>2025-07-22T11:34:40.0300218Z</lastLogin>
+		<totalGameTime>P22DT12H50M55.6549678S</totalGameTime>
 		<chars>
 			<char index="0">7866</char>
 			<char index="1">10318</char>
@@ -40170,12 +40171,13 @@
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="5">
+		<addressList count="6">
 			<ip>71.82.244.230</ip>
 			<ip>47.12.77.232</ip>
 			<ip>47.34.9.231</ip>
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>3.0017000000003548E-05</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -40847,17 +40849,20 @@
 		<password>winski6</password>
 		<flags>2</flags>
 		<created>2014-04-29T23:54:34.8798979Z</created>
-		<lastLogin>2015-10-24T22:37:20.0955403Z</lastLogin>
-		<totalGameTime>P4DT22H42M59.5641239S</totalGameTime>
-		<chars />
+		<lastLogin>2025-07-22T11:39:12.4493496Z</lastLogin>
+		<totalGameTime>P4DT22H44M3.3340147S</totalGameTime>
+		<chars>
+			<char index="0">3825</char>
+		</chars>
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="4">
+		<addressList count="5">
 			<ip>71.82.244.230</ip>
 			<ip>47.12.77.232</ip>
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -46961,9 +46966,10 @@
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="2">
+		<addressList count="3">
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>

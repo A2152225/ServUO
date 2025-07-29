@@ -18,8 +18,14 @@ namespace Server.Misc
 
         public static void FatigueOnDamage(Mobile m, int damage, DFAlgorithm df)
         {
+            try { 
+                
+            
             double fatigue = 0.0;
-
+            if (damage <= 0 || m == null || !m.Player || !m.Alive || m.IsStaff())
+            {
+                return;
+            }
             switch (m.DFA)
             {
                 case DFAlgorithm.Standard:
@@ -52,6 +58,12 @@ namespace Server.Misc
                 {
                     m.Stam -= (int)fatigue;
                 }
+            }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in FatigueOnDamage: {e.Message}");
+                Console.WriteLine(e.StackTrace);
             }
         }
 

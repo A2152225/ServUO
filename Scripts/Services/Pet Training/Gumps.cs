@@ -29,18 +29,30 @@ namespace Server.Mobiles
         {
 				// Get player's difficulty and show adjusted health perception
 int difficultyLevel = DifficultySettings.GetPlayerDifficulty(_viewer);
-double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
+int healthMultiplier = (int)DifficultySettings.GetHealthMultiplier(difficultyLevel);
 
 // Adjust how health looks based on difficulty
 int perceivedMaxHits = Creature.HitsMax;
 int perceivedHits = Creature.Hits;
 
-if (difficultyLevel > 1)
-{
-    // For higher difficulty, creatures appear to have more health
-    perceivedMaxHits = (int)(Creature.HitsMax * healthMultiplier);
-    perceivedHits = (int)(Creature.Hits * healthMultiplier);
-}
+            if (difficultyLevel > 1)
+            {
+
+                perceivedMaxHits = Creature.HitsMax * healthMultiplier;
+              
+                perceivedHits = Creature.GetGlobalPerceivedHits(_viewer, healthMultiplier);
+                if (Creature.FullHealth)
+                {
+                    perceivedHits = perceivedMaxHits;
+
+                }
+
+            }
+            else
+            {
+                perceivedMaxHits = Creature.HitsMax;
+                perceivedHits = Creature.Hits;
+            }
 
             var profile = PetTrainingHelper.GetAbilityProfile(Creature);
             var trainProfile = PetTrainingHelper.GetTrainingProfile(Creature, true);

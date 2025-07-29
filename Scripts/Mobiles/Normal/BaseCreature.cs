@@ -29,6 +29,7 @@ using Server.Spells.Sixth;
 using Server.Spells.SkillMasteries;
 using Server.Spells.Spellweaving;
 using Server.Targeting;
+using System.Collections.Concurrent;
 
 using daat99;			 
 #endregion
@@ -1469,7 +1470,70 @@ namespace Server.Mobiles
 			}
 		}
 
-		  #region High Seas
+        // Add these inside the BaseCreature class
+
+        // Tracks fractional damage per player for perceived health
+
+
+// Replace Dictionary with ConcurrentDictionary
+public ConcurrentDictionary<Mobile, double> _fractionalDamage = new ConcurrentDictionary<Mobile, double>();
+
+        public void AddFractionalDamage(Mobile player, double scaledDamage)
+        {
+            if (player == null)
+                return;
+
+            _fractionalDamage.AddOrUpdate(player, scaledDamage, (key, oldValue) => oldValue + scaledDamage);
+
+            // Convert accumulated fractional damage to whole hits
+            double totalFractional = _fractionalDamage.Values.Sum();
+            if (totalFractional >= 1.0)
+            {
+                int wholeHits = (int)Math.Floor(totalFractional);
+                Health = Math.Max(0, Health - wholeHits);
+
+                // Reduce each player's fractional damage proportionally
+                foreach (var key in _fractionalDamage.Keys.ToList())
+                {
+                    double value = _fractionalDamage[key];
+                    double newValue = value - (wholeHits * (value / totalFractional));
+                    _fractionalDamage[key] = Math.Max(0, newValue);
+                }
+            }
+        }
+        public bool FullHealth = true;
+
+        public double GetFractionalDamage(Mobile player)
+    {
+        if (player == null)
+            return 0.0;
+
+        if (_fractionalDamage.TryGetValue(player, out double value))
+            return value;
+
+        return 0.0;
+    }
+
+        public int GetPerceivedCurrentHits(Mobile player, double healthMultiplier)
+        {
+            // Sum all fractional damage from all players
+            double totalFractional = 0;
+            if (_fractionalDamage != null)
+            {
+                foreach (var kvp in _fractionalDamage)
+                {
+                    totalFractional += kvp.Value;
+                }
+            }
+
+            double perceivedHits = (Health * healthMultiplier) - totalFractional;
+            
+            return Math.Max(1, (int)Math.Round(perceivedHits));
+
+
+        }
+
+        #region High Seas
         public virtual bool TaintedLifeAura { get { return false; } }
         #endregion
 
@@ -2365,7 +2429,14 @@ public virtual void OnDrainLife(Mobile victim)
 
         public override int Damage(int amount, Mobile from)
         {
-            return Damage(amount, from, false, false);
+            double oldHealth = Health;
+            Health -= amount;
+            int actualDamage = (int)(oldHealth - Health);
+
+            // Call base logic if needed
+            base.Damage(actualDamage, from);
+
+            return actualDamage;
         }
 
         public override int Damage(int amount, Mobile from, bool informMount)
@@ -2375,6 +2446,19 @@ public virtual void OnDrainLife(Mobile victim)
 
         public override int Damage(int amount, Mobile from, bool informMount, bool checkDisrupt)
         {
+            // Difficulty scaling: route through OnDamage for difficulty > 1
+            Mobile source = GetDamageSourcePlayer(from);
+            if (source != null)
+            {
+                int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
+                if (difficulty > 1)
+                {
+                    // Use OnDamage fractional logic
+                    OnDamage(amount, from, false); // willKill is false for normal hits
+                    return amount; // Return the original amount for consistency
+                }
+            }
+
             int oldHits = Hits;
 
             if (Core.AOS && Controlled && from is BaseCreature && !((BaseCreature)from).Controlled && !((BaseCreature)from).Summoned)
@@ -2825,129 +2909,179 @@ public virtual void OnDrainLife(Mobile victim)
             }
         }
 
+
+        private double m_Health;
+        public double Health
+        {
+            get { return m_Health; }
+            set
+            {
+                m_Health = Math.Max(0, Math.Min(value, HitsMax));
+                Hits = (int)Math.Floor(m_Health);
+            }
+        }
+
+
+        public int GetGlobalPerceivedHits(Mobile player, int healthMultiplier)
+        {
+            double totalFractional = _fractionalDamage?.Values.Sum() ?? 0.0;
+            if (FullHealth)
+            {
+                totalFractional = 0.0; // Reset if full health
+            }
+            double perceivedHits = (Health * healthMultiplier) - totalFractional;
+            return Math.Max(1, (int)Math.Round(perceivedHits));
+        }
+
+
+        public ConcurrentDictionary<Mobile, double> _rawDamageForPerceivedHealth = new ConcurrentDictionary<Mobile, double>(); // Used to track raw damage for perceived health calculation
+        public ConcurrentDictionary<Mobile, double> _rawDamageForPerceivedHealth2 = new ConcurrentDictionary<Mobile, double>(); // Used to track raw damage for perceived health calculation (for debugging or secondary use)
+
+        private double _globalFractionalDamage;
+        private bool _suppressNextDamagePopup;
+
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
-					SetLastUnscaledDamage(amount);
-            if (BardPacified && (HitsMax - Hits) * 0.001 > Utility.RandomDouble())
+            if (amount <= 0 || from == null || Deleted || !Alive)
             {
-                Unpacify();
+                return; // No damage or invalid state
             }
 
-            int disruptThreshold;
-            //NPCs can use bandages too!
-            if (!Core.AOS)
-            {
-                disruptThreshold = 0;
-            }
-            else if (from != null && from.Player)
-            {
-                disruptThreshold = 18;
-            }
-            else
-            {
-                disruptThreshold = 25;
-            }
+            if (Core.AOS && Controlled && from is BaseCreature && !((BaseCreature)from).Controlled && !((BaseCreature)from).Summoned)
+                amount = (int)(amount * ((BaseCreature)from).BonusPetDamageScalar);
 
-            if (amount > disruptThreshold)
-            {
-                BandageContext c = BandageContext.GetContext(this);
 
-                if (c != null)
+            if (_rawDamageForPerceivedHealth == null)
+                _rawDamageForPerceivedHealth = new ConcurrentDictionary<Mobile, double>();
+
+            if (_rawDamageForPerceivedHealth2 == null)
+                _rawDamageForPerceivedHealth2 = new ConcurrentDictionary<Mobile, double>();
+            if (_fractionalDamage == null)
+                _fractionalDamage = new ConcurrentDictionary<Mobile, double>();
+
+            SetLastUnscaledDamage(amount);
+
+            // ... (other pre-damage logic unchanged) ...
+
+            if (from != null && !this.IsDeadBondedPet)
+            {
+                Mobile source = GetDamageSourcePlayer(from);
+                if (source != null)
                 {
-                    c.Slip();
+                    int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
+
+                    if (difficulty > 1)
+                    {
+                        double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficulty);
+
+                        // Accumulate perceived health
+                        _rawDamageForPerceivedHealth.AddOrUpdate(from, amount, (key, oldValue) => oldValue + amount);
+                        _rawDamageForPerceivedHealth2.AddOrUpdate(from, amount, (key, oldValue) => oldValue + amount);
+
+                        // Accumulate fractional damage
+                        double scaledDamage = amount / healthMultiplier;
+                        if (FullHealth)
+                        {
+                            FullHealth = false;
+                        }
+                        _globalFractionalDamage += scaledDamage;
+                        AddFractionalDamage(from, scaledDamage);
+
+                        // Get total fractional damage
+                        double totalFractional = GetFractionalDamage(from);
+                        int oldHits = Hits;
+                        // Only apply real damage if enough fractional damage has accumulated
+                       // int wholeHits = (int)totalFractional;
+                        int wholeHits = (int)_globalFractionalDamage;
+                        base.SendDamagePacket(from, amount);
+                        if (wholeHits > 0)
+                        {
+                            Health -= wholeHits;
+
+                            // Remove the whole hits from the fractional damage
+                            //_fractionalDamage.AddOrUpdate(from, totalFractional - wholeHits, (key, oldValue) => totalFractional - wholeHits);
+                            _globalFractionalDamage -= wholeHits;
+
+                            // Call base.OnDamage with the whole hits
+                            Console.WriteLine($"Before damage: Hits= {Hits}, totalFractional: {totalFractional}, wholeHits: {wholeHits}, globalFractional: {_globalFractionalDamage}");
+                            _suppressNextDamagePopup = true;
+                            base.Damage(wholeHits, from, false, true);
+                                                      
+                            base.OnDamage(ParagonDamageRBuff(wholeHits), from, willKill);
+                            Console.WriteLine($"After damage: Hits={Hits}, wholeHits={wholeHits}, globalFractional={_globalFractionalDamage}");
+                            _suppressNextDamagePopup = false;
+
+                            if (SubdueBeforeTame && !Controlled)
+                            {
+                                if ((oldHits > ((double)HitsMax / 10)) && ((double)Hits <= ((double)HitsMax / 10)))
+                                {
+                                    PublicOverheadMessage(MessageType.Regular, 0x3B2, false, "* The creature has been beaten into subjugation! *");
+                                }
+                            }
+                        }
+
+                       // UpdatePerceivedHealthForNearbyPlayers();
+
+                        if (from != null && !Deleted && !from.Deleted)
+                        {
+                            if (from is BaseCreature && ((BaseCreature)from).Controlled)
+                            {
+                                PlayerMobile player = ((BaseCreature)from).GetMaster() as PlayerMobile;
+                                if (player != null)
+                                {
+                                    DifficultySettings.ContributionTracker.AddDamageContribution(this, player, amount);
+                                }
+                            }
+                            else
+                            {
+                                DifficultySettings.ContributionTracker.AddDamageContribution(this, from, amount);
+                            }
+
+                            Console.WriteLine($"{from.Name} did {amount} damage to {Name}");
+                        }
+
+                        // Always return for difficulty > 1
+                        return;
+                    }
                 }
             }
 
-            if (Confidence.IsRegenerating(this))
-            {
-                Confidence.StopRegenerating(this);
-            }
+            // Default case - no difficulty scaling
+            base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
+        }
 
-            InhumanSpeech speechType = SpeechType;
 
-            if (speechType != null && !willKill)
-            {
-                speechType.OnDamage(this, amount);
-            }
+        private void UpdatePerceivedHealthForNearbyPlayers()
+        {
+            // Null check for Map and Location
+            if (this.Map == null || this.Location == Point3D.Zero || this.Location == default(Point3D))
+                return;
 
-            if (m_ReceivedHonorContext != null)
-            {
-                m_ReceivedHonorContext.OnTargetDamaged(from, amount);
-            }
+            IPooledEnumerable eable = this.Map.GetClientsInRange(this.Location, 18);
 
-            if (!willKill)
+            foreach (NetState state in eable)
             {
-                if (CanBeDistracted && ControlOrder == OrderType.Follow)
+                if (state == null || state.Mobile == null)
+                    continue;
+
+                Mobile player = state.Mobile;
+                if (player is PlayerMobile)
                 {
-                    CheckDistracted(from);
+                    int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(player);
+
+                    if (difficultyLevel > 1)
+                    {
+                        int healthMultiplier = (int)Server.DifficultySettings.GetHealthMultiplier(difficultyLevel);
+                        int scaledMaxHits = (int)(this.HitsMax * healthMultiplier);
+                        int globalPerceivedHits = (int)GetGlobalPerceivedHits(player, healthMultiplier);
+
+                        state.Send(new Server.HealthUpdatePacket(this, globalPerceivedHits, scaledMaxHits));
+                    }
                 }
             }
-            else if (from is PlayerMobile)
-            {
-                Timer.DelayCall(TimeSpan.FromSeconds(10), ((PlayerMobile)@from).RecoverAmmo);
-            }
 
-// Handle difficulty-based damage calculation
-if (from != null && !this.IsDeadBondedPet)
-{
-    Mobile source = GetDamageSourcePlayer(from);
-    if (source != null)
-    {
-        int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
-        
-        // Skip normal difficulty
-        if (difficulty > 1)
-        {
-            // Calculate actual damage (reduced by difficulty scaling)
-            double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficulty);
-            int actualDamage = Math.Max(1, (int)(amount / healthMultiplier));
-            
-            // Update perceived health for all nearby players
-            UpdatePerceivedHealthForNearbyPlayers();
-             if (from != null && !Deleted && !from.Deleted)
-    {
-        DifficultySettings.ContributionTracker.AddDamageContribution(this, from, amount);
-        Console.WriteLine($"{from.Name} did {amount} damage to {Name}");
-    }
-            // Call base with reduced damage
-            base.OnDamage(ParagonDamageRBuff(actualDamage), from, willKill);
-            return;
+            eable.Free();
         }
-    }
-}
-
-// Default case - no difficulty scaling
-base.OnDamage(ParagonDamageRBuff(amount), from, willKill);
-		}
-		
-private void UpdatePerceivedHealthForNearbyPlayers()
-{
-    IPooledEnumerable eable = this.Map.GetClientsInRange(this.Location, 18);
-    
-    foreach (NetState state in eable)
-    {
-        Mobile player = state.Mobile;
-        if (player != null && player is PlayerMobile)
-        {
-            int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(player);
-            
-            if (difficultyLevel > 1)
-            {
-                // Calculate scaled health values
-                double healthMultiplier = Server.DifficultySettings.GetHealthMultiplier(difficultyLevel);
-                int scaledMaxHits = (int)(this.HitsMax * healthMultiplier);
-                double ratio = this.HitsMax > 0 ? (double)this.Hits / this.HitsMax : 0;
-                int scaledCurrentHits = Math.Max(1, (int)(scaledMaxHits * ratio));
-                
-                // Send custom health update
-                state.Send(new Server.HealthUpdatePacket(this, scaledCurrentHits, scaledMaxHits));
-            }
-        }
-    }
-    
-    eable.Free();
-}
-
 
         public virtual void OnDamagedBySpell(Mobile from)
         {
@@ -3573,10 +3707,48 @@ private Mobile GetDamageSourcePlayer(Mobile source)
         {
             base.Serialize(writer);
 
-            writer.Write(29); // version
+            writer.Write(30); // version
 
-		// Version 21 FS:ATS EDITS
-			writer.Write( (bool) m_IsMating );
+            // Serialize health
+            writer.Write(m_Health);
+
+            // Serialize _fractionalDamage
+            writer.Write(_fractionalDamage?.Count ?? 0);
+            if (_fractionalDamage != null)
+            {
+                foreach (var kvp in _fractionalDamage)
+                {
+                    writer.Write(kvp.Key);      // Mobile
+                    writer.Write(kvp.Value);    // double
+                }
+            }
+
+            // Serialize _rawDamageForPerceivedHealth
+            writer.Write(_rawDamageForPerceivedHealth?.Count ?? 0);
+            if (_rawDamageForPerceivedHealth != null)
+            {
+                foreach (var kvp in _rawDamageForPerceivedHealth)
+                {
+                    writer.Write(kvp.Key);
+                    writer.Write(kvp.Value);
+                }
+            }
+
+            // Serialize _rawDamageForPerceivedHealth2
+            writer.Write(_rawDamageForPerceivedHealth2?.Count ?? 0);
+            if (_rawDamageForPerceivedHealth2 != null)
+            {
+                foreach (var kvp in _rawDamageForPerceivedHealth2)
+                {
+                    writer.Write(kvp.Key);
+                    writer.Write(kvp.Value);
+                }
+            }
+
+            // Serialize _globalFractionalDamage
+
+            // Version 21 FS:ATS EDITS
+            writer.Write( (bool) m_IsMating );
 			writer.Write( (int) m_ABPoints );
 			writer.Write( (int) m_Exp );
 			writer.Write( (int) m_NextLevel );
@@ -3809,8 +3981,52 @@ private Mobile GetDamageSourcePlayer(Mobile source)
 
             switch (version)
             {
-					// FS ATS Starts
-			case 29:
+                case 30:
+                    {
+                        // Deserialize health
+                        m_Health = reader.ReadDouble();
+
+                        // Deserialize _fractionalDamage
+                        int fracCount = reader.ReadInt();
+                        _fractionalDamage = new ConcurrentDictionary<Mobile, double>();
+                        for (int i = 0; i < fracCount; i++)
+                        {
+                            Mobile key = reader.ReadMobile();
+                            double value = reader.ReadDouble();
+                            if (key != null)
+                                _fractionalDamage[key] = value;
+                        }
+
+                        // Deserialize _rawDamageForPerceivedHealth
+                        int rawCount = reader.ReadInt();
+                        _rawDamageForPerceivedHealth = new ConcurrentDictionary<Mobile, double>();
+                        for (int i = 0; i < rawCount; i++)
+                        {
+                            Mobile key = reader.ReadMobile();
+                            double value = reader.ReadDouble();
+                            if (key != null)
+                                _rawDamageForPerceivedHealth[key] = value;
+                        }
+
+                        // Deserialize _rawDamageForPerceivedHealth2
+                        int raw2Count = reader.ReadInt();
+                        _rawDamageForPerceivedHealth2 = new ConcurrentDictionary<Mobile, double>();
+                        for (int i = 0; i < raw2Count; i++)
+                        {
+                            Mobile key = reader.ReadMobile();
+                            double value = reader.ReadDouble();
+                            if (key != null)
+                                _rawDamageForPerceivedHealth2[key] = value;
+                        }
+
+                        // Optionally, sync Hits with m_Health after loading
+                        Hits = (int)Math.Floor(m_Health);
+                        goto case 29;
+                    }
+
+
+                // FS ATS Starts
+                case 29:
 			{
 				m_IsMating = reader.ReadBool();
 				m_ABPoints = reader.ReadInt();
@@ -6359,6 +6575,7 @@ private Mobile GetDamageSourcePlayer(Mobile source)
             }
 
             m_HitsMax = val;
+            m_Health = m_HitsMax; // Start at full health
             Hits = HitsMax;
         }
 
@@ -6371,6 +6588,7 @@ private Mobile GetDamageSourcePlayer(Mobile source)
             }
 
             m_HitsMax = Utility.RandomMinMax(min, max);
+            m_Health = m_HitsMax; // Start at full health
             Hits = HitsMax;
             SetAverage(min, max, m_HitsMax);
         }
@@ -7343,187 +7561,91 @@ private Mobile GetDamageSourcePlayer(Mobile source)
             {
                 Effects.SendLocationEffect(Location, Map, 0x3728, 13, 1, 0x461, 4);
             }
-			/////EXPERIENCE/////
-                        for ( int i = this.DamageEntries.Count - 1; i >= 0; --i )
+
+
+            /////EXPERIENCE/////
+            Dictionary<Mobile, double> playerDamage = new Dictionary<Mobile, double>();
+
+            for (int i = this.DamageEntries.Count - 1; i >= 0; --i)
             {
+                if (i >= this.DamageEntries.Count)
+                    continue;
 
-                                if ( i >= this.DamageEntries.Count )
-                                        continue;
+                DamageEntry de = (DamageEntry)this.DamageEntries[i];
+                if (de.HasExpired)
+                    continue;
 
-                                DamageEntry de = (DamageEntry)this.DamageEntries[i];
-                                if ( de.HasExpired )
-                                        continue;
+                Mobile m = de.Damager;
+                if (m == null || m.Deleted)
+                    continue;
 
-                                Mobile m = de.Damager;
-                                if ( m == null || m.Deleted )
-                                        continue;
-										
-								if ( m is BaseCreature )
-                                {
-								
-                                        BaseCreature bc = (BaseCreature)m;
-									//	int LastLevel = bc.LastLevelExp;
-                                     //   int ExpRequired = (int)(((Math.Pow((Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+bc.LastLevelExp;
-										int karma;
+                Mobile key = m;
 
-                                         if ( this.Karma <= 0 )
-                                         karma = this.Karma * -1;
-                                         else
-                                         karma = this.Karma;
-										//  int LevelDifference = this.Level - bc.Level;
-										  int ExpGained = 0;
-									 int monsterstats = ( ( this.Fame + karma ) / 8 ) + ( this.RawStatTotal * 2 ) + ( ( this.HitsMax + this.StamMax + this.ManaMax ) / 2 ) + ( this.DamageMax - this.DamageMin ) + ( ( this.ColdResistSeed + this.FireResistSeed + this.EnergyResistSeed + this.PhysicalResistanceSeed + this.PoisonResistSeed ) * 2 ) + this.VirtualArmor;
-										
-										if ( this.MinTameSkill > 0 )
-                                                                monsterstats += (int)this.MinTameSkill;
-			
-                                                //        if ( this.Level <= 0 )
-                                               //                 if ( bc.Level <= 0 )
-                                                                        ExpGained = monsterstats;
-                                                    /*            else
-                                                                        ExpGained = monsterstats / bc.Level;
-                                                        else
-                                                                if ( bc.Level <= 0 )
-                                                                        ExpGained = ( this.Level * monsterstats );
-                                                                else
-                                                                    */    ExpGained = monsterstats;
+                if (m is BaseCreature bc)
+                {
+                    if (bc.Controlled && bc.ControlMaster != null)
+                        key = bc.ControlMaster;
+                    else if (bc.Summoned && bc.SummonMaster != null)
+                        key = bc.SummonMaster;
+                }
 
+                if (key == null || key.Deleted || !key.Player)
+                    continue;
 
-                                                        if ( ExpGained <= 0 )
-                                                                ExpGained = 1;
-                                                        if ( !Utility.InRange( this.Location, bc.Location, 18 ))
-                                                        {
-                                                                ExpGained = (int)(ExpGained/2);
-                                                        }
-															
-				long minexp = 10;
-				long maxexp = 50;						
-		/*		if ( LevelDifference > 0 )
-				{
-					minexp = 5+(ExpGained/9);  // Changed from 60 to 9 by RE 6-19-07
-					maxexp = 5+(ExpGained/5);  // Changed from 40 to 5 by RE 6-19-07
-				}
-				else
-				{*/
-					minexp = 5+(ExpGained/15);  // Changed from 120 to 15 by RE 6-19-07
-					maxexp = 5+(ExpGained/9);  // Changed from 100 to 9 by RE 6-19-07
-				//}
-			
-			/*	 if ( bc.Level >= 500 ) // max level for pets
-				 {
-					minexp *= 0;
-					maxexp *= 0;
-				 }*/
-				 
-				double Percent = ((double)de.DamageGiven / (double)HitsMax) ;
-				             
-								int finalexp = (int)((double)( Utility.RandomMinMax( (int)minexp, (int)maxexp ) )*Percent*Tweaks.XPMod);
-                                                 /*       if ( finalexp > ( ExpRequired - LastLevel ) )
-                                                        {
-                                                                finalexp = (int)( ( ExpRequired - LastLevel ) / 2 );
-                                                        }
-														*/
-					Region re = Region.Find( bc.Location, bc.Map );
-				string regname = re.ToString().ToLower();
-						
-				if (regname == "championspawnregion" ) 
-			{
-				if (Tweaks.CXPMod == 0)
-					finalexp = 0;
-				else
-					finalexp /= (100/Tweaks.CXPMod);//3; //  2/3rds exp for champ spawns, now 1/20th// now 20%
-					//finalexp *= 2; // was *=2, want people out in the world more
-			}
+                if (!playerDamage.ContainsKey(key))
+                    playerDamage[key] = 0;
+
+                playerDamage[key] += de.DamageGiven;
+            }
+
+            // Now award XP once per player
+            foreach (var kvp in playerDamage)
+            {
+                Mobile player = kvp.Key;
+                double totalDamage = kvp.Value;
+
+                // Calculate XP as you did before, but use totalDamage instead of de.DamageGiven
+                int karma = this.Karma <= 0 ? this.Karma * -1 : this.Karma;
+                int monsterstats = ((this.Fame + karma) / 8) + (this.RawStatTotal * 2) +
+                    ((this.HitsMax + this.StamMax + this.ManaMax) / 2) + (this.DamageMax - this.DamageMin) +
+                    ((this.ColdResistSeed + this.FireResistSeed + this.EnergyResistSeed +
+                      this.PhysicalResistanceSeed + this.PoisonResistSeed) * 2) + this.VirtualArmor;
+
+                if (this.MinTameSkill > 0)
+                    monsterstats += (int)this.MinTameSkill;
 
 
-				if ( this.IsParagon )
-					finalexp *= 2;
-					
-					
-
-                                                 //       bc.EXP += finalexp;
-														
-                                                
-				 
-												
-												
-												
-                                }		
-										
-                                if ( m is BaseCreature )
-                                {
-                                        BaseCreature bc = (BaseCreature)m;
-
-                                        if ( bc.Controlled && bc.ControlMaster != null )
-                                                m = bc.ControlMaster;
-                                        else if ( bc.Summoned && bc.SummonMaster != null )
-                                                m = bc.SummonMaster;
-                                }
-
-                                if ( m == null || m.Deleted || !m.Player )
-                                        continue;
-									
-										int karma1;
-
-                                         if ( this.Karma <= 0 )
-                                         karma1 = this.Karma * -1;
-                                         else
-                                         karma1 = this.Karma;
-									
-									 int monsterstats1 = ( ( this.Fame + karma1 ) / 8 ) + ( this.RawStatTotal * 2 ) + ( ( this.HitsMax + this.StamMax + this.ManaMax ) / 2 ) + ( this.DamageMax - this.DamageMin ) + ( ( this.ColdResistSeed + this.FireResistSeed + this.EnergyResistSeed + this.PhysicalResistanceSeed + this.PoisonResistSeed ) * 2 ) + this.VirtualArmor;
-										
-										if ( this.MinTameSkill > 0 )
-                                                                monsterstats1 += (int)this.MinTameSkill;
-									
-										double Percent1 = ((double)de.DamageGiven / (double)HitsMax) ;
-				             if (Percent1 >= .02)
-							 {
-								if (Percent1 >= 1.01)
-								 Percent1 = 1;
-								
-								if (Percent1 <= 0.5)
-								Percent1 = 0.5;
-								
-							 }
-							 
-							 
-							 
-							 
-								double finalexp1 = 0;//(int)((double)( Utility.RandomMinMax( (int)minexp, (int)maxexp ) )*Percent*Tweaks.XPMod);
-                                                 /*       if ( finalexp > ( ExpRequired - LastLevel ) )
-                                                        {
-                                                                finalexp = (int)( ( ExpRequired - LastLevel ) / 2 );
-                                                        }
-														*/
-														
-														
-					Region re1 = Region.Find( m.Location, m.Map );
-				string regname1 = re1.ToString().ToLower();
-						
-				if (regname1 == "championspawnregion" ) 
-			{
-				if (Tweaks.CXPMod == 0)
-					finalexp1 = 0;
-				else
-					finalexp1 /= (100/Tweaks.CXPMod);//3; //  2/3rds exp for champ spawns, now 1/20th// now 20%
-					//finalexp *= 2; // was *=2, want people out in the world more
-			}
+                // Difficulty scaling
+                int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
+                int healthMultiplier = (int)DifficultySettings.GetHealthMultiplier(difficultyLevel);
+               // if (difficultyLevel > 1)
+              //  {
+                    monsterstats += ((difficultyLevel * HitsMax) * (healthMultiplier) );
+             //   }
 
 
-				
-									
-									
-						 finalexp1 = ((monsterstats1)*Percent1*Tweaks.XPMod)/10; 
-						 if ( this.IsParagon )
-					finalexp1 *= 2;
-									
-	  Experience.MonsterExp( m, (Mobile)this, this.Location, de.DamageGiven > HitsMaxSeed? 1.0 : (double)de.DamageGiven / (double)HitsMaxSeed,(long)finalexp1 );
-	  Console.WriteLine("{0} has killed a {1}, earning {2} XP!.",m.Name, this.GetType(),finalexp1 );
-						
-			}
-/////End EXPERIENCE/////
-			
+                double percent = totalDamage / (double)HitsMax;
+                if (percent >= 1.01) percent = 1;
+                if (percent <= 0.5) percent = 0.5;
 
+                double finalexp = ((monsterstats) * percent * Tweaks.XPMod) / 10;
+                if (this.IsParagon)
+                    finalexp *= 2;
+
+                Region re = Region.Find(player.Location, player.Map);
+                string regname = re.ToString().ToLower();
+                if (regname == "championspawnregion")
+                {
+                    if (Tweaks.CXPMod == 0)
+                        finalexp = 0;
+                    else
+                        finalexp /= (100 / Tweaks.CXPMod);
+                }
+
+                Experience.MonsterExp(player, (Mobile)this, this.Location, percent, (long)finalexp);
+                Console.WriteLine("{0} has killed a {1}, earning {2} XP!.", player.Name, this.GetType(), finalexp);
+            }
+            /////End EXPERIENCE/////
 
             InhumanSpeech speechType = SpeechType;
 
@@ -8291,15 +8413,17 @@ public override bool SuppressDamagePopup
 {
     get
     {
-		//return true;
-        if (this.Controlled || this.Summoned)
+                if (_suppressNextDamagePopup)
+                    return true;
+                //return true;
+                if (this.Controlled || this.Summoned)
             return false;
+     
+                // Uncomment if you only want to suppress for scaling mobs
+                // if (!this.IsScalingMob)
+                //     return false;
 
-        // Uncomment if you only want to suppress for scaling mobs
-        // if (!this.IsScalingMob)
-        //     return false;
-
-        var lastDamager = this.FindMostRecentDamager(true);
+                var lastDamager = this.FindMostRecentDamager(true);
         if (lastDamager is PlayerMobile)
             return false;
         if (lastDamager is BaseCreature bc && (bc.Controlled || bc.Summoned))
@@ -8308,12 +8432,19 @@ public override bool SuppressDamagePopup
         return true;
     }
 }
-protected override int GetDamagePopupValue(int amount, Server.Mobile from)
-{
-    if (SuppressDamagePopup && _lastUnscaledDamage > 0)
-        return _lastUnscaledDamage;
-    return base.GetDamagePopupValue(amount, from);
-}
+        protected override int GetDamagePopupValue(int amount, Server.Mobile from)
+        {
+            if (_suppressNextDamagePopup)
+                return 0;
+         
+            // If you have a perceived damage value, use it
+            if (_lastUnscaledDamage > 0)
+                return _lastUnscaledDamage;
+
+            // Otherwise, use the base logic
+            return base.GetDamagePopupValue(amount, from);
+        }
+
 
         public bool GivenSpecialArtifact { get; set; }
 
@@ -8568,10 +8699,10 @@ protected override int GetDamagePopupValue(int amount, Server.Mobile from)
             // Skill Masteries
             creature.HitsMaxSeed += MasteryInfo.EnchantedSummoningBonus(creature);
             creature.Hits = creature.HitsMaxSeed;
-			
-			
-			//Paragon point summoned health/stam/mana fix 
-			if (creature.Hits < creature.HitsMax)
+            
+
+            //Paragon point summoned health/stam/mana fix 
+            if (creature.Hits < creature.HitsMax)
 				creature.Hits = creature.HitsMax;
 			
 			if (creature.Stam < creature.StamMax)
@@ -8579,7 +8710,7 @@ protected override int GetDamagePopupValue(int amount, Server.Mobile from)
 			
 			if (creature.Mana < creature.ManaMax)
 				creature.Mana = creature.ManaMax;
-
+            creature.m_Health = creature.Hits;
             return true;
         }        
 
@@ -8774,11 +8905,59 @@ protected override int GetDamagePopupValue(int amount, Server.Mobile from)
 
         public override void OnHeal(ref int amount, Mobile from)
         {
-            base.OnHeal(ref amount, from);
-
             if (from == null)
                 return;
+            if (Hits < HitsMax)
+            {
+                FullHealth = false;
+            }
+            base.OnHeal(ref amount, from);
+            
+            Health = Math.Min(HitsMax, Health + amount);
+            if (Hits >= HitsMax)
+            {
+                if (!FullHealth)
+                {
+                    FullHealth = true;
+                }
 
+                Hits = HitsMax;
+                m_Health = HitsMax;
+                // Reduce all fractional damage
+                if (_fractionalDamage != null)
+                {
+                    foreach (var key in _fractionalDamage.Keys.ToList())
+                    {
+                        _fractionalDamage[key] = 0;
+                    }
+                }
+            }
+
+            // Reduce all fractional damage
+            if (_fractionalDamage != null)
+            {
+                foreach (var key in _fractionalDamage.Keys.ToList())
+                {
+                    _fractionalDamage[key] = Math.Max(0, _fractionalDamage[key] - amount);
+                }
+            }
+
+            if (Hits >= HitsMax)
+            {
+                Hits = HitsMax;
+                m_Health = HitsMax;
+                // Reduce all fractional damage
+                if (_fractionalDamage != null)
+                {
+                    foreach (var key in _fractionalDamage.Keys.ToList())
+                    {
+                        _fractionalDamage[key] = 0;
+                    }
+                }
+            }
+
+            // If the amount is negative, it means we are healing
+            // Existing logic for Core.SA
             if (Core.SA && amount > 0 && from != null && from != this)
             {
                 for (int i = Aggressed.Count - 1; i >= 0; i--)
@@ -8812,8 +8991,19 @@ protected override int GetDamagePopupValue(int amount, Server.Mobile from)
                 }
             }
         }
+        public override int Heal(int amount, Mobile from, bool message)
+        {
+            double oldHealth = Health;
+            Health += amount;
+            int actualHeal = (int)(Health - oldHealth);
 
-  #region Damaging Aura
+            // Call base logic if needed
+            base.Heal(actualHeal, from, message);
+
+            return actualHeal;
+        }
+
+        #region Damaging Aura
         private long m_NextAura;
 
         public virtual bool HasAura { get { return false; } }

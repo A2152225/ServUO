@@ -1947,7 +1947,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenHits) // m_Owner.Alive && !m_Owner.Poisoned )
 				{
-					m_Owner.Hits+=2;
+                    m_Owner.Heal(2, m_Owner, false); //m_Owner.Hits+=2;
 				}
 
 				Delay = Interval = GetHitsRegenRate(m_Owner);
