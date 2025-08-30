@@ -26213,8 +26213,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2025-07-19T19:38:58.897855Z</lastLogin>
-		<totalGameTime>P1279DT5H43M19.5523641S</totalGameTime>
+		<lastLogin>2025-08-30T22:25:41.8772291Z</lastLogin>
+		<totalGameTime>P1281DT12H5M55.2949393S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -26265,7 +26265,7 @@
 			<ip>100.11.166.99</ip>
 			<ip>100.19.60.56</ip>
 		</addressList>
-		<totalCurrency>1.1158844179999969</totalCurrency>
+		<totalCurrency>1.1158860439999967</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -27918,8 +27918,8 @@
 		<accessLevel>Seer</accessLevel>
 		<flags>2</flags>
 		<created>2012-10-05T22:57:24.1384917Z</created>
-		<lastLogin>2025-01-10T22:10:18.9503028Z</lastLogin>
-		<totalGameTime>P1546DT1H58M59.7714552S</totalGameTime>
+		<lastLogin>2025-08-23T22:17:48.565854Z</lastLogin>
+		<totalGameTime>P1546DT2H2M10.5361333S</totalGameTime>
 		<chars>
 			<char index="0">43</char>
 		</chars>
@@ -27927,7 +27927,7 @@
 			<tag name="motd">false</tag>
 			<tag name="numRewardsChosen">2</tag>
 		</tags>
-		<addressList count="14">
+		<addressList count="15">
 			<ip>66.189.142.35</ip>
 			<ip>71.82.244.230</ip>
 			<ip>24.240.4.62</ip>
@@ -27942,6 +27942,7 @@
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
 			<ip>97.83.211.11</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0.035561357000010937</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -27951,8 +27952,8 @@
 		<password>winski1</password>
 		<flags>2</flags>
 		<created>2012-10-05T23:59:21.0634201Z</created>
-		<lastLogin>2023-09-19T02:31:14.5125146Z</lastLogin>
-		<totalGameTime>P149DT15H31M2.6226602S</totalGameTime>
+		<lastLogin>2025-08-20T02:41:49.7464651Z</lastLogin>
+		<totalGameTime>P149DT17H22M29.8228266S</totalGameTime>
 		<chars>
 			<char index="0">45715</char>
 			<char index="1">50205</char>
@@ -27966,7 +27967,7 @@
 			<tag name="motd">false</tag>
 			<tag name="numRewardsChosen">4</tag>
 		</tags>
-		<addressList count="10">
+		<addressList count="11">
 			<ip>66.189.142.35</ip>
 			<ip>71.82.244.230</ip>
 			<ip>75.135.71.57</ip>
@@ -27977,6 +27978,7 @@
 			<ip>47.34.9.231</ip>
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0.00022563899999999393</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -27986,8 +27988,8 @@
 		<password>winski2</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2025-07-22T05:50:49.9654215Z</lastLogin>
-		<totalGameTime>P1863DT14H33M24.3805151S</totalGameTime>
+		<lastLogin>2025-08-30T13:05:55.8026328Z</lastLogin>
+		<totalGameTime>P1885DT7H32M59.7549621S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 			<char index="1">67366</char>
@@ -28018,7 +28020,7 @@
 			<ip>97.83.211.11</ip>
 			<ip>47.35.140.182</ip>
 		</addressList>
-		<totalCurrency>0.016515489000013539</totalCurrency>
+		<totalCurrency>0.018767392000014146</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -28039,8 +28041,8 @@
 		<password>winski4</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:32:55.7176819Z</created>
-		<lastLogin>2023-09-19T02:33:34.1043757Z</lastLogin>
-		<totalGameTime>P32DT20H47M43.8760547S</totalGameTime>
+		<lastLogin>2025-08-20T01:42:35.6971606Z</lastLogin>
+		<totalGameTime>P32DT20H47M54.5902164S</totalGameTime>
 		<chars>
 			<char index="0">97904</char>
 			<char index="1">15173</char>
@@ -28048,7 +28050,7 @@
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="7">
+		<addressList count="8">
 			<ip>66.189.142.35</ip>
 			<ip>71.82.244.230</ip>
 			<ip>47.34.9.231</ip>
@@ -28056,6 +28058,7 @@
 			<ip>24.183.49.132</ip>
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0.00010114499999999913</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -28155,8 +28158,8 @@
 		<password>winski7</password>
 		<flags>2</flags>
 		<created>2012-10-06T15:34:25.4419626Z</created>
-		<lastLogin>2023-09-19T02:35:24.7929199Z</lastLogin>
-		<totalGameTime>P55DT8H1M0.3920496S</totalGameTime>
+		<lastLogin>2025-08-20T01:43:29.8415918Z</lastLogin>
+		<totalGameTime>P55DT8H1M8.4196049S</totalGameTime>
 		<chars>
 			<char index="0">159430</char>
 		</chars>
@@ -30432,22 +30435,23 @@
 	</account>
 	<account>
 		<username>test</username>
-		<newSecureCryptPassword>12-5D-6D-03-B3-2C-84-D4-92-74-7F-79-CF-0B-F6-E1-79-D2-87-F3-41-38-4E-B5-D6-D3-19-75-25-AD-6B-E8-E6-DF-01-16-03-29-35-69-8F-99-A0-9E-26-50-73-D1-D6-C3-2C-27-45-91-BF-1D-0A-20-AD-67-CB-A9-21-BC</newSecureCryptPassword>
+		<password>test</password>
 		<flags>2</flags>
 		<created>2012-12-25T11:48:01.9237936Z</created>
-		<lastLogin>2021-11-18T23:18:59.6057517Z</lastLogin>
-		<totalGameTime>PT26M21.8877803S</totalGameTime>
+		<lastLogin>2025-08-29T00:01:14.8190091Z</lastLogin>
+		<totalGameTime>PT2H10M24.4378634S</totalGameTime>
 		<chars>
 			<char index="0">7619</char>
 		</chars>
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="4">
+		<addressList count="5">
 			<ip>88.241.169.73</ip>
 			<ip>127.0.0.1</ip>
 			<ip>70.121.135.128</ip>
 			<ip>24.183.49.132</ip>
+			<ip>100.19.60.56</ip>
 		</addressList>
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -40158,8 +40162,8 @@
 		<password>winski8</password>
 		<flags>2</flags>
 		<created>2014-03-24T17:00:01.2154248Z</created>
-		<lastLogin>2025-07-22T11:34:40.0300218Z</lastLogin>
-		<totalGameTime>P22DT12H50M55.6549678S</totalGameTime>
+		<lastLogin>2025-08-20T01:43:59.0573265Z</lastLogin>
+		<totalGameTime>P22DT12H50M59.9720953S</totalGameTime>
 		<chars>
 			<char index="0">7866</char>
 			<char index="1">10318</char>
@@ -40834,12 +40838,13 @@
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="5">
+		<addressList count="6">
 			<ip>71.82.244.230</ip>
 			<ip>47.12.77.232</ip>
 			<ip>47.34.9.231</ip>
 			<ip>47.35.142.169</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0.0017518959999996634</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -40849,8 +40854,8 @@
 		<password>winski6</password>
 		<flags>2</flags>
 		<created>2014-04-29T23:54:34.8798979Z</created>
-		<lastLogin>2025-07-22T11:39:12.4493496Z</lastLogin>
-		<totalGameTime>P4DT22H44M3.3340147S</totalGameTime>
+		<lastLogin>2025-08-20T01:43:11.718001Z</lastLogin>
+		<totalGameTime>P4DT22H44M12.8694499S</totalGameTime>
 		<chars>
 			<char index="0">3825</char>
 		</chars>
@@ -46651,13 +46656,14 @@
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="6">
+		<addressList count="7">
 			<ip>75.135.71.57</ip>
 			<ip>47.34.9.122</ip>
 			<ip>47.12.77.232</ip>
 			<ip>24.183.49.132</ip>
 			<ip>23.87.12.245</ip>
 			<ip>172.220.35.116</ip>
+			<ip>47.35.140.182</ip>
 		</addressList>
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -46696,19 +46702,20 @@
 	</account>
 	<account>
 		<username>StatTest</username>
-		<newCryptPassword>E7-5B-D3-71-82-75-55-63-E1-C2-D4-E9-93-B4-FE-5C-6C-8B-0F-E1</newCryptPassword>
+		<password>test</password>
 		<flags>2</flags>
 		<created>2018-08-23T11:33:16.2755736Z</created>
-		<lastLogin>2018-09-01T06:16:45.2292467Z</lastLogin>
-		<totalGameTime>P1DT20M11.5145047S</totalGameTime>
+		<lastLogin>2025-08-29T00:02:52.4766058Z</lastLogin>
+		<totalGameTime>P1DT23M27.5218562S</totalGameTime>
 		<chars>
 			<char index="0">43461</char>
 		</chars>
 		<tags>
 			<tag name="motd">false</tag>
 		</tags>
-		<addressList count="1">
+		<addressList count="2">
 			<ip>174.54.114.120</ip>
+			<ip>100.19.60.56</ip>
 		</addressList>
 		<totalCurrency>0.0014827630000000017</totalCurrency>
 		<sovereigns>0</sovereigns>

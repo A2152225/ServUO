@@ -3955,8 +3955,9 @@ namespace Server
 		{
 			return Skills.UseSkill(this, skillID);
 		}
+        public virtual bool IsPlayerMobile => false;
 
-		private static CreateCorpseHandler m_CreateCorpse;
+        private static CreateCorpseHandler m_CreateCorpse;
 
 		public static CreateCorpseHandler CreateCorpseHandler { get { return m_CreateCorpse; } set { m_CreateCorpse = value; } }
 
@@ -4185,7 +4186,9 @@ namespace Server
 		/// <returns>True to continue with death, false to override it.</returns>
 		public virtual bool OnBeforeDeath()
 		{
-			return true;
+            //Show me the damage number of a dying creature
+     
+            return true;
 		}
 
 		/// <summary>
@@ -5605,14 +5608,34 @@ namespace Server
 
 			return amount;
 		}
-protected virtual int GetDamagePopupValue(int amount, Mobile from)
+
+        protected virtual int GetDamagePopupValue(int amount, Mobile from)
 {
     return amount; // Default: show actual amount
 }
         public virtual void SendDamagePacket(Mobile from, int amount)
         {
-			    if (SuppressDamagePopup)
-				return;
+            if (SuppressDamagePopup)
+                return;
+
+            // Hybrid approach: Use popup for ≤65535, overhead message for >65535
+            if (amount > 65535)
+            {
+                // Overhead message for large values
+                // MessageType.Regular = 0, hue 33 is red (adjust as needed)
+                if (this.IsPlayerMobile)
+                {
+                    // Only show the overhead damage to others, not to the player themselves
+                    this.NonlocalOverheadMessage(MessageType.Label, 33, false, amount.ToString("N0"));
+                }
+                else
+                {
+                    // For creatures, show to all (or as needed)
+                    this.PublicOverheadMessage(MessageType.Label, 33, false, amount.ToString("N0"));
+                }
+                return;
+            }
+
             switch (m_VisibleDamageType)
             {
                 case VisibleDamageType.Related:
@@ -5641,7 +5664,7 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 
                         if (amount > 0 && (ourState != null || theirState != null))
                         {
-                            Packet p = null; // = new DamagePacket( this, amount );
+                            Packet p = null;
 
                             if (ourState != null)
                             {
@@ -5688,7 +5711,7 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
             }
         }
 
-		public virtual void SendDamageToAll(int amount)
+        public virtual void SendDamageToAll(int amount)
 		{
 			if (amount < 0)
 			{
@@ -8238,10 +8261,10 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
-				}
+				}*/
 
 				if (m_Str != value)
 				{
@@ -8289,11 +8312,11 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+				/*else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+*/
 				return value;
 			}
 			set
@@ -8322,11 +8345,11 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+            */
 				if (m_Dex != value)
 				{
 					int oldValue = m_Dex;
@@ -8373,11 +8396,11 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+            */
 				return value;
 			}
 			set
@@ -8406,11 +8429,11 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+            */
 				if (m_Int != value)
 				{
 					int oldValue = m_Int;
@@ -8457,11 +8480,11 @@ protected virtual int GetDamagePopupValue(int amount, Mobile from)
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+				/*else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+*/
 				return value;
 			}
 			set

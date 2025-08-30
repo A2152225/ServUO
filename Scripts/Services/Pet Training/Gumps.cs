@@ -35,7 +35,7 @@ int healthMultiplier = (int)DifficultySettings.GetHealthMultiplier(difficultyLev
 int perceivedMaxHits = Creature.HitsMax;
 int perceivedHits = Creature.Hits;
 
-            if (difficultyLevel > 1)
+            if (difficultyLevel > 1 && !Creature.Summoned && !Creature.Controlled)
             {
 
                 perceivedMaxHits = Creature.HitsMax * healthMultiplier;

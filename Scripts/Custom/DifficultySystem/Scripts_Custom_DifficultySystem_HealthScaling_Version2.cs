@@ -45,15 +45,14 @@ namespace Server
             // Schedule health update for nearby creatures
        //     Timer.DelayCall(TimeSpan.FromSeconds(2), () => UpdateNearbyCreatureHealth(m));
         }
-        
+
         private static void UpdateNearbyCreatureHealth(Mobile player)
         {
             if (player == null || player.NetState == null)
                 return;
 
             int difficultyLevel = DifficultySettings.GetPlayerDifficulty(player);
-
-            if (difficultyLevel <= 1) // No scaling needed
+            if (difficultyLevel <= 1)
                 return;
 
             double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
@@ -62,14 +61,17 @@ namespace Server
             {
                 if (m is BaseCreature bc && m != player && m.Alive)
                 {
-                    int scaledMaxHits = (int)(bc.HitsMax * healthMultiplier);
-                    int scaledCurrentHits = bc.GetPerceivedCurrentHits(player, healthMultiplier);
+                    // Never scale perceived health for pets (controlled/summoned)
+                    double mul = (bc.Controlled || bc.Summoned) ? 1.0 : healthMultiplier;
 
-                   // SendCustomHealthUpdate(player.NetState, bc, scaledCurrentHits, scaledMaxHits);
+                    int scaledMaxHits = (int)(bc.HitsMax * mul);
+                    int scaledCurrentHits = bc.GetPerceivedCurrentHits(player, mul);
+
+                    // SendCustomHealthUpdate(player.NetState, bc, scaledCurrentHits, scaledMaxHits);
                 }
             }
         }
-        
+
         private static void SendCustomHealthUpdate(NetState ns, Mobile creature, int currentHits, int maxHits)
         {
             if (ns == null)
