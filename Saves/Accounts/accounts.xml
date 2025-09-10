@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<accounts count="1951">
+<accounts count="1952">
 	<account>
 		<username>ThomasF</username>
 		<newCryptPassword>85-18-68-31-86-94-61-9D-A9-BA-DA-6A-58-01-B8-52-78-F8-66-3F</newCryptPassword>
@@ -26213,8 +26213,8 @@
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
-		<lastLogin>2025-08-30T22:25:41.8772291Z</lastLogin>
-		<totalGameTime>P1281DT12H5M55.2949393S</totalGameTime>
+		<lastLogin>2025-09-10T04:34:37.7736079Z</lastLogin>
+		<totalGameTime>P1281DT23H57.8700252S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -27988,8 +27988,8 @@
 		<password>winski2</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2025-08-30T13:05:55.8026328Z</lastLogin>
-		<totalGameTime>P1885DT7H32M59.7549621S</totalGameTime>
+		<lastLogin>2025-09-10T04:34:46.9019006Z</lastLogin>
+		<totalGameTime>P1889DT1H35M59.4535018S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 			<char index="1">67366</char>
@@ -28020,7 +28020,7 @@
 			<ip>97.83.211.11</ip>
 			<ip>47.35.140.182</ip>
 		</addressList>
-		<totalCurrency>0.018767392000014146</totalCurrency>
+		<totalCurrency>0.019128748000014212</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
@@ -29332,12 +29332,12 @@
 	</account>
 	<account>
 		<username>T</username>
-		<newSecureCryptPassword>31-50-70-27-4D-36-93-FF-44-8F-2B-4C-92-BF-E6-32-BA-42-41-73-2B-50-99-64-A7-3E-07-CD-A1-47-BE-B1-1B-E1-CC-C1-8E-B4-9F-E5-3A-7C-60-6E-44-26-D2-B1-09-B9-8C-1A-1C-58-09-8F-B6-10-0F-E6-06-EF-9D-73</newSecureCryptPassword>
+		<password>050915</password>
 		<accessLevel>Owner</accessLevel>
 		<flags>2</flags>
 		<created>2012-11-09T13:35:08.797451Z</created>
-		<lastLogin>2021-05-15T05:58:51.2068999Z</lastLogin>
-		<totalGameTime>P50DT3H13M47.7451145S</totalGameTime>
+		<lastLogin>2025-09-09T20:16:23.0158374Z</lastLogin>
+		<totalGameTime>P50DT3H55M9.3816243S</totalGameTime>
 		<chars>
 			<char index="0">97484</char>
 		</chars>
@@ -29345,7 +29345,7 @@
 			<tag name="motd">false</tag>
 			<tag name="BanDealer">0x17E "The Ancient Shard-Breaker"</tag>
 		</tags>
-		<addressList count="9">
+		<addressList count="10">
 			<ip>174.59.235.117</ip>
 			<ip>98.235.127.57</ip>
 			<ip>98.237.53.45</ip>
@@ -29355,6 +29355,7 @@
 			<ip>108.2.60.166</ip>
 			<ip>108.2.60.29</ip>
 			<ip>47.12.77.232</ip>
+			<ip>100.19.60.56</ip>
 		</addressList>
 		<totalCurrency>0.00068973200000000008</totalCurrency>
 		<sovereigns>0</sovereigns>
@@ -47068,6 +47069,16 @@
 		<addressList count="1">
 			<ip>24.139.56.110</ip>
 		</addressList>
+		<totalCurrency>0</totalCurrency>
+		<sovereigns>0</sovereigns>
+	</account>
+	<account>
+		<username>account</username>
+		<password>password</password>
+		<created>2025-09-07T22:56:40.3816957Z</created>
+		<lastLogin>2025-09-07T22:56:40.3816957Z</lastLogin>
+		<totalGameTime>PT0S</totalGameTime>
+		<chars />
 		<totalCurrency>0</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>

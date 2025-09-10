@@ -1,22 +1,10 @@
-Happy Halloween! Welcome To Dev3
+Welcome to Glory!
 
-Happy 4th if July 
-Everyone give a round of applause to Pin for exploding like a firework for this occasion :)
+We are actively adding new functionality at this time, and player feedback or requests are appreciated.  
+Current level cap: 50
+Paragon level cap: Infinite (starts after 50)
 
+Try the new Difficulty system (some things will still change) use [difficulty  to select your difficulty - currently, each increase will double enemy health and damage, so be careful to not bite off more than you can chew. 
+Finishing up difficulty based scaling and mechanics, then moving on to crafting systems so that players may craft gear that can carry you all the way to Difficulty 12. 
 
-Merry Christmas
-
-I've added in the (non dan related) additional resources, so those should be working now.  Feel free to play around with them, Added the animal bod system too, but it seems to not be showing up on the vendors --  I haven't made any changes to that system yet, so brush is available, as are the dyes at this time.
-
-
-
-Happy Thanksgiving
-
-
-Be on  the look out for a few Giant Turkeys that got loose in the Despise Region earlier today. They escaped when we were trying to shove them in an oven, turns out they were too big to fit.
-
-They are considered Dangerous so if you can return them, dead preferably, we can perhaps cook their remains for a large Thanksgiving day feast!
-
-P.S.  They might be too hard to kill alone, so you may need to gather a group of friends to help you.
-
-Update: Giant Turkeys have had their health reduced significantly (for now)
+Current Holiday Event: None

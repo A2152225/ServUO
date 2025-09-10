@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 using Server.Gumps;
 using Server.Mobiles;
@@ -35,14 +36,14 @@ namespace Server.Items
             if (IsChildOf(from.Backpack))
             {
                 if (from.Map == Map.TerMur && !Server.Engines.Points.PointsSystem.QueensLoyalty.IsNoble(from))
-                {                    
+                {
                     from.SendLocalizedMessage(1113713); // You must rise to the rank of noble in the eyes of the Gargoyle Queen before her majesty will allow you to build a house in her lands.
                     return;
                 }
 
                 from.SendGump(new HousePlacementCategoryGump(this, from));
             }
-                
+
             else
                 from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
         }
@@ -70,7 +71,6 @@ namespace Server.Items
     public class HousePlacementCategoryGump : Gump
     {
         private const int LabelColor = 0x7FFF;
-        private const int LabelColorDisabled = 0x4210;
 
         private readonly Mobile m_From;
         private readonly HousePlacementTool m_Tool;
@@ -115,12 +115,12 @@ namespace Server.Items
             }
         }
 
-        public override void OnResponse(Server.Network.NetState sender, RelayInfo info)
+        public override void OnResponse(NetState sender, RelayInfo info)
         {
             if (!m_From.CheckAlive() || m_From.Backpack == null || !m_Tool.IsChildOf(m_From.Backpack))
                 return;
 
-            switch ( info.ButtonID )
+            switch (info.ButtonID)
             {
                 case 1: // Classic Houses
                     {
@@ -159,14 +159,22 @@ namespace Server.Items
         private readonly HousePlacementTool m_Tool;
 
         private readonly bool m_Classic;
+        private readonly bool m_CombineWanted;
+        private readonly bool m_CanLinkHere;
 
-        public HousePlacementListGump(HousePlacementTool tool, Mobile from, HousePlacementEntry[] entries, bool classic = false)
+        private const int ToggleCombineButtonID = 5000;
+
+        public HousePlacementListGump(HousePlacementTool tool, Mobile from, HousePlacementEntry[] entries, bool classic = false, bool combineWanted = false)
             : base(50, 50)
         {
             m_From = from;
             m_Tool = tool;
             m_Entries = entries;
             m_Classic = classic;
+            m_CombineWanted = combineWanted;
+
+            var owned = BaseHouse.GetHouses(from);
+            m_CanLinkHere = owned != null && owned.Exists(h => h != null && !h.Deleted && h.Map == from.Map);
 
             from.CloseGump(typeof(HousePlacementCategoryGump));
             from.CloseGump(typeof(HousePlacementListGump));
@@ -174,7 +182,7 @@ namespace Server.Items
 
             AddPage(0);
 
-            AddBackground(0, 0, 530, 430, 5054);
+            AddBackground(0, 0, 530, 460, 5054);
 
             AddImageTiled(10, 10, 500, 20, 2624);
             AddAlphaRegion(10, 10, 500, 20);
@@ -201,8 +209,19 @@ namespace Server.Items
             AddImageTiled(10, 400, 500, 20, 2624);
             AddAlphaRegion(10, 400, 500, 20);
 
-            AddButton(10, 400, 4017, 4019, 0, GumpButtonType.Reply, 0);
-            AddHtmlLocalized(50, 400, 100, 20, 3000363, LabelColor, false, false); // Close
+            if (m_CanLinkHere)
+            {
+                int toggleGumpID = m_CombineWanted ? 4012 : 4014; // checked/unchecked
+                AddButton(10, 400, toggleGumpID, toggleGumpID, ToggleCombineButtonID, GumpButtonType.Reply, 0);
+                AddLabel(45, 400, LabelHue, "Link to existing owned house");
+            }
+            else
+            {
+                AddLabel(10, 400, 0x835, "Own a nearby house (same map) to enable linking.");
+            }
+
+            AddButton(400, 400, 4017, 4019, 0, GumpButtonType.Reply, 0);
+            AddHtmlLocalized(430, 400, 80, 20, 3000363, LabelColor, false, false); // Close
 
             int page = 1;
             int index = -1;
@@ -246,16 +265,16 @@ namespace Server.Items
                 {
                     if (page > 1)
                     {
-                        AddButton(450, 400, 4005, 4007, 0, GumpButtonType.Page, page);
-                        AddHtmlLocalized(400, 400, 100, 20, 3000406, LabelColor, false, false); // Next
+                        AddButton(450, 430, 4005, 4007, 0, GumpButtonType.Page, page);
+                        AddHtmlLocalized(400, 430, 100, 20, 3000406, LabelColor, false, false); // Next
                     }
 
                     AddPage(page);
 
                     if (page > 1)
                     {
-                        AddButton(200, 400, 4014, 4016, 0, GumpButtonType.Page, page - 1);
-                        AddHtmlLocalized(250, 400, 100, 20, 3000405, LabelColor, false, false); // Previous
+                        AddButton(200, 430, 4014, 4016, 0, GumpButtonType.Page, page - 1);
+                        AddHtmlLocalized(250, 430, 100, 20, 3000405, LabelColor, false, false); // Previous
                     }
                 }
 
@@ -278,11 +297,17 @@ namespace Server.Items
             if (!m_From.CheckAlive() || m_From.Backpack == null || !m_Tool.IsChildOf(m_From.Backpack))
                 return;
 
+            if (info.ButtonID == ToggleCombineButtonID)
+            {
+                m_From.SendGump(new HousePlacementListGump(m_Tool, m_From, m_Entries, m_Classic, !m_CombineWanted));
+                return;
+            }
+
             int index = info.ButtonID - 1;
 
             if (index >= 0 && index < m_Entries.Length)
             {
-                m_From.Target = new NewHousePlacementTarget(m_Tool, m_Entries, m_Entries[index], m_Classic);
+                m_From.Target = new NewHousePlacementTarget(m_Tool, m_Entries, m_Entries[index], m_Classic, m_CanLinkHere && m_CombineWanted);
             }
             else if (m_Tool != null && m_Tool.GetType() == typeof(HousePlacementTool))
             {
@@ -296,11 +321,11 @@ namespace Server.Items
         private readonly HousePlacementEntry m_Entry;
         private readonly HousePlacementEntry[] m_Entries;
 
-        private bool m_Placed;
-        private bool m_Classic;
-        private HousePlacementTool m_Tool;
+        private readonly bool m_Classic;
+        private readonly HousePlacementTool m_Tool;
+        private readonly bool m_CombineWanted;
 
-        public NewHousePlacementTarget(HousePlacementTool tool, HousePlacementEntry[] entries, HousePlacementEntry entry, bool classic)
+        public NewHousePlacementTarget(HousePlacementTool tool, HousePlacementEntry[] entries, HousePlacementEntry entry, bool classic, bool combineWanted = false)
             : base(entry.MultiID, entry.Offset)
         {
             Range = 14;
@@ -309,44 +334,27 @@ namespace Server.Items
             m_Entries = entries;
             m_Entry = entry;
             m_Classic = classic;
+            m_CombineWanted = combineWanted;
         }
 
+        // Preview-first: do not instantiate the real house here. Create preview and open nudge gump.
         protected override void OnTarget(Mobile from, object o)
         {
             if (!from.CheckAlive() || from.Backpack == null || !m_Tool.IsChildOf(from.Backpack))
                 return;
 
             IPoint3D ip = o as IPoint3D;
-
-            if (ip != null)
-            {
-                if (ip is Item)
-                    ip = ((Item)ip).GetWorldTop();
-
-                Point3D p = new Point3D(ip);
-
-                Region reg = Region.Find(new Point3D(p), from.Map);
-
-                if (from.AccessLevel >= AccessLevel.GameMaster || reg.AllowHousing(from, p))
-                    m_Placed = m_Entry.OnPlacement(m_Tool, from, p);
-                else if (reg.IsPartOf<TempNoHousingRegion>())
-                    from.SendLocalizedMessage(501270); // Lord British has decreed a 'no build' period, thus you cannot build this house at this time.
-                else if (reg.IsPartOf<TreasureRegion>() || reg.IsPartOf<HouseRegion>())
-                    from.SendLocalizedMessage(1043287); // The house could not be created here.  Either something is blocking the house, or the house would not be on valid terrain.
-                else if (reg.IsPartOf<HouseRaffleRegion>())
-                    from.SendLocalizedMessage(1150493); // You must have a deed for this plot of land in order to build here.
-                else
-                    from.SendLocalizedMessage(501265); // Housing can not be created in this area.
-            }
-        }
-
-        protected override void OnTargetFinish(Mobile from)
-        {
-            if (!from.CheckAlive() || from.Backpack == null || !m_Tool.IsChildOf(from.Backpack))
+            if (ip == null)
                 return;
 
-            if (!m_Placed)
-                from.SendGump(new HousePlacementListGump(m_Tool, from, m_Entries, m_Classic));
+            if (ip is Item)
+                ip = ((Item)ip).GetWorldTop();
+
+            Point3D p = new Point3D(ip);
+
+            // Use the preview-first flow. The HousePlacementEntry.OnPlacement will create the PreviewHouse,
+            // open the nudge gump, and the real house will be constructed in PlacementWarning_Callback on Accept.
+            m_Entry.OnPlacement(m_Tool, from, p, m_CombineWanted);
         }
     }
 
@@ -398,26 +406,6 @@ namespace Server.Items
             new HousePlacementEntry(typeof(Tower),              1011312,	2119,	1059,	2437,	1218,	42,	366250, 0,	7,	0,	0x007A),
             new HousePlacementEntry(typeof(Keep),               1011313,	2625,	1312,	3019,	1509,	52,	562500, 0, 11,	0,	0x007C),
             new HousePlacementEntry(typeof(Castle),             1011314,	4076,	2038,	4688,	2344,	78,	865000, 0, 16,	0,	0x007E),
-
-            new HousePlacementEntry(typeof(TrinsicKeep),        1158748,	2625,	1312,	3019,	1509,	52,	29643750, 0, 11,	0,	0x147E),
-            new HousePlacementEntry(typeof(GothicRoseCastle),   1158749,	4076,	2038,	4688,	2344,	78,	44808750, 0, 16,	0,	0x147F),
-            new HousePlacementEntry(typeof(ElsaCastle),         1158750,	4076,	2038,	4688,	2344,	78,	45450000, 0, 16,	0,	0x1480),
-            new HousePlacementEntry(typeof(Spires),             1158761,	4076,	2038,	4688,	2344,	78,	47025000, 0, 16,	0,	0x1481),
-            new HousePlacementEntry(typeof(CastleOfOceania),    1158760,	4076,	2038,	4688,	2344,	78,	48971250, 0, 16,	0,	0x1482),
-            new HousePlacementEntry(typeof(FeudalCastle),       1158762,	4076,	2038,	4688,	2344,	78,	27337500, 0, 16,	0,	0x1483),
-            new HousePlacementEntry(typeof(RobinsNest),         1158850,	2625,	1312,	3019,	1509,	52,	25301250, 0, 11,	0,	0x1484),
-            new HousePlacementEntry(typeof(TraditionalKeep),    1158851,	2625,	1312,	3019,	1509,	52,	26685000, 0, 11,	0,	0x1485),
-            new HousePlacementEntry(typeof(VillaCrowley),       1158852,	2625,	1312,	3019,	1509,	52,	21813750, 0, 11,	0,	0x1486),
-            new HousePlacementEntry(typeof(DarkthornKeep),      1158853,	2625,	1312,	3019,	1509,	52,	27990000, 0, 11,	0,	0x1487),
-            new HousePlacementEntry(typeof(SandalwoodKeep),     1158854,	2625,	1312,	3019,	1509,	52,	23456250, 0, 11,	0,	0x1488),
-            new HousePlacementEntry(typeof(CasaMoga),           1158855,	2625,	1312,	3019,	1509,	52,	26313750, 0, 11,	0,	0x1489),
-
-            new HousePlacementEntry(typeof(RobinsRoost),                1158960,    4076,   2038,   4688,   2344,   78,	43863750, 0, 16,	0,	0x148A),
-            new HousePlacementEntry(typeof(Camelot),                    1158961,    4076,   2038,   4688,   2344,   78,	47092500, 0, 16,	0,  0x148B),
-            new HousePlacementEntry(typeof(LacrimaeInCaelo),            1158962,    4076,   2038,   4688,   2344,   78,	45315000, 0, 16,	0,  0x148C),
-            new HousePlacementEntry(typeof(OkinawaSweetDreamCastle),    1158963,    4076,   2038,   4688,   2344,   78,	40128750, 0, 16,	0,  0x148D),
-            new HousePlacementEntry(typeof(TheSandstoneCastle),         1158964,    4076,   2038,   4688,   2344,   78,	48690000, 0, 16,	0,  0x148E),
-            new HousePlacementEntry(typeof(GrimswindSisters),           1158965,    4076,   2038,   4688,   2344,   78, 42142500, 0, 16,    0,  0x148F),
         };
 
         private static readonly HousePlacementEntry[] m_CustomHouseContest = new HousePlacementEntry[]
@@ -446,7 +434,7 @@ namespace Server.Items
             new HousePlacementEntry(typeof(HouseFoundation), 1060267,	750,	375,	863,	431,	16,	52000, 0,	5,	0,	0x1406), // 9x9 2-Story Customizable House
             new HousePlacementEntry(typeof(HouseFoundation), 1060268,	800,	400,	920,	460,	18,	57000, 0,	6,	0,	0x1407), // 9x10 2-Story Customizable House
             new HousePlacementEntry(typeof(HouseFoundation), 1060269,	850,	425,	1265,	632,	24,	62000, 0,	6,	0,	0x1408), // 9x11 2-Story Customizable House
-            new HousePlacementEntry(typeof(HouseFoundation), 1060270,	1100,	550,	1265,	632,	24,	67000, 0,	7,	0,	0x1409), // 9x12 2-Story Customizable House
+            new HousePlacementEntry(typeof(HouseFoundation), 1060270,	1100,	550,	1265,	632,	24,	67000, 0,	6,	0,	0x1409), // 9x12 2-Story Customizable House
             new HousePlacementEntry(typeof(HouseFoundation), 1060271,	1100,	550,	1265,	632,	24,	72000, 0,	7,	0,	0x140A), // 9x13 2-Story Customizable House
             new HousePlacementEntry(typeof(HouseFoundation), 1060277,	700,	350,	805,	402,	16,	46500, 0,	4,	0,	0x1410), // 10x7 2-Story Customizable House
             new HousePlacementEntry(typeof(HouseFoundation), 1060278,	750,	375,	863,	431,	16,	52000, 0,	5,	0,	0x1411), // 10x8 2-Story Customizable House
@@ -583,99 +571,21 @@ namespace Server.Items
             FillTable(m_CustomHouseContest);
         }
 
-        public static HousePlacementEntry[] HousesEJ
-        {
-            get
-            {
-                return m_HousesEJ;
-            }
-        }
+        public static HousePlacementEntry[] HousesEJ { get { return m_HousesEJ; } }
+        public static HousePlacementEntry[] ClassicHouses { get { return m_ClassicHouses; } }
+        public static HousePlacementEntry[] TwoStoryFoundations { get { return m_TwoStoryFoundations; } }
+        public static HousePlacementEntry[] ThreeStoryFoundations { get { return m_ThreeStoryFoundations; } }
+        public static HousePlacementEntry[] CustomHouseContest { get { return m_CustomHouseContest; } }
 
-        public static HousePlacementEntry[] ClassicHouses
-        {
-            get
-            {
-                return m_ClassicHouses;
-            }
-        }
-        public static HousePlacementEntry[] TwoStoryFoundations
-        {
-            get
-            {
-                return m_TwoStoryFoundations;
-            }
-        }
-        public static HousePlacementEntry[] ThreeStoryFoundations
-        {
-            get
-            {
-                return m_ThreeStoryFoundations;
-            }
-        }
-        public static HousePlacementEntry[] CustomHouseContest
-        {
-            get
-            {
-                return m_CustomHouseContest;
-            }
-        }
+        public Type Type { get { return m_Type; } }
+        public int Description { get { return m_Description; } }
+        public int Storage { get { return BaseHouse.NewVendorSystem ? m_NewStorage : m_Storage; } }
+        public int Lockdowns { get { return BaseHouse.NewVendorSystem ? m_NewLockdowns : m_Lockdowns; } }
+        public int Vendors { get { return m_Vendors; } }
+        public int Cost { get { return m_Cost; } }
+        public int MultiID { get { return m_MultiID; } }
+        public Point3D Offset { get { return m_Offset; } }
 
-        public Type Type
-        {
-            get
-            {
-                return m_Type;
-            }
-        }
-        public int Description
-        {
-            get
-            {
-                return m_Description;
-            }
-        }
-        public int Storage
-        {
-            get
-            {
-                return BaseHouse.NewVendorSystem ? m_NewStorage : m_Storage;
-            }
-        }
-        public int Lockdowns
-        {
-            get
-            {
-                return BaseHouse.NewVendorSystem ? m_NewLockdowns : m_Lockdowns;
-            }
-        }
-        public int Vendors
-        {
-            get
-            {
-                return m_Vendors;
-            }
-        }
-        public int Cost
-        {
-            get
-            {
-                return m_Cost;
-            }
-        }
-        public int MultiID
-        {
-            get
-            {
-                return m_MultiID;
-            }
-        }
-        public Point3D Offset
-        {
-            get
-            {
-                return m_Offset;
-            }
-        }
         public static HousePlacementEntry Find(BaseHouse house)
         {
             object obj = m_Table[house.GetType()];
@@ -731,12 +641,181 @@ namespace Server.Items
             return null;
         }
 
+        // Legacy signature keeps compatibility; defaults to standalone (no linking).
+        public bool OnPlacement(HousePlacementTool tool, Mobile from, Point3D p)
+        {
+            return OnPlacement(tool, from, p, false);
+        }
+
+        // Preview-first flow: always show a preview with cloth and the nudge gump.
+        // Do NOT move items/mobiles or place the house here.
+        public bool OnPlacement(HousePlacementTool tool, Mobile from, Point3D p, bool combineWanted)
+        {
+            if (!from.CheckAlive() || from.Backpack == null || !tool.IsChildOf(from.Backpack))
+                return false;
+
+            Point3D center = new Point3D(p.X - m_Offset.X, p.Y - m_Offset.Y, p.Z - m_Offset.Z);
+
+            // Create preview house (cloth-wrapped) at the desired location.
+            PreviewHouse prev = new PreviewHouse(m_MultiID);
+
+            // Move preview into the world regardless of validity so players can see and nudge it.
+            prev.MoveToWorld(center, from.Map);
+
+            // Ensure any viewer-binding API is used for normal players as well (some forks require it)
+            try
+            {
+                var attach = prev.GetType().GetMethod("AttachViewer", BindingFlags.Instance | BindingFlags.Public);
+                var add = prev.GetType().GetMethod("AddViewer", BindingFlags.Instance | BindingFlags.Public);
+
+                if (attach != null) attach.Invoke(prev, new object[] { from });
+                else if (add != null) add.Invoke(prev, new object[] { from });
+            }
+            catch
+            {
+                // Best-effort
+            }
+
+            // Try to force boundary cloth/plot frames to show on foundations if the fork supports it
+            try
+            {
+                if (m_Type == typeof(HouseFoundation))
+                {
+                    var pi = prev.GetType().GetProperty("ShowBoundaryCloth", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                             ?? prev.GetType().GetProperty("ShowCloth", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                             ?? prev.GetType().GetProperty("ShowPlot", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (pi != null && pi.CanWrite)
+                        pi.SetValue(prev, true, null);
+
+                    var mi = prev.GetType().GetMethod("EnableBoundaryCloth", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                          ?? prev.GetType().GetMethod("EnableCloth", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (mi != null)
+                        mi.Invoke(prev, null);
+                }
+            }
+            catch
+            {
+                // Non-fatal if the fork doesn't expose these
+            }
+
+            // Validator: returns true if placement at "loc" should be shown as valid (blue)
+            Func<Point3D, bool> validator = (Point3D loc) =>
+            {
+                ArrayList tmp;
+                var baseRes = HousePlacement.Check(from, m_MultiID, loc, out tmp);
+
+                if (baseRes == HousePlacementResult.Valid)
+                    return true;
+
+                // If not linking, just return engine result
+                if (!combineWanted)
+                    return false;
+
+                try
+                {
+                    var comp = MultiData.GetComponents(m_MultiID);
+
+                    bool anyOverlap = false;
+                    bool anyAdjacency = false;
+                    bool nonOwnedOverlapOrAdjacency = false;
+
+                    for (int rx = comp.Min.X; rx <= comp.Max.X; rx++)
+                    {
+                        for (int ry = comp.Min.Y; ry <= comp.Max.Y; ry++)
+                        {
+                            int wx = loc.X + rx;
+                            int wy = loc.Y + ry;
+
+                            // Overlap check
+                            var h = BaseHouse.FindHouseAt(new Point3D(wx, wy, loc.Z), from.Map, 16);
+                            if (h != null)
+                            {
+                                anyOverlap = true;
+
+                                // If not same account, fail the preview dots
+                                if (h.Owner == null || h.Owner.Account == null || from.Account == null || h.Owner.Account != from.Account)
+                                {
+                                    nonOwnedOverlapOrAdjacency = true;
+                                    goto Decide;
+                                }
+                            }
+
+                            // Edge adjacency four-neighborhood
+                            var n1 = BaseHouse.FindHouseAt(new Point3D(wx + 1, wy, loc.Z), from.Map, 16);
+                            var n2 = BaseHouse.FindHouseAt(new Point3D(wx - 1, wy, loc.Z), from.Map, 16);
+                            var n3 = BaseHouse.FindHouseAt(new Point3D(wx, wy + 1, loc.Z), from.Map, 16);
+                            var n4 = BaseHouse.FindHouseAt(new Point3D(wx, wy - 1, loc.Z), from.Map, 16);
+
+                            BaseHouse[] neigh = { n1, n2, n3, n4 };
+                            foreach (var nh in neigh)
+                            {
+                                if (nh != null)
+                                {
+                                    anyAdjacency = true;
+
+                                    if (nh.Owner == null || nh.Owner.Account == null || from.Account == null || nh.Owner.Account != from.Account)
+                                    {
+                                        nonOwnedOverlapOrAdjacency = true;
+                                        goto Decide;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                Decide:
+                    if (nonOwnedOverlapOrAdjacency)
+                        return false; // not valid for preview
+
+                    // Linking: if overlaps/adjacent only with own houses, treat as valid for dots
+                    if (anyOverlap || anyAdjacency)
+                        return true;
+
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            };
+
+            // Informative message once
+            {
+                ArrayList toMove;
+                var res = HousePlacement.Check(from, m_MultiID, center, out toMove);
+                if (res == HousePlacementResult.Valid)
+                    from.SendLocalizedMessage(1011576); // This is a valid location.
+                else
+                    from.SendMessage("Preview created. Adjust the preview until all dots are valid, then press Accept.");
+            }
+
+            // Open the nudge gump with a NON-NULL callback and the validator above
+            from.CloseGump<HousePreviewNudgeGump>();
+            from.SendGump(
+                new HousePreviewNudgeGump(
+                    new WarningGumpCallback(PlacementWarning_Callback),
+                    new object[] { prev, tool, combineWanted },
+                    prev,
+                    from,
+                    validator
+                )
+            );
+
+            return true;
+        }
+
         public void PlacementWarning_Callback(Mobile from, bool okay, object state)
         {
             object[] objs = (object[])state;
 
             PreviewHouse prevHouse = (PreviewHouse)objs[0];
             HousePlacementTool tool = objs[1] as HousePlacementTool;
+
+            bool combineWanted = false;
+            if (objs.Length >= 3 && objs[2] is bool)
+                combineWanted = (bool)objs[2];
 
             if (!from.CheckAlive() || from.Backpack == null || tool == null || !tool.IsChildOf(from.Backpack))
                 return;
@@ -753,23 +832,71 @@ namespace Server.Items
                 * Please try again!
                 */
                 from.SendGump(new NoticeGump(1060637, 30720, 1060647, 32512, 320, 180, null, null));
-
                 return;
             }
 
             Point3D center = prevHouse.Location;
             Map map = prevHouse.Map;
 
+            // Before deleting the preview, compute prospective footprint if we plan to link
+            HashSet<Point2D> prospectiveTiles = null;
+
+            if (combineWanted)
+            {
+                prospectiveTiles = new HashSet<Point2D>();
+                var comp = MultiData.GetComponents(m_MultiID);
+
+                // Build a 2D set of tiles the house would occupy
+                for (int rx = comp.Min.X; rx <= comp.Max.X; ++rx)
+                {
+                    for (int ry = comp.Min.Y; ry <= comp.Max.Y; ++ry)
+                    {
+                        prospectiveTiles.Add(new Point2D(center.X + rx, center.Y + ry));
+                    }
+                }
+            }
+
             prevHouse.Delete();
 
             ArrayList toMove;
-            //Point3D center = new Point3D( p.X - m_Offset.X, p.Y - m_Offset.Y, p.Z - m_Offset.Z );
             HousePlacementResult res = HousePlacement.Check(from, m_MultiID, center, out toMove);
 
-            switch ( res )
+            // If engine says invalid, allow override ONLY when:
+            // - Linking is enabled
+            // - We detected overlap/adjacency and it's ONLY with own-account houses
+            // - Region allows housing (we still enforce region/raffle/loyalty rules)
+            if (res != HousePlacementResult.Valid && combineWanted && prospectiveTiles != null && prospectiveTiles.Count > 0)
+            {
+                bool touches;
+                bool onlyOwn = OwnOverlapOnly(from, map, center, prospectiveTiles, out touches);
+
+                if (touches && onlyOwn)
+                {
+                    // Region gating still applies
+                    var reg = Region.Find(center, map);
+                    bool regionOK = reg == null || reg.AllowHousing(from, center);
+
+                    // Loyalty for TerMur (mirror base rules)
+                    bool loyaltyOK = true;
+                    if (map == Map.TerMur && !Server.Engines.Points.PointsSystem.QueensLoyalty.IsNoble(from))
+                        loyaltyOK = false;
+
+                    if (regionOK && loyaltyOK)
+                        res = HousePlacementResult.Valid;
+                }
+            }
+
+            // Staff: always be able to place anyway on commit (keep preview honest/red)
+            if (from.AccessLevel >= AccessLevel.GameMaster)
+            {
+                res = HousePlacementResult.Valid;
+            }
+
+            switch (res)
             {
                 case HousePlacementResult.Valid:
                     {
+                        // Full placement guards: account house limit, funds, etc.
                         if (from.AccessLevel > AccessLevel.Player || BaseHouse.CheckAccountHouseLimit(from))
                         {
                             BaseHouse house = ConstructHouse(from);
@@ -789,16 +916,18 @@ namespace Server.Items
                                 {
                                     house.RemoveKeys(from);
                                     house.Delete();
-                                    from.SendLocalizedMessage(1060646); // You do not have the funds available in your bank box to purchase this house.  Try placing a smaller house, or adding gold or checks to your bank box.
+                                    from.SendLocalizedMessage(1060646); // Not enough funds in bank
                                     return;
                                 }
                             }
 
+                            // Place the house
                             house.MoveToWorld(center, from.Map);
 
                             if (house is HouseFoundation)
                                 ((HouseFoundation)house).OnPlacement();
 
+                            // Move obstructing entities
                             for (int i = 0; i < toMove.Count; ++i)
                             {
                                 object o = toMove[i];
@@ -807,6 +936,73 @@ namespace Server.Items
                                     ((Mobile)o).Location = house.BanLocation;
                                 else if (o is Item)
                                     ((Item)o).Location = house.BanLocation;
+                            }
+
+                            // Optional: Link to existing owned houses that touch by >= 3 edge tiles
+                            if (combineWanted && prospectiveTiles != null && prospectiveTiles.Count > 0)
+                            {
+                                try
+                                {
+                                    List<BaseHouse> candidates = new List<BaseHouse>();
+
+                                    foreach (var h in BaseHouse.AllHouses)
+                                    {
+                                        if (h == null || h.Deleted)
+                                            continue;
+
+                                        if (h.Owner == null || h.Owner.Account == null || from.Account == null)
+                                            continue;
+
+                                        if (h.Owner.Account != from.Account)
+                                            continue;
+
+                                        if (h.Map != from.Map)
+                                            continue;
+
+                                        int touches = 0;
+
+                                        var targetTiles = h.GetFootprintTiles();
+
+                                        foreach (var tile in prospectiveTiles)
+                                        {
+                                            if (targetTiles.Contains(new Point2D(tile.X + 1, tile.Y)) ||
+                                                targetTiles.Contains(new Point2D(tile.X - 1, tile.Y)) ||
+                                                targetTiles.Contains(new Point2D(tile.X, tile.Y + 1)) ||
+                                                targetTiles.Contains(new Point2D(tile.X, tile.Y - 1)))
+                                            {
+                                                ++touches;
+                                                if (touches >= 3)
+                                                    break;
+                                            }
+                                        }
+
+                                        if (touches >= 3)
+                                            candidates.Add(h);
+                                    }
+
+                                    if (candidates.Count > 0)
+                                    {
+                                        foreach (var existing in candidates)
+                                        {
+                                            try
+                                            {
+                                                existing.AddLinkedHouse(house);
+                                                house.AddLinkedHouse(existing);
+                                            }
+                                            catch { }
+                                        }
+
+                                        from.SendMessage("Linked the new home to {0} nearby house{1} you own.", candidates.Count, candidates.Count == 1 ? "" : "s");
+                                    }
+                                    else
+                                    {
+                                        from.SendMessage("No adjacent owned house found to link to at this location.");
+                                    }
+                                }
+                                catch
+                                {
+                                    // Non-fatal
+                                }
                             }
 
                             if (tool != null)
@@ -823,7 +1019,7 @@ namespace Server.Items
                 case HousePlacementResult.BadRegionHidden:
                 case HousePlacementResult.NoSurface:
                     {
-                        from.SendLocalizedMessage(1043287); // The house could not be created here.  Either something is blocking the house, or the house would not be on valid terrain.
+                        from.SendLocalizedMessage(1043287); // The house could not be created here. Either blocked or invalid terrain.
                         break;
                     }
                 case HousePlacementResult.BadRegion:
@@ -833,12 +1029,12 @@ namespace Server.Items
                     }
                 case HousePlacementResult.BadRegionTemp:
                     {
-                        from.SendLocalizedMessage(501270); // Lord British has decreed a 'no build' period, thus you cannot build this house at this time.
+                        from.SendLocalizedMessage(501270); // 'No build' period.
                         break;
                     }
                 case HousePlacementResult.BadRegionRaffle:
                     {
-                        from.SendLocalizedMessage(1150493); // You must have a deed for this plot of land in order to build here.
+                        from.SendLocalizedMessage(1150493); // Must have a deed for this plot of land.
                         break;
                     }
                 case HousePlacementResult.InvalidCastleKeep:
@@ -848,111 +1044,53 @@ namespace Server.Items
                     }
                 case HousePlacementResult.NoQueenLoyalty:
                     {
-                        from.SendLocalizedMessage(1113707, "10000"); // You must have at lease ~1_MIN~ loyalty to the Gargoyle Queen to place a house in Ter Mur.
+                        from.SendLocalizedMessage(1113707, "10000"); // Loyalty requirement to Gargoyle Queen.
                         break;
                     }
             }
         }
 
-        public bool OnPlacement(HousePlacementTool tool, Mobile from, Point3D p)
+        private static bool OwnOverlapOnly(Mobile from, Map map, Point3D center, HashSet<Point2D> prospectiveTiles, out bool touchesOrOverlaps)
         {
-            if (!from.CheckAlive() || from.Backpack == null || !tool.IsChildOf(from.Backpack))
-                return false;
-
-            ArrayList toMove;
-            Point3D center = new Point3D(p.X - m_Offset.X, p.Y - m_Offset.Y, p.Z - m_Offset.Z);
-            HousePlacementResult res = HousePlacement.Check(from, m_MultiID, center, out toMove);
-
-            switch ( res )
+            touchesOrOverlaps = false;
+            try
             {
-                case HousePlacementResult.Valid:
+                foreach (var tile in prospectiveTiles)
+                {
+                    // Overlap
+                    var h = BaseHouse.FindHouseAt(new Point3D(tile.X, tile.Y, center.Z), map, 16);
+                    if (h != null)
                     {
-                        from.SendLocalizedMessage(1011576); // This is a valid location.
+                        touchesOrOverlaps = true;
+                        if (h.Owner == null || h.Owner.Account == null || from.Account == null || h.Owner.Account != from.Account)
+                            return false;
+                    }
 
-                        PreviewHouse prev = new PreviewHouse(m_MultiID);
+                    // Edge adjacency
+                    var n1 = BaseHouse.FindHouseAt(new Point3D(tile.X + 1, tile.Y, center.Z), map, 16);
+                    var n2 = BaseHouse.FindHouseAt(new Point3D(tile.X - 1, tile.Y, center.Z), map, 16);
+                    var n3 = BaseHouse.FindHouseAt(new Point3D(tile.X, tile.Y + 1, center.Z), map, 16);
+                    var n4 = BaseHouse.FindHouseAt(new Point3D(tile.X, tile.Y - 1, center.Z), map, 16);
 
-                        MultiComponentList mcl = prev.Components;
-
-                        Point3D banLoc = new Point3D(center.X + mcl.Min.X, center.Y + mcl.Max.Y + 1, center.Z);
-
-                        for (int i = 0; i < mcl.List.Length; ++i)
+                    BaseHouse[] neigh = { n1, n2, n3, n4 };
+                    foreach (var nh in neigh)
+                    {
+                        if (nh != null)
                         {
-                            MultiTileEntry entry = mcl.List[i];
-
-                            int itemID = entry.m_ItemID;
-
-                            if (itemID >= 0xBA3 && itemID <= 0xC0E)
-                            {
-                                banLoc = new Point3D(center.X + entry.m_OffsetX, center.Y + entry.m_OffsetY, center.Z);
-                                break;
-                            }
+                            touchesOrOverlaps = true;
+                            if (nh.Owner == null || nh.Owner.Account == null || from.Account == null || nh.Owner.Account != from.Account)
+                                return false;
                         }
-
-                        for (int i = 0; i < toMove.Count; ++i)
-                        {
-                            object o = toMove[i];
-
-                            if (o is Mobile)
-                                ((Mobile)o).Location = banLoc;
-                            else if (o is Item)
-                                ((Item)o).Location = banLoc;
-                        }
-
-                        prev.MoveToWorld(center, from.Map);
-
-                        /* You are about to place a new house.
-                        * Placing this house will condemn any and all of your other houses that you may have.
-                        * All of your houses on all shards will be affected.
-                        * 
-                        * In addition, you will not be able to place another house or have one transferred to you for one (1) real-life week.
-                        * 
-                        * Once you accept these terms, these effects cannot be reversed.
-                        * Re-deeding or transferring your new house will not uncondemn your other house(s) nor will the one week timer be removed.
-                        * 
-                        * If you are absolutely certain you wish to proceed, click the button next to OKAY below.
-                        * If you do not wish to trade for this house, click CANCEL.
-                        */
-                        from.SendGump(new WarningGump(1060635, 30720, 1049583, 32512, 420, 280, new WarningGumpCallback(PlacementWarning_Callback), new object[] { prev, tool }));
-
-                        return true;
                     }
-                case HousePlacementResult.BadItem:
-                case HousePlacementResult.BadLand:
-                case HousePlacementResult.BadStatic:
-                case HousePlacementResult.BadRegionHidden:
-                case HousePlacementResult.NoSurface:
-                    {
-                        from.SendLocalizedMessage(1043287); // The house could not be created here.  Either something is blocking the house, or the house would not be on valid terrain.
-                        break;
-                    }
-                case HousePlacementResult.BadRegion:
-                    {
-                        from.SendLocalizedMessage(501265); // Housing cannot be created in this area.
-                        break;
-                    }
-                case HousePlacementResult.BadRegionTemp:
-                    {
-                        from.SendLocalizedMessage(501270); //Lord British has decreed a 'no build' period, thus you cannot build this house at this time.
-                        break;
-                    }
-                case HousePlacementResult.BadRegionRaffle:
-                    {
-                        from.SendLocalizedMessage(1150493); // You must have a deed for this plot of land in order to build here.
-                        break;
-                    }
-                case HousePlacementResult.InvalidCastleKeep:
-                    {
-                        from.SendLocalizedMessage(1061122); // Castles and keeps cannot be created here.
-                        break;
-                    }
-                case HousePlacementResult.NoQueenLoyalty:
-                    {
-                        from.SendLocalizedMessage(1113707, "10000"); // You must have at lease ~1_MIN~ loyalty to the Gargoyle Queen to place a house in Ter Mur.
-                        break;
-                    }
+                }
+            }
+            catch
+            {
+                // If anything goes wrong, be conservative
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         private static void FillTable(HousePlacementEntry[] entries)
@@ -1145,9 +1283,7 @@ namespace Server.Items
                             m_House.VendorInventories.Clear();
 
                             foreach (VendorInventory inventory in newHouse.VendorInventories)
-                            {
                                 inventory.House = newHouse;
-                            }
 
                             newHouse.InternalizedVendors.AddRange(m_House.InternalizedVendors);
                             m_House.InternalizedVendors.Clear();
@@ -1174,24 +1310,12 @@ namespace Server.Items
                             m_House.Delete();
 
                             foreach (Item item in items)
-                            {
                                 item.Location = newHouse.BanLocation;
-                            }
 
                             foreach (Mobile mobile in mobiles)
-                            {
                                 mobile.Location = newHouse.BanLocation;
-                            }
 
-                            /* You have successfully replaced your original house with a new house.
-                            * The value of the replaced house has been deposited into your bank box.
-                            * All of the items in your original house have been relocated to a Moving Crate in the new house.
-                            * Any deed-based house add-ons have been converted back into deeds.
-                            * Vendors and barkeeps in the house, if any, have been stored in the Moving Crate as well.
-                            * Use the <B>Get Vendor</B> context-sensitive menu option on your character to retrieve them.
-                            * These containers can be used to re-create the vendor in a new location.
-                            * Any barkeepers have been converted into deeds.
-                            */
+                            /* Success message gump */
                             m_From.SendGump(new NoticeGump(1060637, 30720, 1060012, 32512, 420, 280, null, null));
                             return;
                         }

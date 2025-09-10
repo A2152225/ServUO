@@ -118,6 +118,13 @@ namespace Server.Items
         public static readonly TimeSpan MonsterLootRightSacrifice = TimeSpan.FromMinutes(2.0);
 
         public static readonly TimeSpan InstancedCorpseTime = TimeSpan.FromMinutes(3.0);
+        private int m_HighestContributorDifficulty;
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int HighestContributorDifficulty
+        {
+            get => m_HighestContributorDifficulty;
+            set => m_HighestContributorDifficulty = value;
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public virtual bool InstancedCorpse

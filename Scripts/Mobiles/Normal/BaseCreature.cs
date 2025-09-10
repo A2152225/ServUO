@@ -33,6 +33,7 @@ using System.Collections.Concurrent;
 
 using daat99;
 using System.Linq.Expressions;
+using Server.Custom.Difficulty;
 #endregion
 
 namespace Server.Mobiles
@@ -280,9 +281,9 @@ namespace Server.Mobiles
 		public bool m_F9;
 
 		private int _lastUnscaledDamage;
-		
-		
-		public void SetLastUnscaledDamage(int amount)
+        private Mobile _lastPoisonApplier;
+
+        public void SetLastUnscaledDamage(int amount)
 {
     _lastUnscaledDamage = amount;
 }
@@ -1482,8 +1483,10 @@ public ConcurrentDictionary<Mobile, double> _fractionalDamage = new ConcurrentDi
 
         public void AddFractionalDamage(Mobile player, double scaledDamage)
         {
+
             if (player == null)
                 return;
+
 
             _fractionalDamage.AddOrUpdate(player, scaledDamage, (key, oldValue) => oldValue + scaledDamage);
         }/*
@@ -1504,6 +1507,49 @@ public ConcurrentDictionary<Mobile, double> _fractionalDamage = new ConcurrentDi
             }
         }
         */
+        // Key struct for player + difficulty
+        public struct PlayerDifficultyKey
+        {
+            public PlayerMobile Player;
+            public int Difficulty;
+
+            public PlayerDifficultyKey(PlayerMobile player, int difficulty)
+            {
+                Player = player;
+                Difficulty = difficulty;
+            }
+
+            public void Deconstruct(out PlayerMobile player, out int difficulty)
+            {
+                player = Player;
+                difficulty = Difficulty;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is PlayerDifficultyKey other)
+                    return Player == other.Player && Difficulty == other.Difficulty;
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return (Player?.GetHashCode() ?? 0) ^ Difficulty.GetHashCode();
+            }
+        }
+        private readonly Dictionary<PlayerDifficultyKey, double> _damageByPlayerAndDifficulty = new Dictionary<PlayerDifficultyKey, double>();
+
+        // Damage tracking method
+        public void RecordPlayerDamage(PlayerMobile pm, int difficulty, double amount)
+        {
+            var key = new PlayerDifficultyKey(pm, difficulty);
+            if (_damageByPlayerAndDifficulty.ContainsKey(key))
+                _damageByPlayerAndDifficulty[key] += amount;
+            else
+                _damageByPlayerAndDifficulty[key] = amount;
+        }
+
+
         public bool FullHealth = true;
 
         public double GetFractionalDamage(Mobile player)
@@ -2633,23 +2679,30 @@ public virtual void OnDrainLife(Mobile victim)
         public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison)
         {
             if (!Alive || IsDeadPet)
-            {
                 return ApplyPoisonResult.Immune;
-            }
 
             if (EvilOmenSpell.TryEndEffect(this))
-            {
                 poison = PoisonImpl.IncreaseLevel(poison);
-            }
 
-            ApplyPoisonResult result = base.ApplyPoison(from, poison);
+            var result = base.ApplyPoison(from, poison);
 
-            if (from != null && result == ApplyPoisonResult.Poisoned && PoisonTimer is PoisonImpl.PoisonTimer)
+            // Only stamp ownership if the poison actually applied
+            if (result == ApplyPoisonResult.Poisoned && from != null)
             {
-                (PoisonTimer as PoisonImpl.PoisonTimer).From = from;
+                var applier = GetDamageSourcePlayer(from) ?? from;
+                _lastPoisonApplier = applier;
+
+                if (PoisonTimer is PoisonImpl.PoisonTimer pt)
+                    pt.From = applier; // ensure ticks attribute & scale correctly
             }
 
             return result;
+        }
+
+        public override void OnCured(Mobile from, Poison oldPoison)
+        {
+            base.OnCured(from, oldPoison);
+            _lastPoisonApplier = null; // clear cached owner so stale credit isn’t used
         }
 
         public override bool CheckPoisonImmunity(Mobile from, Poison poison)
@@ -3109,6 +3162,10 @@ public virtual void OnDrainLife(Mobile victim)
                         // …but display the full (post-mitigation) number to the player
                         int displayedThisHit = amount;
 
+                        RecordPlayerDamage(pm, difficulty, amount); // Single line for all player damage
+
+
+
                         if (ShouldSendDamagePopupTo(from, displayedThisHit))
                         {
                             _manualDamagePopupInProgress = true;
@@ -3510,61 +3567,119 @@ public virtual void OnDrainLife(Mobile victim)
             if (m_TempDamageAbsorb > 0 && VialofArmorEssence.UnderInfluence(this))
                 damage -= damage / m_TempDamageAbsorb;
         }
-	/*	public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
-{
-    damage = ParagonDamageRBuff(damage);
-
-Mobile source = GetDamageSourcePlayer(from);
-    if (source != null)
+        /*	public virtual void AlterMeleeDamageFrom(Mobile from, ref int damage)
     {
-		   int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
-//int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(source);
-        if (difficulty > 1)
+        damage = ParagonDamageRBuff(damage);
+
+    Mobile source = GetDamageSourcePlayer(from);
+        if (source != null)
         {
-            double scale = 1.0 / difficulty;
-            damage = (int)(damage * scale);
-            //source.SendMessage(38, $"[Difficulty] Your melee/pet damage was scaled by {scale:F2}");
+               int difficulty = Server.DifficultySettings.GetPlayerDifficulty(source);
+    //int difficultyLevel = Server.DifficultySettings.GetPlayerDifficulty(source);
+            if (difficulty > 1)
+            {
+                double scale = 1.0 / difficulty;
+                damage = (int)(damage * scale);
+                //source.SendMessage(38, $"[Difficulty] Your melee/pet damage was scaled by {scale:F2}");
+            }
         }
+
+        // Your existing Talisman killer bonus code remains unchanged
+        #region Mondain's Legacy
+        if (from != null && from.Talisman is BaseTalisman talisman &&
+            talisman.Killer?.Type != null &&
+            talisman.Killer.Type.IsAssignableFrom(GetType()))
+        {
+            damage = (int)(damage * (1 + (double)talisman.Killer.Amount / 100));
+        }
+        #endregion
     }
 
-    // Your existing Talisman killer bonus code remains unchanged
-    #region Mondain's Legacy
-    if (from != null && from.Talisman is BaseTalisman talisman &&
-        talisman.Killer?.Type != null &&
-        talisman.Killer.Type.IsAssignableFrom(GetType()))
-    {
-        damage = (int)(damage * (1 + (double)talisman.Killer.Amount / 100));
-    }
-    #endregion
-}
+            */
+        // Add this helper method somewhere in BaseCreature.cs:
+        private Mobile GetDamageSourcePlayer(Mobile source)
+        {
+            if (source == null)
+            {
+                if (_lastPoisonApplier != null && !_lastPoisonApplier.Deleted)
+                    return _lastPoisonApplier;
+                return null;
+            }
 
-        */
-// Add this helper method somewhere in BaseCreature.cs:
-private Mobile GetDamageSourcePlayer(Mobile source)
-{
-    if (source == null)
-        return null;
-        
-    // Direct player attack
-    if (source is PlayerMobile)
-        return source;
-        
-    // Handle pets and summons
-    if (source is BaseCreature)
-    {
-        BaseCreature bc = (BaseCreature)source;
-        
-        // Check if it's a pet with a controlling player
-        if (bc.Controlled && bc.ControlMaster is PlayerMobile)
-            return bc.ControlMaster;
-            
-        // Check if it's a summoned creature
-        if (bc.Summoned && bc.SummonMaster is PlayerMobile)
-            return bc.SummonMaster;
-    }
-    
-    return null;
-}
+            if (source is PlayerMobile)
+                return source;
+
+            if (source is BaseCreature bc)
+            {
+                if (bc.Controlled && bc.ControlMaster is PlayerMobile cm)
+                    return cm;
+                if (bc.Summoned && bc.SummonMaster is PlayerMobile sm)
+                    return sm;
+            }
+
+            return null;
+        }
+
+
+        #region Poison Difficulty Scaling
+
+        // Call from poison tick (PoisonImpl.PoisonTimer) BEFORE calling Damage():
+        // if (target is BaseCreature bc) { dmg = bc.AdjustPoisonDamage(dmg, From); }
+        //
+        // Outward (displayed) number is what players see.
+        // Internal fractional health removal still goes through your existing scaling pipeline.
+
+        public int AdjustPoisonDamage(int rawAmount, Mobile from)
+        {
+            if (rawAmount <= 0 || !Alive || IsDeadPet)
+                return rawAmount;
+
+            if (!PoisonScalingConfig.Enabled)
+                return rawAmount;
+
+            var player = GetDamageSourcePlayer(from ?? _lastPoisonApplier) as PlayerMobile;
+            if (player == null)
+                return rawAmount;
+
+            int difficulty = DifficultySettings.GetPlayerDifficulty(player);
+            if (difficulty <= 1)
+                return rawAmount; // no change on base difficulty
+
+            double hm = DifficultySettings.GetHealthMultiplier(difficulty);
+
+            // Base suppression curve
+            double scalar = 1.0 / Math.Pow(hm, PoisonScalingConfig.HighDiffScalarExponent);
+            if (scalar < PoisonScalingConfig.MinScalar)
+                scalar = PoisonScalingConfig.MinScalar;
+
+            // Player investment bonuses (skill, hybrid, catalyst, diminishing returns)
+            scalar *= PoisonScalingConfig.ComputePlayerBonusScalar(player, this);
+
+            int adjusted = (int)Math.Max(1, Math.Round(rawAmount * scalar));
+
+            // Internal removal after health scaling:
+            double internalWouldBe = adjusted / hm;
+            double internalCap = Math.Max(1.0, HitsMax * PoisonScalingConfig.InternalTickCapPercent);
+
+            if (internalWouldBe > internalCap)
+            {
+                internalWouldBe = internalCap;
+                adjusted = (int)Math.Ceiling(internalWouldBe * hm);
+            }
+
+            return adjusted;
+        }
+
+        // External systems (custom scripts) can stamp last applier explicitly if they apply poison manually.
+        public void SetLastPoisonApplier(Mobile src)
+        {
+            var p = GetDamageSourcePlayer(src);
+            if (p != null)
+                _lastPoisonApplier = p;
+        }
+
+        #endregion
+
         /*      public virtual void AlterMeleeDamageTo(Mobile to, ref int damage)
               {
                   if (m_TempDamageBonus > 0 && TastyTreat.UnderInfluence(this))
@@ -3600,46 +3715,46 @@ private Mobile GetDamageSourcePlayer(Mobile source)
                           damage = (int)Math.Max(1, Math.Ceiling(damage / divisor));
                   }
               }*/
-/*public virtual void AlterMeleeDamageTo(Mobile to, ref int damage)
-        {
-            if (m_TempDamageBonus > 0 && TastyTreat.UnderInfluence(this))
-                damage += damage / m_TempDamageBonus;
-
-            // Apply difficulty scaling here for melee (so resists/DR reduce the scaled value)
-            if (!Controlled && !Summoned && to != null)
-            {
-                PlayerMobile owner = to as PlayerMobile;
-
-                if (owner == null && to is BaseCreature pet)
+        /*public virtual void AlterMeleeDamageTo(Mobile to, ref int damage)
                 {
-                    if (pet.Controlled && pet.ControlMaster is PlayerMobile cm) owner = cm;
-                    else if (pet.Summoned && pet.SummonMaster is PlayerMobile sm) owner = sm;
-                }
+                    if (m_TempDamageBonus > 0 && TastyTreat.UnderInfluence(this))
+                        damage += damage / m_TempDamageBonus;
 
-                if (owner != null)
-                {
-                    int difficulty = Server.DifficultySettings.GetPlayerDifficulty(owner);
-                    if (difficulty > 1)
+                    // Apply difficulty scaling here for melee (so resists/DR reduce the scaled value)
+                    if (!Controlled && !Summoned && to != null)
                     {
-                        double hm = Server.DifficultySettings.GetHealthMultiplier(difficulty);
-                        double variance = 0.90 + Utility.RandomDouble() * 0.20; // ±10%
-                        damage = (int)Math.Ceiling(damage * hm * variance);
+                        PlayerMobile owner = to as PlayerMobile;
 
-                        _difficultyAppliedThisHit = true;
-                        // Reset after this hit completes (avoids double with scalar fallback)
-                        Timer.DelayCall(TimeSpan.Zero, () => _difficultyAppliedThisHit = false);
+                        if (owner == null && to is BaseCreature pet)
+                        {
+                            if (pet.Controlled && pet.ControlMaster is PlayerMobile cm) owner = cm;
+                            else if (pet.Summoned && pet.SummonMaster is PlayerMobile sm) owner = sm;
+                        }
+
+                        if (owner != null)
+                        {
+                            int difficulty = Server.DifficultySettings.GetPlayerDifficulty(owner);
+                            if (difficulty > 1)
+                            {
+                                double hm = Server.DifficultySettings.GetHealthMultiplier(difficulty);
+                                double variance = 0.90 + Utility.RandomDouble() * 0.20; // ±10%
+                                damage = (int)Math.Ceiling(damage * hm * variance);
+
+                                _difficultyAppliedThisHit = true;
+                                // Reset after this hit completes (avoids double with scalar fallback)
+                                Timer.DelayCall(TimeSpan.Zero, () => _difficultyAppliedThisHit = false);
+                            }
+                        }
                     }
-                }
-            }
 
-            // Provoked NPC -> NPC dampening
-            if (BardProvoked && to is BaseCreature npc && !npc.Controlled && !npc.Summoned)
-            {
-                double divisor = GetProvocationDivisor(BardMaster);
-                if (divisor > 1.0)
-                    damage = (int)Math.Max(1, Math.Ceiling(damage / divisor));
-            }
-        }*/
+                    // Provoked NPC -> NPC dampening
+                    if (BardProvoked && to is BaseCreature npc && !npc.Controlled && !npc.Summoned)
+                    {
+                        double divisor = GetProvocationDivisor(BardMaster);
+                        if (divisor > 1.0)
+                            damage = (int)Math.Max(1, Math.Ceiling(damage / divisor));
+                    }
+                }*/
 
         #endregion
 
@@ -8489,8 +8604,24 @@ public string CType = "default";  //Declare variable for use of transferring to 
 
 
                 LootingRights = null;
+                PlayerMobile topPlayer = null;
+                int topDifficulty = 0;
+                double topDamage = 0;
 
-        if (!Summoned && !m_NoKillAwards)
+                foreach (var kvp in _damageByPlayerAndDifficulty)
+                {
+                    if (kvp.Value > topDamage)
+                    {
+                        topPlayer = kvp.Key.Player;
+                        topDifficulty = kvp.Key.Difficulty;
+                        topDamage = kvp.Value;
+                    }
+                }
+                // Store topDifficulty in the corpse
+                if (c is Corpse corpse)
+                    corpse.HighestContributorDifficulty = topDifficulty;
+
+                if (!Summoned && !m_NoKillAwards)
         {
             int totalFame = Fame / 100;
             int totalKarma = -Karma / 100;
