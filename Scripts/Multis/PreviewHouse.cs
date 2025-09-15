@@ -30,17 +30,29 @@ namespace Server.Multis
         public bool CenterAreaValid { get; private set; }
         public bool SurroundingRingValid { get; private set; }
 
+        // Extended invalidity (adjacency + foreign house buffer)
+        private HashSet<Point2D> _invalidExtendedTiles = new HashSet<Point2D>();
+
         // Track invalid tiles for the most recent validation
         private HashSet<Point2D> _invalidCenterTiles = new HashSet<Point2D>();
         private HashSet<Point2D> _invalidRingTiles = new HashSet<Point2D>();
 
-        // Viewer tracking: when someone opens the preview gump we attach them here.
-        // The preview will persist while at least one attached viewer is present and within range;
-        // otherwise it will expire according to the lifetime timer logic.
+        // Viewer tracking
         private readonly HashSet<Mobile> _viewers = new HashSet<Mobile>();
 
         public int PreviewWidth => (_maxX - _minX + 1);
         public int PreviewHeight => (_maxY - _minY + 1);
+
+        // NEW: Owner for account-based adjacency & foreign buffer exceptions
+        public Mobile Owner { get; }
+
+        // Foreign house buffer distance must match HousePlacement (Chebyshev)
+        private const int ForeignHouseBuffer = 3;
+
+        public PreviewHouse(int multiID, Mobile owner) : this(multiID)
+        {
+            Owner = owner;
+        }
 
         public PreviewHouse(int multiID) : base(multiID)
         {
@@ -54,7 +66,7 @@ namespace Server.Multis
             CenterAreaValid = false;
             SurroundingRingValid = false;
 
-            // Safety: defer marker spawn slightly; by then MoveToWorld should be done.
+            // Defer marker spawn slightly; by then MoveToWorld should be done.
             Timer.DelayCall(TimeSpan.FromMilliseconds(50), () =>
             {
                 if (!Deleted)
@@ -78,8 +90,6 @@ namespace Server.Multis
             CleanupMarkers();
             _timer?.Stop();
             _timer = null;
-
-            // Clear viewer references
             _viewers.Clear();
         }
 
@@ -87,7 +97,6 @@ namespace Server.Multis
         {
             base.OnLocationChange(oldLocation);
 
-            // If we've just been moved into the world, spawn markers now
             EnsureMarkersSpawned();
 
             if (_markers.Count == 0)
@@ -120,7 +129,7 @@ namespace Server.Multis
         {
             CleanupMarkers();
 
-            // Center fill markers (rectangle)
+            // Center fill markers
             for (int rx = _minX; rx <= _maxX; rx++)
             {
                 for (int ry = _minY; ry <= _maxY; ry++)
@@ -129,7 +138,7 @@ namespace Server.Multis
                 }
             }
 
-            // Exactly one ring around the rectangle (1-tile out)
+            // One ring
             int minX = _minX - 1;
             int maxX = _maxX + 1;
             int minY = _minY - 1;
@@ -181,11 +190,9 @@ namespace Server.Multis
             }
         }
 
+        // Re-validates footprint + ring and computes extended invalid tiles (adjacency + foreign house buffer)
         public bool RevalidateAndColorize()
         {
-            // IMPORTANT: This function updates marker colors and validity flags only.
-            // It DOES NOT delete this preview if invalid. Deletion is controlled by viewer actions
-            // (closing/canceling the gump) or by the lifetime timer when viewer(s) disconnect / move away.
             if (Map == null || Map == Map.Internal)
             {
                 ColorizeAll(HueInvalid);
@@ -193,12 +200,13 @@ namespace Server.Multis
                 SurroundingRingValid = false;
                 _invalidCenterTiles = new HashSet<Point2D>();
                 _invalidRingTiles = new HashSet<Point2D>();
+                _invalidExtendedTiles = new HashSet<Point2D>();
                 return false;
             }
 
-            var invalid = new HashSet<(int x, int y)>();
             var centerInvalid = new HashSet<Point2D>();
             var ringInvalid = new HashSet<Point2D>();
+            var extendedInvalid = new HashSet<Point2D>();
 
             bool centerHasInvalid = false;
             bool ringHasInvalid = false;
@@ -211,14 +219,13 @@ namespace Server.Multis
                     int x = X + rx, y = Y + ry;
                     if (!TileIsPlaceable(x, y))
                     {
-                        invalid.Add((x, y));
                         centerInvalid.Add(new Point2D(x, y));
                         centerHasInvalid = true;
                     }
                 }
             }
 
-            // One ring
+            // Ring
             int rMinX = _minX - 1;
             int rMaxX = _maxX + 1;
             int rMinY = _minY - 1;
@@ -226,28 +233,64 @@ namespace Server.Multis
 
             for (int rx = rMinX; rx <= rMaxX; rx++)
             {
-                int xTop = X + rx, yTop = Y + rMinY;
-                int xBot = X + rx, yBot = Y + rMaxY;
+                int xTop = X + rx; int yTop = Y + rMinY;
+                int xBot = X + rx; int yBot = Y + rMaxY;
 
-                if (!TileIsRingOK(xTop, yTop)) { invalid.Add((xTop, yTop)); ringInvalid.Add(new Point2D(xTop, yTop)); ringHasInvalid = true; }
-                if (!TileIsRingOK(xBot, yBot)) { invalid.Add((xBot, yBot)); ringInvalid.Add(new Point2D(xBot, yBot)); ringHasInvalid = true; }
+                if (!TileIsRingOK(xTop, yTop)) { ringInvalid.Add(new Point2D(xTop, yTop)); ringHasInvalid = true; }
+                if (!TileIsRingOK(xBot, yBot)) { ringInvalid.Add(new Point2D(xBot, yBot)); ringHasInvalid = true; }
             }
             for (int ry = rMinY + 1; ry <= rMaxY - 1; ry++)
             {
-                int xL = X + rMinX, yL = Y + ry;
-                int xR = X + rMaxX, yR = Y + ry;
+                int xL = X + rMinX; int yL = Y + ry;
+                int xR = X + rMaxX; int yR = Y + ry;
 
-                if (!TileIsRingOK(xL, yL)) { invalid.Add((xL, yL)); ringInvalid.Add(new Point2D(xL, yL)); ringHasInvalid = true; }
-                if (!TileIsRingOK(xR, yR)) { invalid.Add((xR, yR)); ringInvalid.Add(new Point2D(xR, yR)); ringHasInvalid = true; }
+                if (!TileIsRingOK(xL, yL)) { ringInvalid.Add(new Point2D(xL, yL)); ringHasInvalid = true; }
+                if (!TileIsRingOK(xR, yR)) { ringInvalid.Add(new Point2D(xR, yR)); ringHasInvalid = true; }
             }
 
-            // Color markers
-            foreach (var item in _markers)
+            // Extended: adjacency to unwalkable for any invalid tile (center or ring) OR within foreign house buffer
+            HashSet<Point2D> allStructureTiles = GetFootprintAndRingTiles();
+
+            // First: adjacency to impassable tiles near the structure footprint/ring
+            foreach (var t in allStructureTiles)
+            {
+                if (IsUnwalkable(Map, t.X, t.Y))
+                {
+                    extendedInvalid.Add(t);
+                    AddAdjacent8(t, extendedInvalid);
+                }
+            }
+
+            // Then add adjacency around tiles already invalid (center/ring) if they represent blockers
+            foreach (var t in centerInvalid)
+                AddAdjacent8(t, extendedInvalid);
+            foreach (var t in ringInvalid)
+                AddAdjacent8(t, extendedInvalid);
+
+            // Foreign house buffer (Chebyshev) excluding same-account houses
+            foreach (var t in allStructureTiles)
+            {
+                if (ForeignHouseViolationAt(t.X, t.Y))
+                {
+                    extendedInvalid.Add(t);
+                    AddAdjacent8(t, extendedInvalid);
+                }
+            }
+
+            // Remove any extended tiles that are actually valid & outside any structural reason? (We still want them red if part of buffer)
+            // Accept this set as is; outside ring red dots handled in gump.
+
+            // Color footprint + ring markers
+            foreach (var marker in _markers)
             {
                 try
                 {
-                    var p = item.Location;
-                    item.Hue = invalid.Contains((p.X, p.Y)) ? HueInvalid : HueValid;
+                    var p = marker.Location;
+                    Point2D pt = new Point2D(p.X, p.Y);
+                    if (centerInvalid.Contains(pt) || ringInvalid.Contains(pt))
+                        marker.Hue = HueInvalid;
+                    else
+                        marker.Hue = HueValid;
                 }
                 catch { }
             }
@@ -257,44 +300,35 @@ namespace Server.Multis
 
             _invalidCenterTiles = centerInvalid;
             _invalidRingTiles = ringInvalid;
+            _invalidExtendedTiles = extendedInvalid;
 
-            // Return center validity (UI decides the label)
             return CenterAreaValid;
         }
 
-        // Full validity: center + ring must be valid
+        // Full validity (center + ring + no extended invalid inside structural area)
         public bool FootprintIsValidAt(Point3D center)
         {
             if (Map == null || Map == Map.Internal)
                 return false;
 
-            // center
-            for (int rx = _minX; rx <= _maxX; rx++)
-                for (int ry = _minY; ry <= _maxY; ry++)
-                    if (!TileIsPlaceable(center.X + rx, center.Y + ry))
-                        return false;
+            // Re-run base logic using existing sets (already recalculated on moves)
+            // If any center/ring invalid -> false
+            if (!CenterAreaValid || !SurroundingRingValid)
+                return false;
 
-            // ring
-            int rMinX = _minX - 1;
-            int rMaxX = _maxX + 1;
-            int rMinY = _minY - 1;
-            int rMaxY = _maxY + 1;
-
-            for (int rx = rMinX; rx <= rMaxX; rx++)
+            // If any extended invalid tile overlaps the footprint or ring, treat invalid
+            foreach (var t in _invalidExtendedTiles)
             {
-                if (!TileIsRingOK(center.X + rx, center.Y + rMinY)) return false;
-                if (!TileIsRingOK(center.X + rx, center.Y + rMaxY)) return false;
-            }
-            for (int ry = rMinY + 1; ry <= rMaxY - 1; ry++)
-            {
-                if (!TileIsRingOK(center.X + rMinX, center.Y + ry)) return false;
-                if (!TileIsRingOK(center.X + rMaxX, center.Y + ry)) return false;
+                if (IsWorldPointInFootprint(t.X, t.Y) || IsWorldPointInRing(t.X, t.Y))
+                    return false;
             }
 
             return true;
         }
 
-        // For the gump’s dot-panel logic
+        public bool HasExtendedInvalids() => _invalidExtendedTiles.Count > 0;
+
+        // Footprint test
         public bool IsWorldPointInFootprint(int x, int y)
         {
             return x >= (X + _minX) && x <= (X + _maxX) && y >= (Y + _minY) && y <= (Y + _maxY);
@@ -310,27 +344,18 @@ namespace Server.Multis
             bool onHorizontal = (y == rMinY || y == rMaxY) && x >= rMinX && x <= rMaxX;
             bool onVertical = (x == rMinX || x == rMaxX) && y >= rMinY && y <= rMaxY;
 
-            // Exclude the inner rectangle itself
             if (IsWorldPointInFootprint(x, y))
                 return false;
 
             return onHorizontal || onVertical;
         }
 
-        public bool IsCenterTileInvalid(int x, int y)
-        {
-            return _invalidCenterTiles.Contains(new Point2D(x, y));
-        }
+        public bool IsCenterTileInvalid(int x, int y) => _invalidCenterTiles.Contains(new Point2D(x, y));
+        public bool IsRingTileInvalid(int x, int y) => _invalidRingTiles.Contains(new Point2D(x, y));
 
-        public bool IsRingTileInvalid(int x, int y)
-        {
-            return _invalidRingTiles.Contains(new Point2D(x, y));
-        }
+        // Red outside ring (extended)
+        public bool IsWorldPointHardInvalid(int x, int y) => _invalidExtendedTiles.Contains(new Point2D(x, y));
 
-        /// <summary>
-        /// Attach a viewer (mobile) to this preview. Multiple viewers can watch a single preview;
-        /// the preview will persist while at least one attached viewer is valid (connected, same map, and within range).
-        /// </summary>
         public void AttachViewer(Mobile m)
         {
             if (m == null || m.Deleted)
@@ -342,9 +367,6 @@ namespace Server.Multis
             }
         }
 
-        /// <summary>
-        /// Detach a previously attached viewer.
-        /// </summary>
         public void DetachViewer(Mobile m)
         {
             if (m == null)
@@ -356,9 +378,6 @@ namespace Server.Multis
             }
         }
 
-        /// <summary>
-        /// Helper: checks whether at least one attached viewer is still present & within limits.
-        /// </summary>
         private bool HasAnyValidViewer()
         {
             lock (_viewers)
@@ -380,9 +399,10 @@ namespace Server.Multis
                         return true;
                 }
             }
-
             return false;
         }
+
+        // --- Internal validation helpers ---
 
         private bool TileIsPlaceable(int x, int y)
         {
@@ -392,15 +412,12 @@ namespace Server.Multis
             int z = GetGroundZ(x, y);
             var p = new Point3D(x, y, z);
 
-            // Region restrictions
+            // Region housing permission
             Region r = Region.Find(p, Map);
-            if (r != null)
-            {
-                if (r.IsPartOf("NoHousing") || r.IsPartOf("HouseRegion"))
-                    return false;
-            }
+            if (r != null && !r.AllowHousing(Owner ?? (Mobile)null, p))
+                return false;
 
-            // Land tile blockers (e.g., water/impassable)
+            // Land
             try
             {
                 int landId = Map.Tiles.GetLandTile(x, y).ID;
@@ -411,7 +428,7 @@ namespace Server.Multis
             }
             catch { }
 
-            // Static tile blockers (trees, rocks, etc.)
+            // Statics
             try
             {
                 var statics = Map.Tiles.GetStaticTiles(x, y);
@@ -428,7 +445,7 @@ namespace Server.Multis
             }
             catch { }
 
-            // Blockers (ignore our own preview multi and markers)
+            // Items
             try
             {
                 foreach (Item item in Map.GetItemsInRange(p, 0))
@@ -450,23 +467,26 @@ namespace Server.Multis
             }
             catch { return false; }
 
-            // Nearby house 1-tile border
+            // Too close to existing house (1 tile) - base rule (legacy)
             if (BaseHouse.FindHouseAt(p, Map, 1) != null)
                 return false;
 
-            // Final Map.CanFit is deferred to HousePlacement.Check during Accept.
             return true;
         }
 
         private bool TileIsRingOK(int x, int y)
         {
+            if (Map == null || Map == Map.Internal)
+                return false;
+
             int z = GetGroundZ(x, y);
             var p = new Point3D(x, y, z);
 
+            // Do not allow ring to overlay existing house tile
             if (BaseHouse.FindHouseAt(p, Map, 0) != null)
                 return false;
 
-            // Land/static blockers color the ring too
+            // Land/static
             try
             {
                 int landId = Map.Tiles.GetLandTile(x, y).ID;
@@ -514,6 +534,114 @@ namespace Server.Multis
             return true;
         }
 
+        private bool IsUnwalkable(Map map, int x, int y)
+        {
+            if (map == null || map == Map.Internal)
+                return true;
+
+            try
+            {
+                int landId = map.Tiles.GetLandTile(x, y).ID;
+                var lf = TileData.LandTable[landId].Flags;
+                if ((lf & TileFlag.Impassable) != 0 || (lf & TileFlag.Wet) != 0)
+                    return true;
+            }
+            catch { }
+
+            try
+            {
+                var statics = map.Tiles.GetStaticTiles(x, y);
+                for (int i = 0; i < statics.Length; i++)
+                {
+                    int sid = statics[i].ID & 0x3FFF;
+                    var flags = TileData.ItemTable[sid].Flags;
+                    if ((flags & TileFlag.Impassable) != 0 ||
+                        (flags & TileFlag.Wet) != 0 ||
+                        (flags & TileFlag.Foliage) != 0)
+                        return true;
+                }
+            }
+            catch { }
+
+            try
+            {
+                foreach (Item item in map.GetItemsInRange(new Point3D(x, y, 0), 0))
+                {
+                    if (item.Deleted || !item.Visible)
+                        continue;
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+                    if ((item.ItemData.Flags & TileFlag.Impassable) != 0)
+                        return true;
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
+        private bool ForeignHouseViolationAt(int x, int y)
+        {
+            if (Map == null) return false;
+
+            for (int dx = -ForeignHouseBuffer; dx <= ForeignHouseBuffer; dx++)
+            {
+                for (int dy = -ForeignHouseBuffer; dy <= ForeignHouseBuffer; dy++)
+                {
+                    BaseHouse h = BaseHouse.FindHouseAt(new Point3D(x + dx, y + dy, 0), Map, 16);
+                    if (h == null)
+                        continue;
+
+                    if (Owner != null && Owner.Account != null && h.Owner != null && h.Owner.Account == Owner.Account)
+                        continue; // same account
+
+                    // foreign
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void AddAdjacent8(Point2D p, HashSet<Point2D> set)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (dx == 0 && dy == 0)
+                        continue;
+                    set.Add(new Point2D(p.X + dx, p.Y + dy));
+                }
+            }
+        }
+
+        private HashSet<Point2D> GetFootprintAndRingTiles()
+        {
+            var set = new HashSet<Point2D>();
+
+            for (int rx = _minX; rx <= _maxX; rx++)
+                for (int ry = _minY; ry <= _maxY; ry++)
+                    set.Add(new Point2D(X + rx, Y + ry));
+
+            int rMinX = _minX - 1;
+            int rMaxX = _maxX + 1;
+            int rMinY = _minY - 1;
+            int rMaxY = _maxY + 1;
+
+            for (int rx = rMinX; rx <= rMaxX; rx++)
+            {
+                set.Add(new Point2D(X + rx, Y + rMinY));
+                set.Add(new Point2D(X + rx, Y + rMaxY));
+            }
+            for (int ry = rMinY + 1; ry <= rMaxY - 1; ry++)
+            {
+                set.Add(new Point2D(X + rMinX, Y + ry));
+                set.Add(new Point2D(X + rMaxX, Y + ry));
+            }
+
+            return set;
+        }
+
         private class PreviewLifetimeTimer : Timer
         {
             private readonly PreviewHouse _house;
@@ -534,19 +662,9 @@ namespace Server.Multis
 
                 try
                 {
-                    // If any attached viewer is valid (connected, same map, within range), keep the preview.
                     if (_house.HasAnyValidViewer())
                         return;
 
-                    // No valid viewers attached: do nothing (we want previews to persist until explicitly cancelled or until
-                    // a previously attached viewer becomes disconnected/out-of-range — in that case the viewer removal path will
-                    // cause the preview to be deleted). To be safe, we do not auto-delete previews just because no viewers are attached,
-                    // as previews may be spawned programmatically or by staff for inspection.
-
-                    // However, we also handle the case where a viewer was attached previously but now all attached viewers are gone/invalid.
-                    // In that scenario, delete the preview so abandoned previews don't linger indefinitely.
-                    //
-                    // Decision: delete when there are attached viewers but none remain valid. If there were never any attached viewers, keep it.
                     bool hadAnyAttached = false;
                     lock (_house._viewers)
                     {
@@ -555,12 +673,9 @@ namespace Server.Multis
 
                     if (hadAnyAttached && !_house.HasAnyValidViewer())
                     {
-                        // All attached viewers are now invalid/disconnected/out-of-range -> delete preview
                         _house.Delete();
                         return;
                     }
-
-                    // Otherwise (no attached viewers ever) do nothing.
                 }
                 catch
                 {

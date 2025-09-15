@@ -361,6 +361,19 @@ namespace Server.Multis
             base.Deserialize(reader);
             int version = reader.ReadInt();
         }
+		public override bool IsInside(Point3D p, int height)
+{
+    if (base.IsInside(p, height))
+        return true;
+
+    if (this is Castle || this is Keep)
+    {
+        if (Contains(p))
+            return true;
+    }
+
+    return false;
+}
     }
 
    public class Castle : BaseHouse
