@@ -2201,6 +2201,13 @@ public virtual HashSet<Point2D> GetFootprintTiles()
             if (!IsActive)
                 return;
 
+            // Require house friend and valid interior/courtyard tile
+            if (!IsFriend(from) || !IsInteriorOrCourtyard(from.Location))
+            {
+                from.SendLocalizedMessage(502094); // You must be in your house to do this.
+                return;
+            }
+
             for (int i = 0; Doors != null && i < Doors.Count; ++i)
             {
                 BaseDoor door = Doors[i] as BaseDoor;
@@ -2227,8 +2234,8 @@ public virtual HashSet<Point2D> GetFootprintTiles()
                 m_Trash.MoveToWorld(from.Location, from.Map);
 
                 from.SendLocalizedMessage(502121); /* You have a new trash barrel.
-                * Three minutes after you put something in the barrel, the trash will be emptied.
-                * Be forewarned, this is permanent! */
+        * Three minutes after you put something in the barrel, the trash will be emptied.
+        * Be forewarned, this is permanent! */
             }
             else
             {
@@ -2332,15 +2339,15 @@ public virtual HashSet<Point2D> GetFootprintTiles()
 
                 if (checkIsInside && item.RootParent is Mobile)
                 {
-                    m.SendLocalizedMessage(1005525);//That is not in your house
+                    m.SendLocalizedMessage(1005525); // That is not in your house
                 }
-                else if (checkIsInside && !IsInside(item.GetWorldLocation(), item.ItemData.Height))
+                else if (checkIsInside && !IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
                 {
-                    m.SendLocalizedMessage(1005525);//That is not in your house
+                    m.SendLocalizedMessage(1005525); // That is not in your house
                 }
                 else if (Ethics.Ethic.IsImbued(item))
                 {
-                    m.SendLocalizedMessage(1005377);//You cannot lock that down
+                    m.SendLocalizedMessage(1005377); // You cannot lock that down
                 }
                 else if (IsSecure(rootItem))
                 {
@@ -2352,7 +2359,7 @@ public virtual HashSet<Point2D> GetFootprintTiles()
                 }
                 else if (!(item is VendorRentalContract) && (IsAosRules ? (!CheckAosLockdowns(amt) || !CheckAosStorage(amt)) : (LockDownCount + amt) > MaxLockDowns))
                 {
-                    m.SendLocalizedMessage(1005379);//That would exceed the maximum lock down limit for this house
+                    m.SendLocalizedMessage(1005379); // That would exceed the maximum lock down limit for this house
                 }
                 else
                 {
@@ -2362,7 +2369,7 @@ public virtual HashSet<Point2D> GetFootprintTiles()
             }
             else if (LockDowns.ContainsKey(item))
             {
-                m.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1005526); //That is already locked down
+                m.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1005526); // That is already locked down
                 return true;
             }
             else if (item is HouseSign || item is Static)
@@ -2371,12 +2378,41 @@ public virtual HashSet<Point2D> GetFootprintTiles()
             }
             else
             {
-                m.SendLocalizedMessage(1005377);//You cannot lock that down
+                m.SendLocalizedMessage(1005377); // You cannot lock that down
             }
 
             return false;
         }
+        // Add this helper immediately after the existing IsInside(Point3D p, int height) method
+        protected bool IsInteriorOrCourtyard(Point3D p, int height = 16)
+        {
+            if (IsInside(p, height))
+                return true;
 
+            // Treat courtyard/footprint tiles inside for Castle/Keep style houses
+            if (this is Castle || this is Keep)
+            {
+                try
+                {
+                    var tiles = GetFootprintTiles();
+                    if (tiles != null)
+                    {
+                        // Use explicit coordinate comparison to avoid dependence on Point2D.Equals implementation
+                        foreach (var t in tiles)
+                        {
+                            if (t.X == p.X && t.Y == p.Y)
+                                return true;
+                        }
+                    }
+                }
+                catch
+                {
+                    // best-effort, swallow errors
+                }
+            }
+
+            return false;
+        }
         private class TransferItem : Item
         {
             private readonly BaseHouse m_House;
@@ -2717,6 +2753,12 @@ public virtual HashSet<Point2D> GetFootprintTiles()
                 {
                     m.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1010418); // You did not lock this down, and you are not able to release this.
                 }
+                else if (!IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
+                {
+                    // Keep feedback consistent with other house ops
+                    m.SendLocalizedMessage(1005525); // That is not in your house
+                    return false;
+                }
                 else if (CanRelease(m, item))
                 {
                     SetLockdown(m, item, false);
@@ -2746,7 +2788,7 @@ public virtual HashSet<Point2D> GetFootprintTiles()
             if (Secures == null || !IsCoOwner(m) || !IsActive)
                 return;
 
-            if (!IsInside(item))
+            if (!IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
             {
                 m.SendLocalizedMessage(1005525); // That is not in your house
             }
@@ -2918,6 +2960,17 @@ public virtual HashSet<Point2D> GetFootprintTiles()
         {
             if (Secures == null || item is StrongBox || !IsActive || !CanRelease(m, item))
                 return false;
+
+            // Only allow releasing secure items within interior/courtyard footprint
+            try
+            {
+                if (!IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
+                {
+                    m.SendLocalizedMessage(1005525); // That is not in your house
+                    return false;
+                }
+            }
+            catch { }
 
             var info = GetSecureInfoFor(item);
 
