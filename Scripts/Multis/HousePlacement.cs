@@ -381,5 +381,41 @@ namespace Server.Multis
 
             return HousePlacementResult.Valid;
         }
+		private static bool IsAdjacentToUnpassable(Map map, Rectangle2D area)
+{
+    for (int x = area.Start.X; x <= area.End.X; x++)
+    {
+        for (int y = area.Start.Y; y <= area.End.Y; y++)
+        {
+            if (x == area.Start.X || x == area.End.X || y == area.Start.Y || y == area.End.Y)
+            {
+                foreach (var offset in new[] { (-1, 0), (1, 0), (0, -1), (0, 1) })
+                {
+                    int adjX = x + offset.Item1;
+                    int adjY = y + offset.Item2;
+                    if (IsUnwalkable(map, adjX, adjY))
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+private static bool IsUnwalkable(Map map, int x, int y)
+{
+    LandTile land = map.Tiles.GetLandTile(x, y);
+    if ((TileData.LandTable[land.ID & TileData.MaxLandValue].Flags & TileFlag.Impassable) != 0)
+        return true;
+
+    StaticTile[] statics = map.GetStaticTiles(x, y, true);
+    foreach (var st in statics)
+    {
+        ItemData id = TileData.ItemTable[st.ID & TileData.MaxItemValue];
+        if (id.Impassable || (id.Surface && (id.Flags & TileFlag.Background) == 0))
+            return true;
+    }
+    return false;
+}
     }
 }

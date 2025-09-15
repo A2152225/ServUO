@@ -363,66 +363,71 @@ namespace Server.Multis
         }
     }
 
-    public class Castle : BaseHouse
+   public class Castle : BaseHouse
+{
+    // Expanded: includes the main footprint and the 9x9 courtyard (adjust offsets as needed)
+    public static Rectangle2D[] AreaArray = new Rectangle2D[] {
+        new Rectangle2D(-15, -15, 31, 31), // Main footprint
+        new Rectangle2D(-4, -4, 9, 9)      // Courtyard: center area inside the walls
+    };
+
+    public Castle(Mobile owner)
+        : base(0x7E, owner, 4076, 28)
     {
-        public static Rectangle2D[] AreaArray = new Rectangle2D[] { new Rectangle2D(-15, -15, 31, 31), new Rectangle2D(-1, 16, 4, 1) };
-        public Castle(Mobile owner)
-            : base(0x7E, owner, 4076, 28)
-        {
-            uint keyValue = CreateKeys(owner);
+        uint keyValue = CreateKeys(owner);
 
-            AddSouthDoors(false, 0, 15, 6, keyValue);
+        AddSouthDoors(false, 0, 15, 6, keyValue);
 
-            SetSign(5, 17, 16);
+        SetSign(5, 17, 16);
 
-            AddSouthDoors(false, 0, 11, 6, true);
-            AddSouthDoors(false, 0, 5, 6, false);
-            AddSouthDoors(false, -1, -11, 6, false);
-        }
+        AddSouthDoors(false, 0, 11, 6, true);
+        AddSouthDoors(false, 0, 5, 6, false);
+        AddSouthDoors(false, -1, -11, 6, false);
+    }
 
-        public Castle(Serial serial)
-            : base(serial)
-        {
-        }
+    public Castle(Serial serial)
+        : base(serial)
+    {
+    }
 
-        public override int DefaultPrice
+    public override int DefaultPrice
+    {
+        get
         {
-            get
-            {
-                return 1022800;
-            }
-        }
-        public override Rectangle2D[] Area
-        {
-            get
-            {
-                return AreaArray;
-            }
-        }
-        public override Point3D BaseBanLocation
-        {
-            get
-            {
-                return new Point3D(5, 17, 0);
-            }
-        }
-        public override HouseDeed GetDeed()
-        {
-            return new CastleDeed();
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write((int)0);//version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+            return 1022800;
         }
     }
+    public override Rectangle2D[] Area
+    {
+        get
+        {
+            return AreaArray;
+        }
+    }
+    public override Point3D BaseBanLocation
+    {
+        get
+        {
+            return new Point3D(5, 17, 0);
+        }
+    }
+    public override HouseDeed GetDeed()
+    {
+        return new CastleDeed();
+    }
+
+    public override void Serialize(GenericWriter writer)
+    {
+        base.Serialize(writer);
+        writer.Write((int)0);//version
+    }
+
+    public override void Deserialize(GenericReader reader)
+    {
+        base.Deserialize(reader);
+        int version = reader.ReadInt();
+    }
+}
 
     public class LargePatioHouse : BaseHouse
     {
