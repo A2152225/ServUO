@@ -2384,35 +2384,37 @@ public virtual HashSet<Point2D> GetFootprintTiles()
             return false;
         }
         // Add this helper immediately after the existing IsInside(Point3D p, int height) method
-        protected bool IsInteriorOrCourtyard(Point3D p, int height = 16)
-        {
-            if (IsInside(p, height))
-                return true;
+// Make IsInteriorOrCourtyard public so other classes can call it.
+public bool IsInteriorOrCourtyard(Point3D p, int height = 16)
+{
+    if (IsInside(p, height))
+        return true;
 
-            // Treat courtyard/footprint tiles inside for Castle/Keep style houses
-            if (this is Castle || this is Keep)
+    // Treat courtyard/footprint tiles inside for Castle/Keep style houses
+    if (this is Castle || this is Keep)
+    {
+        try
+        {
+            var tiles = GetFootprintTiles();
+            if (tiles != null)
             {
-                try
+                // explicit coordinate comparison is safe if you prefer not to rely on Point2D.Equals/GetHashCode
+                foreach (var t in tiles)
                 {
-                    var tiles = GetFootprintTiles();
-                    if (tiles != null)
-                    {
-                        // Use explicit coordinate comparison to avoid dependence on Point2D.Equals implementation
-                        foreach (var t in tiles)
-                        {
-                            if (t.X == p.X && t.Y == p.Y)
-                                return true;
-                        }
-                    }
-                }
-                catch
-                {
-                    // best-effort, swallow errors
+                    if (t.X == p.X && t.Y == p.Y)
+                        return true;
                 }
             }
-
-            return false;
         }
+        catch
+        {
+            // best-effort, swallow errors
+        }
+    }
+
+    return false;
+}
+
         private class TransferItem : Item
         {
             private readonly BaseHouse m_House;

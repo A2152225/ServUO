@@ -82,7 +82,7 @@ namespace Server.Items
 
 		public virtual void OnChop(Mobile from)
 		{
-			var house = BaseHouse.FindHouseAt(this);
+    var house = FindHouseAtInteriorOrCourtyard(GetWorldLocation(), Map, 0);
 
 			#region High Seas
 			var boat = BaseBoat.FindBoatAt(from, from.Map);
@@ -217,16 +217,72 @@ namespace Server.Items
 
 			return AddonFitResult.Valid;
 		}
+public static BaseHouse FindHouseAtInteriorOrCourtyard(Point3D loc, Map map, int height = 16)
+{
+    if (map == null || map == Map.Internal)
+        return null;
 
-		public static bool CheckHouse(Mobile from, Point3D p, Map map, int height, ref BaseHouse house)
-		{
-			house = BaseHouse.FindHouseAt(p, map, height);
+    Sector sector = map.GetSector(loc);
 
-			if (house == null || (from != null && !house.IsCoOwner(from)))
-				return false;
+    for (int i = 0; i < sector.Multis.Count; ++i)
+    {
+        BaseHouse house = sector.Multis[i] as BaseHouse;
+        if (house == null)
+            continue;
 
-			return true;
-		}
+        try
+        {
+            if (house.IsInteriorOrCourtyard(loc, height))
+                return house;
+        }
+        catch
+        {
+            // ignore and continue
+        }
+    }
+
+    return null;
+}
+
+public static bool CheckHouse(Mobile from, Point3D p, Map map, int height, ref BaseHouse house)
+{
+    house = null;
+
+    if (map == null || map == Map.Internal)
+        return false;
+
+    // Try to find a house in the same sector whose footprint/interior includes the point.
+    Sector sector = map.GetSector(p);
+
+    for (int i = 0; i < sector.Multis.Count; ++i)
+    {
+        BaseHouse h = sector.Multis[i] as BaseHouse;
+        if (h == null)
+            continue;
+
+        try
+        {
+            if (h.IsInteriorOrCourtyard(p, height))
+            {
+                house = h;
+                break;
+            }
+        }
+        catch
+        {
+            // ignore and continue
+        }
+    }
+
+    if (house == null)
+        return false;
+
+    // If a player origin is provided, ensure they have placement rights (co-owner or better).
+    if (from != null && !house.IsCoOwner(from))
+        return false;
+
+    return true;
+}
 
 		#region High Seas
 		private static readonly int[] m_ShipAddonTiles =
