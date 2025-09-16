@@ -277,9 +277,6 @@ namespace Server.Multis
                 }
             }
 
-            // Remove any extended tiles that are actually valid & outside any structural reason? (We still want them red if part of buffer)
-            // Accept this set as is; outside ring red dots handled in gump.
-
             // Color footprint + ring markers
             foreach (var marker in _markers)
             {
@@ -450,15 +447,68 @@ namespace Server.Multis
             {
                 foreach (Item item in Map.GetItemsInRange(p, 0))
                 {
-                    if (item.Deleted || !item.Visible)
+                    if (item == null || item.Deleted || !item.Visible)
                         continue;
 
+                    // Skip the preview instance and any preview marker items so the preview doesn't block itself
                     if (ReferenceEquals(item, this))
+                        continue;
+
+                    if (item is PreviewHouse) // in case preview object is present as an item
                         continue;
 
                     if (PreviewMarkerItem.IsPreviewMarker(item))
                         continue;
 
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    if (PreviewMarkerItem.IsPreviewMarker(item))
+                        continue;
+
+                    // Normal checks below
                     bool impassable = (item.ItemData.Flags & TileFlag.Impassable) != 0;
 
                     // If the item is an existing house, consult centralized helper to allow owner's overlap.
@@ -559,10 +609,14 @@ namespace Server.Multis
             {
                 foreach (Item item in Map.GetItemsInRange(p, 0))
                 {
-                    if (item.Deleted || !item.Visible)
+                    if (item == null || item.Deleted || !item.Visible)
                         continue;
 
+                    // Skip the preview instance and any preview marker items so the preview doesn't block itself
                     if (ReferenceEquals(item, this))
+                        continue;
+
+                    if (item is PreviewHouse)
                         continue;
 
                     if (PreviewMarkerItem.IsPreviewMarker(item))
@@ -641,10 +695,19 @@ namespace Server.Multis
             {
                 foreach (Item item in map.GetItemsInRange(new Point3D(x, y, 0), 0))
                 {
-                    if (item.Deleted || !item.Visible)
+                    if (item == null || item.Deleted || !item.Visible)
                         continue;
+
+                    // Skip preview artifacts
+                    if (ReferenceEquals(item, this))
+                        continue;
+
+                    if (item is PreviewHouse)
+                        continue;
+
                     if (PreviewMarkerItem.IsPreviewMarker(item))
                         continue;
+
                     if ((item.ItemData.Flags & TileFlag.Impassable) != 0)
                         return true;
                 }
@@ -668,6 +731,10 @@ namespace Server.Multis
 
                     if (Owner != null && Owner.Account != null && h.Owner != null && h.Owner.Account == Owner.Account)
                         continue; // same account
+
+                    // ignore preview houses if any slipped into house-finding APIs
+                    if (h is PreviewHouse)
+                        continue;
 
                     // foreign
                     return true;
