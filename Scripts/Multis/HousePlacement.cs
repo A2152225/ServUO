@@ -223,6 +223,21 @@ namespace Server.Multis
 
                             if (addTileTop > item.Z && (item.Z + id.CalcHeight) > addTileZ)
                             {
+                                // --- START: changed block: allow overlappable houses to be ignored (treated like movable)
+                                // If the blocking item is an existing BaseHouse, allow it if the player is allowed to overlap that house via HousePlacementHelper.
+                                try
+                                {
+                                    if (item is BaseHouse existingHouse)
+                                    {
+                                        if (HousePlacementHelper.CanOverlapHouse(existingHouse, from))
+                                            continue; // allowed overlap -> ignore this house collision
+                                        else
+                                            return HousePlacementResult.BadItem; // blocking foreign house
+                                    }
+                                }
+                                catch { /* fall through to normal handling on any error */ }
+                                // --- END changed block
+
                                 if (item.Movable)
                                     toMove.Add(item);
                                 else if ((id.Impassable || (id.Surface && (id.Flags & TileFlag.Background) == 0)))
@@ -382,7 +397,16 @@ namespace Server.Multis
                 foreach (BaseHouse b in _houses)
                 {
                     if (b.Contains(yard[i]))
+                    {
+                        // Allow overlap if the placer is allowed to overlap the existing house (owner/co-owner/account)
+                        if (from != null && HousePlacementHelper.CanOverlapHouse(b, from))
+                            continue;
+
+                        // Otherwise this yard point collides with another player's house -> invalid
+                        // Debug helper (can be removed later):
+                        // Console.WriteLine($"[HousePlacement] Rejecting yard point {yard[i].X},{yard[i].Y} due to house at {b.X},{b.Y}; CanOverlap={HousePlacementHelper.CanOverlapHouse(b, from)}");
                         return HousePlacementResult.BadStatic; // Broke rule #3
+                    }
                 }
             }
 
@@ -415,8 +439,8 @@ namespace Server.Multis
                         if (h == null)
                             continue;
 
-                        // Same account owner? Allow.
-                        if (h.Owner != null && h.Owner.Account != null && from.Account != null && h.Owner.Account == from.Account)
+                        // If the placer can overlap this house (owner / same-account / allowed access), allow.
+                        if (HousePlacementHelper.CanOverlapHouse(h, from))
                             continue;
 
                         return true;

@@ -160,6 +160,10 @@ namespace Server.Multis
                         bool centerInvalid = _prev.IsCenterTileInvalid(wx, wy);
                         bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
 
+                        // If the tile is center-invalid but the only blocking thing is an overlappable house, allow it.
+                        if (centerInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            centerInvalid = false;
+
                         if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
                             hardInvalid = false;
 
@@ -171,6 +175,10 @@ namespace Server.Multis
                     {
                         bool ringInvalid = _prev.IsRingTileInvalid(wx, wy);
                         bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
+
+                        // Clear ringInvalid if it's only due to an overlappable house
+                        if (ringInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            ringInvalid = false;
 
                         if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
                             hardInvalid = false;
@@ -334,6 +342,10 @@ namespace Server.Multis
                         bool centerInvalid = _prev.IsCenterTileInvalid(wx, wy);
                         bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
 
+                        // Allow owner-overlap for center tiles too if the only blocking object is an overlappable house
+                        if (centerInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            centerInvalid = false;
+
                         if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
                             hardInvalid = false;
 
@@ -344,6 +356,10 @@ namespace Server.Multis
                     {
                         bool ringInvalid = _prev.IsRingTileInvalid(wx, wy);
                         bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
+
+                        // Allow owner-overlap for ring tiles as well
+                        if (ringInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            ringInvalid = false;
 
                         if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
                             hardInvalid = false;

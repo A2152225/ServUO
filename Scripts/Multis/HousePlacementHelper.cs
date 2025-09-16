@@ -14,15 +14,24 @@ public static class HousePlacementHelper
         try
         {
             // Owner always allowed
-            if (existing.IsOwner(placer))
-                return true;
+           if (existing.IsOwner(placer))
+    return true;
 
-            // Optionally allow co-owners / friends / account-shared owners:
-            // Uncomment/adapt to match your BaseHouse implementation:
-            // if (existing.IsCoOwner(placer)) return true;
-            // if (existing.IsFriend(placer)) return true;
-            // if (existing.HasAccess(placer)) return true;
-            // if (existing.IsOnSameAccount(placer)) return true;
+// allow same-account overlap
+try
+{
+    if (existing.Owner != null && existing.Owner.Account != null && placer.Account != null && existing.Owner.Account == placer.Account)
+        return true;
+}
+catch { }
+
+
+            // If your BaseHouse has additional helpers like IsCoOwner, HasAccess, IsFriend, etc.,
+            // and you want to allow those, uncomment/adapt the following lines to match your API:
+            //
+            // try { if (existing.IsCoOwner(placer)) return true; } catch { }
+            // try { if (existing.HasAccess(placer)) return true; } catch { }
+            // try { if (existing.IsFriend(placer)) return true; } catch { }
 
             return false;
         }

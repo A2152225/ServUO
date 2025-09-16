@@ -461,15 +461,54 @@ namespace Server.Multis
 
                     bool impassable = (item.ItemData.Flags & TileFlag.Impassable) != 0;
 
-                    if (item is BaseHouse || item is BaseMulti || item is AddonComponent || impassable)
+                    // If the item is an existing house, consult centralized helper to allow owner's overlap.
+                    if (item is BaseHouse existingHouse)
+                    {
+                        try
+                        {
+                            if (HousePlacementHelper.CanOverlapHouse(existingHouse, Owner ?? (Mobile)null))
+                                continue; // allowed overlap -> ignore this house
+                        }
+                        catch { }
+
+                        return false;
+                    }
+
+                    // Some implementations use BaseMulti; if it's a BaseHouse underneath, allow similar handling.
+                    if (item is BaseMulti multiItem)
+                    {
+                        if (multiItem is BaseHouse multiAsHouse)
+                        {
+                            try
+                            {
+                                if (HousePlacementHelper.CanOverlapHouse(multiAsHouse, Owner ?? (Mobile)null))
+                                    continue;
+                            }
+                            catch { }
+
+                            return false;
+                        }
+                        // If BaseMulti is not a house-type in this shard, treat it as blocking
+                        return false;
+                    }
+
+                    if (item is AddonComponent)
+                        return false;
+
+                    if (impassable)
                         return false;
                 }
             }
             catch { return false; }
 
             // Too close to existing house (1 tile) - base rule (legacy)
-            if (BaseHouse.FindHouseAt(p, Map, 1) != null)
-                return false;
+            try
+            {
+                BaseHouse near = BaseHouse.FindHouseAt(p, Map, 1);
+                if (near != null && !HousePlacementHelper.CanOverlapHouse(near, Owner ?? (Mobile)null))
+                    return false;
+            }
+            catch { }
 
             return true;
         }
@@ -482,9 +521,14 @@ namespace Server.Multis
             int z = GetGroundZ(x, y);
             var p = new Point3D(x, y, z);
 
-            // Do not allow ring to overlay existing house tile
-            if (BaseHouse.FindHouseAt(p, Map, 0) != null)
-                return false;
+            // Do not allow ring to overlay existing house tile (unless allowed for owner)
+            try
+            {
+                BaseHouse atHouse = BaseHouse.FindHouseAt(p, Map, 0);
+                if (atHouse != null && !HousePlacementHelper.CanOverlapHouse(atHouse, Owner ?? (Mobile)null))
+                    return false;
+            }
+            catch { return false; }
 
             // Land/static
             try
@@ -525,7 +569,37 @@ namespace Server.Multis
                         continue;
 
                     bool impassable = (item.ItemData.Flags & TileFlag.Impassable) != 0;
-                    if (item is BaseHouse || item is BaseMulti || impassable)
+
+                    if (item is BaseHouse existingHouse)
+                    {
+                        try
+                        {
+                            if (HousePlacementHelper.CanOverlapHouse(existingHouse, Owner ?? (Mobile)null))
+                                continue;
+                        }
+                        catch { }
+
+                        return false;
+                    }
+
+                    if (item is BaseMulti multiItem)
+                    {
+                        if (multiItem is BaseHouse multiAsHouse)
+                        {
+                            try
+                            {
+                                if (HousePlacementHelper.CanOverlapHouse(multiAsHouse, Owner ?? (Mobile)null))
+                                    continue;
+                            }
+                            catch { }
+
+                            return false;
+                        }
+
+                        return false;
+                    }
+
+                    if (impassable)
                         return false;
                 }
             }
