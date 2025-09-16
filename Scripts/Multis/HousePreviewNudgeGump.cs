@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Server;
 using Server.Gumps;
 using Server.Mobiles;
@@ -64,7 +65,8 @@ namespace Server.Multis
             _prev.AttachViewer(_viewer);
             _prev.RevalidateAndColorize();
 
-            bool showValid = _prev.CenterAreaValid && _prev.SurroundingRingValid && !_prev.HasExtendedInvalids();
+            // Evaluate validity with owner-aware overlap allowance.
+            bool showValid = IsPreviewCenterAndRingValidConsideringOwner() && !_prev.HasExtendedInvalids();
             string statusHtmlColor = showValid ? "#008000" : "#A00000";
             string statusText = showValid ? "Placement: Valid" : "Placement: Invalid";
 
@@ -154,20 +156,42 @@ namespace Server.Multis
 
                     if (_prev.IsWorldPointInFootprint(wx, wy))
                     {
-                        bool invalid = _prev.IsCenterTileInvalid(wx, wy) || _prev.IsWorldPointHardInvalid(wx, wy);
+                        // Allow owner-aware house overlap: treat hard-invalids that are house-owned by the viewer as valid.
+                        bool centerInvalid = _prev.IsCenterTileInvalid(wx, wy);
+                        bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
+
+                        if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            hardInvalid = false;
+
+                        bool invalid = centerInvalid || hardInvalid;
                         int hue = invalid ? HueRed : HueGreen;
                         AddLabelCropped(px, py, DotSpacing + 2, DotSpacing + 2, hue, "•");
                     }
                     else if (_prev.IsWorldPointInRing(wx, wy))
                     {
-                        bool invalid = _prev.IsRingTileInvalid(wx, wy) || _prev.IsWorldPointHardInvalid(wx, wy);
+                        bool ringInvalid = _prev.IsRingTileInvalid(wx, wy);
+                        bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
+
+                        if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            hardInvalid = false;
+
+                        bool invalid = ringInvalid || hardInvalid;
                         AddLabelCropped(px, py, DotSpacing + 2, DotSpacing + 2, invalid ? HueRed : HueGreen, "•");
                     }
                     else
                     {
                         if (_prev.IsWorldPointHardInvalid(wx, wy))
                         {
-                            AddLabelCropped(px, py, DotSpacing + 2, DotSpacing + 2, HueRed, "•");
+                            // If it's a hard invalid but due solely to a house the viewer owns, allow it visually as non-blocking.
+                            if (IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            {
+                                // show as green (or maybe blue) to indicate allowed overlap; choose green for consistency.
+                                AddLabelCropped(px, py, DotSpacing + 2, DotSpacing + 2, HueGreen, "•");
+                            }
+                            else
+                            {
+                                AddLabelCropped(px, py, DotSpacing + 2, DotSpacing + 2, HueRed, "•");
+                            }
                         }
                         else if (IsTerrainClear(map, wx, wy))
                         {
@@ -237,6 +261,102 @@ namespace Server.Multis
             return true;
         }
 
+        // Scans items at (x,y) and returns the first BaseHouse/BaseMulti found, or null.
+        private static BaseHouse FindHouseAtPoint(Map map, int x, int y)
+        {
+            if (map == null || map == Map.Internal)
+                return null;
+
+            try
+            {
+                int z = 0, avg = 0, top = 0;
+                map.GetAverageZ(x, y, ref z, ref avg, ref top);
+                var p = new Point3D(x, y, avg);
+
+                foreach (Item item in map.GetItemsInRange(p, 0))
+                {
+                    if (item == null || item.Deleted)
+                        continue;
+                    if (item is BaseHouse house)
+                        return house;
+                    if (item is BaseMulti multi) // some house implementations use BaseMulti
+                    {
+                        // Try to cast to BaseHouse if appropriate
+                        if (multi is BaseHouse asHouse)
+                            return asHouse;
+                    }
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+        // Returns true if the only blocking item at the point is a house that 'viewer' is allowed to overlap.
+        private static bool IsHouseOverlapAllowedAt(Map map, int x, int y, Mobile viewer)
+        {
+            try
+            {
+                BaseHouse h = FindHouseAtPoint(map, x, y);
+                if (h == null)
+                    return false;
+
+                // Use the centralized helper added in your HousingUpdate branch.
+                return HousePlacementHelper.CanOverlapHouse(h, viewer);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Re-evaluate center and ring area validity using the same owner-aware allowance used by RenderDotPanel.
+        // This function is used to determine the overall "Placement: Valid/Invalid" status shown at the top of the gump
+        // and to influence the Accept button behavior.
+        private bool IsPreviewCenterAndRingValidConsideringOwner()
+        {
+            if (_prev == null || _prev.Deleted || _prev.Map == null || _prev.Map == Map.Internal)
+                return false;
+
+            var map = _prev.Map;
+            int cx = _prev.X;
+            int cy = _prev.Y;
+
+            for (int dy = -_scanRadius; dy <= _scanRadius; dy++)
+            {
+                for (int dx = -_scanRadius; dx <= _scanRadius; dx++)
+                {
+                    int wx = cx + dx;
+                    int wy = cy + dy;
+
+                    if (_prev.IsWorldPointInFootprint(wx, wy))
+                    {
+                        bool centerInvalid = _prev.IsCenterTileInvalid(wx, wy);
+                        bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
+
+                        if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            hardInvalid = false;
+
+                        if (centerInvalid || hardInvalid)
+                            return false;
+                    }
+                    else if (_prev.IsWorldPointInRing(wx, wy))
+                    {
+                        bool ringInvalid = _prev.IsRingTileInvalid(wx, wy);
+                        bool hardInvalid = _prev.IsWorldPointHardInvalid(wx, wy);
+
+                        if (hardInvalid && IsHouseOverlapAllowedAt(map, wx, wy, _viewer))
+                            hardInvalid = false;
+
+                        if (ringInvalid || hardInvalid)
+                            return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         public override void OnResponse(NetState sender, RelayInfo info)
         {
             var from = sender.Mobile;
@@ -268,11 +388,12 @@ namespace Server.Multis
                             return;
                         }
 
-                        bool fullyValid = _prev.CenterAreaValid && _prev.SurroundingRingValid && !_prev.HasExtendedInvalids();
+                        // Use owner-aware center/ring validation when deciding whether to allow acceptance.
+                        bool fullyValid = IsPreviewCenterAndRingValidConsideringOwner() && !_prev.HasExtendedInvalids();
 
                         if (from.AccessLevel < AccessLevel.GameMaster && !fullyValid)
                         {
-                            from.SendMessage("Cannot accept: placement fails extended validity (adjacency or foreign house buffer).");
+                            from.SendMessage("Cannot accept: placement fails extended validity (adjacency or foreign house buffer) or center/ring contains invalid tiles.");
                             from.CloseGump<HousePreviewNudgeGump>();
                             from.SendGump(new HousePreviewNudgeGump(_callback, _state, _prev, _viewer, _placementIsValidAt));
                             return;

@@ -26214,7 +26214,7 @@
 		<flags>2</flags>
 		<created>2012-09-14T03:05:29.1238511Z</created>
 		<lastLogin>2025-09-15T04:52:01.4576337Z</lastLogin>
-		<totalGameTime>P1284DT23H57M48.5074215S</totalGameTime>
+		<totalGameTime>P1285DT38M53.4412175S</totalGameTime>
 		<chars>
 			<char index="0">42</char>
 		</chars>
@@ -27988,8 +27988,8 @@
 		<password>winski2</password>
 		<flags>2</flags>
 		<created>2012-10-06T01:08:22.7942949Z</created>
-		<lastLogin>2025-09-15T12:06:29.7277211Z</lastLogin>
-		<totalGameTime>P1894DT18H42M0.8263619S</totalGameTime>
+		<lastLogin>2025-09-16T16:50:25.2971682Z</lastLogin>
+		<totalGameTime>P1894DT19H43M21.6477313S</totalGameTime>
 		<chars>
 			<char index="0">1651</char>
 			<char index="1">67366</char>
@@ -28020,7 +28020,7 @@
 			<ip>97.83.211.11</ip>
 			<ip>47.35.140.182</ip>
 		</addressList>
-		<totalCurrency>0.019173933000014319</totalCurrency>
+		<totalCurrency>0.019174296000014322</totalCurrency>
 		<sovereigns>0</sovereigns>
 	</account>
 	<account>
