@@ -2588,8 +2588,40 @@ namespace Server.Items
             percentageBonus += Spells.Mysticism.StoneFormSpell.GetMaxResistBonus(attacker);
 
 			damage = AOS.Scale(damage, 100 + percentageBonus);
-			#endregion
+            #endregion
+            // Scale by difficulty BEFORE armor/parry/flat DR
+            if (attacker is BaseCreature bcAtt && !bcAtt.Controlled && !bcAtt.Summoned)
+            {
+                // Player victim
+                if (defender is PlayerMobile pm)
+                {
+                    int diff = DifficultySettings.GetPlayerDifficulty(pm);
+                    if (diff > 1 && damage > 0)
+                    {
+                        double hm = DifficultySettings.GetHealthMultiplier(diff);
+                        damage = (int)Math.Max(1, Math.Ceiling(damage * hm));
+                        // Console.WriteLine($"[Diff:MeleePreDR] {bcAtt.Name} -> {pm.Name}: scaled={damage}, hm={hm}");
+                    }
+                }
+                // Player-owned pet/summon victim
+                else if (defender is BaseCreature pet)
+                {
+                    PlayerMobile owner = null;
+                    if (pet.Controlled && pet.ControlMaster is PlayerMobile cm) owner = cm;
+                    else if (pet.Summoned && pet.SummonMaster is PlayerMobile sm) owner = sm;
 
+                    if (owner != null && damage > 0)
+                    {
+                        int diff = DifficultySettings.GetPlayerDifficulty(owner);
+                        if (diff > 1)
+                        {
+                            double hm = DifficultySettings.GetHealthMultiplier(diff);
+                            damage = (int)Math.Max(1, Math.Ceiling(damage * hm));
+                            // Console.WriteLine($"[Diff:MeleePreDR] {bcAtt.Name} -> {pet.Name} (owner {owner.Name}): scaled={damage}, hm={hm}");
+                        }
+                    }
+                }
+            }
             damage = AbsorbDamage(attacker, defender, damage);
 
 			if (!Core.AOS && damage < 1)

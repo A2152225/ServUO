@@ -14,15 +14,46 @@ namespace Server.Mobiles
         private int _Label = 0xF424E5;
 
         public BaseCreature Creature { get; private set; }
+		public PlayerMobile _viewer { get; private set; }
 
         public NewAnimalLoreGump(PlayerMobile pm, BaseCreature bc)
             : base(pm, 250, 50)
         {
             Creature = bc;
+			
+			    _viewer = pm;
+
         }
 
         public override void AddGumpLayout()
         {
+				// Get player's difficulty and show adjusted health perception
+int difficultyLevel = DifficultySettings.GetPlayerDifficulty(_viewer);
+int healthMultiplier = (int)DifficultySettings.GetHealthMultiplier(difficultyLevel);
+
+// Adjust how health looks based on difficulty
+int perceivedMaxHits = Creature.HitsMax;
+int perceivedHits = Creature.Hits;
+
+            if (difficultyLevel > 1 && !Creature.Summoned && !Creature.Controlled)
+            {
+
+                perceivedMaxHits = Creature.HitsMax * healthMultiplier;
+              
+                perceivedHits = Creature.GetGlobalPerceivedHits(_viewer, healthMultiplier);
+                if (Creature.FullHealth)
+                {
+                    perceivedHits = perceivedMaxHits;
+
+                }
+
+            }
+            else
+            {
+                perceivedMaxHits = Creature.HitsMax;
+                perceivedHits = Creature.Hits;
+            }
+
             var profile = PetTrainingHelper.GetAbilityProfile(Creature);
             var trainProfile = PetTrainingHelper.GetTrainingProfile(Creature, true);
 
@@ -80,7 +111,7 @@ namespace Server.Mobiles
             AddHtmlLocalized(47, 74, 160, 18, 1049593, 0xC8, false, false); // Attributes
 
             AddHtmlLocalized(53, 92, 160, 18, 1049578, _Label, false, false); // Hits
-            AddHtml(180, 92, 75, 18, FormatAttributes(Creature.Hits, Creature.HitsMax), false, false);
+            AddHtml(180, 92, 140, 18, String.Format("{0} / {1}", perceivedHits, perceivedMaxHits), false, false);//FormatAttributes(Creature.Hits, Creature.HitsMax), false, false);
 
             AddHtmlLocalized(53, 110, 160, 18, 1049579, _Label, false, false); // Stamina
             AddHtml(180, 110, 75, 18, FormatAttributes(Creature.Stam, Creature.StamMax), false, false);

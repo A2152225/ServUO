@@ -26,6 +26,7 @@ namespace Server.Multis
     {
         // Any land tile which matches one of these ID numbers is considered a road and cannot be placed over.
         public static int[] RoadIDs { get { return m_RoadIDs; } }
+
         private static readonly int[] m_RoadIDs = new int[]
         {
             0x0071, 0x0078,
@@ -38,8 +39,22 @@ namespace Server.Multis
             0x0009, 0x0015, // Furrows
             0x0150, 0x015C  // Furrows
         };
+
         private const int YardSize = 5;
+
+        // Foreign house minimum buffer (Chebyshev distance) unless same account
+        private const int ForeignHouseBuffer = 3;
+
+        // ORIGINAL PUBLIC SIGNATURE (kept for compatibility)
         public static HousePlacementResult Check(Mobile from, int multiID, Point3D center, out ArrayList toMove)
+        {
+            return Check(from, multiID, center, out toMove, false);
+        }
+
+        // NEW OVERLOAD:
+        // ignoreStaffBypass=true => Runs full validation (so staff see true invalidity in previews)
+        // ignoreStaffBypass=false => Staff are auto-valid (placement override)
+        public static HousePlacementResult Check(Mobile from, int multiID, Point3D center, out ArrayList toMove, bool ignoreStaffBypass)
         {
             // If this spot is considered valid, every item and mobile in this list will be moved under the house sign
             toMove = new ArrayList();
@@ -49,8 +64,8 @@ namespace Server.Multis
             if (map == null || map == Map.Internal)
                 return HousePlacementResult.BadLand; // A house cannot go here
 
-            if (from.AccessLevel >= AccessLevel.GameMaster)
-                return HousePlacementResult.Valid; // Staff can place anywhere
+            if (from.AccessLevel >= AccessLevel.GameMaster && !ignoreStaffBypass)
+                return HousePlacementResult.Valid; // Staff bypass for final placement (preview suppresses this)
 
             if (map == Map.Ilshenar || SpellHelper.IsFeluccaT2A(map, center) || SpellHelper.IsEodon(map, center))
                 return HousePlacementResult.BadRegion; // No houses in Ilshenar/T2A/Eodon
@@ -76,7 +91,7 @@ namespace Server.Multis
             if (multiID >= 0x13EC && multiID < 0x1D00)
                 HouseFoundation.AddStairsTo(ref mcl); // this is a AOS house, add the stairs
 
-            // Location of the nortwest-most corner of the house
+            // Location of the northwest-most corner of the house
             Point3D start = new Point3D(center.X + mcl.Min.X, center.Y + mcl.Min.Y, center.Z);
 
             // These are storage lists. They hold items and mobiles found in the map for further processing
@@ -86,14 +101,20 @@ namespace Server.Multis
             // These are also storage lists. They hold location values indicating the yard and border locations.
             List<Point2D> yard = new List<Point2D>(), borders = new List<Point2D>();
 
+            // Track foundation footprint (world coords) for foreign-house buffer & adjacency testing
+            HashSet<Point2D> foundationTiles = new HashSet<Point2D>();
+
             /* RULES:
-            * 
-            * 1) All tiles which are around the -outside- of the foundation must not have anything impassable.
-            * 2) No impassable object or land tile may come in direct contact with any part of the house.
-            * 3) Five tiles from the front and back of the house must be completely clear of all house tiles.
-            * 4) The foundation must rest flatly on a surface. Any bumps around the foundation are not allowed.
-            * 5) No foundation tile may reside over terrain which is viewed as a road.
-            */
+             * 
+             * 1) All tiles which are around the -outside- of the foundation must not have anything impassable.
+             * 2) No impassable object or land tile may come in direct contact with any part of the house.
+             * 3) Five tiles from the front and back of the house must be completely clear of all house tiles.
+             * 4) The foundation must rest flatly on a surface. Any bumps around the foundation are not allowed.
+             * 5) No foundation tile may reside over terrain which is viewed as a road.
+             * PLUS (Shard Custom):
+             * 6) Must be at least ForeignHouseBuffer tiles from any other house (Chebyshev) unless owned by same account.
+             * 7) Adjacent (8-direction) tiles around impassable statics/terrain cause invalid (preview + final).
+             */
 
             for (int x = 0; x < mcl.Width; ++x)
             {
@@ -111,7 +132,7 @@ namespace Server.Multis
 
                     Region reg = Region.Find(testPoint, map);
 
-                    if (!reg.AllowHousing(from, testPoint)) // Cannot place houses in dungeons, towns, treasure map areas etc
+                    if (!reg.AllowHousing(from, testPoint))
                     {
                         if (reg.IsPartOf<TempNoHousingRegion>())
                             return HousePlacementResult.BadRegionTemp;
@@ -128,6 +149,7 @@ namespace Server.Multis
                     LandTile landTile = map.Tiles.GetLandTile(tileX, tileY);
                     int landID = landTile.ID & TileData.MaxLandValue;
 
+                    // VALIDATED CALL: correct usage including multis
                     StaticTile[] oldTiles = map.Tiles.GetStaticTiles(tileX, tileY, true);
 
                     Sector sector = map.GetSector(tileX, tileY);
@@ -192,8 +214,6 @@ namespace Server.Multis
 
                             if ((id.Impassable || (id.Surface && (id.Flags & TileFlag.Background) == 0)) && addTileTop > oldTile.Z && (oldTile.Z + id.CalcHeight) > addTileZ)
                                 return HousePlacementResult.BadStatic; // Broke rule #2
-                            /*else if ( isFoundation && !hasSurface && (id.Flags & TileFlag.Surface) != 0 && (oldTile.Z + id.CalcHeight) == center.Z )
-                            hasSurface = true;*/
                         }
 
                         for (int j = 0; j < items.Count; ++j)
@@ -203,15 +223,26 @@ namespace Server.Multis
 
                             if (addTileTop > item.Z && (item.Z + id.CalcHeight) > addTileZ)
                             {
+                                // --- START: changed block: allow overlappable houses to be ignored (treated like movable)
+                                // If the blocking item is an existing BaseHouse, allow it if the player is allowed to overlap that house via HousePlacementHelper.
+                                try
+                                {
+                                    if (item is BaseHouse existingHouse)
+                                    {
+                                        if (HousePlacementHelper.CanOverlapHouse(existingHouse, from))
+                                            continue; // allowed overlap -> ignore this house collision
+                                        else
+                                            return HousePlacementResult.BadItem; // blocking foreign house
+                                    }
+                                }
+                                catch { /* fall through to normal handling on any error */ }
+                                // --- END changed block
+
                                 if (item.Movable)
                                     toMove.Add(item);
                                 else if ((id.Impassable || (id.Surface && (id.Flags & TileFlag.Background) == 0)))
                                     return HousePlacementResult.BadItem; // Broke rule #2
                             }
-                            /*else if ( isFoundation && !hasSurface && (id.Flags & TileFlag.Surface) != 0 && (item.Z + id.CalcHeight) == center.Z )
-                            {
-                            hasSurface = true;
-                            }*/
                         }
 
                         if (isFoundation && !hasSurface)
@@ -234,6 +265,8 @@ namespace Server.Multis
 
                     if (hasFoundation)
                     {
+                        foundationTiles.Add(new Point2D(tileX, tileY));
+
                         for (int xOffset = -1; xOffset <= 1; ++xOffset)
                         {
                             for (int yOffset = -YardSize; yOffset <= YardSize; ++yOffset)
@@ -253,7 +286,6 @@ namespace Server.Multis
                                     continue;
 
                                 // To ease this rule, we will not add to the border list if the tile here is under a base floor (z<=8)
-
                                 int vx = x + xOffset;
                                 int vy = y + yOffset;
 
@@ -284,6 +316,7 @@ namespace Server.Multis
                 }
             }
 
+            // Borders (legacy rule #1)
             for (int i = 0; i < borders.Count; ++i)
             {
                 Point2D borderPoint = borders[i];
@@ -300,6 +333,7 @@ namespace Server.Multis
                         return HousePlacementResult.BadLand; // Broke rule #5
                 }
 
+                // VALIDATED CALL
                 StaticTile[] tiles = map.Tiles.GetStaticTiles(borderPoint.X, borderPoint.Y, true);
 
                 for (int j = 0; j < tiles.Length; ++j)
@@ -328,17 +362,18 @@ namespace Server.Multis
                 }
             }
 
+            // Get nearby houses via sectors for yard (legacy yard check)
             List<Sector> _sectors = new List<Sector>();
             List<BaseHouse> _houses = new List<BaseHouse>();
 
             for (int i = 0; i < yard.Count; i++)
             {
                 Sector sector = map.GetSector(yard[i]);
-				
+
                 if (!_sectors.Contains(sector))
                 {
                     _sectors.Add(sector);
-					
+
                     if (sector.Multis != null)
                     {
                         for (int j = 0; j < sector.Multis.Count; j++)
@@ -356,30 +391,132 @@ namespace Server.Multis
                 }
             }
 
+            // Legacy yard rule
             for (int i = 0; i < yard.Count; ++i)
             {
                 foreach (BaseHouse b in _houses)
                 {
                     if (b.Contains(yard[i]))
+                    {
+                        // Allow overlap if the placer is allowed to overlap the existing house (owner/co-owner/account)
+                        if (from != null && HousePlacementHelper.CanOverlapHouse(b, from))
+                            continue;
+
+                        // Otherwise this yard point collides with another player's house -> invalid
+                        // Debug helper (can be removed later):
+                        // Console.WriteLine($"[HousePlacement] Rejecting yard point {yard[i].X},{yard[i].Y} due to house at {b.X},{b.Y}; CanOverlap={HousePlacementHelper.CanOverlapHouse(b, from)}");
                         return HousePlacementResult.BadStatic; // Broke rule #3
+                    }
                 }
-                /*Point2D yardPoint = yard[i];
-                IPooledEnumerable eable = map.GetMultiTilesAt( yardPoint.X, yardPoint.Y );
-                foreach ( StaticTile[] tile in eable )
-                {
-                for ( int j = 0; j < tile.Length; ++j )
-                {
-                if ( (TileData.ItemTable[tile[j].ID & TileData.MaxItemValue].Flags & (TileFlag.Impassable | TileFlag.Surface)) != 0 )
-                {
-                eable.Free();
-                return HousePlacementResult.BadStatic; // Broke rule #3
-                }
-                }
-                }
-                eable.Free();*/
             }
 
+            // NEW: Foreign house buffer rule (rule #6)
+            if (ViolatesForeignHouseBuffer(from, map, foundationTiles))
+                return HousePlacementResult.BadStatic;
+
+            // NEW: Adjacency to unwalkable (rule #7)
+            if (IsAdjacentToUnpassable(map, foundationTiles))
+                return HousePlacementResult.BadStatic;
+
             return HousePlacementResult.Valid;
+        }
+
+        // Checks if any tile within ForeignHouseBuffer of the foundation is part of a different-account house
+        private static bool ViolatesForeignHouseBuffer(Mobile from, Map map, HashSet<Point2D> foundationTiles)
+        {
+            if (map == null) return false;
+
+            foreach (var ft in foundationTiles)
+            {
+                for (int dx = -ForeignHouseBuffer; dx <= ForeignHouseBuffer; dx++)
+                {
+                    for (int dy = -ForeignHouseBuffer; dy <= ForeignHouseBuffer; dy++)
+                    {
+                        int wx = ft.X + dx;
+                        int wy = ft.Y + dy;
+
+                        BaseHouse h = BaseHouse.FindHouseAt(new Point3D(wx, wy, 0), map, 16);
+                        if (h == null)
+                            continue;
+
+                        // If the placer can overlap this house (owner / same-account / allowed access), allow.
+                        if (HousePlacementHelper.CanOverlapHouse(h, from))
+                            continue;
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // Determines if any foundation tile is adjacent (8-direction) to an unwalkable tile (land/static/item)
+        private static bool IsAdjacentToUnpassable(Map map, HashSet<Point2D> foundationTiles)
+        {
+            if (map == null) return false;
+
+            foreach (var ft in foundationTiles)
+            {
+                // Check the 8 neighbors of ft
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        if (dx == 0 && dy == 0)
+                            continue;
+
+                        int x = ft.X + dx;
+                        int y = ft.Y + dy;
+
+                        if (IsUnwalkable(map, x, y))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // Utility: Determine if tile is unwalkable (land/static/item). VALIDATED calls now always use map.Tiles.GetStaticTiles
+        private static bool IsUnwalkable(Map map, int x, int y)
+        {
+            try
+            {
+                LandTile land = map.Tiles.GetLandTile(x, y);
+                if ((TileData.LandTable[land.ID & TileData.MaxLandValue].Flags & TileFlag.Impassable) != 0)
+                    return true;
+            }
+            catch { }
+
+            try
+            {
+                // FIX: previously incorrect call map.GetStaticTiles(...) -> now map.Tiles.GetStaticTiles(...)
+                StaticTile[] statics = map.Tiles.GetStaticTiles(x, y, true);
+                foreach (var st in statics)
+                {
+                    ItemData id = TileData.ItemTable[st.ID & TileData.MaxItemValue];
+                    if (id.Impassable || (id.Surface && (id.Flags & TileFlag.Background) == 0))
+                        return true;
+                }
+            }
+            catch { }
+
+            try
+            {
+                foreach (Item item in map.GetItemsInRange(new Point3D(x, y, 0), 0))
+                {
+                    if (item == null || item.Deleted || !item.Visible)
+                        continue;
+
+                    var id = item.ItemData;
+                    if ((id.Flags & TileFlag.Impassable) != 0)
+                        return true;
+                }
+            }
+            catch { }
+
+            return false;
         }
     }
 }

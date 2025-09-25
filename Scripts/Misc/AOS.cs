@@ -518,7 +518,7 @@ if (m is PlayerMobile)  //Can we add kill damage here? //////
             #endregion
 
             BaseCostume.OnDamaged(m);
-			
+			Server.DamageScaling.ShowScaledDamage(from, m, totalDamage);
             return totalDamage;
         }
 

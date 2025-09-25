@@ -43,7 +43,7 @@ namespace Server.SkillHandlers
                 else
                 {
                     from.CloseGump(typeof(AnimalLoreGump));
-                    from.SendGump(new AnimalLoreGump(c));
+                    from.SendGump(new AnimalLoreGump(from,c));
                 }
 			}
 
@@ -176,9 +176,27 @@ namespace Server.SkillHandlers
 
         private const int LabelColor = 0x24E5;
 
-        public AnimalLoreGump(BaseCreature c)
-            : base(250, 50)
-        {
+private readonly Mobile _viewer;
+
+public AnimalLoreGump(Mobile viewer, BaseCreature c) : base(250, 50)
+{
+    _viewer = viewer;
+	// Get player's difficulty and show adjusted health perception
+int difficultyLevel = DifficultySettings.GetPlayerDifficulty(_viewer);
+double healthMultiplier = DifficultySettings.GetHealthMultiplier(difficultyLevel);
+
+// Adjust how health looks based on difficulty
+int perceivedMaxHits = c.HitsMax;
+int perceivedHits = c.Hits;
+
+if (difficultyLevel > 1)
+{
+    // For higher difficulty, creatures appear to have more health
+    perceivedMaxHits = (int)(c.HitsMax * healthMultiplier);
+    perceivedHits = (int)(c.Hits * healthMultiplier);
+}
+
+
             AddPage(0);
 
             AddImage(100, 100, 2080);
@@ -204,7 +222,9 @@ namespace Server.SkillHandlers
             AddHtmlLocalized(147, 150, 160, 18, 1049593, 200, false, false); // Attributes
 
             AddHtmlLocalized(153, 168, 160, 18, 1049578, LabelColor, false, false); // Hits
-            AddHtml(280, 168, 75, 18, FormatAttributes(c.Hits, c.HitsMax), false, false);
+AddHtml(280, 168, 75, 18, String.Format("{0} / {1}", perceivedHits, perceivedMaxHits), false, false);//FormatAttributes(perceivedHits, perceivedMaxHits), false, false);
+
+			
 
             AddHtmlLocalized(153, 186, 160, 18, 1049579, LabelColor, false, false); // Stamina
             AddHtml(280, 186, 75, 18, FormatAttributes(c.Stam, c.StamMax), false, false);

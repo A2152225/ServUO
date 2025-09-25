@@ -3402,6 +3402,12 @@ m_Stream.Write( (int) renderMode );
 			m_Stream.Write(d.Serial);
 			AttributeNormalizer.Write(m_Stream, d.Hits, d.HitsMax);
 		}
+		public MobileHitsN(Serial serial, int current, int max) : base(0x1B, 9)
+{
+    m_Stream.Write(serial);
+    m_Stream.Write((short)current);
+    m_Stream.Write((short)max);
+}
 	}
 
 	public sealed class MobileMana : Packet
@@ -3535,7 +3541,7 @@ m_Stream.Write( (int) renderMode );
         }
 	}
 
-	public sealed class MobileStatusCompact : Packet
+/*	public sealed class MobileStatusCompact : Packet
 	{
 		public MobileStatusCompact(bool canBeRenamed, IDamageable d)
 			: base(0x11)
@@ -3554,6 +3560,30 @@ m_Stream.Write( (int) renderMode );
 			m_Stream.Write((byte)0); // type
 		}
 	}
+	*/
+	//Add Difficulty
+public sealed class MobileStatusCompact : Packet
+{
+    public MobileStatusCompact(bool canBeRenamed, IDamageable d)
+        : base(0x11)
+    {
+        string name = d.Name == null ? "" : d.Name;
+        
+        EnsureCapacity(43);
+
+        // Write the standard packet fields
+        m_Stream.Write(d.Serial);
+        m_Stream.WriteAsciiFixed(name, 30);
+        
+        // Use standard health values by default
+        AttributeNormalizer.WriteReverse(m_Stream, d.Hits, d.HitsMax);
+        
+        m_Stream.Write(canBeRenamed);
+        m_Stream.Write((byte)0); // type
+    }
+}
+//End Difficulty
+
 
 	public sealed class MobileStatusExtended : Packet
 	{

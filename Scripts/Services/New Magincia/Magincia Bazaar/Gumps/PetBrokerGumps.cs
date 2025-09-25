@@ -551,7 +551,7 @@ namespace Server.Engines.NewMagincia
                         else
                         {
                             from.CloseGump(typeof(Server.SkillHandlers.AnimalLoreGump));
-                            from.SendGump(new Server.SkillHandlers.AnimalLoreGump(entry.Pet));
+                            from.SendGump(new Server.SkillHandlers.AnimalLoreGump(from, entry.Pet));
                         }
                     }
                     else

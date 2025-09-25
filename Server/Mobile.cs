@@ -39,7 +39,7 @@ namespace Server
 
 	public delegate void PromptStateCallback<T>(Mobile from, string text, T state);
 	#endregion
-
+	
 	#region [...]Mods
 	public class TimedSkillMod : SkillMod
 	{
@@ -146,7 +146,7 @@ namespace Server
 				}
 			}
 		}
-
+	
 		public void Remove()
 		{
 			Owner = null;
@@ -825,6 +825,7 @@ namespace Server
 		private DateTime m_LastDexGain;
 		private Race m_Race;
         #endregion
+			public virtual bool SuppressDamagePopup => false;
 
         private static readonly TimeSpan WarmodeSpamCatch = TimeSpan.FromSeconds((Core.SE ? 1.0 : 0.5));
 		private static readonly TimeSpan WarmodeSpamDelay = TimeSpan.FromSeconds((Core.SE ? 4.0 : 2.0));
@@ -1946,7 +1947,7 @@ namespace Server
 			{
 				if (m_Owner.CanRegenHits) // m_Owner.Alive && !m_Owner.Poisoned )
 				{
-					m_Owner.Hits+=2;
+                    m_Owner.Heal(2, m_Owner, false); //m_Owner.Hits+=2;
 				}
 
 				Delay = Interval = GetHitsRegenRate(m_Owner);
@@ -3954,8 +3955,9 @@ namespace Server
 		{
 			return Skills.UseSkill(this, skillID);
 		}
+        public virtual bool IsPlayerMobile => false;
 
-		private static CreateCorpseHandler m_CreateCorpse;
+        private static CreateCorpseHandler m_CreateCorpse;
 
 		public static CreateCorpseHandler CreateCorpseHandler { get { return m_CreateCorpse; } set { m_CreateCorpse = value; } }
 
@@ -4184,7 +4186,9 @@ namespace Server
 		/// <returns>True to continue with death, false to override it.</returns>
 		public virtual bool OnBeforeDeath()
 		{
-			return true;
+            //Show me the damage number of a dying creature
+     
+            return true;
 		}
 
 		/// <summary>
@@ -5571,8 +5575,9 @@ namespace Server
 				DisruptiveAction();
 
 				Paralyzed = false;
-
-                SendDamagePacket(from, amount);
+				
+                //SendDamagePacket(from, amount);
+				SendDamagePacket(from, GetDamagePopupValue(amount, from));
 				OnDamage(amount, from, newHits < 0);
 
 				IMount m = Mount;
@@ -5604,8 +5609,33 @@ namespace Server
 			return amount;
 		}
 
+        protected virtual int GetDamagePopupValue(int amount, Mobile from)
+{
+    return amount; // Default: show actual amount
+}
         public virtual void SendDamagePacket(Mobile from, int amount)
         {
+            if (SuppressDamagePopup)
+                return;
+
+            // Hybrid approach: Use popup for ≤65535, overhead message for >65535
+            if (amount > 65535)
+            {
+                // Overhead message for large values
+                // MessageType.Regular = 0, hue 33 is red (adjust as needed)
+                if (this.IsPlayerMobile)
+                {
+                    // Only show the overhead damage to others, not to the player themselves
+                    this.NonlocalOverheadMessage(MessageType.Label, 33, false, amount.ToString("N0"));
+                }
+                else
+                {
+                    // For creatures, show to all (or as needed)
+                    this.PublicOverheadMessage(MessageType.Label, 33, false, amount.ToString("N0"));
+                }
+                return;
+            }
+
             switch (m_VisibleDamageType)
             {
                 case VisibleDamageType.Related:
@@ -5634,7 +5664,7 @@ namespace Server
 
                         if (amount > 0 && (ourState != null || theirState != null))
                         {
-                            Packet p = null; // = new DamagePacket( this, amount );
+                            Packet p = null;
 
                             if (ourState != null)
                             {
@@ -5681,7 +5711,7 @@ namespace Server
             }
         }
 
-		public virtual void SendDamageToAll(int amount)
+        public virtual void SendDamageToAll(int amount)
 		{
 			if (amount < 0)
 			{
@@ -8231,10 +8261,10 @@ namespace Server
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
-				}
+				}*/
 
 				if (m_Str != value)
 				{
@@ -8282,11 +8312,11 @@ namespace Server
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+				/*else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+*/
 				return value;
 			}
 			set
@@ -8315,11 +8345,11 @@ namespace Server
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+            */
 				if (m_Dex != value)
 				{
 					int oldValue = m_Dex;
@@ -8366,11 +8396,11 @@ namespace Server
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+            */
 				return value;
 			}
 			set
@@ -8399,11 +8429,11 @@ namespace Server
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+			/*	else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+            */
 				if (m_Int != value)
 				{
 					int oldValue = m_Int;
@@ -8450,11 +8480,11 @@ namespace Server
 				{
 					value = 1;
 				}
-				else if (value > 65000)
+				/*else if (value > 65000)
 				{
 					value = 65000;
 				}
-
+*/
 				return value;
 			}
 			set

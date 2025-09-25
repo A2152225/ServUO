@@ -361,68 +361,86 @@ namespace Server.Multis
             base.Deserialize(reader);
             int version = reader.ReadInt();
         }
-    }
+		public override bool IsInside(Point3D p, int height)
+{
+    if (base.IsInside(p, height))
+        return true;
 
-    public class Castle : BaseHouse
+    if (this is Castle || this is Keep)
     {
-        public static Rectangle2D[] AreaArray = new Rectangle2D[] { new Rectangle2D(-15, -15, 31, 31), new Rectangle2D(-1, 16, 4, 1) };
-        public Castle(Mobile owner)
-            : base(0x7E, owner, 4076, 28)
-        {
-            uint keyValue = CreateKeys(owner);
+        if (Contains(p))
+            return true;
+    }
 
-            AddSouthDoors(false, 0, 15, 6, keyValue);
+    return false;
+}
+    }
 
-            SetSign(5, 17, 16);
+   public class Castle : BaseHouse
+{
+    // Expanded: includes the main footprint and the 9x9 courtyard (adjust offsets as needed)
+    public static Rectangle2D[] AreaArray = new Rectangle2D[] {
+        new Rectangle2D(-15, -15, 31, 31), // Main footprint
+        new Rectangle2D(-4, -4, 9, 9)      // Courtyard: center area inside the walls
+    };
 
-            AddSouthDoors(false, 0, 11, 6, true);
-            AddSouthDoors(false, 0, 5, 6, false);
-            AddSouthDoors(false, -1, -11, 6, false);
-        }
+    public Castle(Mobile owner)
+        : base(0x7E, owner, 4076, 28)
+    {
+        uint keyValue = CreateKeys(owner);
 
-        public Castle(Serial serial)
-            : base(serial)
-        {
-        }
+        AddSouthDoors(false, 0, 15, 6, keyValue);
 
-        public override int DefaultPrice
-        {
-            get
-            {
-                return 1022800;
-            }
-        }
-        public override Rectangle2D[] Area
-        {
-            get
-            {
-                return AreaArray;
-            }
-        }
-        public override Point3D BaseBanLocation
-        {
-            get
-            {
-                return new Point3D(5, 17, 0);
-            }
-        }
-        public override HouseDeed GetDeed()
-        {
-            return new CastleDeed();
-        }
+        SetSign(5, 17, 16);
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write((int)0);//version
-        }
+        AddSouthDoors(false, 0, 11, 6, true);
+        AddSouthDoors(false, 0, 5, 6, false);
+        AddSouthDoors(false, -1, -11, 6, false);
+    }
 
-        public override void Deserialize(GenericReader reader)
+    public Castle(Serial serial)
+        : base(serial)
+    {
+    }
+
+    public override int DefaultPrice
+    {
+        get
         {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+            return 1022800;
         }
     }
+    public override Rectangle2D[] Area
+    {
+        get
+        {
+            return AreaArray;
+        }
+    }
+    public override Point3D BaseBanLocation
+    {
+        get
+        {
+            return new Point3D(5, 17, 0);
+        }
+    }
+    public override HouseDeed GetDeed()
+    {
+        return new CastleDeed();
+    }
+
+    public override void Serialize(GenericWriter writer)
+    {
+        base.Serialize(writer);
+        writer.Write((int)0);//version
+    }
+
+    public override void Deserialize(GenericReader reader)
+    {
+        base.Deserialize(reader);
+        int version = reader.ReadInt();
+    }
+}
 
     public class LargePatioHouse : BaseHouse
     {

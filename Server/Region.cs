@@ -362,7 +362,7 @@ namespace Server
 			m_Sectors = null;
 		}
 
-		public bool Contains(Point3D p)
+		public virtual bool Contains(Point3D p)
 		{
 			for (int i = 0; i < m_Area.Length; i++)
 			{

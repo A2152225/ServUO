@@ -222,6 +222,213 @@ namespace Server.Multis
 
             return DecayLevel.LikeNew;
         }
+		    public virtual HousePlacementEntry ConvertEntry { get { return null; } }
+        public virtual int ConvertOffsetX { get { return 0; } }
+        public virtual int ConvertOffsetY { get { return 0; } }
+        public virtual int ConvertOffsetZ { get { return 0; } }
+
+        public virtual int DefaultPrice { get { return 0; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int Price { get; set; }
+
+        public virtual HouseDeed GetDeed()
+        {
+            return null;
+        }
+
+        public bool IsFriend(Mobile m)
+        {
+            if (m == null || Friends == null)
+                return false;
+
+            return IsCoOwner(m) || Friends.Contains(m);
+        }
+
+        public bool IsBanned(Mobile m)
+        {
+            if (m == null || m == Owner || m.IsStaff() || Bans == null)
+                return false;
+
+            Account theirAccount = m.Account as Account;
+
+            for (int i = 0; i < Bans.Count; ++i)
+            {
+                Mobile c = (Mobile)Bans[i];
+
+                if (c == m)
+                    return true;
+
+                Account bannedAccount = c.Account as Account;
+
+                if (bannedAccount != null && bannedAccount == theirAccount)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool HasAccess(Mobile m)
+        {
+            if (m == null)
+                return false;
+
+            if (m.IsStaff() || IsFriend(m) || (Access != null && Access.Contains(m)))
+                return true;
+
+            if (m is BaseCreature)
+            {
+                BaseCreature bc = (BaseCreature)m;
+
+                if (bc.NoHouseRestrictions)
+                    return true;
+
+                if (bc.Controlled || bc.Summoned)
+                {
+                    m = bc.ControlMaster;
+
+                    if (m == null)
+                        m = bc.SummonMaster;
+
+                    if (m == null)
+                        return false;
+
+                    if (m.IsStaff() || IsFriend(m) || (Access != null && Access.Contains(m)))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public new bool IsLockedDown(Item check)
+        {
+            if (check == null)
+                return false;
+
+            if (LockDowns == null)
+                return false;
+
+            return (LockDowns.ContainsKey(check) || VendorRentalContracts.Contains(check));
+        }
+
+        public new bool IsSecure(Item item)
+        {
+            if (item == null)
+                return false;
+
+            if (Secures == null)
+                return false;
+
+            bool contains = false;
+
+            for (int i = 0; !contains && i < Secures.Count; ++i)
+                contains = Secures[i].Item == item;
+
+            return contains;
+        }
+
+        public virtual Guildstone FindGuildstone()
+        {
+            Map map = Map;
+
+            if (map == null)
+                return null;
+
+            MultiComponentList mcl = Components;
+            IPooledEnumerable eable = map.GetItemsInBounds(new Rectangle2D(X + mcl.Min.X, Y + mcl.Min.Y, mcl.Width, mcl.Height));
+
+            foreach (Item item in eable)
+            {
+                if (item is Guildstone && Contains(item))
+                {
+                    eable.Free();
+                    return (Guildstone)item;
+                }
+            }
+
+            eable.Free();
+            return null;
+        }
+// Add these members inside the BaseHouse class (near the end), before the closing brace.
+
+/// <summary>
+/// Houses that are logically linked (used by combine placement feature).
+/// </summary>
+public List<BaseHouse> LinkedHouses { get; } = new List<BaseHouse>();
+
+/// <summary>
+/// Adds a house to this house's linked set (no duplicates).
+/// Caller may add mutual links if needed.
+/// </summary>
+public virtual void AddLinkedHouse(BaseHouse other)
+{
+    if (other == null || other == this)
+        return;
+
+    if (!LinkedHouses.Contains(other))
+        LinkedHouses.Add(other);
+}
+
+/// <summary>
+/// Returns the 2D footprint tiles covered by this house for adjacency checks.
+/// Uses Region.Area when available (treating End as exclusive, consistent with other code),
+/// otherwise falls back to the multi Components bounds.
+/// </summary>
+public virtual HashSet<Point2D> GetFootprintTiles()
+{
+    var tiles = new HashSet<Point2D>();
+
+    try
+    {
+        var area = Region != null ? Region.Area : null;
+
+        if (area != null && area.Length > 0)
+        {
+            // Region.Area rectangles use End as exclusive (see InRange and other usages)
+            for (int i = 0; i < area.Length; i++)
+            {
+                var r = area[i];
+
+                int startX = Math.Min(r.Start.X, r.End.X);
+                int endX   = Math.Max(r.Start.X, r.End.X); // exclusive
+                int startY = Math.Min(r.Start.Y, r.End.Y);
+                int endY   = Math.Max(r.Start.Y, r.End.Y); // exclusive
+
+                for (int x = startX; x < endX; x++)
+                {
+                    for (int y = startY; y < endY; y++)
+                    {
+                        tiles.Add(new Point2D(x, y));
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Fallback: use multi component bounds. Build exclusive end using +1 like other code paths.
+            var mcl = Components;
+            int startX = X + mcl.Min.X;
+            int endX   = X + mcl.Max.X + 1; // exclusive
+            int startY = Y + mcl.Min.Y;
+            int endY   = Y + mcl.Max.Y + 1; // exclusive
+
+            for (int x = startX; x < endX; x++)
+            {
+                for (int y = startY; y < endY; y++)
+                {
+                    tiles.Add(new Point2D(x, y));
+                }
+            }
+        }
+    }
+    catch
+    {
+        // Best-effort; return whatever we collected
+    }
+
+    return tiles;
+}
 
         public virtual bool RefreshDecay()
         {
@@ -1523,6 +1730,27 @@ namespace Server.Multis
             return door;
         }
 
+        // Single-door wrappers for int/short key values (custom-script compatibility)
+        public BaseDoor AddEastDoor(bool wood, int x, int y, int z, int k)
+        {
+            return AddEastDoor(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor AddEastDoor(bool wood, int x, int y, int z, short k)
+        {
+            return AddEastDoor(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor AddSouthDoor(bool wood, int x, int y, int z, int k)
+        {
+            return AddSouthDoor(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor AddSouthDoor(bool wood, int x, int y, int z, short k)
+        {
+            return AddSouthDoor(wood, x, y, z, (uint)k);
+        }
+
         public BaseDoor[] AddSouthDoors(int x, int y, int z, uint k)
         {
             return AddSouthDoors(true, x, y, z, k);
@@ -1543,6 +1771,17 @@ namespace Server.Multis
             AddDoor(eastDoor, x + 1, y, z);
 
             return new BaseDoor[2] { westDoor, eastDoor };
+        }
+
+        // Double-door wrappers with int/short keys (custom-script compatibility)
+        public BaseDoor[] AddSouthDoors(bool wood, int x, int y, int z, int k)
+        {
+            return AddSouthDoors(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor[] AddSouthDoors(bool wood, int x, int y, int z, short k)
+        {
+            return AddSouthDoors(wood, x, y, z, (uint)k);
         }
 
         public BaseDoor[] AddEastDoors(int x, int y, int z, uint k)
@@ -1587,6 +1826,17 @@ namespace Server.Multis
             return new BaseDoor[2] { northDoor, southDoor };
         }
 
+        // Double-door wrappers with int key and invert/altopen (custom-script compatibility)
+        public BaseDoor[] AddEastDoors(bool wood, int x, int y, int z, int k)
+        {
+            return AddEastDoors(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor[] AddEastDoors(bool wood, int x, int y, int z, int k, bool invert, bool altopen)
+        {
+            return AddEastDoors(wood, x, y, z, (uint)k, invert, altopen);
+        }
+
         protected void ConvertDoor(BaseDoor door, int closedID, bool invert)
         {
             door.ItemID = closedID;
@@ -1596,7 +1846,8 @@ namespace Server.Multis
 
         protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset)
         {
-            return AddDoor(null, itemID, xOffset, yOffset, zOffset);
+            // Cast null to Mobile to disambiguate from the BaseDoor overload
+            return AddDoor((Mobile)null, itemID, xOffset, yOffset, zOffset);
         }
 
         protected BaseDoor AddDoor(Mobile from, int itemID, int xOffset, int yOffset, int zOffset)
@@ -1821,6 +2072,33 @@ namespace Server.Multis
             return door;
         }
 
+        // Convenience overloads to create-by-itemID with a given key (custom-script compatibility)
+        protected BaseDoor AddDoor(Mobile from, int itemID, int xOffset, int yOffset, int zOffset, uint key)
+        {
+            BaseDoor door = AddDoor(from, itemID, xOffset, yOffset, zOffset);
+            if (door != null)
+                door.KeyValue = key;
+            return door;
+        }
+
+        protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset, uint key)
+        {
+            BaseDoor door = AddDoor((Mobile)null, itemID, xOffset, yOffset, zOffset);
+            if (door != null)
+                door.KeyValue = key;
+            return door;
+        }
+
+        protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset, int key)
+        {
+            return AddDoor(itemID, xOffset, yOffset, zOffset, (uint)key);
+        }
+
+        protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset, short key)
+        {
+            return AddDoor(itemID, xOffset, yOffset, zOffset, (uint)key);
+        }
+
         private static DoorFacing GetSADoorFacing(int offset)
         {
             /* Offset		0	2	4	6
@@ -1829,11 +2107,15 @@ namespace Server.Multis
             return (DoorFacing)((offset / 2 + 2 * (1 + offset / 4)) % 8);
         }
 
-        public uint CreateKeys(Mobile m)
+        // Make CreateKeys static so external/custom scripts can call BaseHouse.CreateKeys(m)
+        public static uint CreateKeys(Mobile m)
         {
+            if (m == null)
+                return 0;
+
             uint value = Key.RandomValue();
 
-            if (!IsAosRules)
+            if (!Core.AOS)
             {
                 Key packKey = new Key(KeyType.Gold);
                 Key bankKey = new Key(KeyType.Gold);
@@ -1895,10 +2177,36 @@ namespace Server.Multis
             Doors.Add(door);
         }
 
+        // Convenience overloads to set key when adding pre-built doors (custom-script compatibility)
+        protected void AddDoor(BaseDoor door, int xoff, int yoff, int zoff, uint key)
+        {
+            if (door != null)
+                door.KeyValue = key;
+
+            AddDoor(door, xoff, yoff, zoff);
+        }
+
+        protected void AddDoor(BaseDoor door, int xoff, int yoff, int zoff, int key)
+        {
+            AddDoor(door, xoff, yoff, zoff, (uint)key);
+        }
+
+        protected void AddDoor(BaseDoor door, int xoff, int yoff, int zoff, short key)
+        {
+            AddDoor(door, xoff, yoff, zoff, (uint)key);
+        }
+
         public void AddTrashBarrel(Mobile from)
         {
             if (!IsActive)
                 return;
+
+            // Require house friend and valid interior/courtyard tile
+            if (!IsFriend(from) || !IsInteriorOrCourtyard(from.Location))
+            {
+                from.SendLocalizedMessage(502094); // You must be in your house to do this.
+                return;
+            }
 
             for (int i = 0; Doors != null && i < Doors.Count; ++i)
             {
@@ -1926,8 +2234,8 @@ namespace Server.Multis
                 m_Trash.MoveToWorld(from.Location, from.Map);
 
                 from.SendLocalizedMessage(502121); /* You have a new trash barrel.
-                * Three minutes after you put something in the barrel, the trash will be emptied.
-                * Be forewarned, this is permanent! */
+        * Three minutes after you put something in the barrel, the trash will be emptied.
+        * Be forewarned, this is permanent! */
             }
             else
             {
@@ -2031,15 +2339,15 @@ namespace Server.Multis
 
                 if (checkIsInside && item.RootParent is Mobile)
                 {
-                    m.SendLocalizedMessage(1005525);//That is not in your house
+                    m.SendLocalizedMessage(1005525); // That is not in your house
                 }
-                else if (checkIsInside && !IsInside(item.GetWorldLocation(), item.ItemData.Height))
+                else if (checkIsInside && !IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
                 {
-                    m.SendLocalizedMessage(1005525);//That is not in your house
+                    m.SendLocalizedMessage(1005525); // That is not in your house
                 }
                 else if (Ethics.Ethic.IsImbued(item))
                 {
-                    m.SendLocalizedMessage(1005377);//You cannot lock that down
+                    m.SendLocalizedMessage(1005377); // You cannot lock that down
                 }
                 else if (IsSecure(rootItem))
                 {
@@ -2051,7 +2359,7 @@ namespace Server.Multis
                 }
                 else if (!(item is VendorRentalContract) && (IsAosRules ? (!CheckAosLockdowns(amt) || !CheckAosStorage(amt)) : (LockDownCount + amt) > MaxLockDowns))
                 {
-                    m.SendLocalizedMessage(1005379);//That would exceed the maximum lock down limit for this house
+                    m.SendLocalizedMessage(1005379); // That would exceed the maximum lock down limit for this house
                 }
                 else
                 {
@@ -2061,7 +2369,7 @@ namespace Server.Multis
             }
             else if (LockDowns.ContainsKey(item))
             {
-                m.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1005526); //That is already locked down
+                m.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1005526); // That is already locked down
                 return true;
             }
             else if (item is HouseSign || item is Static)
@@ -2070,11 +2378,42 @@ namespace Server.Multis
             }
             else
             {
-                m.SendLocalizedMessage(1005377);//You cannot lock that down
+                m.SendLocalizedMessage(1005377); // You cannot lock that down
             }
 
             return false;
         }
+        // Add this helper immediately after the existing IsInside(Point3D p, int height) method
+// Make IsInteriorOrCourtyard public so other classes can call it.
+public bool IsInteriorOrCourtyard(Point3D p, int height = 16)
+{
+    if (IsInside(p, height))
+        return true;
+
+    // Treat courtyard/footprint tiles inside for Castle/Keep style houses
+    if (this is Castle || this is Keep)
+    {
+        try
+        {
+            var tiles = GetFootprintTiles();
+            if (tiles != null)
+            {
+                // explicit coordinate comparison is safe if you prefer not to rely on Point2D.Equals/GetHashCode
+                foreach (var t in tiles)
+                {
+                    if (t.X == p.X && t.Y == p.Y)
+                        return true;
+                }
+            }
+        }
+        catch
+        {
+            // best-effort, swallow errors
+        }
+    }
+
+    return false;
+}
 
         private class TransferItem : Item
         {
@@ -2416,6 +2755,12 @@ namespace Server.Multis
                 {
                     m.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1010418); // You did not lock this down, and you are not able to release this.
                 }
+                else if (!IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
+                {
+                    // Keep feedback consistent with other house ops
+                    m.SendLocalizedMessage(1005525); // That is not in your house
+                    return false;
+                }
                 else if (CanRelease(m, item))
                 {
                     SetLockdown(m, item, false);
@@ -2445,7 +2790,7 @@ namespace Server.Multis
             if (Secures == null || !IsCoOwner(m) || !IsActive)
                 return;
 
-            if (!IsInside(item))
+            if (!IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
             {
                 m.SendLocalizedMessage(1005525); // That is not in your house
             }
@@ -2617,6 +2962,17 @@ namespace Server.Multis
         {
             if (Secures == null || item is StrongBox || !IsActive || !CanRelease(m, item))
                 return false;
+
+            // Only allow releasing secure items within interior/courtyard footprint
+            try
+            {
+                if (!IsInteriorOrCourtyard(item.GetWorldLocation(), item.ItemData.Height))
+                {
+                    m.SendLocalizedMessage(1005525); // That is not in your house
+                    return false;
+                }
+            }
+            catch { }
 
             var info = GetSecureInfoFor(item);
 
@@ -3038,7 +3394,6 @@ namespace Server.Multis
                 }
             }
         }
-
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -4198,135 +4553,103 @@ namespace Server.Multis
             }
         }
 
-        public virtual HousePlacementEntry ConvertEntry { get { return null; } }
-        public virtual int ConvertOffsetX { get { return 0; } }
-        public virtual int ConvertOffsetY { get { return 0; } }
-        public virtual int ConvertOffsetZ { get { return 0; } }
+        // ----------------------------
+        // Custom-script compatibility helpers (door/key overloads)
+        // ----------------------------
 
-        public virtual int DefaultPrice { get { return 0; } }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int Price { get; set; }
-
-        public virtual HouseDeed GetDeed()
+        // Allow passing a key when creating a door by itemID (no ambiguity with existing overloads)
+   /*     protected BaseDoor AddDoor(Mobile from, int itemID, int xOffset, int yOffset, int zOffset, uint key)
         {
-            return null;
+            BaseDoor door = AddDoor(from, itemID, xOffset, yOffset, zOffset);
+            if (door != null)
+                door.KeyValue = key;
+            return door;
+        }
+		protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset)
+{
+    // Disambiguate vs. AddDoor(BaseDoor, …)
+    return AddDoor((Mobile)null, itemID, xOffset, yOffset, zOffset);
+}
+*/
+     /*   protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset, uint key)
+        {
+            BaseDoor door = AddDoor((Mobile)null, itemID, xOffset, yOffset, zOffset);
+            if (door != null)
+                door.KeyValue = key;
+            return door;
         }
 
-        public bool IsFriend(Mobile m)
+        protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset, int key)
         {
-            if (m == null || Friends == null)
-                return false;
-
-            return IsCoOwner(m) || Friends.Contains(m);
+            return AddDoor(itemID, xOffset, yOffset, zOffset, (uint)key);
         }
 
-        public bool IsBanned(Mobile m)
+        protected BaseDoor AddDoor(int itemID, int xOffset, int yOffset, int zOffset, short key)
         {
-            if (m == null || m == Owner || m.IsStaff() || Bans == null)
-                return false;
-
-            Account theirAccount = m.Account as Account;
-
-            for (int i = 0; i < Bans.Count; ++i)
-            {
-                Mobile c = (Mobile)Bans[i];
-
-                if (c == m)
-                    return true;
-
-                Account bannedAccount = c.Account as Account;
-
-                if (bannedAccount != null && bannedAccount == theirAccount)
-                    return true;
-            }
-
-            return false;
+            return AddDoor(itemID, xOffset, yOffset, zOffset, (uint)key);
         }
 
-        public bool HasAccess(Mobile m)
+        // Set key directly when adding an already-built door
+        protected void AddDoor(BaseDoor door, int xoff, int yoff, int zoff, uint key)
         {
-            if (m == null)
-                return false;
+            if (door != null)
+                door.KeyValue = key;
 
-            if (m.IsStaff() || IsFriend(m) || (Access != null && Access.Contains(m)))
-                return true;
-
-            if (m is BaseCreature)
-            {
-                BaseCreature bc = (BaseCreature)m;
-
-                if (bc.NoHouseRestrictions)
-                    return true;
-
-                if (bc.Controlled || bc.Summoned)
-                {
-                    m = bc.ControlMaster;
-
-                    if (m == null)
-                        m = bc.SummonMaster;
-
-                    if (m == null)
-                        return false;
-
-                    if (m.IsStaff() || IsFriend(m) || (Access != null && Access.Contains(m)))
-                        return true;
-                }
-            }
-
-            return false;
+            AddDoor(door, xoff, yoff, zoff);
         }
 
-        public new bool IsLockedDown(Item check)
+        protected void AddDoor(BaseDoor door, int xoff, int yoff, int zoff, int key)
         {
-            if (check == null)
-                return false;
-
-            if (LockDowns == null)
-                return false;
-
-            return (LockDowns.ContainsKey(check) || VendorRentalContracts.Contains(check));
+            AddDoor(door, xoff, yoff, zoff, (uint)key);
         }
 
-        public new bool IsSecure(Item item)
+        protected void AddDoor(BaseDoor door, int xoff, int yoff, int zoff, short key)
         {
-            if (item == null)
-                return false;
-
-            if (Secures == null)
-                return false;
-
-            bool contains = false;
-
-            for (int i = 0; !contains && i < Secures.Count; ++i)
-                contains = Secures[i].Item == item;
-
-            return contains;
+            AddDoor(door, xoff, yoff, zoff, (uint)key);
         }
 
-        public virtual Guildstone FindGuildstone()
+        // Single-door wrappers for int/short key values
+        public BaseDoor AddEastDoor(bool wood, int x, int y, int z, int k)
         {
-            Map map = Map;
-
-            if (map == null)
-                return null;
-
-            MultiComponentList mcl = Components;
-            IPooledEnumerable eable = map.GetItemsInBounds(new Rectangle2D(X + mcl.Min.X, Y + mcl.Min.Y, mcl.Width, mcl.Height));
-
-            foreach (Item item in eable)
-            {
-                if (item is Guildstone && Contains(item))
-                {
-                    eable.Free();
-                    return (Guildstone)item;
-                }
-            }
-
-            eable.Free();
-            return null;
+            return AddEastDoor(wood, x, y, z, (uint)k);
         }
-    }
+
+        public BaseDoor AddEastDoor(bool wood, int x, int y, int z, short k)
+        {
+            return AddEastDoor(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor AddSouthDoor(bool wood, int x, int y, int z, int k)
+        {
+            return AddSouthDoor(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor AddSouthDoor(bool wood, int x, int y, int z, short k)
+        {
+            return AddSouthDoor(wood, x, y, z, (uint)k);
+        }
+*/
+        // Double-door wrappers with int/short keys and invert/altopen variants
+         /*       public BaseDoor[] AddEastDoors(bool wood, int x, int y, int z, int k)
+        {
+            return AddEastDoors(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor[] AddEastDoors(bool wood, int x, int y, int z, int k, bool invert, bool altopen)
+        {
+            return AddEastDoors(wood, x, y, z, (uint)k, invert, altopen);
+        }
+
+public BaseDoor[] AddSouthDoors(bool wood, int x, int y, int z, int k)
+        {
+            return AddSouthDoors(wood, x, y, z, (uint)k);
+        }
+
+        public BaseDoor[] AddSouthDoors(bool wood, int x, int y, int z, short k)
+        {
+            return AddSouthDoors(wood, x, y, z, (uint)k);
+        }
+  */  }
 
     public enum DecayType
     {
@@ -4935,22 +5258,16 @@ namespace Server.Multis
                     if (House.Release(from, Item))
                     {
                         Item.MoveToWorld(point, from.Map);
-                        Item.Movable = true;
-
-                        from.SendLocalizedMessage(1159159); // This container has been released and is no longer secure.
+                        Item.SetLastMoved();
+                        from.SendLocalizedMessage(1159159); // That container has been relocated.
                     }
                 }
                 else
                 {
-                    from.SendLocalizedMessage(1149667); // Invalid target.
+                    from.SendLocalizedMessage(1159157); // You may only relocate this inside your house.
                 }
             }
-
-            protected override void OnTargetCancel(Mobile from, TargetCancelType cancelType)
-            {
-                from.SendLocalizedMessage(500979); // You cannot see that location.
-            }
-        }        
+        }
     }
 
     public class ReleaseEntry : ContextMenuEntry

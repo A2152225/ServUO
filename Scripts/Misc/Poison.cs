@@ -150,26 +150,45 @@ namespace Server
 			return new PoisonTimer(m, this);
 		}
 
-		public class PoisonTimer : Timer
-		{
-			private readonly PoisonImpl m_Poison;
-			private readonly Mobile m_Mobile;
-			private Mobile m_From;
-			private int m_LastDamage;
-			private int m_Index;
+        public class PoisonTimer : Timer
+        {
+            private readonly PoisonImpl m_Poison;
+            private readonly Mobile m_Mobile;
+            private Mobile m_From;
+            private int m_LastDamage;
+            private int m_Index;
 
-			public Mobile From { get { return m_From; } set { m_From = value; } }
+            // Source (player or creature) that applied the poison. BaseCreature.ApplyPoison stamps this already.
+            public Mobile From { get { return m_From; } set { m_From = value; } }
 
-			public PoisonTimer(Mobile m, PoisonImpl p)
-				: base(p.m_Delay, p.m_Interval)
-			{
-				m_From = m;
-				m_Mobile = m;
-				m_Poison = p;
+            public PoisonTimer(Mobile m, PoisonImpl p)
+                : base(p.m_Delay, p.m_Interval)
+            {
+                m_From = m;
+                m_Mobile = m;
+                m_Poison = p;
 
-                int damage = 1 + (int)(m.Hits * p.m_Scalar);
+                // Preview/base damage for the buff icon (pre-scaling, like stock behavior)
+                int preview = 1 + (int)(m.Hits * p.m_Scalar);
 
-                BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Poison, 1017383, 1075633, TimeSpan.FromSeconds((int)((p.m_Count + 1) * p.m_Interval.TotalSeconds)), m, String.Format("{0}\t{1}", damage, (int)p.m_Interval.TotalSeconds)));
+                // If you prefer the player to see the outward (scaled) amount that will tick on a difficulty-scaled creature,
+                // uncomment the block below (kept off by default to preserve original OSI-like display):
+                /*
+                if (m is BaseCreature bc && m_From != null)
+                {
+                    preview = bc.AdjustPoisonDamage(preview, m_From);
+                }
+                */
+
+                BuffInfo.AddBuff(
+                    m,
+                    new BuffInfo(
+                        BuffIcon.Poison,
+                        1017383,
+                        1075633,
+                        TimeSpan.FromSeconds((int)((p.m_Count + 1) * p.m_Interval.TotalSeconds)),
+                        m,
+                        String.Format("{0}\t{1}", preview, (int)p.m_Interval.TotalSeconds)));
             }
 
             protected override void OnTick()
@@ -184,6 +203,7 @@ namespace Server
                     m_Mobile.LocalOverheadMessage(MessageType.Regular, 0x3F, 1053093); // * The strength of the poison overcomes your resistance! *
                 }
 
+                // Auto-resist path (unchanged)
                 if ((Core.AOS && m_Poison.RealLevel < 4 && TransformationSpellHelper.UnderTransformation(m_Mobile, typeof(VampiricEmbraceSpell))) ||
                     (m_Poison.RealLevel <= 3 && usingPetals) ||
                     AnimalForm.UnderTransformation(m_Mobile, typeof(Unicorn)))
@@ -191,9 +211,7 @@ namespace Server
                     if (m_Mobile.CurePoison(m_Mobile))
                     {
                         m_Mobile.LocalOverheadMessage(MessageType.Emote, 0x3F, 1053092); // * You feel yourself resisting the effects of the poison *
-
                         m_Mobile.NonlocalOverheadMessage(MessageType.Emote, 0x3F, 1114442, m_Mobile.Name); // * ~1_NAME~ seems resistant to the poison *
-
                         Stop();
                         return;
                     }
@@ -213,6 +231,7 @@ namespace Server
 
                 int damage;
 
+                // Stock damage roll (retains legacy behavior first)
                 if (!Core.AOS && m_LastDamage != 0 && Utility.RandomBool())
                 {
                     damage = m_LastDamage;
@@ -229,9 +248,11 @@ namespace Server
                     m_LastDamage = damage;
                 }
 
+                // Ownership sanity: if the original applier was a creature that recently changed control,
+                // clear harmful credit like legacy logic did.
                 if (m_From != null)
                 {
-                    if (m_From is BaseCreature && ((BaseCreature)m_From).RecentSetControl && ((BaseCreature)m_From).GetMaster() == m_Mobile)
+                    if (m_From is BaseCreature bc && bc.RecentSetControl && bc.GetMaster() == m_Mobile)
                     {
                         m_From = null;
                     }
@@ -241,24 +262,25 @@ namespace Server
                     }
                 }
 
-                IHonorTarget honorTarget = m_Mobile as IHonorTarget;
-
-                if (honorTarget != null && honorTarget.ReceivedHonorContext != null)
+                if (m_Mobile is IHonorTarget honorTarget && honorTarget.ReceivedHonorContext != null)
                     honorTarget.ReceivedHonorContext.OnTargetPoisoned();
 
-                #region Mondain's Legacy
+                #region Mondain's Legacy (darkglow / parasitic adjustments)
                 if (Core.ML)
                 {
-                    if (m_From != null && m_Mobile != m_From && !m_From.InRange(m_Mobile.Location, 1) && m_Poison.m_Level >= 10 && m_Poison.m_Level <= 13) // darkglow
+                    // Darkglow bonus if source is at distance
+                    if (m_From != null && m_Mobile != m_From && !m_From.InRange(m_Mobile.Location, 1) &&
+                        m_Poison.m_Level >= 10 && m_Poison.m_Level <= 13)
                     {
                         m_From.SendLocalizedMessage(1072850); // Darkglow poison increases your damage!
                         damage = (int)Math.Floor(damage * 1.1);
                     }
 
-                    if (m_From != null && m_Mobile != m_From && m_From.InRange(m_Mobile.Location, 1) && m_Poison.m_Level >= 14 && m_Poison.m_Level <= 18) // parasitic
+                    // Parasitic healing if adjacent
+                    if (m_From != null && m_Mobile != m_From && m_From.InRange(m_Mobile.Location, 1) &&
+                        m_Poison.m_Level >= 14 && m_Poison.m_Level <= 18)
                     {
                         int toHeal = Math.Min(m_From.HitsMax - m_From.Hits, damage);
-
                         if (toHeal > 0)
                         {
                             m_From.SendLocalizedMessage(1060203, toHeal.ToString()); // You have had ~1_HEALED_AMOUNT~ hit points of damage healed.
@@ -268,16 +290,26 @@ namespace Server
                 }
                 #endregion
 
+                // === Difficulty / Poison Scaling Integration ===
+                // Adjust OUTWARD poison damage for difficulty-scaled creatures so internal fractional health fits balance rules.
+                if (m_Mobile is BaseCreature targetCreature)
+                {
+                    // Stamp applier fallback (in case original ApplyPoison path missed due to custom scripts)
+                    if (m_From != null)
+                        targetCreature.SetLastPoisonApplier(m_From);
+
+                    damage = targetCreature.AdjustPoisonDamage(damage, m_From);
+                }
+                // ===============================================
+
                 AOS.Damage(m_Mobile, m_From, damage, 0, 0, 0, 100, 0);
 
                 if (damage > 0)
-                {
                     m_Mobile.RevealingAction();
-                }
 
                 if ((m_Index % m_Poison.m_MessageInterval) == 0)
                     m_Mobile.OnPoisoned(m_From, m_Poison, m_Poison);
             }
         }
-	}
+    }
 }

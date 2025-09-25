@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Commands;
 
 using Server.Accounting;
 using Server.ContextMenus;
@@ -495,9 +496,9 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 		private int m_ParagonPoints28 =0;
 		private int m_ParagonPoints29 =0;
 		private int m_ParagonPoints30 =0;
-		
-		/////Level/////
-		[CommandProperty(AccessLevel.Administrator)]
+        public override bool IsPlayerMobile => true;
+        /////Level/////
+        [CommandProperty(AccessLevel.Administrator)]
         public double XPIncrease
         {
             get { return m_XPIncrease; }
@@ -1578,7 +1579,10 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			{
 				Timer.DelayCall(TimeSpan.Zero, CheckPets);
 			}
-		}
+            CommandSystem.Register("SetDamagePopup", AccessLevel.Player, SetDamagePopup_OnCommand);
+            CommandSystem.Register("ResetDamagePopup", AccessLevel.Player, ResetDamagePopup_OnCommand);
+
+        }
 
         #region Enhanced Client
         private static void Targeted_Skill(TargetedSkillEventArgs e)
@@ -1694,7 +1698,43 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 				UpdateResistances();
 			}
 		}
+        private static void SetDamagePopup_OnCommand(CommandEventArgs e)
+        {
+            if (e.Mobile is PlayerMobile pm)
+            {
+                pm.SendMessage("Target a location on your screen for the damage popup.");
+                pm.SendGump(new DamagePopupGump(new List<DamagePopupGump.DamageEntry>(),
+     pm.DamagePopupX == -1 ? 370 : pm.DamagePopupX,
+     pm.DamagePopupY == -1 ? 180 : pm.DamagePopupY,
+     pm, true));
+            }
+        }
 
+        private static void ResetDamagePopup_OnCommand(CommandEventArgs e)
+        {
+            if (e.Mobile is PlayerMobile pm)
+            {
+                pm.DamagePopupX = (800 / 2) - 30;
+                pm.DamagePopupY = (600 / 2) - 120;
+                pm.SendMessage("Damage popup position reset to default.");
+            }
+        }
+        private int m_DamagePopupX = -1;
+        private int m_DamagePopupY = -1;
+
+        [CommandProperty(AccessLevel.Player)]
+        public int DamagePopupX
+        {
+            get => m_DamagePopupX;
+            set => m_DamagePopupX = value;
+        }
+
+        [CommandProperty(AccessLevel.Player)]
+        public int DamagePopupY
+        {
+            get => m_DamagePopupY;
+            set => m_DamagePopupY = value;
+        }
         public override int GetMaxResistance(ResistanceType type)
         {
           /*  if (IsStaff())
@@ -2024,14 +2064,23 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 			//	{	
 			pm.Hits = pm.HitsMax; 
 			pm.Mana = pm.ManaMax; 
-			pm.Stam = pm.StamMax;  
-			//	}
-				
-					
-                       
-/////End Level//
+			pm.Stam = pm.StamMax;
+                //	}
 
-			}
+
+
+                /////End Level//
+                ///
+                if (pm.DamagePopupX == -1 || pm.DamagePopupY == -1)
+                {
+                    pm.SendMessage("Please target a location on your screen for your damage popup.");
+                    pm.SendGump(new DamagePopupGump(new List<DamagePopupGump.DamageEntry>(),
+    pm.DamagePopupX == -1 ? 370 : pm.DamagePopupX,
+    pm.DamagePopupY == -1 ? 180 : pm.DamagePopupY,
+    pm, true));
+                }
+
+            }
             else if (Siege.SiegeShard && from.Map == Map.Trammel && from.AccessLevel == AccessLevel.Player)
             {
                 from.Map = Map.Felucca;
@@ -4449,6 +4498,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
             UndertakersStaff.TryRemoveTimer(this);
 
 			base.OnDamage(amount, from, willKill);
+                // Only show for significant damage, e.g., > 0
+    if (amount > 0)
+    {
+        DamagePopupGump.Show(this, amount);
+    }
 		}
 
 		public override void Resurrect()
@@ -5417,7 +5471,11 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			switch (version)
 			{
-				case 41:
+                case 42:
+                    m_DamagePopupX = reader.ReadInt();
+                    m_DamagePopupY = reader.ReadInt(); 
+                    goto case 41;
+                case 41:
 					#region FS:ATS Edits
 		
 					m_TamingBOBFilter = new Engines.BulkOrders.TamingBOBFilter( reader );
@@ -6023,11 +6081,13 @@ public Dictionary<int, UserSessionInfo> Deserialize(Stream stream)
 
 			base.Serialize(writer);
 
-			writer.Write(41); // version
+			writer.Write(42); // version
+            //Version 42 Damage Popup Position
+            writer.Write(m_DamagePopupX);
+            writer.Write(m_DamagePopupY);
 
-
-		// Version 41 FS:ATS
-		if ( m_TamingBOBFilter == null )
+            // Version 41 FS:ATS
+            if ( m_TamingBOBFilter == null )
 			{
 				m_TamingBOBFilter = new Engines.BulkOrders.TamingBOBFilter();
 			}

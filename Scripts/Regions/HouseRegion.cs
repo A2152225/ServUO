@@ -159,7 +159,26 @@ namespace Server.Regions
 
             m_Recursion = false;
         }
+public override bool Contains(Point3D p)
+{
+    // First let the base (current region rectangle set) decide.
+    if (base.Contains(p))
+        return true;
 
+    // Safety: ensure house exists.
+    if (House == null || House.Deleted)
+        return false;
+
+    // Only extend for Castle / Keep (adjust types as needed)
+    //if (House is Castle || House is Keep)
+    //{
+        // BaseHouse.Contains(Point3D,int) or Contains(Point3D) usually checks full multi footprint.
+        if (House.Contains(p))
+            return true;
+    //}
+
+    return false;
+}
         public override bool OnMoveInto(Mobile from, Direction d, Point3D newLocation, Point3D oldLocation)
         {
             if (!base.OnMoveInto(from, d, newLocation, oldLocation))
@@ -281,6 +300,7 @@ namespace Server.Regions
             bool isOwner = House.IsOwner(from);
             bool isCoOwner = isOwner || House.IsCoOwner(from);
             bool isFriend = isCoOwner || House.IsFriend(from);
+			bool inside = House.IsInside(from);
 
             if (!isFriend)
                 return;
@@ -309,9 +329,24 @@ namespace Server.Regions
                     from.SendLocalizedMessage(501320); // Only the house owner may do 
                 }
             }
+			        if (!inside && (House is Castle || House is Keep))
+            {
+                // House.Contains covers full multi footprint (including courtyard)
+                if (House.Contains(from.Location))
+                    inside = true;
+                else
+                {
+                    // Fallback: if the region itself includes the tile, accept it
+                    // (useful if you deliberately enlarged GetArea)
+                    if (ReferenceEquals(Region.Find(from.Location, from.Map), this))
+                        inside = true;
+                }
+            }
 			
-            if (!House.IsInside(from) || !House.IsActive)
+            if (!inside || !House.IsActive)
                 return;
+			
+			 
 
             else if (e.HasKeyword(0x33)) // remove thyself
             {

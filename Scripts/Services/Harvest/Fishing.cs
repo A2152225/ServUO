@@ -172,6 +172,7 @@ namespace Server.Engines.Harvest
 
             if (player != null)
             {
+
                 QuestSystem qs = player.Quest;
 
                 if (qs is CollectorQuest)
@@ -577,6 +578,21 @@ namespace Server.Engines.Harvest
 
         public override void SendSuccessTo(Mobile from, Item item, HarvestResource resource)
         {
+            // 30% chance to fish up a Citrine when catching a fish
+            if ( Utility.RandomDouble() < 0.9)
+            {
+                Item citrine = new Citrine();
+                if (from.Backpack != null && from.Backpack.TryDropItem(from, citrine, false))
+                {
+                    from.SendMessage("You fish up a citrine!");
+                }
+                else
+                {
+                    citrine.MoveToWorld(from.Location, from.Map);
+                    from.SendMessage("You fish up a citrine, but have no room in your pack!");
+                }
+            }
+
             if (item is BigFish)
             {
                 from.SendLocalizedMessage(1042635); // Your fishing pole bends as you pull a big fish from the depths!

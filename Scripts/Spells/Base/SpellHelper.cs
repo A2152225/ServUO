@@ -1536,6 +1536,7 @@ namespace Server.Spells
 		//	if (from is PlayerMobile){
 		//	amount+=(((PlayerMobile)from).Paragon_5HealingInc*5);			}
             Heal(amount, target, from, true);
+						TrackHealingContribution(from, target, amount);
         }
 
         public static void Heal(int amount, Mobile target, Mobile from, bool message)
@@ -1560,7 +1561,24 @@ namespace Server.Spells
             }
 
             target.Heal(amount, from, message);
+
+
         }
+		
+private static void TrackHealingContribution(Mobile caster, Mobile target, int healAmount)
+{
+    IPooledEnumerable eable = caster.Map.GetMobilesInRange(caster.Location, 10);
+    
+    foreach (Mobile m in eable)
+    {
+        if (m is BaseCreature bc && (bc.Combatant == caster || bc.Combatant == target))
+        {
+		Server.DifficultySettings.GetPlayerDifficulty(caster);
+        }
+    }
+    
+    eable.Free();
+}
 
         private class SpellDamageTimer : Timer
         {

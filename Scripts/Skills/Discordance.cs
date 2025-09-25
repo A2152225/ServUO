@@ -172,6 +172,8 @@ namespace Server.SkillHandlers
 					{
 						double diff = m_Instrument.GetDifficultyFor(targ) - 10.0;
 						double music = from.Skills[SkillName.Musicianship].Value;
+						// After successful discordance
+					DifficultySettings.ContributionTracker.AddUtilityContribution(targ, from, 12);
 
                         if (from is BaseCreature)
                             music = 120.0;
@@ -201,7 +203,9 @@ namespace Server.SkillHandlers
 						}
 						else if (from.CheckTargetSkill(SkillName.Discordance, target, diff - 25.0, diff + 25.0))
 						{
+							
 							from.SendLocalizedMessage(1049539); // You play the song surpressing your targets strength
+
 
                             if (targ.Player)
                                 targ.SendLocalizedMessage(1072061); // You hear jarring music, suppressing your strength.

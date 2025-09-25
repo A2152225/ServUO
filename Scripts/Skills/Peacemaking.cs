@@ -129,6 +129,7 @@ namespace Server.SkillHandlers
 									if (m is BaseCreature && !((BaseCreature)m).BardPacified)
 									{
 										((BaseCreature)m).Pacify(from, DateTime.UtcNow + TimeSpan.FromSeconds(1.0));
+													DifficultySettings.ContributionTracker.AddUtilityContribution(m, from, 10);
 									}
 								}
                                 eable.Free();
@@ -139,7 +140,10 @@ namespace Server.SkillHandlers
 								}
 								else
 								{
+									
 									from.SendLocalizedMessage(500615); // You play your hypnotic music, stopping the battle.
+						
+
 								}
 							}
 						}
@@ -207,6 +211,7 @@ namespace Server.SkillHandlers
 
 									targ.Combatant = null;
 									targ.Warmode = false;
+					DifficultySettings.ContributionTracker.AddUtilityContribution(targ, from, 10);
 
 									double seconds = 100 - (diff / 1.5);
 

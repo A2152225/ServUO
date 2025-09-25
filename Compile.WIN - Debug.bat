@@ -90,4 +90,4 @@ echo Incorrect input & goto Ask
 @ECHO OFF
 
 "%CURPATH%%EXENAME%.exe"
-
+@PAUSE

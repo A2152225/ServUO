@@ -409,7 +409,7 @@ namespace Server.Mobiles
 				Mobile m = (Mobile)e.Mobile;
 				if ( m == this.ControlMaster )
 				{
-					m.SendGump( new AnimalLoreGump( this ) );
+					m.SendGump( new AnimalLoreGump(m, this ) );
 				}
 				else
 				{
