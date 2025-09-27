@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
-using Server;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
 using Server.Prompts;
+using System;
+using System.Collections;
 
 namespace Server.Engines.BulkOrders
 {
@@ -209,7 +210,7 @@ namespace Server.Engines.BulkOrders
                         else if (name is string)
                             AddLabel(316, y, 1152, (string)name);
 
-                        AddLabel(421, y, 1152, String.Format("{0} / {1}", sub.AmountCur, e.AmountMax));
+                        AddLabel(421, y, 1152, string.Format("{0} / {1}", sub.AmountCur, e.AmountMax));
 
                         ++tableIndex;
                         y += 32;
@@ -246,7 +247,7 @@ namespace Server.Engines.BulkOrders
                     else if (name is string)
                         AddLabel(316, y, 1152, (string)name);
 
-                    AddLabel(421, y, 1152, String.Format("{0} / {1}", e.AmountCur, e.AmountMax));
+                    AddLabel(421, y, 1152, string.Format("{0} / {1}", e.AmountCur, e.AmountMax));
                 }
             }
         }
@@ -575,7 +576,7 @@ namespace Server.Engines.BulkOrders
 
         public object GetMaterialName(BulkMaterialType mat, BODType type, Type itemType)
         {
-            switch ( type )
+            switch (type)
             {
                 case BODType.Tinkering:
                 case BODType.Smith:
@@ -625,7 +626,7 @@ namespace Server.Engines.BulkOrders
                     }
                 case BODType.Tailor:
                     {
-                        switch ( mat )
+                        switch (mat)
                         {
                             case BulkMaterialType.None:
                                 {
@@ -682,11 +683,11 @@ namespace Server.Engines.BulkOrders
             return "";
         }
 
-        public override void OnResponse(Server.Network.NetState sender, RelayInfo info)
+        public override void OnResponse(Network.NetState sender, RelayInfo info)
         {
             int index = info.ButtonID;
 
-            switch ( index )
+            switch (index)
             {
                 case 0: // EXIT
                     {
@@ -771,13 +772,13 @@ namespace Server.Engines.BulkOrders
                                             m_From.SendLocalizedMessage(1045152); // The bulk order deed has been placed in your backpack.
                                             m_Book.Entries.Remove(obj);
                                             m_Book.InvalidateProperties();
-										
+
                                             if (m_Book.Entries.Count / 5 < m_Book.ItemCount)
                                             {
                                                 m_Book.ItemCount--;
                                                 m_Book.InvalidateItems();
                                             }
-										
+
                                             if (m_Book.Entries.Count > 0)
                                             {
                                                 m_Page = GetPageForIndex(index, sizeOfDroppedBod);
@@ -842,7 +843,7 @@ namespace Server.Engines.BulkOrders
 
         private class SetPricePrompt : Prompt
         {
-            public override int MessageCliloc { get { return 1062383; } }
+            public override int MessageCliloc => 1062383;
             private readonly BulkOrderBook m_Book;
             private readonly object m_Object;
             private readonly int m_Page;

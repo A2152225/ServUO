@@ -141,7 +141,7 @@ namespace Server.Items
         private int m_RunicMaxAttributes;
         private int m_RunicMinIntensity;
         private int m_RunicMaxIntensity;
-        
+
         public int WeaponFireDamage { get { return m_WeaponFireDamage; } set { m_WeaponFireDamage = value; } }
         public int WeaponColdDamage { get { return m_WeaponColdDamage; } set { m_WeaponColdDamage = value; } }
         public int WeaponPoisonDamage { get { return m_WeaponPoisonDamage; } set { m_WeaponPoisonDamage = value; } }
@@ -197,10 +197,6 @@ namespace Server.Items
         public int RunicMaxAttributes { get { return m_RunicMaxAttributes; } set { m_RunicMaxAttributes = value; } }
         public int RunicMinIntensity { get { return m_RunicMinIntensity; } set { m_RunicMinIntensity = value; } }
         public int RunicMaxIntensity { get { return m_RunicMaxIntensity; } set { m_RunicMaxIntensity = value; } }
-
-        public CraftAttributeInfo()
-        {
-        }
 
         public static readonly CraftAttributeInfo Blank;
         public static readonly CraftAttributeInfo DullCopper, ShadowIron, Copper, Bronze, Golden, Agapite, Verite, Valorite, Blaze, Ice, Toxic, Electrum, Platinum, Barite, Wulfenite, Dragonite ,Bunterite,Pineite,Samite,Toberite, Lisite,Marite, Royalite, Danite, Teal;
@@ -996,57 +992,21 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
         private readonly CraftResource m_Resource;
         private readonly Type[] m_ResourceTypes;
 
-        public int Hue
-        {
-            get
-            {
-                return this.m_Hue;
-            }
-        }
-        public int Number
-        {
-            get
-            {
-                return this.m_Number;
-            }
-        }
-        public string Name
-        {
-            get
-            {
-                return this.m_Name;
-            }
-        }
-        public CraftAttributeInfo AttributeInfo
-        {
-            get
-            {
-                return this.m_AttributeInfo;
-            }
-        }
-        public CraftResource Resource
-        {
-            get
-            {
-                return this.m_Resource;
-            }
-        }
-        public Type[] ResourceTypes
-        {
-            get
-            {
-                return this.m_ResourceTypes;
-            }
-        }
+        public int Hue => m_Hue;
+        public int Number => m_Number;
+        public string Name => m_Name;
+        public CraftAttributeInfo AttributeInfo => m_AttributeInfo;
+        public CraftResource Resource => m_Resource;
+        public Type[] ResourceTypes => m_ResourceTypes;
 
         public CraftResourceInfo(int hue, int number, string name, CraftAttributeInfo attributeInfo, CraftResource resource, params Type[] resourceTypes)
         {
-            this.m_Hue = hue;
-            this.m_Number = number;
-            this.m_Name = name;
-            this.m_AttributeInfo = attributeInfo;
-            this.m_Resource = resource;
-            this.m_ResourceTypes = resourceTypes;
+            m_Hue = hue;
+            m_Number = number;
+            m_Name = name;
+            m_AttributeInfo = attributeInfo;
+            m_Resource = resource;
+            m_ResourceTypes = resourceTypes;
 
             for (int i = 0; i < resourceTypes.Length; ++i)
                 CraftResources.RegisterType(resourceTypes[i], resource);
@@ -1055,11 +1015,11 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 
     public class CraftResources
     {
-        private static readonly CraftResourceInfo[] m_MetalInfo = new CraftResourceInfo[]
+        private static readonly CraftResourceInfo[] m_MetalInfo = new[]
         {
             new CraftResourceInfo(0x000, 1053109, "Iron", CraftAttributeInfo.Blank, CraftResource.Iron, typeof(IronIngot), typeof(IronOre), typeof(Granite)),
-            new CraftResourceInfo(0x973, 1053108, "Dull Copper",	CraftAttributeInfo.DullCopper,	CraftResource.DullCopper, typeof(DullCopperIngot),	typeof(DullCopperOre),	typeof(DullCopperGranite)),
-            new CraftResourceInfo(0x966, 1053107, "Shadow Iron",	CraftAttributeInfo.ShadowIron,	CraftResource.ShadowIron, typeof(ShadowIronIngot),	typeof(ShadowIronOre),	typeof(ShadowIronGranite)),
+            new CraftResourceInfo(0x973, 1053108, "Dull Copper",    CraftAttributeInfo.DullCopper,  CraftResource.DullCopper, typeof(DullCopperIngot),  typeof(DullCopperOre),  typeof(DullCopperGranite)),
+            new CraftResourceInfo(0x966, 1053107, "Shadow Iron",    CraftAttributeInfo.ShadowIron,  CraftResource.ShadowIron, typeof(ShadowIronIngot),  typeof(ShadowIronOre),  typeof(ShadowIronGranite)),
             new CraftResourceInfo(0x96D, 1053106, "Copper", CraftAttributeInfo.Copper, CraftResource.Copper, typeof(CopperIngot), typeof(CopperOre), typeof(CopperGranite)),
             new CraftResourceInfo(0x972, 1053105, "Bronze", CraftAttributeInfo.Bronze, CraftResource.Bronze, typeof(BronzeIngot), typeof(BronzeOre), typeof(BronzeGranite)),
             new CraftResourceInfo(0x8A5, 1053104, "Gold", CraftAttributeInfo.Golden, CraftResource.Gold, typeof(GoldIngot), typeof(GoldOre), typeof(GoldGranite)),
@@ -1105,7 +1065,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 				new CraftResourceInfo( 49,  	0,		"Gold Scales",		CraftAttributeInfo.GoldScales,		CraftResource.GoldScales,		typeof( GoldScales ) ),
 		};
 
-        private static readonly CraftResourceInfo[] m_LeatherInfo = new CraftResourceInfo[]
+        private static readonly CraftResourceInfo[] m_ScaleInfo = new[]
         {
             new CraftResourceInfo(0x000, 1049353, "Normal", CraftAttributeInfo.Blank, CraftResource.RegularLeather,	typeof(Leather), typeof(Hides)),
             new CraftResourceInfo(0x283, 1049354, "Spined", CraftAttributeInfo.Spined, CraftResource.SpinedLeather,	typeof(SpinedLeather),	typeof(SpinedHides)),
@@ -1121,7 +1081,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 				//daat99 OWLTR end - custom leather
 		};
 
-        private static readonly CraftResourceInfo[] m_AOSLeatherInfo = new CraftResourceInfo[]
+        private static readonly CraftResourceInfo[] m_AOSLeatherInfo = new[]
         {
             new CraftResourceInfo(0x000, 1049353, "Normal", CraftAttributeInfo.Blank, CraftResource.RegularLeather,	typeof(Leather), typeof(Hides)),
             new CraftResourceInfo(0x8AC, 1049354, "Spined", CraftAttributeInfo.Spined, CraftResource.SpinedLeather,	typeof(SpinedLeather),	typeof(SpinedHides)),
@@ -1137,7 +1097,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 				//daat99 OWLTR end - custom leather
         };
 
-        private static readonly CraftResourceInfo[] m_WoodInfo = new CraftResourceInfo[]
+        private static readonly CraftResourceInfo[] m_WoodInfo = new[]
         {
             new CraftResourceInfo(0x000, 1011542, "Normal", CraftAttributeInfo.Blank, CraftResource.RegularWood,	typeof(Log), typeof(Board)),
             new CraftResourceInfo(1457, 1072533, "Oak", CraftAttributeInfo.OakWood, CraftResource.OakWood, typeof(OakLog), typeof(OakBoard)),
@@ -1165,7 +1125,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
         private static Hashtable m_TypeTable;
 
         /// <summary>
-        /// Registers that '<paramref name="resourceType"/>' uses '<paramref name="resource"/>' so that it can later be queried by <see cref="CraftResources.GetFromType"/>
+        /// Registers that '<paramref name="resourceType"/>' uses '<paramref name="resource"/>' so that it can later be queried by <see cref="GetFromType"/>
         /// </summary>
         public static void RegisterType(Type resourceType, CraftResource resource)
         {
@@ -1204,7 +1164,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
                     list = m_MetalInfo;
                     break;
                 case CraftResourceType.Leather:
-                    list = Core.AOS ? m_AOSLeatherInfo : m_LeatherInfo;
+                    list = m_AOSLeatherInfo;
                     break;
                 case CraftResourceType.Scales:
                     list = m_ScaleInfo;
@@ -1275,7 +1235,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
             if (start == CraftResource.None)
                 return 0;
 
-            return (int)(resource - start);
+            return resource - start;
         }
 
         /// <summary>
@@ -1305,7 +1265,7 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
         {
             CraftResourceInfo info = GetInfo(resource);
 
-            return (info == null ? String.Empty : info.Name);
+            return (info == null ? string.Empty : info.Name);
         }
 
         /// <summary>
@@ -1445,33 +1405,15 @@ CraftAttributeInfo blaze = Blaze = new CraftAttributeInfo();
 
         public OreInfo(int level, int hue, string name)
         {
-            this.m_Level = level;
-            this.m_Hue = hue;
-            this.m_Name = name;
+            m_Level = level;
+            m_Hue = hue;
+            m_Name = name;
         }
 
-        public int Level
-        {
-            get
-            {
-                return this.m_Level;
-            }
-        }
+        public int Level => m_Level;
 
-        public int Hue
-        {
-            get
-            {
-                return this.m_Hue;
-            }
-        }
+        public int Hue => m_Hue;
 
-        public string Name
-        {
-            get
-            {
-                return this.m_Name;
-            }
-        }
+        public string Name => m_Name;
     }
 }

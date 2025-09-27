@@ -1,5 +1,3 @@
-using System;
-
 namespace Server.Mobiles
 {
     [CorpseName("a chicken corpse")]
@@ -7,7 +5,7 @@ namespace Server.Mobiles
     {
         [Constructable]
         public Chicken()
-            : base(AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             Name = "a chicken";
             Body = 0xD0;
@@ -32,8 +30,6 @@ namespace Server.Mobiles
 
             Fame = 150;
             Karma = 0;
-
-            VirtualArmor = 2;
 
             Tamable = true;
             ControlSlots = 1;
@@ -90,14 +86,12 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write((int)0);
+            writer.Write(0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
             int version = reader.ReadInt();
         }
     }

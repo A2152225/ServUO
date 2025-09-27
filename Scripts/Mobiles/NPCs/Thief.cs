@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -16,6 +16,7 @@ namespace Server.Mobiles
             SetSkill(SkillName.Archery, 65.0, 88.0);
             SetSkill(SkillName.Tracking, 65.0, 88.0);
             SetSkill(SkillName.Veterinary, 60.0, 83.0);
+            SetSkill(SkillName.RemoveTrap, 75.0, 98.0);
         }
 
         public Thief(Serial serial)
@@ -23,13 +24,7 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos
-        {
-            get
-            {
-                return m_SBInfos;
-            }
-        }
+        protected override List<SBInfo> SBInfos => m_SBInfos;
         public override void InitSBInfo()
         {
             m_SBInfos.Add(new SBThief());
@@ -37,10 +32,10 @@ namespace Server.Mobiles
 
         public override void InitOutfit()
         {
-            AddItem(new Server.Items.Shirt(Utility.RandomNeutralHue()));
-            AddItem(new Server.Items.LongPants(Utility.RandomNeutralHue()));
-            AddItem(new Server.Items.Dagger());
-            AddItem(new Server.Items.ThighBoots(Utility.RandomNeutralHue()));
+            SetWearable(new Shirt(), Utility.RandomNeutralHue(), 1);
+            SetWearable(new LongPants(), Utility.RandomNeutralHue(), 1);
+            SetWearable(new Dagger(), dropChance: 1);
+			SetWearable(new ThighBoots(), Utility.RandomNeutralHue(), 1);
 
             base.InitOutfit();
         }
@@ -49,7 +44,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,14 +1,9 @@
-using System;
-
-using Server;
-using Server.Items;
-using Server.Mobiles;
-using Server.Engines.Quests;
-using Server.Engines.Points;
 using Server.Accounting;
 using Server.Engines.BulkOrders;
 using Server.Engines.CityLoyalty;
+using Server.Engines.Points;
 using Server.Misc;
+using System;
 
 namespace Server.Mobiles
 {
@@ -171,6 +166,19 @@ namespace Server.Mobiles
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
+        public double Fellowship
+        {
+            get
+            {
+                return (int)PointsSystem.FellowshipData.GetPoints(Player);
+            }
+            set
+            {
+                PointsSystem.FellowshipData.SetPoints(Player, value);
+            }
+        }
+
+        [CommandProperty(AccessLevel.GameMaster)]
         public double GauntletPoints
         {
             get
@@ -309,11 +317,11 @@ namespace Server.Mobiles
         {
             Player = pm;
 
-            var context = BulkOrderSystem.GetContext(pm, false);
+            BODContext context = BulkOrderSystem.GetContext(pm, false);
 
             if (context != null)
             {
-                foreach (var kvp in context.Entries)
+                foreach (System.Collections.Generic.KeyValuePair<BODType, BODEntry> kvp in context.Entries)
                 {
                     switch (kvp.Key)
                     {
@@ -370,16 +378,16 @@ namespace Server.Mobiles
         public BODType Type { get; private set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int CachedDeeds { get { return Entry == null ? 0 : Entry.CachedDeeds; } }
+        public int CachedDeeds => Entry == null ? 0 : Entry.CachedDeeds;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public DateTime LastBulkOrder { get { return Entry == null ? DateTime.MinValue : Entry.LastBulkOrder; } }
+        public DateTime LastBulkOrder => Entry == null ? DateTime.MinValue : Entry.LastBulkOrder;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public double BankedPoints { get { return Entry == null ? 0 : Entry.BankedPoints; } }
+        public double BankedPoints => Entry == null ? 0 : Entry.BankedPoints;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int PendingRewardPoints { get { return Entry == null ? 0 : Entry.PendingRewardPoints; } }
+        public int PendingRewardPoints => Entry == null ? 0 : Entry.PendingRewardPoints;
 
         public BODData(BODType type, BODEntry entry)
         {
@@ -500,11 +508,11 @@ namespace Server.Mobiles
 
         public override string ToString()
         {
-            var sys = CityLoyaltySystem.GetCitizenship(Player, false);
+            CityLoyaltySystem sys = CityLoyaltySystem.GetCitizenship(Player, false);
 
             if (sys != null)
             {
-                return String.Format("Citizenship: {0}", sys.City.ToString());
+                return string.Format("Citizenship: {0}", sys.City.ToString());
             }
 
             return base.ToString();

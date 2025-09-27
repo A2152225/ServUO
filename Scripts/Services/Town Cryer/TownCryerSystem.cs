@@ -1,20 +1,18 @@
-using Server;
-using Server.Engines.CityLoyalty;
-using Server.Gumps;
-using Server.ContextMenus;
-using Server.Guilds;
-using Server.Mobiles;
-using Server.Engines.Quests;
 using Server.Commands;
+using Server.ContextMenus;
+using Server.Engines.CityLoyalty;
 using Server.Engines.Khaldun;
-
+using Server.Engines.Quests;
+using Server.Guilds;
+using Server.Gumps;
+using Server.Items;
+using Server.Mobiles;
 using System;
-using System.IO;
-using System.Text;
-using System.Xml;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Xml;
 
 namespace Server.Services.TownCryer
 {
@@ -24,15 +22,15 @@ namespace Server.Services.TownCryer
 
         public static readonly int MaxNewsEntries = 100;
         public static readonly int MaxPerGuildEntries = 1;
-        public static readonly int MaxPerCityGoverrnorEntries = 5;
-        public static readonly int MaxEMEntries = 15;
-        public static readonly int MinGuildMemberCount = 20;
+        public const int MaxPerCityGoverrnorEntries = 5;
+        public const int MaxEMEntries = 15;
+        public const int MinGuildMemberCount = 20;
 
         public static bool UsePreloadedMessages = false;
         public static AccessLevel EMAccess = AccessLevel.Counselor;
         public static readonly string EMEventsPage = "https://uo.com/live-events/";
 
-        private static string PreLoadedPath = "Data/PreLoadedTC.xml";
+        private static readonly string PreLoadedPath = "Data/PreLoadedTC.xml";
 
         public static List<TownCryerGreetingEntry> GreetingsEntries { get; private set; }
         //public static List<TextDefinition> GreetingsEntries { get; private set; }
@@ -95,6 +93,8 @@ namespace Server.Services.TownCryer
             {
                 EventSink.Login += OnLogin;
 
+                NewsEntries.Add(new TownCryerNewsEntry(1159346, 1159347, 0x9D3E, null, "https://uo.com/wiki/ultima-online-wiki/combat/jolly-roger/")); // Jolly Roger
+                NewsEntries.Add(new TownCryerNewsEntry(1159262, 1159263, 0x64E, null, "https://uo.com/wiki/ultima-online-wiki/seasonal-events/halloween-treasures-of-the-sea/")); // Forsaken Foes
                 NewsEntries.Add(new TownCryerNewsEntry(1158944, 1158945, 0x9CEA, null, "https://uo.com/wiki/ultima-online-wiki/combat/pvm-player-versus-monster/rising-tide/")); // Rising Tide
                 NewsEntries.Add(new TownCryerNewsEntry(1158552, 1158553, 0x6CE, typeof(GoingGumshoeQuest), null)); // Going Gumshoe
                 NewsEntries.Add(new TownCryerNewsEntry(1158095, 1158097, 0x61E, null, "https://uo.com/")); // Britain Commons
@@ -107,7 +107,12 @@ namespace Server.Services.TownCryer
                 NewsEntries.Add(new TownCryerNewsEntry(1158092, 1158094, 0x651, typeof(HuntmastersChallengeQuest), "https://uo.com/wiki/ultima-online-wiki/gameplay/huntmasters-challenge/")); // Huntsmaster Challenge 
                 NewsEntries.Add(new TownCryerNewsEntry(1158104, 1158106, 0x61C, typeof(PaladinsOfTrinsic), "https://uo.com/wiki/ultima-online-wiki/world/dungeons/dungeon-shame/")); //  New Shame 
                 NewsEntries.Add(new TownCryerNewsEntry(1158107, 1158109, 0x61A, typeof(RightingWrongQuest), "https://uo.com/wiki/ultima-online-wiki/world/dungeons/dungeon-wrong/")); // New Wrong
-                NewsEntries.Add(new TownCryerNewsEntry(1158113, 1158115, 0x64C, typeof(BuriedRichesQuest), "https://uo.com/wiki/ultima-online-wiki/gameplay/treasure-maps/")); // New TMaps
+
+                if (TreasureMapInfo.NewSystem)
+                {
+                    NewsEntries.Add(new TownCryerNewsEntry(1158113, 1158115, 0x64C, typeof(BuriedRichesQuest), "https://uo.com/wiki/ultima-online-wiki/gameplay/treasure-maps/")); // New TMaps
+                }
+
                 NewsEntries.Add(new TownCryerNewsEntry(1158119, 1158121, 0x64D, typeof(APleaFromMinocQuest), "https://uo.com/wiki/ultima-online-wiki/world/dungeons/dungeon-covetous/")); // New Covetous
                 NewsEntries.Add(new TownCryerNewsEntry(1158110, 1158112, 0x64E, typeof(AVisitToCastleBlackthornQuest), "https://uo.com/wiki/ultima-online-wiki/items/artifacts-castle-blackthorn/")); // Castle Blackthorn
                 NewsEntries.Add(new TownCryerNewsEntry(1158122, 1158124, 0x650, typeof(WishesOfTheWispQuest), "https://uo.com/wiki/ultima-online-wiki/world/dungeons/dungeon-despise-trammel/")); // New Despise
@@ -176,9 +181,9 @@ namespace Server.Services.TownCryer
 
         public static void OnLogin(LoginEventArgs e)
         {
-            if (Enabled && e.Mobile is PlayerMobile && !IsExempt(e.Mobile))
+            if (Enabled && e.Mobile is PlayerMobile mobile && !IsExempt(mobile))
             {
-                Timer.DelayCall<PlayerMobile>(TimeSpan.FromSeconds(1), player =>
+                Timer.DelayCall(TimeSpan.FromSeconds(1), player =>
                 {
                     if (HasCustomEntries())
                     {
@@ -186,7 +191,7 @@ namespace Server.Services.TownCryer
                     }
                     else
                     {
-                        IPooledEnumerable eable = player.Map.GetMobilesInRange(player.Location, 25);
+                        IPooledEnumerable eable = player.Map.GetMobilesInRange(player.Location, 20);
 
                         foreach (Mobile m in eable)
                         {
@@ -200,13 +205,13 @@ namespace Server.Services.TownCryer
                         eable.Free();
                     }
 
-                }, (PlayerMobile)e.Mobile);
+                }, mobile);
             }
         }
 
         public static int CityEntryCount(City city)
         {
-            return CityEntries.Where(x => x.City == city).Count();
+            return CityEntries.Count(x => x.City == city);
         }
 
         public static bool HasGuildEntry(Guild g)
@@ -226,7 +231,7 @@ namespace Server.Services.TownCryer
         {
             if (ModeratorEntries.Count > 0 ||
                 CityEntries.Count > 0 ||
-                GuildEntries.Count > 0 || 
+                GuildEntries.Count > 0 ||
                 GreetingsEntries.Any(e => e.Expires != DateTime.MinValue) ||
                 MysteriousPotionEffects != null)
             {
@@ -271,9 +276,9 @@ namespace Server.Services.TownCryer
 
             if (MysteriousPotionEffects != null)
             {
-                var list = new List<Mobile>(MysteriousPotionEffects.Keys);
+                List<Mobile> list = new List<Mobile>(MysteriousPotionEffects.Keys);
 
-                foreach (var m in list)
+                foreach (Mobile m in list)
                 {
                     if (MysteriousPotionEffects != null && MysteriousPotionEffects.ContainsKey(m) && MysteriousPotionEffects[m] < DateTime.UtcNow)
                     {
@@ -301,7 +306,7 @@ namespace Server.Services.TownCryer
         {
             if (from is PlayerMobile)
             {
-                var pm = from as PlayerMobile;
+                PlayerMobile pm = from as PlayerMobile;
 
                 if (pm.AccessLevel >= EMAccess)
                 {
@@ -309,11 +314,11 @@ namespace Server.Services.TownCryer
                     list.Add(new UpdateEMEntry(tc));
                 }
 
-                var system = CityLoyaltySystem.GetCitizenship(pm, false);
+                CityLoyaltySystem system = CityLoyaltySystem.GetCitizenship(pm, false);
 
                 if (IsGovernor(pm, system))
                 {
-                    list.Add(new UpdateCityEntry(tc, system.City));
+                    list.Add(new UpdateCityEntry(tc));
                 }
 
                 Guild g = pm.Guild as Guild;
@@ -344,9 +349,9 @@ namespace Server.Services.TownCryer
 
         public static bool UnderMysteriousPotionEffects(Mobile m, bool checkQuest = false)
         {
-            return 
+            return
                 MysteriousPotionEffects != null && MysteriousPotionEffects.ContainsKey(m) && MysteriousPotionEffects[m] > DateTime.UtcNow &&
-                (!checkQuest || (m is PlayerMobile && QuestHelper.HasQuest<AForcedSacraficeQuest2>((PlayerMobile)m)));
+                (!checkQuest || m is PlayerMobile && QuestHelper.HasQuest<AForcedSacraficeQuest2>((PlayerMobile)m));
         }
 
         public static void AddMysteriousPotionEffects(Mobile m)
@@ -378,7 +383,7 @@ namespace Server.Services.TownCryer
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Diagnostics.ExceptionLogging.LogException(e);
                     Utility.WriteConsoleColor(ConsoleColor.Cyan, "...FAILED! ***");
                     return;
                 }
@@ -418,17 +423,18 @@ namespace Server.Services.TownCryer
                         }
                         else if (expires > DateTime.Now || expires == DateTime.MinValue)
                         {
-                            var entry = new TownCryerGreetingEntry(title, body, -1, link, linktext);
-
-                            entry.PreLoaded = true;
-                            entry.Created = created;
+                            TownCryerGreetingEntry entry = new TownCryerGreetingEntry(title, body, -1, link, linktext)
+                            {
+                                PreLoaded = true,
+                                Created = created
+                            };
 
                             if (expires > created)
                             {
                                 entry.Expires = expires;
                             }
 
-                            TownCryerSystem.AddEntry(entry);
+                            AddEntry(entry);
                             good++;
                         }
                         else
@@ -465,8 +471,9 @@ namespace Server.Services.TownCryer
             {
                 datetime = DateTime.Parse(text, CultureInfo.CreateSpecificCulture("en-US"));
             }
-            catch
+            catch (Exception e)
             {
+                Diagnostics.ExceptionLogging.LogException(e);
             }
 
             return datetime;
@@ -507,30 +514,30 @@ namespace Server.Services.TownCryer
             writer.Write(GreetingsEntries.Count);
 
             writer.Write(TownCryerExempt.Count);
-            foreach (var pm in TownCryerExempt)
+            foreach (PlayerMobile pm in TownCryerExempt)
                 writer.Write(pm);
 
-            writer.Write(GreetingsEntries.Where(x => x.Saves).Count());
-            foreach (var e in GreetingsEntries.Where(x => x.Saves))
+            writer.Write(GreetingsEntries.Count(x => x.Saves));
+            foreach (TownCryerGreetingEntry e in GreetingsEntries.Where(x => x.Saves))
                 e.Serialize(writer);
 
             writer.Write(ModeratorEntries.Count);
-            foreach (var e in ModeratorEntries)
+            foreach (TownCryerModeratorEntry e in ModeratorEntries)
                 e.Serialize(writer);
 
             writer.Write(CityEntries.Count);
-            foreach (var e in CityEntries)
+            foreach (TownCryerCityEntry e in CityEntries)
                 e.Serialize(writer);
 
             writer.Write(GuildEntries.Count);
-            foreach (var e in GuildEntries)
+            foreach (TownCryerGuildEntry e in GuildEntries)
                 e.Serialize(writer);
 
             writer.Write(MysteriousPotionEffects != null ? MysteriousPotionEffects.Count : 0);
 
             if (MysteriousPotionEffects != null)
             {
-                foreach (var kvp in MysteriousPotionEffects)
+                foreach (KeyValuePair<Mobile, DateTime> kvp in MysteriousPotionEffects)
                 {
                     writer.Write(kvp.Key);
                     writer.Write(kvp.Value);
@@ -553,7 +560,7 @@ namespace Server.Services.TownCryer
 
                     for (int i = 0; i < count; i++)
                     {
-                        var pm = reader.ReadMobile() as PlayerMobile;
+                        PlayerMobile pm = reader.ReadMobile() as PlayerMobile;
 
                         if (pm != null)
                         {
@@ -564,7 +571,7 @@ namespace Server.Services.TownCryer
                     count = reader.ReadInt();
                     for (int i = 0; i < count; i++)
                     {
-                        var entry = new TownCryerGreetingEntry(reader);
+                        TownCryerGreetingEntry entry = new TownCryerGreetingEntry(reader);
 
                         if (!entry.Expired)
                         {
@@ -576,7 +583,7 @@ namespace Server.Services.TownCryer
                     count = reader.ReadInt();
                     for (int i = 0; i < count; i++)
                     {
-                        var entry = new TownCryerModeratorEntry(reader);
+                        TownCryerModeratorEntry entry = new TownCryerModeratorEntry(reader);
 
                         if (!entry.Expired)
                         {
@@ -587,7 +594,7 @@ namespace Server.Services.TownCryer
                     count = reader.ReadInt();
                     for (int i = 0; i < count; i++)
                     {
-                        var entry = new TownCryerCityEntry(reader);
+                        TownCryerCityEntry entry = new TownCryerCityEntry(reader);
 
                         if (!entry.Expired)
                         {
@@ -598,7 +605,7 @@ namespace Server.Services.TownCryer
                     count = reader.ReadInt();
                     for (int i = 0; i < count; i++)
                     {
-                        var entry = new TownCryerGuildEntry(reader);
+                        TownCryerGuildEntry entry = new TownCryerGuildEntry(reader);
 
                         if (!entry.Expired)
                         {
@@ -634,7 +641,7 @@ namespace Server.Services.TownCryer
 
     public class AddGreetingEntry : ContextMenuEntry
     {
-        public TownCrier Cryer { get; set; }
+        public TownCrier Cryer { get; }
 
         public AddGreetingEntry(TownCrier cryer)
             : base(1011405, 3) // Change Greeting
@@ -654,7 +661,7 @@ namespace Server.Services.TownCryer
 
     public class UpdateEMEntry : ContextMenuEntry
     {
-        public TownCrier Cryer { get; set; }
+        public TownCrier Cryer { get; }
 
         public UpdateEMEntry(TownCrier cryer)
             : base(1158022, 3) // Update EM Town Crier
@@ -681,22 +688,20 @@ namespace Server.Services.TownCryer
 
     public class UpdateCityEntry : ContextMenuEntry
     {
-        public City City { get; set; }
-        public TownCrier Cryer { get; set; }
+        public TownCrier Cryer { get; }
 
-        public UpdateCityEntry(TownCrier cryer, City city)
+        public UpdateCityEntry(TownCrier cryer)
             : base(1158023, 3) // Update City Town Crier
         {
             Cryer = cryer;
-            City = city;
         }
 
         public override void OnClick()
         {
             if (Owner.From is PlayerMobile)
             {
-                var pm = Owner.From as PlayerMobile;
-                var system = CityLoyaltySystem.GetCitizenship(pm, false);
+                PlayerMobile pm = Owner.From as PlayerMobile;
+                CityLoyaltySystem system = CityLoyaltySystem.GetCitizenship(pm, false);
 
                 if (TownCryerSystem.IsGovernor(pm, system))
                 {
@@ -715,7 +720,7 @@ namespace Server.Services.TownCryer
 
     public class UpdateGuildEntry : ContextMenuEntry
     {
-        public TownCrier Cryer { get; set; }
+        public TownCrier Cryer { get; }
 
         public UpdateGuildEntry(Mobile from, TownCrier cryer)
             : base(1158024, 3) // Update Guild Town Crier
@@ -728,7 +733,7 @@ namespace Server.Services.TownCryer
         {
             PlayerMobile pm = Owner.From as PlayerMobile;
 
-            if(pm != null)
+            if (pm != null)
             {
                 Guild g = pm.Guild as Guild;
 

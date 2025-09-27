@@ -1,10 +1,8 @@
-using System;
-
 namespace Server.Items
 {
     public abstract class BaseIngot : Item, ICommodity, IResource
     {
-        protected virtual CraftResource DefaultResource { get { return CraftResource.Iron; } }
+        protected virtual CraftResource DefaultResource => CraftResource.Iron;
 
         private CraftResource m_Resource;
         public BaseIngot(CraftResource resource)
@@ -40,42 +38,24 @@ namespace Server.Items
                 InvalidateProperties();
             }
         }
-        public override double DefaultWeight
-        {
-            get
-            {
-                return 0.1;
-            }
-        }
+        public override double DefaultWeight => 0.1;
         public override int LabelNumber
         {
             get
             {
                 if (m_Resource >= CraftResource.DullCopper && m_Resource <= CraftResource.Valorite)
-                    return 1042684 + (int)(m_Resource - CraftResource.DullCopper);
+                    return 1042684 + (m_Resource - CraftResource.DullCopper);
 
                 return 1042692;
             }
         }
-        TextDefinition ICommodity.Description
-        {
-            get
-            {
-                return LabelNumber;
-            }
-        }
-        bool ICommodity.IsDeedable
-        {
-            get
-            {
-                return true;
-            }
-        }
+        TextDefinition ICommodity.Description => LabelNumber;
+        bool ICommodity.IsDeedable => true;
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write((int)1); // version
+            writer.Write(1); // version
 
             writer.Write((int)m_Resource);
         }
@@ -86,7 +66,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch ( version )
+            switch (version)
             {
                 case 2: // Reset from Resource System
                     m_Resource = DefaultResource;
@@ -101,7 +81,7 @@ namespace Server.Items
                     {
                         OreInfo info;
 
-                        switch ( reader.ReadInt() )
+                        switch (reader.ReadInt())
                         {
                             case 0:
                                 info = OreInfo.Iron;
@@ -227,7 +207,7 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class IronIngot : BaseIngot
     {
         [Constructable]
@@ -251,7 +231,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -262,10 +242,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class DullCopperIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.DullCopper; } }
+        protected override CraftResource DefaultResource => CraftResource.DullCopper;
 
         [Constructable]
         public DullCopperIngot()
@@ -288,7 +268,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -299,10 +279,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class ShadowIronIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.ShadowIron; } }
+        protected override CraftResource DefaultResource => CraftResource.ShadowIron;
 
         [Constructable]
         public ShadowIronIngot()
@@ -325,7 +305,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -336,10 +316,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class CopperIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Copper; } }
+        protected override CraftResource DefaultResource => CraftResource.Copper;
 
         [Constructable]
         public CopperIngot()
@@ -362,7 +342,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -373,10 +353,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class BronzeIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Bronze; } }
+        protected override CraftResource DefaultResource => CraftResource.Bronze;
 
         [Constructable]
         public BronzeIngot()
@@ -399,7 +379,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -410,10 +390,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class GoldIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Gold; } }
+        protected override CraftResource DefaultResource => CraftResource.Gold;
 
         [Constructable]
         public GoldIngot()
@@ -436,7 +416,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -447,10 +427,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class AgapiteIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Agapite; } }
+        protected override CraftResource DefaultResource => CraftResource.Agapite;
 
         [Constructable]
         public AgapiteIngot()
@@ -473,7 +453,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -484,10 +464,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class VeriteIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Verite; } }
+        protected override CraftResource DefaultResource => CraftResource.Verite;
 
         [Constructable]
         public VeriteIngot()
@@ -510,7 +490,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -521,10 +501,10 @@ namespace Server.Items
         }
     }
 
-    [FlipableAttribute(0x1BF2, 0x1BEF)]
+    [Flipable(0x1BF2, 0x1BEF)]
     public class ValoriteIngot : BaseIngot
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Valorite; } }
+        protected override CraftResource DefaultResource => CraftResource.Valorite;
 
         [Constructable]
         public ValoriteIngot()
@@ -547,7 +527,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)

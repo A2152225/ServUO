@@ -1,4 +1,3 @@
-using System;
 using Server.Engines.Craft;
 using Server.Mobiles;
 using Server.Targeting;
@@ -7,7 +6,7 @@ namespace Server.Items
 {
     public abstract class BaseOre : Item
     {
-        protected virtual CraftResource DefaultResource { get { return CraftResource.Iron; } }
+        protected virtual CraftResource DefaultResource => CraftResource.Iron;
 
         private CraftResource m_Resource;
 
@@ -31,7 +30,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)1); // version
+            writer.Write(1); // version
 
             writer.Write((int)m_Resource);
         }
@@ -42,7 +41,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch ( version )
+            switch (version)
             {
                 case 2: // Reset from Resource System
                     m_Resource = DefaultResource;
@@ -57,7 +56,7 @@ namespace Server.Items
                     {
                         OreInfo info;
 
-                        switch ( reader.ReadInt() )
+                        switch (reader.ReadInt())
                         {
                             case 0:
                                 info = OreInfo.Iron;
@@ -219,7 +218,7 @@ namespace Server.Items
             get
             {
                 if (m_Resource >= CraftResource.DullCopper && m_Resource <= CraftResource.Valorite)
-                    return 1042845 + (int)(m_Resource - CraftResource.DullCopper);
+                    return 1042845 + (m_Resource - CraftResource.DullCopper);
 
                 return 1042853; // iron ore;
             }
@@ -257,7 +256,7 @@ namespace Server.Items
 
             private bool IsForge(object obj)
             {
-                if (Core.ML && obj is Mobile && ((Mobile)obj).IsDeadBondedPet)
+                if (obj is Mobile && ((Mobile)obj).IsDeadBondedPet)
                     return false;
 
                 if (obj.GetType().IsDefined(typeof(ForgeAttribute), false))
@@ -381,7 +380,7 @@ namespace Server.Items
                         talisman = true;
                     #endregion
 
-                    switch ( m_Ore.Resource )
+                    switch (m_Ore.Resource)
                     {
                         default:
                             difficulty = 20.0;
@@ -595,7 +594,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -613,7 +612,7 @@ namespace Server.Items
 
     public class DullCopperOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.DullCopper; } }
+        protected override CraftResource DefaultResource => CraftResource.DullCopper;
 
         [Constructable]
         public DullCopperOre()
@@ -636,7 +635,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -654,7 +653,7 @@ namespace Server.Items
 
     public class ShadowIronOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.ShadowIron; } }
+        protected override CraftResource DefaultResource => CraftResource.ShadowIron;
 
         [Constructable]
         public ShadowIronOre()
@@ -677,7 +676,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -695,7 +694,7 @@ namespace Server.Items
 
     public class CopperOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Copper; } }
+        protected override CraftResource DefaultResource => CraftResource.Copper;
 
         [Constructable]
         public CopperOre()
@@ -718,7 +717,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -736,7 +735,7 @@ namespace Server.Items
 
     public class BronzeOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Bronze; } }
+        protected override CraftResource DefaultResource => CraftResource.Bronze;
 
         [Constructable]
         public BronzeOre()
@@ -759,7 +758,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -777,7 +776,7 @@ namespace Server.Items
 
     public class GoldOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Gold; } }
+        protected override CraftResource DefaultResource => CraftResource.Gold;
 
         [Constructable]
         public GoldOre()
@@ -800,7 +799,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -818,7 +817,7 @@ namespace Server.Items
 
     public class AgapiteOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Agapite; } }
+        protected override CraftResource DefaultResource => CraftResource.Agapite;
 
         [Constructable]
         public AgapiteOre()
@@ -841,7 +840,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -859,7 +858,7 @@ namespace Server.Items
 
     public class VeriteOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Verite; } }
+        protected override CraftResource DefaultResource => CraftResource.Verite;
 
         [Constructable]
         public VeriteOre()
@@ -882,7 +881,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -900,7 +899,7 @@ namespace Server.Items
 
     public class ValoriteOre : BaseOre
     {
-        protected override CraftResource DefaultResource { get { return CraftResource.Valorite; } }
+        protected override CraftResource DefaultResource => CraftResource.Valorite;
 
         [Constructable]
         public ValoriteOre()
@@ -923,7 +922,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write((int)0); // version
+            writer.Write(0); // version
         }
 
         public override void Deserialize(GenericReader reader)

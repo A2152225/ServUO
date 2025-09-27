@@ -1,6 +1,6 @@
+using Server.Items;
 using System;
 using System.Collections.Generic;
-using Server.Items;
 using System.Linq;
 using daat99;
 
@@ -10,9 +10,6 @@ namespace Server.Mobiles
     {
         private readonly Dictionary<Type, int> m_Table = new Dictionary<Type, int>();
         private Type[] m_Types;
-        public GenericSellInfo()
-        {
-        }
 
         public Type[] Types
         {
@@ -50,7 +47,7 @@ namespace Server.Mobiles
                 if (buyInfo != null)
                 {
                     int sold = buyInfo.TotalSold;
-                    price = (int)((double)buyInfo.Price * .75);
+                    price = (int)(buyInfo.Price * .75);
 
                     return Math.Max(1, price);
                 }
@@ -65,9 +62,7 @@ namespace Server.Mobiles
                 else if (armor.Quality == ItemQuality.Exceptional)
                     price = (int)(price * 1.25);
 
-                price += 100 * (int)armor.Durability;
-
-                price += 100 * (int)armor.ProtectionLevel;
+                price += 5 * armor.ArmorAttributes.DurabilityBonus;
 
 				//daat99 OWLTR start - resources cost more
 				if ( OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.RESOURCE_COST) )
@@ -97,9 +92,9 @@ namespace Server.Mobiles
                 else if (weapon.Quality == ItemQuality.Exceptional)
                     price = (int)(price * 1.25);
 
-                price += 100 * (int)weapon.DurabilityLevel;
+                price += 100 * weapon.WeaponAttributes.DurabilityBonus;
 
-				price += 100 * (int)weapon.DamageLevel;
+                price += 10 * weapon.Attributes.WeaponDamage;
 
 				//daat99 OWLTR start - resources cost more
 				if ( OWLTROptionsManager.IsEnabled(OWLTROptionsManager.OPTIONS_ENUM.RESOURCE_COST) )

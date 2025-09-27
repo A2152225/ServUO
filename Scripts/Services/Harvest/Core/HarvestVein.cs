@@ -1,19 +1,13 @@
-using System;
-
 namespace Server.Engines.Harvest
 {
     public class HarvestVein
     {
-        private double m_VeinChance;
-        private double m_ChanceToFallback;
-        private HarvestResource m_PrimaryResource;
-        private HarvestResource m_FallbackResource;
         public HarvestVein(double veinChance, double chanceToFallback, HarvestResource primaryResource, HarvestResource fallbackResource)
         {
-            this.m_VeinChance = veinChance;
-            this.m_ChanceToFallback = chanceToFallback;
-            this.m_PrimaryResource = primaryResource;
-            this.m_FallbackResource = fallbackResource;
+            VeinChance = veinChance;
+            ChanceToFallback = chanceToFallback;
+            PrimaryResource = primaryResource;
+            FallbackResource = fallbackResource;
         }
 
         public double VeinChance
@@ -38,10 +32,6 @@ namespace Server.Engines.Harvest
                 this.m_ChanceToFallback = value;
             }
         }
-		    //daat99 OWLTR start - custom harvesting
-        private bool b_IsProspected = false;
-        public bool IsProspected { get { return b_IsProspected; } set { b_IsProspected = value; } }
-        //daat99 OWLTR end - custom harvesting									  
         public HarvestResource PrimaryResource
         {
             get

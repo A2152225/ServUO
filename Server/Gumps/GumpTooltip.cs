@@ -18,7 +18,6 @@
  *
  ***************************************************************************/
 
-using System;
 using Server.Network;
 
 namespace Server.Gumps
@@ -26,65 +25,48 @@ namespace Server.Gumps
 	public class GumpTooltip : GumpEntry
 	{
 		private int m_Number;
-		private string m_Text;
-        public GumpTooltip( int number )
+		private string m_Args;
+
+		public GumpTooltip(int number)
+			: this(number, null)
+		{
+		}
+
+		public GumpTooltip(int number, string args)
 		{
 			m_Number = number;
-		}
-	public GumpTooltip( string text )
-		{
-			m_Text = text;
+			m_Args = args;
 		}
 
-        public int Number
+		public int Number
 		{
-			get
-			{
-				return m_Number;
-			}
-			set
-			{
-				Delta( ref m_Number, value );
-				
-			}
-		}
-		public string Text
-		{
-			get
-			{
-				return m_Text;
-			}
-			set
-			{
-				//m_Text = Text;//value;
-				Console.WriteLine("{0} mtext, {1} Text " ,m_Text, Text );
-				Delta( ref m_Text, value );
-				Console.WriteLine("{0} mtext, {1} After Delta Text " ,m_Text, Text );
-			}
+			get => m_Number;
+			set => Delta(ref m_Number, value);
 		}
 
-
-        public override string Compile()
+		public string Args
 		{
-			if (m_Text != null)
-				return string.Format("{{ tooltip {0} }}", m_Text);
-			else 
-				return string.Format("{{ tooltip {0} }}", m_Number);
-				
-        }
+			get => m_Args;
+			set => Delta(ref m_Args, value);
+		}
 
-		private static byte[] m_LayoutName = Gump.StringToBuffer( "tooltip" );
-
-		public override void AppendTo( IGumpWriter disp )
+		public override string Compile()
 		{
-			Console.WriteLine("{0}",disp );
-			disp.AppendLayout( m_LayoutName );
-			Console.WriteLine("{0}",m_LayoutName );
-			Console.WriteLine("Mtext {0}  mnumber {1}",m_Text,m_Number );
-			if (m_Text != null)
-			disp.AppendLayout( m_Text );
-			else		
-			disp.AppendLayout( m_Number );
-        }
+			if (System.String.IsNullOrEmpty(m_Args))
+				return System.String.Format("{{ tooltip {0} }}", m_Number);
+
+			return System.String.Format("{{ tooltip {0} @{1}@ }}", m_Number, m_Args);
+		}
+
+		private static readonly byte[] m_LayoutName = Gump.StringToBuffer("tooltip");
+
+		public override void AppendTo(IGumpWriter disp)
+		{
+			disp.AppendLayout(m_LayoutName);
+			disp.AppendLayout(m_Number);
+
+			if (!System.String.IsNullOrEmpty(m_Args))
+				disp.AppendLayout(m_Args);
+		}
 	}
 }
