@@ -44,5 +44,10 @@ Save*
 *.DotSettings.user
 *.ini
 
+# MakeScript generated files (except examples)
+/MakeScript-*.txt
+!/MakeScript-Example-Output.txt
+!/MakeScript-Documentation.md
+
 !/Data/*
 !/bin/rosyln/*
