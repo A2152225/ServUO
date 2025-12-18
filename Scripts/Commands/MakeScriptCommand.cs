@@ -417,7 +417,7 @@ namespace Server.Commands
                         else
                         {
                             // Generate property summary only
-                            string script = MakeScriptCommand.GenerateIndividualScript(obj);
+                            string script = GenerateIndividualScript(obj);
                             combinedScript.AppendLine(script);
                         }
                         combinedScript.AppendLine();
@@ -469,7 +469,7 @@ namespace Server.Commands
             
             sb.AppendLine(" * Properties:");
             
-            var properties = MakeScriptCommand.GetWritablePropertiesWithValues(type, obj);
+            var properties = GetWritablePropertiesWithValues(type, obj);
             foreach (var kvp in properties)
             {
                 sb.AppendLine(" *   " + kvp.Key + " = " + kvp.Value);
@@ -503,7 +503,7 @@ namespace Server.Commands
                 try
                 {
                     object value = prop.GetValue(obj, null);
-                    string valueStr = MakeScriptCommand.FormatValueForComment(value);
+                    string valueStr = FormatValueForComment(value);
                     result[prop.Name] = valueStr;
                 }
                 catch
