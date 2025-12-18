@@ -159,7 +159,6 @@ namespace Server.Commands
                 try
                 {
                     object value = prop.GetValue(obj, null);
-                    string valueStr = FormatValue(value, prop.PropertyType);
                     
                     // Special handling for Name property
                     if (prop.Name == "Name")
@@ -168,6 +167,16 @@ namespace Server.Commands
                     }
                     else
                     {
+                        string valueStr = FormatValue(value, prop.PropertyType);
+                        
+                        // Special handling for Hue - show as hex
+                        if (prop.Name == "Hue" && value is int)
+                        {
+                            int hueValue = (int)value;
+                            if (hueValue != 0)
+                                valueStr = "0x" + hueValue.ToString("X");
+                        }
+                        
                         sb.AppendLine("            " + prop.Name + " = " + valueStr + ";");
                     }
                 }
@@ -255,7 +264,10 @@ namespace Server.Commands
                 "Serial", "Parent", "Map", "Location", "X", "Y", "Z",
                 "Items", "Backpack", "Followers", "FollowersMax",
                 "Region", "NetState", "Account", "AccessLevel",
-                "LastMoved", "Created", "Deleted"
+                "LastMoved", "Created", "Deleted", "RootParent",
+                "RootParentEntity", "PropertyList", "Context",
+                "Effects", "Aggressed", "Aggressors", "Gump",
+                "Skills", "Stabled", "StatMods"
             };
 
             return skipped.Contains(name);
@@ -279,7 +291,7 @@ namespace Server.Commands
                 return "null";
 
             if (type == typeof(string))
-                return "\"" + value.ToString().Replace("\"", "\\\"") + "\"";
+                return "\"" + value.ToString().Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n") + "\"";
 
             if (type == typeof(bool))
                 return value.ToString().ToLower();
@@ -296,6 +308,11 @@ namespace Server.Commands
             if (type == typeof(DateTime))
             {
                 return "DateTime.UtcNow";
+            }
+
+            if (type.Name == "Point3D")
+            {
+                return string.Format("new Point3D({0})", value.ToString().Replace(",", ", "));
             }
 
             if (type.IsPrimitive || type == typeof(decimal))
