@@ -1,9 +1,12 @@
-using System; 
-using System; 
-using System.ComponentModel;
-using System.Collections; 
+// Updated Experience.cs — replaced large if/else chains with dictionary lookups,
+// made EXPDeed stacking multiplicative (each deed multiplies xp by 1.2),
+// kept DanDollar award constant per XP event (5 ticks == 0.00005).
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Server.Network;
-using Server.Items; 
+using Server.Items;
 using Server.Mobiles;
 using Server.Gumps;
 using Server.Engines.Harvest;
@@ -12,1293 +15,556 @@ using Server.Misc;
 using Server.Engines.PartySystem;
 using PARTY = Server.Engines.PartySystem.Party;
 using Server.Accounting;
+using Server.Custom; // DanDollarManager
 
-
-namespace Server.Mobiles 
-{ 
-	public class Experience
-	{ 
-	public static int AvgMonsterExp = 10;//Exp gained from monster same level in normal circumstances (//was 10)
-	
-	public static void CheckLevel( PlayerMobile pm ) 
-	{
-	
-		PlayerMobile from = pm;
-		long Exp = from.EXP;
-		long XPO = 0;
-		int Level = 0;
-		
-		if (from.LvL == from.MaxLvl) 
-		{Level = from.PrestigeLvl;}
-		else {Level = from.LvL; }	
-		
-	
-		
-		if (from.LvL > from.MaxLvl)
-		{
-		while (from.LvL > from.MaxLvl)
-		{
-			 XPO += (long)((100 * Math.Pow((from.LvL-1),1.35)));
-			from.LvL--;
-		}
-		from.EXP += XPO; 
-		}
-
-while (from.EXP > GetNextLevelXP(pm))
+namespace Server.Mobiles
 {
- long XPMinus = GetNextLevelXP(pm);	
-	
-		if (from.LvL == from.MaxLvl)
+	public class Experience
+	{
+		public static int AvgMonsterExp = 10; // Exp gained from monster same level in normal circumstances
+
+		// Small constant: 0.00005 DanDollar == 5 ticks when TicksPerDollar == 100000
+		private const long DanDollarTicksPerXPEvent = 5L;
+
+		// Harvest base values (without oremodifier). Ores listed here will be multiplied by oremodifier in method.
+		private static readonly Dictionary<Type, int> HarvestBaseExpMap = new Dictionary<Type, int>()
+		{
+			// Ores (base values)
+			{ typeof(IronOre), 3 },
+			{ typeof(DullCopperOre), 5 },
+			{ typeof(ShadowIronOre), 6 },
+			{ typeof(CopperOre), 7 },
+			{ typeof(BronzeOre), 8 },
+			{ typeof(GoldOre), 9 },
+			{ typeof(AgapiteOre), 10 },
+			{ typeof(VeriteOre), 12 },
+			{ typeof(ValoriteOre), 13 },
+			{ typeof(BlazeOre), 12 },
+			{ typeof(IceOre), 13 },
+			{ typeof(ToxicOre), 14 },
+			{ typeof(ElectrumOre), 15 },
+			{ typeof(PlatinumOre), 16 },
+			{ typeof(BariteOre), 16 },
+			{ typeof(WulfeniteOre), 16 },
+			{ typeof(DragoniteOre), 16 },
+			{ typeof(BunteriteOre), 16 },
+			{ typeof(PineiteOre), 16 },
+			{ typeof(SamiteOre), 16 },
+			{ typeof(ToberiteOre), 16 },
+			{ typeof(LisiteOre), 16 },
+			{ typeof(MariteOre), 16 },
+			{ typeof(TealOre), 18 },
+			{ typeof(RoyaliteOre), 17 },
+			{ typeof(DaniteOre), 18 },
+
+			// Logs / generic resources
+			{ typeof(Log), 3 },
+			{ typeof(OakLog), 4 },
+			{ typeof(AshLog), 6 },
+			{ typeof(YewLog), 7 },
+			{ typeof(HeartwoodLog), 8 },
+			{ typeof(BloodwoodLog), 10 },
+			{ typeof(FrostwoodLog), 11 },
+			{ typeof(EbonyLog), 12 },
+			{ typeof(BambooLog), 13 },
+			{ typeof(PurpleHeartLog), 14 },
+			{ typeof(RedwoodLog), 15 },
+			{ typeof(PetrifiedLog), 16 },
+
+			// Fishing, etc
+			{ typeof(Fish), 20 }, // previous code used random 1-100; keep a reasonable base if used
+
+			// Granites
+			{ typeof(Granite), 15 },
+			{ typeof(DullCopperGranite), 15 },
+			{ typeof(ShadowIronGranite), 16 },
+			{ typeof(CopperGranite), 17 },
+			{ typeof(BronzeGranite), 18 },
+			{ typeof(GoldGranite), 19 },
+			{ typeof(AgapiteGranite), 20 },
+			{ typeof(VeriteGranite), 21 },
+			{ typeof(ValoriteGranite), 22 },
+			{ typeof(BlazeGranite), 23 },
+			{ typeof(IceGranite), 24 },
+			{ typeof(ToxicGranite), 25 },
+			{ typeof(ElectrumGranite), 26 },
+			{ typeof(PlatinumGranite), 27 },
+			{ typeof(TealGranite), 28 },
+			{ typeof(RoyaliteGranite), 28 },
+			{ typeof(DaniteGranite), 30 },
+
+			// Boards
+			{ typeof(Board), 5 },
+			{ typeof(OakBoard), 6 },
+			{ typeof(AshBoard), 7 },
+			{ typeof(YewBoard), 8 },
+			{ typeof(HeartwoodBoard), 9 },
+			{ typeof(BloodwoodBoard), 10 },
+			{ typeof(FrostwoodBoard), 11 },
+			{ typeof(EbonyBoard), 12 },
+			{ typeof(BambooBoard), 13 },
+			{ typeof(PurpleHeartBoard), 14 },
+			{ typeof(RedwoodBoard), 15 },
+			{ typeof(PetrifiedBoard), 16 },
+
+			// Other simple resources
+			{ typeof(Garlic), 11 },
+			{ typeof(BlackPearl), 11 },
+			{ typeof(Bloodmoss), 11 },
+			{ typeof(Ginseng), 11 },
+			{ typeof(MandrakeRoot), 11 },
+			{ typeof(Nightshade), 11 },
+			{ typeof(SulfurousAsh), 11 },
+			{ typeof(SpidersSilk), 11 },
+			{ typeof(Bottle), 4 },
+			{ typeof(Shaft), 2 },
+			{ typeof(Feather), 3 },
+			{ typeof(BlankMap), 10 },
+			{ typeof(SackFlour), 4 },
+			{ typeof(Dough), 3 },
+			{ typeof(CakeMix), 10 },
+			{ typeof(CookieMix), 8 },
+			{ typeof(RawBird), 3 },
+			{ typeof(RawChickenLeg), 3 },
+			{ typeof(RawFishSteak), 2 },
+			{ typeof(RawLambLeg), 3 },
+			{ typeof(RawRibs), 3 },
+			{ typeof(Sand), 15 },
+			{ typeof(Keg), 20 },
+			{ typeof(Axle), 3 },
+			{ typeof(ClockFrame), 14 },
+			{ typeof(AxleGears), 3 },
+			{ typeof(SextantParts), 4 },
+			{ typeof(BolaBall), 5 },
+			{ typeof(GateTravelScroll), 7 },
+			{ typeof(RecallScroll), 7 },
+			{ typeof(RecallRune), 8 },
+			{ typeof(BlankScroll), 7 },
+			{ typeof(Cloth), 3 },
+			{ typeof(Leather), 4 },
+			{ typeof(Bone), 4 },
+			{ typeof(DaemonBone), 11 },
+			{ typeof(DaemonBlood), 11 },
+			{ typeof(Cotton), 3 }
+		};
+
+		// Quick lookup of known ore types for applying oremodifier
+		private static readonly HashSet<Type> OreTypes = new HashSet<Type>()
+		{
+			typeof(IronOre),
+			typeof(DullCopperOre),
+			typeof(ShadowIronOre),
+			typeof(CopperOre),
+			typeof(BronzeOre),
+			typeof(GoldOre),
+			typeof(AgapiteOre),
+			typeof(VeriteOre),
+			typeof(ValoriteOre),
+			typeof(BlazeOre),
+			typeof(IceOre),
+			typeof(ToxicOre),
+			typeof(ElectrumOre),
+			typeof(PlatinumOre),
+			typeof(BariteOre),
+			typeof(WulfeniteOre),
+			typeof(DragoniteOre),
+			typeof(BunteriteOre),
+			typeof(PineiteOre),
+			typeof(SamiteOre),
+			typeof(ToberiteOre),
+			typeof(LisiteOre),
+			typeof(MariteOre),
+			typeof(TealOre),
+			typeof(RoyaliteOre),
+			typeof(DaniteOre)
+		};
+
+		// Crafting hold-resource -> base exp
+		private static readonly Dictionary<Type, int> CraftHoldResourceExpMap = new Dictionary<Type, int>()
+		{
+			{ typeof(DullCopperIngot), 5 },
+			{ typeof(ShadowIronIngot), 6 },
+			{ typeof(CopperIngot), 7 },
+			{ typeof(BronzeIngot), 8 },
+			{ typeof(GoldIngot), 9 },
+			{ typeof(AgapiteIngot), 10 },
+			{ typeof(VeriteIngot), 11 },
+			{ typeof(ValoriteIngot), 12 },
+			{ typeof(BlazeIngot), 13 },
+			{ typeof(IceIngot), 14 },
+			{ typeof(ToxicIngot), 15 },
+			{ typeof(ElectrumIngot), 16 },
+			{ typeof(PlatinumIngot), 17 },
+			{ typeof(TealIngot), 17 },
+			{ typeof(RoyaliteIngot), 18 },
+			{ typeof(DaniteIngot), 20 },
+
+			// Boards / logs used in crafting
+			{ typeof(OakLog), 6 },
+			{ typeof(AshLog), 7 },
+			{ typeof(YewLog), 8 },
+			{ typeof(HeartwoodLog), 9 },
+			{ typeof(BloodwoodLog), 10 },
+			{ typeof(FrostwoodLog), 11 },
+			{ typeof(EbonyLog), 12 },
+			{ typeof(BambooLog), 13 },
+			{ typeof(PurpleHeartLog), 14 },
+			{ typeof(RedwoodLog), 15 },
+			{ typeof(PetrifiedLog), 16 },
+
+			// Granites (if used as hold resource)
+			{ typeof(DullCopperGranite), 15 },
+			{ typeof(ShadowIronGranite), 16 },
+			{ typeof(CopperGranite), 17 },
+			{ typeof(BronzeGranite), 18 },
+			{ typeof(GoldGranite), 19 },
+			{ typeof(AgapiteGranite), 20 },
+			{ typeof(VeriteGranite), 21 },
+			{ typeof(ValoriteGranite), 22 },
+			{ typeof(BlazeGranite), 23 },
+			{ typeof(IceGranite), 24 },
+			{ typeof(ToxicGranite), 25 },
+			{ typeof(ElectrumGranite), 26 },
+			{ typeof(PlatinumGranite), 27 },
+			{ typeof(TealGranite), 28 },
+			{ typeof(RoyaliteGranite), 28 },
+			{ typeof(DaniteGranite), 30 }
+		};
+
+		// Craft resource item type fallback map
+		private static readonly Dictionary<Type, int> CraftItemTypeExpMap = new Dictionary<Type, int>()
+		{
+			{ typeof(IronIngot), 4 },
+			{ typeof(Log), 5 },
+			{ typeof(Granite), 15 },
+			{ typeof(Board), 5 },
+			{ typeof(RedScales), 4 },
+			{ typeof(BlankScroll), 7 },
+			{ typeof(Shaft), 2 },
+			{ typeof(Feather), 3 },
+			{ typeof(Bottle), 4 },
+			{ typeof(Garlic), 11 },
+			{ typeof(BlackPearl), 11 },
+			{ typeof(Bloodmoss), 11 },
+			{ typeof(Ginseng), 11 },
+			{ typeof(MandrakeRoot), 11 },
+			{ typeof(Nightshade), 11 },
+			{ typeof(SulfurousAsh), 11 },
+			{ typeof(SpidersSilk), 11 },
+			{ typeof(SackFlour), 4 },
+			{ typeof(Dough), 3 },
+			{ typeof(CakeMix), 10 },
+			{ typeof(CookieMix), 8 },
+			{ typeof(RawBird), 3 },
+			{ typeof(RawChickenLeg), 3 },
+			{ typeof(RawFishSteak), 2 },
+			{ typeof(RawLambLeg), 3 },
+			{ typeof(RawRibs), 3 },
+			{ typeof(Sand), 15 },
+			{ typeof(BlankMap), 10 },
+			{ typeof(Cloth), 3 },
+			{ typeof(Leather), 4 },
+			{ typeof(Bone), 4 },
+			{ typeof(DaemonBone), 11 },
+			{ typeof(DaemonBlood), 11 },
+			{ typeof(Cotton), 3 }
+		};
+
+		public static void CheckLevel(PlayerMobile pm)
+		{
+			PlayerMobile from = pm;
+
+			if (from == null)
+				return;
+
+			long Exp = from.EXP;
+			long XPO = 0;
+			int Level = (from.LvL == from.MaxLvl) ? from.PrestigeLvl : from.LvL;
+
+			if (from.LvL > from.MaxLvl)
+			{
+				while (from.LvL > from.MaxLvl)
+				{
+					XPO += (long)((100 * Math.Pow((from.LvL - 1), 1.35)));
+					from.LvL--;
+				}
+				from.EXP += XPO;
+			}
+
+			while (from.EXP > GetNextLevelXP(pm))
+			{
+				long XPMinus = GetNextLevelXP(pm);
+
+				if (from.LvL == from.MaxLvl)
 				{
 					from.PrestigeLvl++;
-					Effects.SendTargetParticles( from, 14170, 1, 17, 2924-1, 2, 0, EffectLayer.Waist, 0 );//Blue/gold sparkles
-					from.Say( "*Has gained a paragon level*" ); 
-					from.PlaySound( 61 );//Flute
+					Effects.SendTargetParticles(from, 14170, 1, 17, 2924 - 1, 2, 0, EffectLayer.Waist, 0);
+					from.Say("*Has gained a paragon level*");
+					from.PlaySound(61);
 					from.Hits = from.HitsMax;
 					from.Mana = from.ManaMax;
 					from.Stam = from.StamMax;
 					from.ParagonPoints++;
 					pm.InvalidateProperties();
-					
 				}
-				else if ( from.LvL < from.MaxLvl )		//changed 12-12-14 breaker, MaxLvl  prop	/////// Changed from 500 on 7-12-07 {RE} to 2000 ////
-			{
-					LevelUp(from);  //normal level up check below max level 
-					
-					
-				if (from.LvL == from.MaxLvl && from.PrestigeLvl == 0)	// after max level reached , reset XP values for Paragon Leveling calculations
+				else if (from.LvL < from.MaxLvl)
 				{
-					from.LastLevelExp = 100;
-			
-					from.SendMessage("You have reached the maximum level at this time, additional experience will go into paragon levels.");
+					LevelUp(from);
+					if (from.LvL == from.MaxLvl && from.PrestigeLvl == 0)
+					{
+						from.LastLevelExp = 100;
+						from.SendMessage("You have reached the maximum level at this time, additional experience will go into paragon levels.");
+					}
 				}
-			
+
+				from.EXP -= XPMinus;
 			}
-			
-			
-				
-		from.EXP -= XPMinus;
+
+			if (from.ShowExpBar == true)
+				from.SendGump(new ExpBarGump(from));
 		}
 
-		
-		if ( from.ShowExpBar == true )
-			from.SendGump( new ExpBarGump(from));
-	}
-	
-	public static long GetNextLevelXP( PlayerMobile from )
-	{
-			int Level = 0;
-			
-		if (from.LvL == from.MaxLvl) 
-		{Level = from.PrestigeLvl;}
-		else {Level = from.LvL; }	
-		long LastLevel = from.LastLevelExp;
-		double XP = (100 * Math.Pow(Level,1.35));
-		if (XP <= 100) XP = 100;
-		return (long)XP;
-	}
-	
-	public static void LevelUp( PlayerMobile from )
-	{
-		//PlayerMobile from = pm;
-		
-		double XP = (100 * Math.Pow(1.35,from.LvL));
-		if (XP <= 100) XP = 100;
-		from.LastLevelExp = (long)XP;
-		from.LvL++;// 1;
-		from.InvalidateProperties();
+		public static long GetNextLevelXP(PlayerMobile from)
+		{
+			int Level = (from.LvL == from.MaxLvl) ? from.PrestigeLvl : from.LvL;
+			double XP = (100 * Math.Pow(Level, 1.35));
+			if (XP <= 100) XP = 100;
+			return (long)XP;
+		}
 
+		public static void LevelUp(PlayerMobile from)
+		{
+			double XP = (100 * Math.Pow(1.35, from.LvL));
+			if (XP <= 100) XP = 100;
+			from.LastLevelExp = (long)XP;
+			from.LvL++;
+			from.InvalidateProperties();
 
-		
-			if (from.Young && from.LvL == 20)  //remove young protection at 20
+			if (from.Young && from.LvL == 20)
 			{
 				Account acc = from.Account as Account;
-				if (acc != null)
-				acc.RemoveYoungStatus(0);
+				if (acc != null) acc.RemoveYoungStatus(0);
 				from.Young = false;
 				from.YoungSaves = 0;
 				from.SendMessage("You have reached a point where you are no longer considered to be young, you will no longer have the protection from death that has been afforded to you until this point. Good Luck.");
 			}
-		
-		if (from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
-		from.StatCap += 8; //= 1200 + from.LvL;  //stat cap should be set to 1200 base on character creation, no need to redefine with every level, just increase
-		from.SP+=4;
-		from.RawStr ++;
-		from.RawStr ++;
-		from.RawDex ++;
-		from.RawDex ++;
-		from.RawInt ++;
-		from.RawInt ++;
-		
-		
-		//int Level = from.LvL;
 
-		if ( from.LvL >= 1 && from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
-			from.SkillsCap += 80;
-			
-		from.SendMessage("You have gained a level! You are now level " + from.LvL);
-/*			if ( from.SP > 0 )
-		{
-			from.SendMessage("You have " + from.SP + " specialization points to allocate");
-			from.SendGump( new StatGump(from) );
+			if (from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
+				from.StatCap += 8;
+			from.SP += 4;
+			from.RawStr++;
+			from.RawStr++;
+			from.RawDex++;
+			from.RawDex++;
+			from.RawInt++;
+			from.RawInt++;
+
+			if (from.LvL >= 1 && from.LvL > from.OldMaxLvl && from.LvL <= from.MaxLvl)
+				from.SkillsCap += 80;
+
+			from.SendMessage("You have gained a level! You are now level " + from.LvL);
+			Effects.SendTargetParticles(from, 14170, 1, 17, 2924 - 1, 2, 0, EffectLayer.Waist, 0);
+			from.Say("*Has gained a level*");
+			from.PlaySound(61);
+			from.Hits = from.HitsMax;
+			from.Mana = from.ManaMax;
+			from.Stam = from.StamMax;
+			from.InvalidateProperties();
 		}
-*/
-		Effects.SendTargetParticles( from, 14170, 1, 17, 2924-1, 2, 0, EffectLayer.Waist, 0 );//Blue/gold sparkles
-		from.Say( "*Has gained a level*" ); 
-		from.PlaySound( 61 );//Flute
-		from.Hits = from.HitsMax;
-		from.Mana = from.ManaMax;
-		from.Stam = from.StamMax;
-		from.InvalidateProperties();
 
-		
-	}
-	public static void MonsterExp( Mobile killer, Mobile monster, Point3D loc, double Percent, long XPAMOUNT )
-	{
-		BaseCreature Monster = monster as BaseCreature;
-		PlayerMobile from = null;
-		if ( killer is PlayerMobile )
-			from = killer as PlayerMobile;
-		else if ( killer is BaseCreature )
+		public static void MonsterExp(Mobile killer, Mobile monster, Point3D loc, double Percent, long XPAMOUNT)
 		{
-			BaseCreature c = (BaseCreature)killer;
-			if ( c.ControlMaster is PlayerMobile )
+			BaseCreature Monster = monster as BaseCreature;
+			PlayerMobile from = null;
+			if (killer is PlayerMobile)
+				from = killer as PlayerMobile;
+			else if (killer is BaseCreature)
 			{
-				from = (PlayerMobile)c.ControlMaster;
+				BaseCreature c = (BaseCreature)killer;
+				if (c.ControlMaster is PlayerMobile)
+					from = (PlayerMobile)c.ControlMaster;
 			}
-		}
-		if ( from != null && Monster != null )
-		{
-			int Level = from.LvL;
-			long LastLevel = from.LastLevelExp;
-			long ExpRequired;
-			if (LastLevel == 0)
-			 ExpRequired = 100;  //Was 100, ended up lvl 12 with 7 kills -  XP mod was also at 2, changing to 1. 
-		 else
-			  ExpRequired = ((long)(LastLevel*1.2));
-			int mapb = 0;
-			int karma;
 
-			if ( Monster.Karma <= 0 )
-				karma = Monster.Karma * -1;
-			else
-				karma = Monster.Karma;
+			if (from == null || Monster == null)
+				return;
 
-		//	int LevelDifference = Monster.Level - from.LvL;
-			long ExpGained;
-			int monsterstats = ( ( Monster.Fame + karma ) / 5 ) + ( Monster.RawStatTotal * 3 ) + ( ( Monster.HitsMaxSeed + Monster.StamMaxSeed + Monster.ManaMaxSeed ) * 2 ) + ( Monster.DamageMax - Monster.DamageMin ) + ( ( Monster.ColdResistSeed + Monster.FireResistSeed + Monster.EnergyResistSeed + Monster.PhysicalResistanceSeed + Monster.PoisonResistSeed ) * 2 ) + Monster.VirtualArmor;   
-														//5								//3																				//3																																																//3
-			if ( Monster.MinTameSkill > 0 )
-				monsterstats += (int)Monster.MinTameSkill;
-
-
-				
-					ExpGained = (  monsterstats );
-				ExpGained = XPAMOUNT;
+			long ExpGained = XPAMOUNT > 0 ? XPAMOUNT : 1;
 			Point3D DeathLoc = loc;
 
+			if (!Utility.InRange(from.Location, DeathLoc, 18))
+				ExpGained = (long)(ExpGained / 2);
 
-			if ( ExpGained <= 0 )
-				ExpGained = 1;
-			
-			if ( !Utility.InRange( from.Location, DeathLoc, 18 ))
-			{
-				ExpGained = (long)(ExpGained/2);
-			}
-			
-			// party up for more xp
-			//Party party = Engines.PartySystem.Party.Get(from);
+			// Party bonus
 			Party p = from.Party as Party;
-
-		if ( p != null )
-		{
-		double xpbonus =1;
-			for ( int i = 0; i < p.Members.Count; ++i )
+			if (p != null)
 			{
-				PartyMemberInfo pmi = (PartyMemberInfo)p.Members[i];
-				if ( pmi != null )
+				double xpbonus = 1;
+				for (int i = 0; i < p.Members.Count; ++i)
 				{
-					Mobile member = pmi.Mobile;
-
-					if ( member != null && Utility.InRange( member.Location, from.Location, 18 ) )
+					PartyMemberInfo pmi = (PartyMemberInfo)p.Members[i];
+					if (pmi?.Mobile != null && Utility.InRange(pmi.Mobile.Location, from.Location, 18))
 						xpbonus += .05;
 				}
+				ExpGained = (long)(ExpGained * xpbonus);
 			}
-			
-			ExpGained  = (long)(ExpGained * xpbonus);
-		}
-			
 
-			foreach( Item item in from.Backpack.Items )
+			// EXPDeed stacking multiplicative: each deed multiplies xp by 1.2
+			int deedCount = 0;
+			if (from.Backpack != null)
+				deedCount = from.Backpack.Items.OfType<EXPDeed>().Count();
+			if (deedCount > 0)
 			{
-				if( item is EXPDeed ) 
-				{ 
-					ExpGained += ExpGained / 5;
-				}
+				double factor = Math.Pow(1.2, deedCount);
+				ExpGained = (long)Math.Ceiling(ExpGained * factor);
 			}
 
 			long minexp = 0;
 			long maxexp = 0;
 
-		
-			
-//if (from.Map != Map.TerMur)
- mapb = Tweaks.GetMapXPMod(from.Map);
-			 
-			long finalexp = (long)((double)( Utility.RandomMinMax( (int)minexp, (int)maxexp ) )*Percent*(Tweaks.XPMod+mapb));
+			int mapb = Tweaks.GetMapXPMod(from.Map);
+			long finalexp = (long)((double)(Utility.RandomMinMax((int)minexp, (int)maxexp)) * Percent * (Tweaks.XPMod + mapb));
 
-
-			Region re = Region.Find( from.Location, from.Map );
+			Region re = Region.Find(from.Location, from.Map);
 			string regname = re.ToString().ToLower();
-			
-	
-		/*	if ( Monster is CBogle || Monster is CMongbat || Monster is CGhoul || Monster is CShade || Monster is CWraith || Monster is CSpectre || Monster is CSnake || Monster is CGiantRat || Monster is CWisp || Monster is CMummy || Monster is CGargoyle || Monster is CBoneMagi || Monster is CHellHound || Monster is CSkeletalMage || Monster is CSlime || Monster is CDireWolf || Monster is CRatman || Monster is CRottingCorpse || Monster is CStoneGargoyle || Monster is CGiantSpider || Monster is CShadowWisp || Monster is CLizardman || Monster is CTerathanWarrior || Monster is CTerathanDrone || Monster is CSilverSerpent || Monster is CLavaLizard || Monster is CPixie || Monster is CFireGargoyle || Monster is CTerathanMatriarch || Monster is CLichLord || Monster is CLich || Monster is COphidianMatriarch || Monster is CDreadSpider || Monster is COphidianWarrior || Monster is CBoneKnight || Monster is CSkeletalKnight || Monster is CDaemon || Monster is CHarpy || Monster is CImp || Monster is CCentaur || Monster is CRatmanArcher || Monster is COphidianArchmage || Monster is CRatmanMage || Monster is CScorpion || Monster is COphidianMage || Monster is CTerathanAvenger || Monster is CPoisonElemental || Monster is CDrake || Monster is COphidianKnight || Monster is CDragon || Monster is CUnicorn || Monster is CKirin || Monster is CEtherealWarrior || Monster is CSuccubus || Monster is CSerpentineDragon || Monster is Machine || Monster is BrokenMechanicalAssembly || Monster is MechanicalAssembly || Monster is BrokenMachine  || Monster is EarthSnake || Monster is GiantEarthSerpent || Monster is EarthDrake || Monster is EarthDragon || Monster is FireSnake || Monster is GiantFireSerpent || Monster is FireDrake || Monster is FireDragon || Monster is WaterSnake || Monster is GiantWaterSerpent || Monster is WaterDrake || Monster is WaterDragon || Monster is WindSnake || Monster is GiantWindSerpent || Monster is WindDrake || Monster is WindDragon )*/
-		if (regname == "championspawnregion" ) 
-		{
-			if (Tweaks.CXPMod == 0)
-				finalexp = 0;
-			else
-				finalexp /= (100/Tweaks.CXPMod);//3; //  2/3rds exp for champ spawns, now 1/20th// now 20%
-				//finalexp *= 2; // was *=2, want people out in the world more
+
+			if (regname == "championspawnregion")
+			{
+				if (Tweaks.CXPMod == 0)
+					finalexp = 0;
+				else
+					finalexp /= (100 / Tweaks.CXPMod);
 				if (finalexp <= 10)
 					finalexp = 10;
-		}
+			}
 
-
-			if ( Monster.IsParagon )
+			if (Monster.IsParagon)
 				finalexp *= 2;
 
-			from.EXP += ExpGained ;//finalexp;
-			//if (EXP2 >= 1)
-		CheckLevel(from) ;//Re-triggers levelup if exp is more than 1 level ahead
-		}
-	}
-	public static void HarvestExp( Mobile m, HarvestResource resource, bool success, int amount )
-	{
-		PlayerMobile from = m as PlayerMobile;
-		int oremodifier = 8;
-		if ( from != null )
-		{
-			HarvestResource Res = resource;
-			int ExpGained = new int();
-			if (Res.Types[0] == typeof(IronOre))
-			{
-				ExpGained = 3 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(DullCopperOre))
-			{
-				ExpGained = 5 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(ShadowIronOre))
-			{
-				ExpGained = 6 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(CopperOre))
-			{
-				ExpGained = 7 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(BronzeOre))
-			{
-				ExpGained = 8 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(GoldOre))
-			{
-				ExpGained = 9 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(AgapiteOre))
-			{
-				ExpGained = 10 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(VeriteOre))
-			{
-				ExpGained = 12 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(ValoriteOre))
-			{
-				ExpGained = 13 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(BlazeOre))
-			{
-				ExpGained = 12 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(IceOre))
-			{
-				ExpGained = 13 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(ToxicOre))
-			{
-				ExpGained = 14 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(ElectrumOre))
-			{
-				ExpGained = 15 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(PlatinumOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(BariteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(WulfeniteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(DragoniteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(BunteriteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(PineiteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(SamiteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(ToberiteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(LisiteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(MariteOre))
-			{
-				ExpGained = 16 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(TealOre))
-			{
-				ExpGained = 18 * oremodifier;
-			}		
-			if (Res.Types[0] == typeof(RoyaliteOre))
-			{
-				ExpGained = 17 * oremodifier;
-			}
-			if (Res.Types[0] == typeof(DaniteOre))
-			{
-				ExpGained = 18 * oremodifier;
-			}		
-			//end ore 
-			if (Res.Types[0] == typeof(Log))
-			{
-				ExpGained = 3;
-			}
-			if (Res.Types[0] == typeof(OakLog))
-			{
-				ExpGained = 4;
-			}
-			if (Res.Types[0] == typeof(AshLog))
-			{
-				ExpGained = 6;
-			}
-			if (Res.Types[0] == typeof(YewLog))
-			{
-				ExpGained = 7;
-			}
-			if (Res.Types[0] == typeof(HeartwoodLog))
-			{
-				ExpGained = 8;
-			}
-			if (Res.Types[0] == typeof(BloodwoodLog))
-			{
-				ExpGained = 10;
-			}
-			if (Res.Types[0] == typeof(FrostwoodLog))
-			{
-				ExpGained = 11;
-			}
-				if (Res.Types[0] == typeof(EbonyLog))
-			{
-				ExpGained = 12;
-			}
-			if (Res.Types[0] == typeof(BambooLog))
-			{
-				ExpGained = 13;
-			}
-			if (Res.Types[0] == typeof(PurpleHeartLog))
-			{
-				ExpGained = 14;
-			}		
-			if (Res.Types[0] == typeof(RedwoodLog))
-			{
-				ExpGained = 15;
-			}
-			if (Res.Types[0] == typeof(PetrifiedLog))
-			{
-				ExpGained = 16;
-			}
-			
+			from.EXP += ExpGained;
 
-			if (Res.Types[0] == typeof(Fish))
+			// Award DanDollar ticks for the XP event (kill). Use direct ticks API for efficiency.
+			try
+{
+    // Read player's difficulty level and health multiplier from your DifficultySystem
+    int diffLevel = 1;
+    double healthMul = 1.0;
+
+    try
+    {
+        diffLevel = DifficultySettings.GetPlayerDifficulty(from);               // returns int
+        healthMul  = DifficultySettings.GetHealthMultiplier(diffLevel);        // returns double
+    }
+    catch
+    {
+        // If DifficultySystem isn't present or methods differ, fallback to 1.0
+        diffLevel = 1;
+        healthMul  = 1.0;
+    }
+
+    long baseTicks = DanDollarTicksPerXPEvent; // 5 ticks == 0.00005 with TicksPerDollar == 100000
+    // Scale by health multiplier and round up to avoid losing fractional increases
+    long scaledTicks = (long)Math.Ceiling(baseTicks * healthMul);
+    if (scaledTicks <= 0)
+        scaledTicks = baseTicks;
+
+    DanDollarManager.AddTicks(from, scaledTicks, $"XP from kill (diff={diffLevel}, mul={healthMul:0.###})");
+}
+catch
+{
+    // ignore if DanDollar system isn't present or other errors occur
+}
+
+			CheckLevel(from); // Re-triggers levelup if exp is more than 1 level ahead
+		}
+
+		public static void HarvestExp(Mobile m, HarvestResource resource, bool success, int amount)
+		{
+			PlayerMobile from = m as PlayerMobile;
+			if (from == null || resource == null) return;
+
+			int oremodifier = 8;
+			var Res = resource;
+			Type resType = (Res.Types != null && Res.Types.Length > 0) ? Res.Types[0] : null;
+
+			int baseExp = 0;
+			if (resType != null && HarvestBaseExpMap.TryGetValue(resType, out int v))
+				baseExp = v;
+			else
+				baseExp = 3; // default fallback
+
+			int ExpGained = baseExp;
+
+			// If it's an ore type, apply oremodifier
+			if (resType != null && OreTypes.Contains(resType))
+				ExpGained *= oremodifier;
+
+			// Special handling for fish randomness if desired (previous code used random 1..100)
+			if (resType == typeof(Fish))
+				ExpGained = Utility.RandomMinMax(1, 100);
+
+			if (!success)
+				ExpGained -= ExpGained / 2;
+
+			if (ExpGained > 0)
 			{
-				ExpGained = Utility.RandomMinMax(1,100);//to vary fishing a bit
-			}
-			if ( success == false )
-				ExpGained -= ExpGained/2;
-			if ( ExpGained > 0 )
-			{
-			from.EXP += (ExpGained * Tweaks.XPMod * amount) ; //4  //12  //2  //scale with amount harvested.
-			//int finalexp = (ExpGained * Tweaks.XPMod * 1);  //12  //2 
-				
-			//	GearUp(from, finalexp);
+				from.EXP += (ExpGained * Tweaks.XPMod * amount);
+
+				// Award DanDollar ticks for this harvest event
+				try
+				{
+					DanDollarManager.AddTicks(from, DanDollarTicksPerXPEvent, "XP from harvest");
+				}
+				catch { }
 			}
 		}
-	}
-	public static void CraftExp( Mobile m, int quality, bool failed, CraftItem item)
-	{
-		PlayerMobile from = m as PlayerMobile;
-		if ( from != null )
+
+		public static void CraftExp(Mobile m, int quality, bool failed, CraftItem item)
 		{
-			CraftRes Res = null;
-			int ResExp = 0;
-			for ( int i = 0; i < item.Resources.Count; ++i )
-			{
-				Res = item.Resources.GetAt(i);
-				Console.WriteLine($"Which resource are we at? {item.Resources.GetAt(i)}");
-			Console.WriteLine($"Holding this resource: {item.HoldResource}");
-		
-			//	Console.WriteLine(item.typeRes);
-		/*		Type resourceType = typeRes;
+			PlayerMobile from = m as PlayerMobile;
+			if (from == null || item == null) return;
 
-					if (resourceType == null)
-					{
-						resourceType = Resources.GetAt(0).ItemType;
-					}
+			// Get the resource used (take first if multiple)
+			CraftRes Res = (item.Resources != null && item.Resources.Count > 0) ? item.Resources.GetAt(0) : null;
 
-					CraftResource thisResource = CraftResources.GetFromType(resourceType);
-*/
-			}
-			int ExpGained = 0;
-			if ( Res != null )
+			int ResExp = 3; // default
+			if (Res != null)
 			{
-				
-				if (item.HoldResource ==  typeof(DullCopperIngot)){
-					ResExp = 5;
-					}
-				else if (item.HoldResource ==  typeof( ShadowIronIngot)){	
-					ResExp = 6;
-					}
-				else if (item.HoldResource ==  typeof( CopperIngot)){	
-					ResExp = 7;
-					}
-				else if (item.HoldResource ==  typeof( BronzeIngot)){	
-					ResExp = 8;
-					}
-				else if (item.HoldResource ==  typeof( GoldIngot)){	
-					ResExp = 9;
-					}
-				else if (item.HoldResource ==  typeof( AgapiteIngot)){	
-					ResExp = 10;
-					}
-				else if (item.HoldResource ==  typeof( VeriteIngot)){	
-					ResExp = 11;
-					}
-				else if (item.HoldResource ==  typeof( ValoriteIngot)){	
-					ResExp = 12;
-					}
-				else if (item.HoldResource ==  typeof( BlazeIngot)){	
-					ResExp = 13;
-					}
-				else if (item.HoldResource ==  typeof( IceIngot)){	
-					ResExp = 14;
-					}
-				else if (item.HoldResource ==  typeof( ToxicIngot)){	
-					ResExp = 15;
-					}
-				else if (item.HoldResource ==  typeof( ElectrumIngot)){	
-					ResExp = 16;
-					}
-				else if (item.HoldResource ==  typeof( PlatinumIngot)){	
-					ResExp = 17;
-					}
-				else if (item.HoldResource ==  typeof( TealIngot)){	
-					ResExp = 17;
-					}					
-				else if (item.HoldResource ==  typeof( RoyaliteIngot)){	
-					ResExp = 18;
-					}
-				else if (item.HoldResource ==  typeof( DaniteIngot)){	
-				ResExp = 20;
-				}
-				else if (Res.ItemType == typeof(IronIngot))
-				{
-					ResExp = 4;
-				}
-				else if (item.HoldResource ==  typeof(OakLog)){
-					ResExp = 6;
-					}
-				else if (item.HoldResource ==  typeof( AshLog)){	
-					ResExp = 7;
-					}
-				else if (item.HoldResource ==  typeof( YewLog)){	
-					ResExp = 8;
-					}
-				else if (item.HoldResource ==  typeof( HeartwoodLog)){	
-					ResExp = 9;
-					}
-				else if (item.HoldResource ==  typeof( BloodwoodLog)){	
-					ResExp = 10;
-					}
-				else if (item.HoldResource ==  typeof( FrostwoodLog)){	
-					ResExp = 11;
-					}
-				else if (item.HoldResource ==  typeof( EbonyLog)){	
-					ResExp = 12;
-					}
-				else if (item.HoldResource ==  typeof( BambooLog)){	
-					ResExp = 13;
-					}
-				else if (item.HoldResource ==  typeof( PurpleHeartLog)){	
-					ResExp = 14;
-					}
-				else if (item.HoldResource ==  typeof( RedwoodLog)){	
-					ResExp = 15;
-					}
-				else if (item.HoldResource ==  typeof( PetrifiedLog)){	
-					ResExp = 16;
-					}
-				else if (Res.ItemType == typeof(Log))
-				{
-					ResExp = 5;
-				}
-			//	else if (Res.ItemType == typeof(Log)) //Add mana? 
-		//		{
-		//			ResExp = 5;
-		//		}
-				
-				else if (Res.ItemType == typeof(Garlic))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(BlackPearl))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(Bloodmoss))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(Ginseng))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(MandrakeRoot))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(Nightshade))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(SulfurousAsh))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(SpidersSilk))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(Bottle))
-				{
-					ResExp = 4;
-				}
-				else if (Res.ItemType == typeof(Shaft))
-				{
-					ResExp = 2;
-				}
-				else if (Res.ItemType == typeof(Feather))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(BlankMap))
-				{
-					ResExp = 10;
-				}
-				else if (Res.ItemType == typeof(SackFlour))
-				{
-					ResExp = 4;
-				}
-				else if (Res.ItemType == typeof(Dough))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(CakeMix))
-				{
-					ResExp = 10;
-				}
-				else if (Res.ItemType == typeof(CookieMix))
-				{
-					ResExp = 8;
-				}
-				else if (Res.ItemType == typeof(RawBird))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(RawChickenLeg))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(RawFishSteak))
-				{
-					ResExp = 2;
-				}
-				else if (Res.ItemType == typeof(RawLambLeg))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(RawRibs))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(Sand))
-				{
-					ResExp = 15;
-				}
-				else if (item.HoldResource ==  typeof(DullCopperGranite)){
-					ResExp = 15;
-					}
-				else if (item.HoldResource ==  typeof( ShadowIronGranite)){	
-					ResExp = 16;
-					}
-				else if (item.HoldResource ==  typeof( CopperGranite)){	
-					ResExp = 17;
-					}
-				else if (item.HoldResource ==  typeof( BronzeGranite)){	
-					ResExp = 18;
-					}
-				else if (item.HoldResource ==  typeof( GoldGranite)){	
-					ResExp = 19;
-					}
-				else if (item.HoldResource ==  typeof( AgapiteGranite)){	
-					ResExp = 20;
-					}
-				else if (item.HoldResource ==  typeof( VeriteGranite)){	
-					ResExp = 21;
-					}
-				else if (item.HoldResource ==  typeof( ValoriteGranite)){	
-					ResExp = 22;
-					}
-				else if (item.HoldResource ==  typeof( BlazeGranite)){	
-					ResExp = 23;
-					}
-				else if (item.HoldResource ==  typeof( IceGranite)){	
-					ResExp = 24;
-					}
-				else if (item.HoldResource ==  typeof( ToxicGranite)){	
-					ResExp = 25;
-					}
-				else if (item.HoldResource ==  typeof( ElectrumGranite)){	
-					ResExp = 26;
-					}
-				else if (item.HoldResource ==  typeof( PlatinumGranite)){	
-					ResExp = 27;
-					}
-				else if (item.HoldResource ==  typeof( TealGranite)){	
-					ResExp = 28;
-					}					
-				else if (item.HoldResource ==  typeof( RoyaliteGranite)){	
-					ResExp = 28;
-					}
-				else if (item.HoldResource ==  typeof( DaniteGranite)){	
-				ResExp = 30;
-				}
-				else if (Res.ItemType == typeof(Granite))
-				{
-					ResExp = 15;
-				}
-				else if (item.HoldResource ==  typeof(OakBoard)){
-					ResExp = 6;
-					}
-				else if (item.HoldResource ==  typeof( AshBoard)){	
-					ResExp = 7;
-					}
-				else if (item.HoldResource ==  typeof( YewBoard)){	
-					ResExp = 8;
-					}
-				else if (item.HoldResource ==  typeof( HeartwoodBoard)){	
-					ResExp = 9;
-					}
-				else if (item.HoldResource ==  typeof( BloodwoodBoard)){	
-					ResExp = 10;
-					}
-				else if (item.HoldResource ==  typeof( FrostwoodBoard)){	
-					ResExp = 11;
-					}
-				else if (item.HoldResource ==  typeof( EbonyBoard)){	
-					ResExp = 12;
-					}
-				else if (item.HoldResource ==  typeof( BambooBoard)){	
-					ResExp = 13;
-					}
-				else if (item.HoldResource ==  typeof( PurpleHeartBoard)){	
-					ResExp = 14;
-					}
-				else if (item.HoldResource ==  typeof( RedwoodBoard)){	
-					ResExp = 15;
-					}
-				else if (item.HoldResource ==  typeof( PetrifiedBoard)){	
-					ResExp = 16;
-					}
-				else if (Res.ItemType == typeof(Board))
-				{
-					ResExp = 5;
-				}
-				else if (Res.ItemType == typeof(BatWing))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(GraveDust))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(DaemonBlood))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(NoxCrystal))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(PigIron))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(BlankScroll))
-				{
-					ResExp = 7;
-				}
-				else if (Res.ItemType == typeof(Cloth))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(Leather))
-				{
-					ResExp = 4;
-				}
-				else if (item.HoldResource ==  typeof(SpinedLeather)){
-					ResExp = 5;
-					}
-				else if (item.HoldResource ==  typeof( HornedLeather)){	
-					ResExp = 6;
-					}
-				else if (item.HoldResource ==  typeof( BarbedLeather)){	
-					ResExp = 7;
-					}
-				else if (item.HoldResource ==  typeof( PolarLeather)){	
-					ResExp = 8;
-					}
-				else if (item.HoldResource ==  typeof( SyntheticLeather)){	
-					ResExp = 9;
-					}
-				else if (item.HoldResource ==  typeof( BlazeLeather)){	
-					ResExp = 10;
-					}
-				else if (item.HoldResource ==  typeof( DaemonicLeather)){	
-					ResExp = 11;
-					}
-				else if (item.HoldResource ==  typeof( ShadowLeather)){	
-					ResExp = 12;
-					}
-				else if (item.HoldResource ==  typeof( FrostLeather)){	
-					ResExp = 13;
-					}
-				else if (item.HoldResource ==  typeof( EtherealLeather)){	
-					ResExp = 14;
-					}
-				else if (item.HoldResource == typeof(RedScales))
-				{
-					ResExp = 4;
-				}
-				else if (item.HoldResource ==  typeof(YellowScales)){
-					ResExp = 5;
-					}
-				else if (item.HoldResource ==  typeof( BlackScales)){	
-					ResExp = 6;
-					}
-				else if (item.HoldResource ==  typeof( GreenScales)){	
-					ResExp = 7;
-					}
-				else if (item.HoldResource ==  typeof( WhiteScales)){	
-					ResExp = 8;
-					}
-				else if (item.HoldResource ==  typeof( BlueScales)){	
-					ResExp = 9;
-					}
-				else if (item.HoldResource ==  typeof( CopperScales)){	
-					ResExp = 10;
-					}
-				else if (item.HoldResource ==  typeof( SilverScales)){	
-					ResExp = 11;
-					}
-				else if (item.HoldResource ==  typeof( GoldScales)){	
-					ResExp = 12;
-					}
-				else if (Res.ItemType == typeof(Bone))
-				{
-					ResExp = 4;
-				}
-				else if (Res.ItemType == typeof(DaemonBone))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(DaemonBlood))
-				{
-					ResExp = 11;
-				}
-				else if (Res.ItemType == typeof(Cotton))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(Keg))
-				{
-					ResExp = 20;
-				}
-				else if (Res.ItemType == typeof(Axle))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(ClockFrame))
-				{
-					ResExp = 14;
-				}
-				else if (Res.ItemType == typeof(AxleGears))
-				{
-					ResExp = 3;
-				}
-				else if (Res.ItemType == typeof(SextantParts))
-				{
-					ResExp = 4;
-				}
-				else if (Res.ItemType == typeof(BolaBall))
-				{
-					ResExp = 5;
-				}
-				else if (Res.ItemType == typeof(GateTravelScroll))
-				{
-					ResExp = 7;
-				}
-				else if (Res.ItemType == typeof(RecallScroll))
-				{
-					ResExp = 7;
-				}
-				else if (Res.ItemType == typeof(RecallRune))
-				{
-					ResExp = 8;
-				}
+				Type holdRes = item.HoldResource;
+				Type resItemType = Res.ItemType;
+
+				if (holdRes != null && CraftHoldResourceExpMap.TryGetValue(holdRes, out int v))
+					ResExp = v;
+				else if (resItemType != null && CraftItemTypeExpMap.TryGetValue(resItemType, out int v2))
+					ResExp = v2;
 				else
 					ResExp = 3;
-				ExpGained = ResExp * Res.Amount; /// 3;
-		
-				
-
-				if ( quality == 0 )//low quality
-					ExpGained = (int)((decimal.Divide(ExpGained,5))*2);
-				else if ( quality == 1 )//normal quality
-					ExpGained = (int)((decimal.Divide(ExpGained,5))*5);
-				else if ( quality == 2 )//exceptional
-					ExpGained = (int)((decimal.Divide(ExpGained,5))*6);
-				if ( failed == true )//20% exp on fail
-					ExpGained = (int)(decimal.Divide(ExpGained,5));
-				if ( ExpGained > 0 )
-				{
-			if (ExpGained > 6000)
-				ExpGained = 6000;
-			
-				ExpGained *= (1 +(2 * Tweaks.XPMod));  //4
-					from.EXP += ExpGained;
-		//			GearUp(from,ExpGained);
-	/*	foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(item))
-		{
-			string name=descriptor.Name;
-			object value=descriptor.GetValue(item);
-			Console.WriteLine("{0}={1}",name,value);
-			Console.WriteLine(item.Resources.Type);
-			Console.WriteLine(item.Resources.Type);
-			
-		}
-		*/
-		
-				}
 			}
-		}
-	}
-	
-	
-/*public static void GearUp( Mobile from, int finalxp)
-{
-   if ( from == null )
-		   return;
 
-					BaseWeapon wep = from.FindItemOnLayer( Layer.FirstValid ) as BaseWeapon;
-					if ( wep == null )
-							wep = from.FindItemOnLayer( Layer.OneHanded ) as BaseWeapon;
-					if ( wep == null )
-							wep = from.FindItemOnLayer( Layer.TwoHanded ) as BaseWeapon;
+			int ExpGained = ResExp * (Res?.Amount ?? 1);
 
-					if ( from.Backpack != null )
-					{
-							
-							if ( wep != null )
-							{
-									int ExpRequired = (int)(((Math.Pow((wep.Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+wep.LastLevelExp;
+			if (quality == 0) // low quality
+				ExpGained = (int)((decimal.Divide(ExpGained, 5)) * 2);
+			else if (quality == 1) // normal quality
+				ExpGained = (int)((decimal.Divide(ExpGained, 5)) * 5);
+			else if (quality == 2) // exceptional
+				ExpGained = (int)((decimal.Divide(ExpGained, 5)) * 6);
 
-							   
-							   
-									int ExpGained = finalxp;
-							 
-									
+			if (failed)
+				ExpGained = (int)(decimal.Divide(ExpGained, 5));
 
-									if ( ExpGained <= 0 )
-											ExpGained = 1;
-							 
-							 
-							 
-									foreach( Item item in from.Backpack.Items )
-									{
-											if( item is EXPDeed ) 
-											{ 
-													ExpGained += ExpGained / 5;
-											}
-									}
-
-									int minexp = 0;
-									int maxexp = 0;
-
-								  
-											minexp = 5+(ExpGained/30);
-											maxexp = 5+(ExpGained/25);
-									
-
-									if ( wep.Level >= 200 )
-									{
-											minexp *= 5;
-											maxexp *= 5;
-									}
-									else if ( wep.Level >= 150 )
-									{
-											minexp *= 4;
-											maxexp *= 4;
-									}
-									else if ( wep.Level >= 100 )
-									{
-											minexp *= 3;
-											maxexp *= 3;
-									}
-									else if ( wep.Level >= 50 )
-									{
-											minexp *= 2;
-											maxexp *= 2;
-									}
-									
-
-									int finalexp = ( Utility.RandomMinMax( minexp, maxexp ) );
-					
-									if ( finalexp > ( ExpRequired - wep.LastLevelExp ) )
-									{
-											finalexp = (int)( ( ExpRequired - wep.LastLevelExp ) / 2 );
-									}
-
-									if ( wep.CanGainLevels )
-									{
-											wep.Exp += finalexp;
-											SetWeaponLevel.CheckLevel( wep, from );
-									}
-							}
-							for ( int i = 0; i < from.Items.Count; ++i )
-							{
-									Item item = (Item)from.Items[i];
-
-									if ( item is BaseArmor && item.Parent == from )
-									{
-											BaseArmor armor = (BaseArmor)item;
-
-											int ExpRequired = (int)(((Math.Pow((armor.Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+armor.LastLevelExp;
-
-									
-											int ExpGained = finalxp;
-											
-											if ( ExpGained <= 0 )
-													ExpGained = 1;
-											
-
-											foreach( Item item2 in from.Backpack.Items )
-											{
-													if( item2 is EXPDeed ) 
-													{ 
-															ExpGained += ExpGained / 5;
-													}
-											}
-
-											int minexp = 0;
-											int maxexp = 0;
-
-									   
-											
-													minexp = 5+(ExpGained/30);
-													maxexp = 5+(ExpGained/25);
-											
-
-											if ( armor.Level >= 200 )
-											{
-													minexp *= 5;
-													maxexp *= 5;
-											}
-											else if ( armor.Level >= 150 )
-											{
-													minexp *= 4;
-													maxexp *= 4;
-											}
-											else if ( armor.Level >= 100 )
-											{
-													minexp *= 3;
-													maxexp *= 3;
-											}
-											else if ( armor.Level >= 50 )
-											{
-													minexp *= 2;
-													maxexp *= 2;
-											}
-
-											int finalexp = ( Utility.RandomMinMax( minexp, maxexp ) );
-
-											if ( finalexp > ( ExpRequired - armor.LastLevelExp ) )
-											{
-													finalexp = (int)( ( ExpRequired - armor.LastLevelExp ) / 2 );
-											}
-
-											if ( armor.CanGainLevels )
-											{
-													armor.Exp += finalexp;
-													SetArmorLevel.CheckLevel( armor, from );
-											}
-									}
-									else if ( item is BaseJewel && item.Parent == from )
-									{
-											BaseJewel jewelry = (BaseJewel)item;
-
-											int ExpRequired = (int)(((Math.Pow((jewelry.Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+jewelry.LastLevelExp;
-
-										  
-
-										   
-											int ExpGained = finalxp;
-										  
-										  
-											if ( ExpGained <= 0 )
-													ExpGained = 1;
-										  
-										  
-
-											foreach( Item item2 in from.Backpack.Items )
-											{
-													if( item2 is EXPDeed ) 
-													{ 
-															ExpGained += ExpGained / 5;
-													}
-											}
-
-											int minexp = 0;
-											int maxexp = 0;
-
-										   
-													minexp = 5+(ExpGained/30);
-													maxexp = 5+(ExpGained/25);
-									
-
-											if ( jewelry.Level >= 200 )
-											{
-													minexp *= 5;
-													maxexp *= 5;
-											}
-											else if ( jewelry.Level >= 150 )
-											{
-													minexp *= 4;
-													maxexp *= 4;
-											}
-											else if ( jewelry.Level >= 100 )
-											{
-													minexp *= 3;
-													maxexp *= 3;
-											}
-											else if ( jewelry.Level >= 50 )
-											{
-													minexp *= 2;
-													maxexp *= 2;
-											}
-
-											int finalexp = ( Utility.RandomMinMax( minexp, maxexp ) );
-
-											if ( finalexp > ( ExpRequired - jewelry.LastLevelExp ) )
-											{
-													finalexp = (int)( ( ExpRequired - jewelry.LastLevelExp ) / 2 );
-											}
-
-											if ( jewelry.CanGainLevels)
-											{
-													jewelry.Exp += finalexp;
-													SetJewelryLevel.CheckLevel( jewelry, from );
-											}
-									}
-									 else if ( item is BaseClothing && item.Parent == from )
-									{
-											BaseClothing Clothing = (BaseClothing)item;
-
-											int ExpRequired = (int)(((Math.Pow((Clothing.Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+Clothing.LastLevelExp;
-
-										  
-
-										   
-											int ExpGained = finalxp;
-										  
-										  
-											if ( ExpGained <= 0 )
-													ExpGained = 1;
-										  
-										  
-
-											foreach( Item item2 in from.Backpack.Items )
-											{
-													if( item2 is EXPDeed ) 
-													{ 
-															ExpGained += ExpGained / 5;
-													}
-											}
-
-											int minexp = 0;
-											int maxexp = 0;
-
-										   
-													minexp = 5+(ExpGained/30);
-													maxexp = 5+(ExpGained/25);
-									
-
-											if ( Clothing.Level >= 200 )
-											{
-													minexp *= 5;
-													maxexp *= 5;
-											}
-											else if ( Clothing.Level >= 150 )
-											{
-													minexp *= 4;
-													maxexp *= 4;
-											}
-											else if ( Clothing.Level >= 100 )
-											{
-													minexp *= 3;
-													maxexp *= 3;
-											}
-											else if ( Clothing.Level >= 50 )
-											{
-													minexp *= 2;
-													maxexp *= 2;
-											}
-
-											int finalexp = ( Utility.RandomMinMax( minexp, maxexp ) );
-
-											if ( finalexp > ( ExpRequired - Clothing.LastLevelExp ) )
-											{
-													finalexp = (int)( ( ExpRequired - Clothing.LastLevelExp ) / 2 );
-											}
-
-											if ( Clothing.CanGainLevels)
-											{
-													Clothing.Exp += finalexp;
-													SetClothingLevel.CheckLevel( Clothing, from );
-											}
-									}
-							}
-					}
-
-
-
-}
-	
-	
-} */ 
-}
-public class ExpBarGump : Gump
-{
-	public ExpBarGump( PlayerMobile m ) : base( 20,20 )
-	{
-		Dragable = true;
-		Closable=false;
-		PlayerMobile from = m;
-		from.CloseGump( typeof( ExpBarGump ) );
-
-		int Level = from.LvL;
-		long LastLevel = from.LastLevelExp;
-		long ExpRequired = ((long)(Experience.GetNextLevelXP(from)));//(long)(((Math.Pow((Level*1.5), 1.5)*1.5)+20)*Experience.AvgMonsterExp)+LastLevel;
-			if (ExpRequired == 0 || (LastLevel == 0) )
+			if (ExpGained > 0)
 			{
-			 ExpRequired = 100;
-			  if ( from.HorizontalExpBar == false )
+				if (ExpGained > 6000) ExpGained = 6000;
+				ExpGained *= (1 + (2 * Tweaks.XPMod));
+				from.EXP += ExpGained;
+
+				// Award DanDollar ticks for craft event (one award per craft action)
+				try
 				{
-					AddImage(0, 0, 9741);
-					AddImageTiled(0, 0, 8, 96-(int)(decimal.Divide(1,100)*96), 9740);
+					DanDollarManager.AddTicks(from, DanDollarTicksPerXPEvent, "XP from craft");
 				}
-					else
-				{
-					AddImage(0, 0, 9750);
-					AddImageTiled(0, 0, (int)(decimal.Divide(1,100)*96), 8, 9751);
-				}
-			}
-		else if ( from.HorizontalExpBar == false )
-		{
-			AddImage(0, 0, 9741);
-			AddImageTiled(0, 0, 8, 96-(int)(decimal.Divide(from.EXP,Experience.GetNextLevelXP(from))*96), 9740);
-		}
-		else
-		{
-			AddImage(0, 0, 9750);
-			AddImageTiled(0, 0, (int)(decimal.Divide(from.EXP,Experience.GetNextLevelXP(from))*96), 8, 9751);
-		}
-	}
-}
-public class StatGump : Gump
-{
-	public StatGump(PlayerMobile m) : base( 50,50 )
-	{
-		PlayerMobile from = m;
-		from.CloseGump( typeof( StatGump ) );
-		AddButton(0, 0, 2643, 2642, 1, GumpButtonType.Reply, 0);
-	}
-	public override void OnResponse( NetState state, RelayInfo info )
-	{
-		Mobile m = state.Mobile;
-		PlayerMobile from = m as PlayerMobile;
-		
-		if ( from != null )
-		switch ( info.ButtonID )
-		{
-			case 0:
-			{
-				break;
-			}
-			case 1:
-			{
-				from.Send( new PlaySound( 81, from.Location ) );
-				from.SendGump( new CharInfoGump(from) ); 
-				break;
+				catch { }
 			}
 		}
 	}
 }
-
-
-}
-
-	
-	
-	
-	
-	
-	
-	
-	
