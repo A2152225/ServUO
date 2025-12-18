@@ -23,6 +23,16 @@ namespace Server.Commands.Generic
         private bool m_ListOptimized;
         private string m_Usage;
         private string m_Description;
+
+        // Flag to control whether command outputs should be echoed to console
+        private static bool m_ConsoleEcho = false;
+
+        public static bool ConsoleEcho
+        {
+            get { return m_ConsoleEcho; }
+            set { m_ConsoleEcho = value; }
+        }
+
         public BaseCommand()
         {
             this.m_Responses = new ArrayList();
@@ -194,10 +204,15 @@ namespace Server.Commands.Generic
 
                     if (obj is MessageEntry)
                     {
-                        from.SendMessage(((MessageEntry)obj).ToString());
+                        string message = ((MessageEntry)obj).ToString();
+                        from.SendMessage(message);
 
                         if (flushToLog)
-                            CommandLogging.WriteLine(from, ((MessageEntry)obj).ToString());
+                            CommandLogging.WriteLine(from, message);
+
+                        // Echo to console if enabled
+                        if (m_ConsoleEcho)
+                            Console.WriteLine("[Command Output] {0}: {1}", from.Name, message);
                     }
                     else if (obj is Gump)
                     {
@@ -208,7 +223,14 @@ namespace Server.Commands.Generic
             else
             {
                 for (int i = 0; i < this.m_Failures.Count; ++i)
-                    from.SendMessage(((MessageEntry)this.m_Failures[i]).ToString());
+                {
+                    string message = ((MessageEntry)this.m_Failures[i]).ToString();
+                    from.SendMessage(message);
+
+                    // Echo failures to console if enabled
+                    if (m_ConsoleEcho)
+                        Console.WriteLine("[Command Failure] {0}: {1}", from.Name, message);
+                }
             }
 
             this.m_Responses.Clear();
