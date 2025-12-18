@@ -46,6 +46,7 @@ Saves/
 *.csproj.user
 *.DotSettings.user
 *.ini
+*.bak
 
 # MakeScript generated files (except examples)
 /MakeScript-*.txt
