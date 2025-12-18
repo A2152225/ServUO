@@ -430,7 +430,7 @@ namespace Server.Commands
                 
                 File.WriteAllText(filePath, combinedScript.ToString());
                 
-                AddResponse("Generated scripts for {0} objects: {1}", list.Count, fileName);
+                AddResponse(string.Format("Generated scripts for {0} objects: {1}", list.Count, fileName));
                 
                 CommandLogging.WriteLine(
                     e.Mobile,
