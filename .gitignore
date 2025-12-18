@@ -8,11 +8,13 @@
 /Scripts/bin
 /Scripts/obj
 /Scripts/Output
-
+/Saves/*
 /Save*
 /WorldFile*
 /Crash*
 /Scripts3*
+/Server1*
+/
 Save*
 /Honesty
 /Logs
@@ -24,7 +26,8 @@ Save*
 /VitaNexCore
 /TheBox
 /.vs
-
+Saves/*
+Saves/
 /staffHistory.xml
 /reportHistory.xml
 /firewall.cfg
