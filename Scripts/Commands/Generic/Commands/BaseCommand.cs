@@ -25,13 +25,7 @@ namespace Server.Commands.Generic
         private string m_Description;
 
         // Flag to control whether command outputs should be echoed to console
-        private static bool m_ConsoleEcho = false;
-
-        public static bool ConsoleEcho
-        {
-            get { return m_ConsoleEcho; }
-            set { m_ConsoleEcho = value; }
-        }
+        public static bool ConsoleEcho { get; set; } = false;
 
         public BaseCommand()
         {
@@ -211,7 +205,7 @@ namespace Server.Commands.Generic
                             CommandLogging.WriteLine(from, message);
 
                         // Echo to console if enabled
-                        if (m_ConsoleEcho)
+                        if (ConsoleEcho)
                             Console.WriteLine("[Command Output] {0}: {1}", from.Name, message);
                     }
                     else if (obj is Gump)
@@ -228,7 +222,7 @@ namespace Server.Commands.Generic
                     from.SendMessage(message);
 
                     // Echo failures to console if enabled
-                    if (m_ConsoleEcho)
+                    if (ConsoleEcho)
                         Console.WriteLine("[Command Failure] {0}: {1}", from.Name, message);
                 }
             }
