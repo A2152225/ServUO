@@ -99,7 +99,7 @@ namespace Server.Engines.BulkOrders
     }
 
     public class BODCollectionItem : CollectionItem
-    { 
+    {
         public ConstructCallback Constructor { get; set; }
         public int RewardType { get; set; }
 
@@ -109,12 +109,12 @@ namespace Server.Engines.BulkOrders
             Constructor = constructor;
             RewardType = type;
         }
-		
-		
+
+
     }
-	
+
 	 public class BODCollectionItemS : CollectionItem
-    { 
+    {
         public ConstructCallback Constructor { get; set; }
         public int RewardType { get; set; }
 
@@ -124,7 +124,7 @@ namespace Server.Engines.BulkOrders
             Constructor = constructor;
             RewardType = type;
         }
-		
+
     }
 
     public sealed class RewardGroup
@@ -374,14 +374,24 @@ namespace Server.Engines.BulkOrders
                 RewardCollection.Add(new BODCollectionItem(0x13E3, 1157104, 0x482, 1100, AncientHammer, 60));
                 RewardCollection.Add(new BODCollectionItem(0x13E3, 1157098, CraftResources.GetHue(CraftResource.Verite), 1150, RunicHammer, 7));
                 RewardCollection.Add(new BODCollectionItem(0x13E3, 1157099, CraftResources.GetHue(CraftResource.Valorite), 1200, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157293, CraftResources.GetHue(CraftResource.Blaze), 1250, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157294, CraftResources.GetHue(CraftResource.Ice), 1300, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157295, CraftResources.GetHue(CraftResource.Toxic), 1350, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157296, CraftResources.GetHue(CraftResource.Electrum), 1400, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157297, CraftResources.GetHue(CraftResource.Platinum), 1450, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157298, CraftResources.GetHue(CraftResource.Royalite), 1500, RunicHammer, 8));
-				RewardCollection.Add(new BODCollectionItem(0x13E3, 1157299, CraftResources.GetHue(CraftResource.Danite), 1550, RunicHammer, 8));
-																																   
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Blaze, "Runic Hammer"), CraftResources.GetHue(CraftResource.Blaze), 1250, RunicHammer, (int)CraftResource.Blaze));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Ice, "Runic Hammer"), CraftResources.GetHue(CraftResource.Ice), 1300, RunicHammer, (int)CraftResource.Ice));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Toxic, "Runic Hammer"), CraftResources.GetHue(CraftResource.Toxic), 1350, RunicHammer, (int)CraftResource.Toxic));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Electrum, "Runic Hammer"), CraftResources.GetHue(CraftResource.Electrum), 1400, RunicHammer, (int)CraftResource.Electrum));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Platinum, "Runic Hammer"), CraftResources.GetHue(CraftResource.Platinum), 1450, RunicHammer, (int)CraftResource.Platinum));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Barite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Barite), 1500, RunicHammer, (int)CraftResource.Barite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Wulfenite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Wulfenite), 1550, RunicHammer, (int)CraftResource.Wulfenite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Dragonite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Dragonite), 1600, RunicHammer, (int)CraftResource.Dragonite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Bunterite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Bunterite), 1650, RunicHammer, (int)CraftResource.Bunterite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Pineite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Pineite), 1700, RunicHammer, (int)CraftResource.Pineite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Samite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Samite), 1750, RunicHammer, (int)CraftResource.Samite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Toberite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Toberite), 1800, RunicHammer, (int)CraftResource.Toberite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Teal, "Runic Hammer"), CraftResources.GetHue(CraftResource.Teal), 1850, RunicHammer, (int)CraftResource.Teal));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Lisite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Lisite), 1900, RunicHammer, (int)CraftResource.Lisite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Marite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Marite), 1950, RunicHammer, (int)CraftResource.Marite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Royalite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Royalite), 2000, RunicHammer, (int)CraftResource.Royalite));
+                RewardCollection.Add(new BODCollectionItemS(0x13E3, GetRewardLabel(CraftResource.Danite, "Runic Hammer"), CraftResources.GetHue(CraftResource.Danite), 2050, RunicHammer, (int)CraftResource.Danite));
+
             }
             else
             {
@@ -409,7 +419,24 @@ namespace Server.Engines.BulkOrders
                     new RewardGroup(1050, new RewardItem(1, RunicHammer, 6)),
                     new RewardGroup(1100, new RewardItem(1, AncientHammer, 60)),
                     new RewardGroup(1150, new RewardItem(1, RunicHammer, 7)),
-                    new RewardGroup(1200, new RewardItem(1, RunicHammer, 8))
+                    new RewardGroup(1200, new RewardItem(1, RunicHammer, 8)),
+                    new RewardGroup(1250, new RewardItem(1, RunicHammer, (int)CraftResource.Blaze)),
+                    new RewardGroup(1300, new RewardItem(1, RunicHammer, (int)CraftResource.Ice)),
+                    new RewardGroup(1350, new RewardItem(1, RunicHammer, (int)CraftResource.Toxic)),
+                    new RewardGroup(1400, new RewardItem(1, RunicHammer, (int)CraftResource.Electrum)),
+                    new RewardGroup(1450, new RewardItem(1, RunicHammer, (int)CraftResource.Platinum)),
+                    new RewardGroup(1500, new RewardItem(1, RunicHammer, (int)CraftResource.Barite)),
+                    new RewardGroup(1550, new RewardItem(1, RunicHammer, (int)CraftResource.Wulfenite)),
+                    new RewardGroup(1600, new RewardItem(1, RunicHammer, (int)CraftResource.Dragonite)),
+                    new RewardGroup(1650, new RewardItem(1, RunicHammer, (int)CraftResource.Bunterite)),
+                    new RewardGroup(1700, new RewardItem(1, RunicHammer, (int)CraftResource.Pineite)),
+                    new RewardGroup(1750, new RewardItem(1, RunicHammer, (int)CraftResource.Samite)),
+                    new RewardGroup(1800, new RewardItem(1, RunicHammer, (int)CraftResource.Toberite)),
+                    new RewardGroup(1850, new RewardItem(1, RunicHammer, (int)CraftResource.Teal)),
+                    new RewardGroup(1900, new RewardItem(1, RunicHammer, (int)CraftResource.Lisite)),
+                    new RewardGroup(1950, new RewardItem(1, RunicHammer, (int)CraftResource.Marite)),
+                    new RewardGroup(2000, new RewardItem(1, RunicHammer, (int)CraftResource.Royalite)),
+                    new RewardGroup(2050, new RewardItem(1, RunicHammer, (int)CraftResource.Danite))
                 };
             }
         }
@@ -426,9 +453,9 @@ namespace Server.Engines.BulkOrders
         private static readonly ConstructCallback PowerScroll = new ConstructCallback(CreatePowerScroll);
         private static readonly ConstructCallback ColoredAnvil = new ConstructCallback(CreateColoredAnvil);
         private static readonly ConstructCallback AncientHammer = new ConstructCallback(CreateAncientHammer);
-		
-		
-		
+
+
+
 
         private static Item CreateSmithHammer(int type)
         {
@@ -475,12 +502,51 @@ namespace Server.Engines.BulkOrders
             return new PowderOfTemperament();
         }
 
-        private static Item CreateRunicHammer(int type)
+        private static CraftResource GetSmithRewardResource(int type)
         {
-            if (type >= 1 && type <= 8)
-                return new RunicHammer(CraftResource.Iron + type, Core.AOS ? (55 - (type * 5)) : 50);
+            switch (type)
+            {
+                case 1: return CraftResource.DullCopper;
+                case 2: return CraftResource.ShadowIron;
+                case 3: return CraftResource.Copper;
+                case 4: return CraftResource.Bronze;
+                case 5: return CraftResource.Gold;
+                case 6: return CraftResource.Agapite;
+                case 7: return CraftResource.Verite;
+                case 8: return CraftResource.Valorite;
+            }
+
+            CraftResource resource = (CraftResource)type;
+
+            if (BulkMaterialInfo.IsSmithMetal(SmallBOD.GetMaterial(resource)))
+                return resource;
 
             throw new InvalidOperationException();
+        }
+
+        private static int GetRunicHammerUses(CraftResource resource)
+        {
+            int index = BulkMaterialInfo.GetSmithMetalIndex(SmallBOD.GetMaterial(resource));
+
+            if (index < 0)
+                throw new InvalidOperationException();
+
+            if (index <= 7)
+                return Core.AOS ? (50 - (index * 5)) : 50;
+
+            return Math.Max(5, 15 - (index - 7));
+        }
+
+        private static string GetRewardLabel(CraftResource resource, string rewardName)
+        {
+            return String.Format("{0} {1}", CraftResources.GetName(resource), rewardName);
+        }
+
+        private static Item CreateRunicHammer(int type)
+        {
+            CraftResource resource = GetSmithRewardResource(type);
+
+            return new RunicHammer(resource, GetRunicHammerUses(resource));
         }
 
         private static Item CreatePowerScroll(int type)
@@ -544,8 +610,10 @@ namespace Server.Engines.BulkOrders
             if (itemCount > 1)
                 points += this.LookupTypePoints(this.m_Types, type);
 
-            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite)
-                points += 200 + (50 * (material - BulkMaterialType.DullCopper));
+            int smithTier = BulkMaterialInfo.GetSmithRewardTier(material);
+
+            if (smithTier >= 0)
+                points += 200 + (50 * smithTier);
 
             return points;
         }
@@ -674,12 +742,18 @@ namespace Server.Engines.BulkOrders
 
             int typeIndex = this.ComputeType(type, itemCount);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
-            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
+            int smithTier = BulkMaterialInfo.GetSmithRewardTier(material);
+            int mtrlIndex = smithTier >= 0 ? 1 + smithTier : 0;
 
             if (exceptional)
                 typeIndex++;
 
-            gold = goldTable[typeIndex][quanIndex][mtrlIndex];
+            int[] goldRow = goldTable[typeIndex][quanIndex];
+
+            if (mtrlIndex >= goldRow.Length)
+                gold = goldRow[goldRow.Length - 1];
+            else
+                gold = goldRow[mtrlIndex];
 
             int min = (gold * 9) / 10;
             int max = (gold * 10) / 9;
@@ -1057,7 +1131,7 @@ namespace Server.Engines.BulkOrders
         }
     }
     #endregion
-     
+
     #region Tinkering Rewards
     public sealed class TinkeringRewardCalculator : RewardCalculator
     {
@@ -1090,6 +1164,23 @@ namespace Server.Engines.BulkOrders
             RewardCollection.Add(new BODCollectionItem(0x2F5B, 1152677, CraftResources.GetHue(CraftResource.Valorite), 1050, SmeltersTalisman, (int)CraftResource.Valorite));
             RewardCollection.Add(new BODCollectionItem(0x14EC, 1152668, CraftResources.GetHue(CraftResource.Valorite), 1100, HarvestMap, (int)CraftResource.Valorite));
             RewardCollection.Add(new BODCollectionItem(0x9DB1, 1157220, 1175, 1200, CreateItem, 3));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Blaze)), CraftResources.GetHue(CraftResource.Blaze), 1250, SmeltersTalisman, (int)CraftResource.Blaze));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Ice)), CraftResources.GetHue(CraftResource.Ice), 1300, HarvestMap, (int)CraftResource.Ice));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Toxic)), CraftResources.GetHue(CraftResource.Toxic), 1350, SmeltersTalisman, (int)CraftResource.Toxic));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Electrum)), CraftResources.GetHue(CraftResource.Electrum), 1400, HarvestMap, (int)CraftResource.Electrum));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Platinum)), CraftResources.GetHue(CraftResource.Platinum), 1450, SmeltersTalisman, (int)CraftResource.Platinum));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Barite)), CraftResources.GetHue(CraftResource.Barite), 1500, HarvestMap, (int)CraftResource.Barite));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Wulfenite)), CraftResources.GetHue(CraftResource.Wulfenite), 1550, SmeltersTalisman, (int)CraftResource.Wulfenite));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Dragonite)), CraftResources.GetHue(CraftResource.Dragonite), 1600, HarvestMap, (int)CraftResource.Dragonite));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Bunterite)), CraftResources.GetHue(CraftResource.Bunterite), 1650, SmeltersTalisman, (int)CraftResource.Bunterite));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Pineite)), CraftResources.GetHue(CraftResource.Pineite), 1700, HarvestMap, (int)CraftResource.Pineite));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Samite)), CraftResources.GetHue(CraftResource.Samite), 1750, SmeltersTalisman, (int)CraftResource.Samite));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Toberite)), CraftResources.GetHue(CraftResource.Toberite), 1800, HarvestMap, (int)CraftResource.Toberite));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Teal)), CraftResources.GetHue(CraftResource.Teal), 1850, SmeltersTalisman, (int)CraftResource.Teal));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Lisite)), CraftResources.GetHue(CraftResource.Lisite), 1900, HarvestMap, (int)CraftResource.Lisite));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Marite)), CraftResources.GetHue(CraftResource.Marite), 1950, SmeltersTalisman, (int)CraftResource.Marite));
+            RewardCollection.Add(new BODCollectionItemS(0x14EC, String.Format("{0} Harvest Map", CraftResources.GetName(CraftResource.Royalite)), CraftResources.GetHue(CraftResource.Royalite), 2000, HarvestMap, (int)CraftResource.Royalite));
+            RewardCollection.Add(new BODCollectionItemS(0x2F5B, String.Format("{0} Smelter's Talisman", CraftResources.GetName(CraftResource.Danite)), CraftResources.GetHue(CraftResource.Danite), 2050, SmeltersTalisman, (int)CraftResource.Danite));
         }
 
         #region Constructors
@@ -1143,8 +1234,10 @@ namespace Server.Engines.BulkOrders
                 case 6: points += 400; break;
             }
 
-            if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite)
-                points += 200 + (50 * (material - BulkMaterialType.DullCopper));
+            int smithTier = BulkMaterialInfo.GetSmithRewardTier(material);
+
+            if (smithTier >= 0)
+                points += 200 + (50 * smithTier);
 
             if (exceptional)
                 points += 200;
@@ -1229,9 +1322,15 @@ namespace Server.Engines.BulkOrders
 
             int typeIndex = ((itemCount == 6 ? 3 : itemCount == 5 ? 2 : itemCount == 4 ? 1 : 0) * 2) + (exceptional ? 1 : 0);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
-            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Danite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
+            int smithTier = BulkMaterialInfo.GetSmithRewardTier(material);
+            int mtrlIndex = smithTier >= 0 ? 1 + smithTier : 0;
 
-            gold = goldTable[typeIndex][quanIndex][mtrlIndex];
+            int[] goldRow = goldTable[typeIndex][quanIndex];
+
+            if (mtrlIndex >= goldRow.Length)
+                gold = goldRow[goldRow.Length - 1];
+            else
+                gold = goldRow[mtrlIndex];
 
             int min = (gold * 9) / 10;
             int max = (gold * 10) / 9;
@@ -1462,7 +1561,7 @@ namespace Server.Engines.BulkOrders
 
   #region Constructors
         private static readonly ConstructCallback  MCBook = new ConstructCallback(CreateMonsterContractBook);
-		
+
         private static Item ScribesPen(int type)
         {
             BaseTool tool = new ScribesPen();
@@ -1795,7 +1894,7 @@ namespace Server.Engines.BulkOrders
 				case BulkMaterialType.Bamboo: points += 700; break;
 				case BulkMaterialType.PurpleHeart: points += 750; break;
 				case BulkMaterialType.Redwood: points += 800; break;
-				case BulkMaterialType.Petrified: points += 850; break;	
+				case BulkMaterialType.Petrified: points += 850; break;
             }
 
             if (itemCount > 1)
@@ -1996,7 +2095,7 @@ namespace Server.Engines.BulkOrders
         public override int ComputeGold(int quantity, bool exceptional, BulkMaterialType material, int itemCount, Type type)
         {
             int gold = 0;
-            
+
             if (itemCount == 1 && BulkOrderSystem.NewSystemEnabled && BulkOrderSystem.ComputeGold(type, quantity, out gold))
             {
                 return gold;

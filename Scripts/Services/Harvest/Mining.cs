@@ -112,11 +112,11 @@ namespace Server.Engines.Harvest
 				new HarvestResource( 117.0, 75.0, 159.0, "You put some Pineite ore in your backpack",typeof( PineiteOre ),	typeof( PineiteGranite ),typeof( PineiteOreElemental ) ),
 				new HarvestResource( 117.0, 75.0, 159.0, "You put some Samite ore in your backpack",typeof( SamiteOre ),	typeof( SamiteGranite ),typeof( SamiteOreElemental ) ),
 				new HarvestResource( 117.0, 75.0, 159.0, "You put some Toberite ore in your backpack",typeof( ToberiteOre ),	typeof( ToberiteGranite ),typeof( ToberiteOreElemental ) ),
-				new HarvestResource( 117.0, 75.0, 159.0, "You put some Lisite ore in your backpack",typeof( LisiteOre ),	typeof( LisiteGranite ),typeof( LisiteOreElemental ) ),
-				new HarvestResource( 117.0, 75.0, 159.0, "You put some Marite ore in your backpack",typeof( MariteOre ),	typeof( MariteGranite ),typeof( MariteOreElemental ) ),
-				new HarvestResource( 117.0, 75.0, 159.0, "You put some Royalite ore in your backpack",typeof( RoyaliteOre ),	typeof( RoyaliteGranite ),typeof( RoyaliteOreElemental ) ),
-				new HarvestResource( 119.0, 79.0, 159.0, "You put some Danite ore in your backpack",typeof( DaniteOre ),	typeof( DaniteGranite ),typeof( DaniteOreElemental ) ),
-				new HarvestResource( 119.0, 79.0, 159.0, "You put some Teal ore in your backpack",typeof( TealOre ),	typeof( TealGranite ),typeof( TealOreElemental ) )
+                new HarvestResource( 118.0, 77.0, 159.0, "You put some Teal ore in your backpack",typeof( TealOre ),	typeof( TealGranite ),typeof( TealOreElemental ) ),
+                new HarvestResource( 118.0, 77.0, 159.0, "You put some Lisite ore in your backpack",typeof( LisiteOre ),	typeof( LisiteGranite ),typeof( LisiteOreElemental ) ),
+                new HarvestResource( 118.0, 78.0, 159.0, "You put some Marite ore in your backpack",typeof( MariteOre ),	typeof( MariteGranite ),typeof( MariteOreElemental ) ),
+                new HarvestResource( 118.0, 79.0, 159.0, "You put some Royalite ore in your backpack",typeof( RoyaliteOre ),	typeof( RoyaliteGranite ),typeof( RoyaliteOreElemental ) ),
+                new HarvestResource( 119.0, 80.0, 159.0, "You put some Danite ore in your backpack",typeof( DaniteOre ),	typeof( DaniteGranite ),typeof( DaniteOreElemental ) )
             };
 
             veins = new HarvestVein[]
@@ -140,15 +140,14 @@ namespace Server.Engines.Harvest
                     new HarvestVein( 01, 0.5, res[15], res[0] ), // Wulfenite
                     new HarvestVein( 01.0, 0.5, res[16], res[0] ), // Dragonite
                     new HarvestVein( 01, 0.5, res[17], res[0] ), // Bunterite
-                    new HarvestVein( 01, 0.5, res[18], res[0] ), // Pineite                                               
+                    new HarvestVein( 01, 0.5, res[18], res[0] ), // Pineite
                     new HarvestVein( 01.0, 0.5, res[19], res[0] ), // Samite
-                    new HarvestVein( 01, 0.5, res[20], res[0] ), // Toberite                                               
-                    new HarvestVein( 01, 0.5, res[21], res[0] ), // Lisite                                               
-                    new HarvestVein( 0.75, 0.5, res[22], res[0] ), // Marite
-                    
-                    new HarvestVein( 00.5, 0.5, res[23], res[0] ), // Royalite
-                    new HarvestVein( 00.25, 0.5, res[24], res[0] ), // Danite										   
-					new HarvestVein( 00.75, 0.5, res[25], res[0] ) // Teal				
+                    new HarvestVein( 00.9, 0.5, res[20], res[0] ), // Toberite
+                    new HarvestVein( 00.8, 0.5, res[21], res[0] ), // Teal
+                    new HarvestVein( 00.7, 0.5, res[22], res[0] ), // Lisite
+                    new HarvestVein( 00.6, 0.5, res[23], res[0] ), // Marite
+                    new HarvestVein( 00.45, 0.5, res[24], res[0] ), // Royalite
+                    new HarvestVein( 00.25, 0.5, res[25], res[0] ) // Danite
             };
 
             oreAndStone.Resources = res;
@@ -475,28 +474,28 @@ namespace Server.Engines.Harvest
 				{
 					 spawned = new Ferret() as BaseCreature;
 					break;
-				}				
+				}
 				default:
 				{
 					spawned = new Rat() as BaseCreature;
 					break;
 				}
-				
+
 			}
 
-							
+
                         if (spawned != null)
                         {
 							spawned.Name = "an adorable baby "+critter;
 							spawned.HitsMaxSeed = 150;
-							
+
 							spawned.Hits = 150;
 							spawned.Tamable = false;
 							 spawned.Hue =  Utility.RandomList( 1157, 1175, 1172, 1171, 1170, 1169, 1168, 1167, 1166, 1165 );
 							Diamond reward = new Diamond(2);
 							Console.WriteLine("Debug!:Creature spawned with  utility = {0}  rnd = {1} ",utilityDouble,  randomDouble);
 							from.SendMessage("While mining, you destroyed the home of a poor critter.  It stares at you with its sad little eyes, pleading for its life , knowing that it is probably not long for this world...");
-							
+
 							spawned.PackItem(reward);
                             int offset = Utility.Random(8) * 2;
 
@@ -534,7 +533,7 @@ namespace Server.Engines.Harvest
                     catch
                     {
                     }
-				}				
+				}
 			}
         }
 
@@ -644,7 +643,7 @@ namespace Server.Engines.Harvest
             if (toHarvest is LandTarget)
             {
                 from.SendLocalizedMessage(501862); // You can't mine there.
-            }            
+            }
             else if (!(toHarvest is LandTarget))
             {
                 from.SendLocalizedMessage(501863); // You can't mine that.

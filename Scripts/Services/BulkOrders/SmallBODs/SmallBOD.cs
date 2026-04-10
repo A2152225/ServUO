@@ -178,6 +178,48 @@ namespace Server.Engines.BulkOrders
             return BulkMaterialType.None;
         }
 
+        public static BulkMaterialType GetRandomMaterial(BulkMaterialType[] materials, double[] weights)
+        {
+            if (materials == null || weights == null || materials.Length == 0 || materials.Length != weights.Length)
+            {
+                return BulkMaterialType.None;
+            }
+
+            double totalWeight = 0.0;
+
+            for (int i = 0; i < weights.Length; ++i)
+            {
+                if (weights[i] > 0.0)
+                {
+                    totalWeight += weights[i];
+                }
+            }
+
+            if (totalWeight <= 0.0)
+            {
+                return BulkMaterialType.None;
+            }
+
+            double random = Utility.RandomDouble() * totalWeight;
+
+            for (int i = 0; i < materials.Length; ++i)
+            {
+                if (weights[i] <= 0.0)
+                {
+                    continue;
+                }
+
+                if (random < weights[i])
+                {
+                    return materials[i];
+                }
+
+                random -= weights[i];
+            }
+
+            return materials[materials.Length - 1];
+        }
+
         public static BulkMaterialType GetMaterial(CraftResource resource)
         {
             switch ( resource )
@@ -200,18 +242,38 @@ namespace Server.Engines.BulkOrders
                     return BulkMaterialType.Valorite;
 				case CraftResource.Blaze:
 					return BulkMaterialType.Blaze;
-				case CraftResource.Ice:		
+				case CraftResource.Ice:
 					return BulkMaterialType.Ice;
-				case CraftResource.Toxic:	
+				case CraftResource.Toxic:
 					return BulkMaterialType.Toxic;
-				case CraftResource.Electrum:	
+				case CraftResource.Electrum:
 					return BulkMaterialType.Electrum;
 				case CraftResource.Platinum:
 					return BulkMaterialType.Platinum;
-				case CraftResource.Royalite:	
+                case CraftResource.Barite:
+                    return BulkMaterialType.Barite;
+                case CraftResource.Wulfenite:
+                    return BulkMaterialType.Wulfenite;
+                case CraftResource.Dragonite:
+                    return BulkMaterialType.Dragonite;
+                case CraftResource.Bunterite:
+                    return BulkMaterialType.Bunterite;
+                case CraftResource.Pineite:
+                    return BulkMaterialType.Pineite;
+                case CraftResource.Samite:
+                    return BulkMaterialType.Samite;
+                case CraftResource.Toberite:
+                    return BulkMaterialType.Toberite;
+                case CraftResource.Lisite:
+                    return BulkMaterialType.Lisite;
+                case CraftResource.Marite:
+                    return BulkMaterialType.Marite;
+				case CraftResource.Royalite:
 					return BulkMaterialType.Royalite;
-				case CraftResource.Danite:			
+				case CraftResource.Danite:
 					return BulkMaterialType.Danite;
+                case CraftResource.Teal:
+                    return BulkMaterialType.Teal;
                 case CraftResource.SpinedLeather:
                     return BulkMaterialType.Spined;
                 case CraftResource.HornedLeather:
@@ -253,7 +315,7 @@ namespace Server.Engines.BulkOrders
             if (m_Material != BulkMaterialType.None)
                	list.Add("All items must be crafted with " + LargeBODGump.GetMaterialStringFor( Material ));
            //     list.Add(SmallBODGump.GetMaterialNumberFor(m_Material)); // All items must be made with x material.
-				
+
             list.Add(1060656, m_AmountMax.ToString()); // amount to make: ~1_val~
             list.Add(1060658, "#{0}\t{1}", m_Number, m_AmountCur); // ~1_val~: ~2_val~
         }
@@ -431,6 +493,39 @@ namespace Server.Engines.BulkOrders
                     break;
                 case BulkMaterialType.Valorite:
                     skillReq = 100.0;
+                    break;
+                case BulkMaterialType.Blaze:
+                    skillReq = 100.0;
+                    break;
+                case BulkMaterialType.Ice:
+                    skillReq = 105.0;
+                    break;
+                case BulkMaterialType.Toxic:
+                    skillReq = 110.0;
+                    break;
+                case BulkMaterialType.Electrum:
+                    skillReq = 112.0;
+                    break;
+                case BulkMaterialType.Platinum:
+                    skillReq = 115.0;
+                    break;
+                case BulkMaterialType.Barite:
+                case BulkMaterialType.Wulfenite:
+                case BulkMaterialType.Dragonite:
+                case BulkMaterialType.Bunterite:
+                case BulkMaterialType.Pineite:
+                case BulkMaterialType.Samite:
+                case BulkMaterialType.Toberite:
+                    skillReq = 117.0;
+                    break;
+                case BulkMaterialType.Teal:
+                case BulkMaterialType.Lisite:
+                case BulkMaterialType.Marite:
+                case BulkMaterialType.Royalite:
+                    skillReq = 118.0;
+                    break;
+                case BulkMaterialType.Danite:
+                    skillReq = 119.0;
                     break;
                 case BulkMaterialType.Spined:
                     skillReq = 65.0;

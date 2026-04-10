@@ -9,35 +9,70 @@ namespace Server.Engines.BulkOrders
     {
         public override BODType BODType { get { return BODType.Smith; } }
 
-        public static double[] m_BlacksmithMaterialChances = new double[]
-        {
-				0.125, // None
-				0.095, // Dull Copper
-				0.090, // Shadow Iron
-				0.090, // Copper
-				0.080, // Bronze
-				0.080, // Gold
-				0.070, // Agapite
-				0.070, // Verite
-				0.060, // Valorite
-				0.060, // Blaze
-				0.050, // Ice
-				0.050, // Toxic
-				0.040, // Electrum
-				0.020,  // Platinum
-				0.015, // Royalite
-				0.005  // Danite
+                public static readonly BulkMaterialType[] m_BlacksmithMaterials = new BulkMaterialType[]
+            {
+                    BulkMaterialType.DullCopper,
+                    BulkMaterialType.ShadowIron,
+                    BulkMaterialType.Copper,
+                    BulkMaterialType.Bronze,
+                    BulkMaterialType.Gold,
+                    BulkMaterialType.Agapite,
+                    BulkMaterialType.Verite,
+                    BulkMaterialType.Valorite,
+                    BulkMaterialType.Blaze,
+                    BulkMaterialType.Ice,
+                    BulkMaterialType.Toxic,
+                    BulkMaterialType.Electrum,
+                    BulkMaterialType.Platinum,
+                    BulkMaterialType.Barite,
+                    BulkMaterialType.Wulfenite,
+                    BulkMaterialType.Dragonite,
+                    BulkMaterialType.Bunterite,
+                    BulkMaterialType.Pineite,
+                    BulkMaterialType.Samite,
+                    BulkMaterialType.Toberite,
+                    BulkMaterialType.Teal,
+                    BulkMaterialType.Lisite,
+                    BulkMaterialType.Marite,
+                    BulkMaterialType.Royalite,
+                    BulkMaterialType.Danite
+                };
+
+                public static readonly double[] m_BlacksmithMaterialWeights = new double[]
+                {
+                        95.0,
+                        90.0,
+                        90.0,
+                        80.0,
+                        80.0,
+                        70.0,
+                        70.0,
+                        60.0,
+                        50.0,
+                        45.0,
+                        40.0,
+                        35.0,
+                        25.0,
+                        10.0,
+                        9.5,
+                        9.0,
+                        8.5,
+                        8.0,
+                        7.5,
+                        7.0,
+                        6.5,
+                        5.5,
+                        4.5,
+                        3.5,
+                        2.5
         };
         [Constructable]
         public SmallSmithBOD()
         {
-            SmallBulkEntry[] entries;
-            bool useMaterials;
-
-            if (useMaterials = Utility.RandomBool())
-                entries = SmallBulkEntry.BlacksmithArmor;
-            else
-                entries = SmallBulkEntry.BlacksmithWeapons;
+            bool useMaterials = Utility.RandomBool();
+            SmallBulkEntry[] entries = Utility.RandomBool()
+                ? SmallBulkEntry.BlacksmithArmor
+                : SmallBulkEntry.BlacksmithWeapons;
 
             if (entries.Length > 0)
             {
@@ -47,7 +82,7 @@ namespace Server.Engines.BulkOrders
                 BulkMaterialType material;
 
                 if (useMaterials)
-                    material = GetRandomMaterial(BulkMaterialType.DullCopper, m_BlacksmithMaterialChances);
+                    material = GetRandomMaterial(m_BlacksmithMaterials, m_BlacksmithMaterialWeights);
                 else
                     material = BulkMaterialType.None;
 
@@ -95,15 +130,37 @@ namespace Server.Engines.BulkOrders
             Material = material;
         }
 
+        public static BulkMaterialType GetRandomMaterialForSkill(double theirSkill)
+        {
+            if (GetIronMaterialChance(theirSkill) > Utility.RandomDouble())
+            {
+                return BulkMaterialType.None;
+            }
+
+            for (int i = 0; i < 20; ++i)
+            {
+                BulkMaterialType check = GetRandomMaterial(m_BlacksmithMaterials, m_BlacksmithMaterialWeights);
+                double skillReq = GetRequiredSkill(check);
+
+                if (theirSkill >= skillReq)
+                {
+                    return check;
+                }
+            }
+
+            return BulkMaterialType.None;
+        }
+
+        private static double GetIronMaterialChance(double theirSkill)
+        {
+            return 0.5;
+        }
+
         public static SmallSmithBOD CreateRandomFor(Mobile m)
         {
-            SmallBulkEntry[] entries;
-            bool useMaterials;
-
-            if (useMaterials = Utility.RandomBool())
-                entries = SmallBulkEntry.BlacksmithArmor;
-            else
-                entries = SmallBulkEntry.BlacksmithWeapons;
+            SmallBulkEntry[] entries = Utility.RandomBool()
+                ? SmallBulkEntry.BlacksmithArmor
+                : SmallBulkEntry.BlacksmithWeapons;
 
             if (entries.Length > 0)
             {
@@ -119,19 +176,9 @@ namespace Server.Engines.BulkOrders
 
                 BulkMaterialType material = BulkMaterialType.None;
 
-                if (useMaterials && theirSkill >= 70.1)
+                if (theirSkill >= 70.1)
                 {
-                    for (int i = 0; i < 20; ++i)
-                    {
-                        BulkMaterialType check = GetRandomMaterial(BulkMaterialType.DullCopper, m_BlacksmithMaterialChances);
-                        double skillReq = GetRequiredSkill(check);
-
-                        if (theirSkill >= skillReq)
-                        {
-                            material = check;
-                            break;
-                        }
-                    }
+                    material = GetRandomMaterialForSkill(theirSkill);
                 }
 
                 double excChance = 0.0;

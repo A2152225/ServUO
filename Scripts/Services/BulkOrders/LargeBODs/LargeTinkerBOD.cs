@@ -26,18 +26,9 @@ namespace Server.Engines.BulkOrders
             }
         }
 
-        public static double[] m_BlackTinkerMaterialChances = new double[]
-        {
-            0.501953125, // None
-            0.250000000, // Dull Copper
-            0.125000000, // Shadow Iron
-            0.062500000, // Copper
-            0.031250000, // Bronze
-            0.015625000, // Gold
-            0.007812500, // Agapite
-            0.003906250, // Verite
-            0.001953125  // Valorite
-        };
+        public static readonly BulkMaterialType[] m_BlackTinkerMaterials = SmallTinkerBOD.m_TinkerMaterials;
+
+        public static readonly double[] m_BlackTinkerMaterialWeights = SmallTinkerBOD.m_TinkerMaterialWeights;
 
         [Constructable]
         public LargeTinkerBOD()
@@ -45,7 +36,7 @@ namespace Server.Engines.BulkOrders
             LargeBulkEntry[] entries;
             bool useMaterials = true;
             bool jewelry = false;
-			
+
             int rand = Utility.Random(4);
 
             switch ( rand )
@@ -74,7 +65,7 @@ namespace Server.Engines.BulkOrders
             BulkMaterialType material;
 
             if (useMaterials)
-                material = GetRandomMaterial(BulkMaterialType.DullCopper, m_BlackTinkerMaterialChances);
+                material = SmallBOD.GetRandomMaterial(m_BlackTinkerMaterials, m_BlackTinkerMaterialWeights);
             else
                 material = BulkMaterialType.None;
 

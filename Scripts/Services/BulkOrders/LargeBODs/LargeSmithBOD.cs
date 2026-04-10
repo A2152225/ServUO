@@ -8,31 +8,16 @@ namespace Server.Engines.BulkOrders
     {
         public override BODType BODType { get { return BODType.Smith; } }
 
-        public static double[] m_BlacksmithMaterialChances = new double[]
-        {
-        	0.125, // None
-				0.095, // Dull Copper
-				0.090, // Shadow Iron
-				0.090, // Copper
-				0.080, // Bronze
-				0.080, // Gold
-				0.070, // Agapite
-				0.070, // Verite
-				0.060, // Valorite
-				0.060, // Blaze
-				0.050, // Ice
-				0.050, // Toxic
-				0.040, // Electrum
-				0.020,  // Platinum
-				0.015, // Royalite
-				0.005  // Danite
-        };
+        public static readonly BulkMaterialType[] m_BlacksmithMaterials = SmallSmithBOD.m_BlacksmithMaterials;
+
+        public static readonly double[] m_BlacksmithMaterialWeights = SmallSmithBOD.m_BlacksmithMaterialWeights;
+
         [Constructable]
         public LargeSmithBOD()
         {
             LargeBulkEntry[] entries;
-            bool useMaterials = true;
-			
+            bool useMaterials = Utility.RandomBool();
+
             int rand = Utility.Random(8);
 
             switch ( rand )
@@ -63,9 +48,6 @@ namespace Server.Engines.BulkOrders
                     entries = LargeBulkEntry.ConvertEntries(this, LargeBulkEntry.LargeSwords);
                     break;
             }
-			
-            if (rand > 2 && rand < 8)
-                useMaterials = false;
 
             int hue = 0x44E;
             int amountMax = Utility.RandomList(10, 15, 20, 20);
@@ -74,7 +56,7 @@ namespace Server.Engines.BulkOrders
             BulkMaterialType material;
 
             if (useMaterials)
-                material = GetRandomMaterial(BulkMaterialType.DullCopper, m_BlacksmithMaterialChances);
+                material = SmallBOD.GetRandomMaterial(m_BlacksmithMaterials, m_BlacksmithMaterialWeights);
             else
                 material = BulkMaterialType.None;
 
@@ -83,6 +65,16 @@ namespace Server.Engines.BulkOrders
             this.Entries = entries;
             this.RequireExceptional = reqExceptional;
             this.Material = material;
+        }
+
+        public static LargeSmithBOD CreateRandomFor(Mobile m)
+        {
+            double theirSkill = BulkOrderSystem.GetBODSkill(m, SkillName.Blacksmith);
+            LargeSmithBOD bod = new LargeSmithBOD();
+
+            bod.Material = theirSkill >= 70.1 ? SmallSmithBOD.GetRandomMaterialForSkill(theirSkill) : BulkMaterialType.None;
+
+            return bod;
         }
 
         public LargeSmithBOD(int amountMax, bool reqExceptional, BulkMaterialType mat, LargeBulkEntry[] entries)

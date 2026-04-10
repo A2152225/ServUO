@@ -42,8 +42,95 @@ namespace Server.Engines.BulkOrders
         Bamboo,
         PurpleHeart,
         Redwood,
-        Petrified
+        Petrified,
+        Barite,
+        Wulfenite,
+        Dragonite,
+        Bunterite,
+        Pineite,
+        Samite,
+        Toberite,
+        Lisite,
+        Marite,
+        Teal
         //daat99 OWLTR end - custom resources
+    }
+
+    public static class BulkMaterialInfo
+    {
+        private static readonly BulkMaterialType[] m_SmithMetals =
+        {
+            BulkMaterialType.DullCopper,
+            BulkMaterialType.ShadowIron,
+            BulkMaterialType.Copper,
+            BulkMaterialType.Bronze,
+            BulkMaterialType.Gold,
+            BulkMaterialType.Agapite,
+            BulkMaterialType.Verite,
+            BulkMaterialType.Valorite,
+            BulkMaterialType.Blaze,
+            BulkMaterialType.Ice,
+            BulkMaterialType.Toxic,
+            BulkMaterialType.Electrum,
+            BulkMaterialType.Platinum,
+            BulkMaterialType.Barite,
+            BulkMaterialType.Wulfenite,
+            BulkMaterialType.Dragonite,
+            BulkMaterialType.Bunterite,
+            BulkMaterialType.Pineite,
+            BulkMaterialType.Samite,
+            BulkMaterialType.Toberite,
+            BulkMaterialType.Teal,
+            BulkMaterialType.Lisite,
+            BulkMaterialType.Marite,
+            BulkMaterialType.Royalite,
+            BulkMaterialType.Danite
+        };
+
+        public static BulkMaterialType[] SmithMetals
+        {
+            get
+            {
+                return m_SmithMetals;
+            }
+        }
+
+        public static bool IsSmithMetal(BulkMaterialType material)
+        {
+            return GetSmithMetalIndex(material) >= 0;
+        }
+
+        public static int GetSmithMetalIndex(BulkMaterialType material)
+        {
+            return Array.IndexOf(m_SmithMetals, material);
+        }
+
+        public static bool IsLastSmithMetal(BulkMaterialType material)
+        {
+            return GetSmithMetalIndex(material) == (m_SmithMetals.Length - 1);
+        }
+
+        public static BulkMaterialType GetNextSmithMetal(BulkMaterialType material)
+        {
+            int index = GetSmithMetalIndex(material);
+
+            if (index < 0)
+            {
+                return m_SmithMetals[0];
+            }
+
+            if ((index + 1) < m_SmithMetals.Length)
+            {
+                return m_SmithMetals[index + 1];
+            }
+
+            return material;
+        }
+
+        public static int GetSmithRewardTier(BulkMaterialType material)
+        {
+            return GetSmithMetalIndex(material);
+        }
     }
 
     public enum BulkGenericType

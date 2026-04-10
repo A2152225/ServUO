@@ -21,7 +21,8 @@ namespace Server.Engines.CannedEvil
         #region TOL
         DragonTurtle,
         #endregion
-        Khaldun
+        Khaldun,
+        PowerCrystalChamp
     }
 
     public class ChampionSpawnInfo
@@ -174,6 +175,13 @@ namespace Server.Engines.CannedEvil
 				new Type[]{ typeof( CultistAmbusher  ), typeof( ShadowFiend ) },										// Level 3
 				new Type[]{ typeof( KhalAnkurWarriors ) }											                    // Level 4
 			} ),
+            new ChampionSpawnInfo("powercrystalChamp", typeof(PowerCrystalChampion), new string[] { "Spark", "Charge", "Overload" }, new Type[][]
+            {
+                new Type[] { typeof(GreaterMongbat), typeof(GiantRat), typeof(Lizardman), typeof(Shade), typeof(Bogle) },
+                new Type[] { typeof(Gargoyle), typeof(Ratman), typeof(BoneMagi), typeof(Kappa), typeof(OphidianWarrior) },
+                new Type[] { typeof(Drake), typeof(DreadSpider), typeof(BoneKnight), typeof(RatmanMage), typeof(RevenantLion) },
+                new Type[] { typeof(Daemon), typeof(Dragon), typeof(LichLord), typeof(Oni), typeof(RatmanArcher) }
+            }),
         };
 
         public static ChampionSpawnInfo GetInfo(ChampionSpawnType type)

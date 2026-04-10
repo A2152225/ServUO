@@ -12222,6 +12222,22 @@
     <Compile Include="VendorInfo\SBWeaver.cs" />
     <Compile Include="VendorInfo\SBWoodenShields.cs" />
     <Compile Include="VendorInfo\VendorInventory.cs" />
+    <Compile Include="Custom\1.1\EXP.cs" />
+    <Compile Include="Custom\DanDollars\DanDollarSystem.cs" />
+    <Compile Include="Custom\DifficultySystem\DamagePopupGump.cs" />
+    <Compile Include="Custom\DifficultySystem\PoisonScalingConfig.cs" />
+    <Compile Include="Custom\DifficultySystem\Scripts_Custom_DifficultySystem_AnimalLoreScaling_Version4.cs" />
+    <Compile Include="Custom\DifficultySystem\Scripts_Custom_DifficultySystem_DamageScaling_Version4.cs" />
+    <Compile Include="Custom\DifficultySystem\Scripts_Custom_DifficultySystem_DifficultyGump_Version2.cs" />
+    <Compile Include="Custom\DifficultySystem\Scripts_Custom_DifficultySystem_DifficultySettings_Version2.cs" />
+    <Compile Include="Custom\DifficultySystem\Scripts_Custom_DifficultySystem_HealthScaling_Version2.cs" />
+    <Compile Include="Custom\DifficultySystem\Scripts_Custom_DifficultySystem_PlayerIncomingDamage_Version1.cs" />
+    <Compile Include="Custom\FS-ATS Gen2\Animal Taming BODs\Taming BOB\TamingBOBFilter.cs" />
+    <Compile Include="Custom\FS-ATS Gen2\Core\AnimalBODCore.cs" />
+    <Compile Include="Custom\FS-ATS Gen2\Core\AnimalBODModule.cs" />
+    <Compile Include="Custom\OWLTR\New\OWLTROptions.cs" />
+    <Compile Include="Custom\OWLTR\New\Resource Helper.cs" />
+    <Compile Include="Multis\PreviewMarkerItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Services\LootGeneration\RunicReforging\ReadMe.txt" />

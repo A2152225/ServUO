@@ -147,12 +147,12 @@ namespace Server.Items
         #region IUsesRemaining members
         private int m_UsesRemaining;
         private bool m_ShowUsesRemaining;
-        
+
         [CommandProperty(AccessLevel.GameMaster)]
         public int UsesRemaining { get { return m_UsesRemaining; } set { m_UsesRemaining = value; InvalidateProperties(); } }
 
         public bool ShowUsesRemaining { get { return m_ShowUsesRemaining; } set { m_ShowUsesRemaining = value; InvalidateProperties(); } }
-        
+
         public void ScaleUses()
         {
             m_UsesRemaining = (m_UsesRemaining * GetUsesScalar()) / 100;
@@ -172,7 +172,7 @@ namespace Server.Items
             return 100;
         }
         #endregion
-        
+
         private bool _VvVItem;
         private Mobile _Owner;
         private string _OwnerName;
@@ -662,7 +662,7 @@ namespace Server.Items
 		[CommandProperty(AccessLevel.GameMaster)]
 		public int StrRequirement
 		{
-            get 
+            get
             {
                 if (m_NegativeAttributes.Massive > 0)
                 {
@@ -1534,7 +1534,7 @@ namespace Server.Items
             }
 			if (Core.AOS && chance < 0.00)
             {
-                chance = 0.00; //////// <^ was 0.02 
+                chance = 0.00; //////// <^ was 0.02
             }/*
             if (Core.AOS && chance < 0.02)
             {
@@ -1610,7 +1610,7 @@ namespace Server.Items
 				int bonus = AosAttributes.GetValue(m, AosAttribute.WeaponSpeed);
 				if (m is PlayerMobile)
 				bonus += ((PlayerMobile)m).Paragon_1SSI;
-			
+
 				v += AOS.Scale(v, bonus);
 
 				if (v <= 0)
@@ -1887,7 +1887,7 @@ namespace Server.Items
 
 			bool blocked = false;
 
-			if (defender.Player || defender.Body.IsHuman || (defender is BaseCreature && 
+			if (defender.Player || defender.Body.IsHuman || (defender is BaseCreature &&
                                                             ((BaseCreature)defender).Controlled &&
                                                             defender.Skills[SkillName.Wrestling].Base >= 100))
 			{
@@ -2170,7 +2170,7 @@ namespace Server.Items
 
 			if (inPack >= 5)
 			{
-				return (25 * inPack); //was 100 ---  Added support for larger packs 
+				return (25 * inPack); //was 100 ---  Added support for larger packs
 			}
 			else if (inPack >= 4)
 			{
@@ -2184,7 +2184,7 @@ namespace Server.Items
 			{
 				return 25;
 			}
-			
+
 
 			return 0;
 		}
@@ -2192,18 +2192,18 @@ namespace Server.Items
 		private bool m_InDoubleStrike;
         private bool m_ProcessingMultipleHits;
 
-		public bool InDoubleStrike 
+		public bool InDoubleStrike
         {
             get { return m_InDoubleStrike; }
             set
-            { 
+            {
                 m_InDoubleStrike = value;
 
                 if (m_InDoubleStrike)
                     ProcessingMultipleHits = true;
                 else
                     ProcessingMultipleHits = false;
-            } 
+            }
         }
 
         public bool ProcessingMultipleHits
@@ -2740,7 +2740,7 @@ namespace Server.Items
             }
 
 			if (defender is PlayerMobile){
-				
+
 			damageGiven = AOS.Damage(
 				defender,
 				attacker,
@@ -2755,7 +2755,7 @@ namespace Server.Items
 				(direct + defender.Kills*7),
 				false,
 				ranged ? Server.DamageType.Ranged : Server.DamageType.Melee);
-				
+
 			}
 			else{
 
@@ -2830,7 +2830,7 @@ namespace Server.Items
 				if (stamLeech != 0)
 				{
 					attacker.Stam += AOS.Scale(damageGiven, stamLeech);
-					
+
 				}
 
 				if (Core.SA) // New formulas
@@ -2840,8 +2840,8 @@ namespace Server.Items
 						int toHeal = Utility.RandomMinMax(0, (int)(AOS.Scale(damageGiven, lifeLeech) * 0.3));
 
                         if (defender is BaseCreature && ((BaseCreature)defender).TaintedLifeAura)
-                        {                            
-                            AOS.Damage(attacker, defender, toHeal, false, 0, 0, 0, 0, 0, 0, 100, false, false, false);                            
+                        {
+                            AOS.Damage(attacker, defender, toHeal, false, 0, 0, 0, 0, 0, 0, 100, false, false, false);
                             attacker.SendLocalizedMessage(1116778); //The tainted life force energy damages you as your body tries to absorb it.
                         }
                         else
@@ -2922,9 +2922,9 @@ namespace Server.Items
 					while ( physChance > 0)
 					{
 						if ( physChance > Utility.Random(100) )
-							DoAreaAttack(attacker, defender, damageGiven, 0x10E, 50, 100, 0, 0, 0, 0);				
+							DoAreaAttack(attacker, defender, damageGiven, 0x10E, 50, 100, 0, 0, 0, 0);
 						physChance -= 100;
-					}					
+					}
 				}
 
 				if (fireChance != 0 && fireChance > Utility.Random(100))
@@ -2936,8 +2936,8 @@ namespace Server.Items
 						if ( fireChance > Utility.Random(100) )
 					DoAreaAttack(attacker, defender, damageGiven, 0x11D, 1160, 0, 100, 0, 0, 0);
 						fireChance -= 100;
-					}					
-					
+					}
+
 				}
 
 				if (coldChance != 0 && coldChance > Utility.Random(100))
@@ -2947,10 +2947,10 @@ namespace Server.Items
 					while ( coldChance > 0)
 					{
 						if ( coldChance > Utility.Random(100) )
-						DoAreaAttack(attacker, defender, damageGiven, 0x0FC, 2100, 0, 0, 100, 0, 0);	
+						DoAreaAttack(attacker, defender, damageGiven, 0x0FC, 2100, 0, 0, 100, 0, 0);
 						coldChance -= 100;
-					}					
-					
+					}
+
 				}
 
 				if (poisChance != 0 && poisChance > Utility.Random(100))
@@ -2960,10 +2960,10 @@ namespace Server.Items
 					while ( poisChance > 0)
 					{
 						if ( poisChance > Utility.Random(100) )
-						DoAreaAttack(attacker, defender, damageGiven, 0x205, 1166, 0, 0, 0, 100, 0);		
+						DoAreaAttack(attacker, defender, damageGiven, 0x205, 1166, 0, 0, 0, 100, 0);
 						poisChance -= 100;
-					}					
-					
+					}
+
 				}
 
 				if (nrgyChance != 0 && nrgyChance > Utility.Random(100))
@@ -2975,9 +2975,9 @@ namespace Server.Items
 						if ( nrgyChance > Utility.Random(100) )
 					DoAreaAttack(attacker, defender, damageGiven, 0x1F1, 120, 0, 0, 0, 0, 100);
 						nrgyChance -= 100;
-					}					
-					
-					
+					}
+
+
 				}
 
 				int maChance = (int)(AosWeaponAttributes.GetValue(attacker, AosWeaponAttribute.HitMagicArrow) * propertyBonus);
@@ -3004,7 +3004,7 @@ namespace Server.Items
 					while ( maChance > 0)
 					{
 						if ( maChance > Utility.Random(100) )
-							DoMagicArrow(attacker, defender);					
+							DoMagicArrow(attacker, defender);
 						maChance -= 100;
 					}
 				}
@@ -3016,22 +3016,22 @@ namespace Server.Items
 					while ( harmChance > 0)
 					{
 						if ( harmChance > Utility.Random(100) )
-							DoHarm(attacker, defender);					
+							DoHarm(attacker, defender);
 						harmChance -= 100;
 					}
 				}
 
 				if (fireballChance != 0 && fireballChance > Utility.Random(100))
 				{
-					DoFireball(attacker, defender);					
+					DoFireball(attacker, defender);
 					fireballChance -= 100;
 					while ( fireballChance > 0)
 					{
 						if ( fireballChance > Utility.Random(100) )
-							DoFireball(attacker, defender);					
+							DoFireball(attacker, defender);
 						fireballChance -= 100;
 					}
-							
+
 				}
 
 				if (lightningChance != 0 && lightningChance > Utility.Random(100))
@@ -3041,9 +3041,9 @@ namespace Server.Items
 					while ( lightningChance > 0)
 					{
 						if ( lightningChance > Utility.Random(100) )
-							DoLightning(attacker, defender);					
+							DoLightning(attacker, defender);
 						lightningChance -= 100;
-					}					
+					}
 				}
 
 				if (dispelChance != 0 && dispelChance > Utility.Random(100))
@@ -3053,9 +3053,9 @@ namespace Server.Items
 					while ( dispelChance > 0)
 					{
 						if ( dispelChance > Utility.Random(100) )
-							DoDispel(attacker, defender);					
+							DoDispel(attacker, defender);
 						dispelChance -= 100;
-					}										
+					}
                 }
 
                 if (explosChance != 0 && explosChance > Utility.Random(100))
@@ -3065,9 +3065,9 @@ namespace Server.Items
 					while ( explosChance > 0)
 					{
 						if ( explosChance > Utility.Random(100) )
-							DoExplosion(attacker, defender);					
+							DoExplosion(attacker, defender);
 						explosChance -= 100;
-					}										
+					}
                 }
 
                 #region Mondains Legacy
@@ -3080,7 +3080,7 @@ namespace Server.Items
 						if ( velocityChance > Utility.Random(100) )
                     DoHitVelocity(attacker, damageable);
 						velocityChance -= 100;
-					}							
+					}
                 }
                 #endregion
 
@@ -3094,7 +3094,7 @@ namespace Server.Items
 						if ( curseChance > Utility.Random(100) )
 					DoCurse(attacker, defender);
 						curseChance -= 100;
-					}											
+					}
 				}
 
 				if (fatigueChance != 0 && fatigueChance > Utility.Random(100))
@@ -3106,7 +3106,7 @@ namespace Server.Items
 						if ( fatigueChance > Utility.Random(100) )
 					DoFatigue(attacker, defender, damageGiven);
 						fatigueChance -= 100;
-					}											
+					}
 				}
 
 				if (manadrainChance != 0 && manadrainChance > Utility.Random(100))
@@ -3118,7 +3118,7 @@ namespace Server.Items
 						if ( manadrainChance > Utility.Random(100) )
 					DoManaDrain(attacker, defender, damageGiven);
 						manadrainChance -= 100;
-					}											
+					}
 				}
 				#endregion
 
@@ -3133,7 +3133,7 @@ namespace Server.Items
 						if ( laChance > Utility.Random(100) )
 					DoLowerAttack(attacker, defender);
 						laChance -= 100;
-					}											
+					}
 				}
 
                 if (!Core.HS)
@@ -3149,14 +3149,14 @@ namespace Server.Items
 						if ( ldChance > Utility.Random(100) )
                         DoLowerDefense(attacker, defender);
 						ldChance -= 100;
-					}												
+					}
                     }
                 }
                 else
                 {
                     int hldWep = m_AosWeaponAttributes.HitLowerDefend;
                     int hldGlasses = 0;
-                    
+
                     var helm = attacker.FindItemOnLayer(Layer.Helm);
 
                     if (helm != null)
@@ -3178,8 +3178,8 @@ namespace Server.Items
                     DoHitVelocity(attacker, damageable);
 						hldWep -= 100;
 						hldGlasses -= 100;
-					}						
-					
+					}
+
                     }
                 }
 			}
@@ -3224,10 +3224,10 @@ namespace Server.Items
 
             BaseFamiliar.OnHit(attacker, damageable);
             WhiteTigerFormSpell.OnHit(attacker, defender);
-			
+
 			if (defender is PlayerMobile)
 				damageGiven += (defender.Kills*7);
-			
+
 			XmlAttach.OnWeaponHit(this, attacker, defender, damageGiven);
 		}
 
@@ -3271,7 +3271,7 @@ namespace Server.Items
             int inscribeBonus = (inscribeSkill + (1000 * (inscribeSkill / 1000))) / 200;
 
             damageBonus += inscribeBonus;
-            damageBonus += attacker.Int / 5; //////10;   was 10 -- Str gives 1% per 5, so scaling int to match 
+            damageBonus += attacker.Int / 5; //////10;   was 10 -- Str gives 1% per 5, so scaling int to match
             damageBonus += SpellHelper.GetSpellDamageBonus(attacker, defender, SkillName.Magery, attacker is PlayerMobile && defender is PlayerMobile);
             damage = AOS.Scale(damage, 100 + damageBonus);
 
@@ -3286,10 +3286,10 @@ namespace Server.Items
 			{
 				if (defender.Kills > 0)
 				return (damage/100 + (defender.Kills * 7));
-				
+
 			}
-			
-			
+
+
 
             return damage / 100;
 		}
@@ -4029,7 +4029,7 @@ namespace Server.Items
 			double totalBonus = strengthBonus + anatomyBonus + tacticsBonus + lumberBonus +
 								((GetDamageBonus() + damageBonus) / 100.0);
 
-		
+
 
 			return damage + (int)(damage * totalBonus);
 		}
@@ -4201,7 +4201,7 @@ namespace Server.Items
             {
                 action = GetNewAnimationAction(from);
 
-                from.Animate(AnimationType.Attack, action); 
+                from.Animate(AnimationType.Attack, action);
             }
             else
             {
@@ -4313,7 +4313,7 @@ namespace Server.Items
 			base.Serialize(writer);
 
 			writer.Write(20); // version
-			//version 20 -  add ItemRanks 
+			//version 20 -  add ItemRanks
 			writer.Write(_ItemRank);
 
             // Version 19 - Removes m_SearingWeapon as its handled as a socket now
@@ -4713,7 +4713,7 @@ namespace Server.Items
 
 			switch (version)
 			{
-				case 20: 
+				case 20:
 				{
 					_ItemRank = reader.ReadInt();
 					goto case 17;
@@ -5543,6 +5543,16 @@ string aname = this.GetNameString();
 				case CraftResource.Platinum: rname = "Platinum"; break;
 				case CraftResource.Royalite: rname = "Royalite"; break;
 				case CraftResource.Danite: rname = "Danite"; break;
+				case CraftResource.Barite: rname = "Barite"; break;
+				case CraftResource.Wulfenite: rname = "Wulfenite"; break;
+				case CraftResource.Dragonite: rname = "Dragonite"; break;
+				case CraftResource.Bunterite: rname = "Bunterite"; break;
+				case CraftResource.Pineite: rname = "Pineite"; break;
+				case CraftResource.Samite: rname = "Samite"; break;
+				case CraftResource.Toberite: rname = "Toberite"; break;
+				case CraftResource.Lisite: rname = "Lisite"; break;
+				case CraftResource.Marite: rname = "Marite"; break;
+				case CraftResource.Teal: rname = "Teal"; break;
 				case CraftResource.PolarLeather: rname = "Polar"; break;
 				case CraftResource.SyntheticLeather: rname = "Synthetic"; break;
 				case CraftResource.BlazeLeather: rname = "BlazeL"; break;
@@ -5557,7 +5567,7 @@ string aname = this.GetNameString();
 				case CraftResource.Petrified: rname = "Petrified"; break;
                 default: oreType = 0; break;
             }
-			
+
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -5578,7 +5588,7 @@ string aname = this.GetNameString();
             {
                 if (oreType != 0)
                     list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
-                else if (rname != "0") 
+                else if (rname != "0")
 			        list.Add(1053099, "{0}\t{1}", rname, GetNameString()); // ~1_oretype~ ~2_armortype~  1053099,
 				else if (Name == null)
                     list.Add(LabelNumber);
@@ -5604,7 +5614,7 @@ string aname = this.GetNameString();
                     RunicReforging.AddSuffixName(list, m_ReforgedSuffix, GetNameString());
                 }
             }
-			
+
 			if ( m_Quality == ItemQuality.Exceptional )
 			{
 				if (level > 1 && !string.IsNullOrEmpty(oreType))
@@ -5618,10 +5628,10 @@ string aname = this.GetNameString();
 					list.Add( 1053099, "{0}\t{1}", oreType, GetNameString() ); // ~1_oretype~ ~2_armortype~
 				else
 					list.Add( GetNameString() );
-				
+
 			}
 			//daat99 OWLTR end - add custom resources to name
-			
+
 			*/
 			/*
 			int oreType;
@@ -5858,7 +5868,7 @@ string aname = this.GetNameString();
         {
             base.AddNameProperties(list);
 			if (_ItemRank != null)
-			list.Add("Rank: {0}",ItemRank ); 
+			list.Add("Rank: {0}",ItemRank );
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
 			#endregion
@@ -5898,7 +5908,7 @@ string aname = this.GetNameString();
 			if (m_AosSkillBonuses != null)
 			{
 				m_AosSkillBonuses.GetProperties(list);
-			}			
+			}
 
 			if (RequiredRace == Race.Elf)
 			{
@@ -6059,7 +6069,7 @@ string aname = this.GetNameString();
             {
                 list.Add(1060420, ((int)((double)enchantBonus * focusBonus)).ToString()); // hit fireball ~1_val~%
             }
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitLightning * focusBonus) != 0)
 			{
 				list.Add(1060423, ((int)fprop).ToString()); // hit lightning ~1_val~%
@@ -6096,17 +6106,17 @@ string aname = this.GetNameString();
             {
                 list.Add(1060426, ((int)(enchantBonus * focusBonus)).ToString()); // hit magic arrow ~1_val~%
             }
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitPhysicalArea * focusBonus) != 0)
 			{
 				list.Add(1060428, ((int)fprop).ToString()); // hit physical area ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitFireArea * focusBonus) != 0)
 			{
 				list.Add(1060419, ((int)fprop).ToString()); // hit fire area ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitColdArea * focusBonus) != 0)
 			{
 				list.Add(1060416, ((int)fprop).ToString()); // hit cold area ~1_val~%
@@ -6116,12 +6126,12 @@ string aname = this.GetNameString();
 			{
 				list.Add(1060429, ((int)fprop).ToString()); // hit poison area ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitEnergyArea * focusBonus) != 0)
 			{
 				list.Add(1060418, ((int)fprop).ToString()); // hit energy area ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitLeechStam * focusBonus) != 0)
 			{
                 list.Add(1060430, Math.Min(100, (int)fprop).ToString()); // hit stamina leech ~1_val~%
@@ -6131,42 +6141,42 @@ string aname = this.GetNameString();
 			{
 				list.Add(1060427, Math.Min(100, (int)fprop).ToString()); // hit mana leech ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitLeechHits * focusBonus) != 0)
 			{
                 list.Add(1060422, Math.Min(100, (int)fprop).ToString()); // hit life leech ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitFatigue * focusBonus) != 0)
 			{
 				list.Add(1113700, ((int)fprop).ToString()); // Hit Fatigue ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitManaDrain * focusBonus) != 0)
 			{
 				list.Add(1113699, ((int)fprop).ToString()); // Hit Mana Drain ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitCurse * focusBonus) != 0)
 			{
 				list.Add(1113712, ((int)fprop).ToString()); // Hit Curse ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitLowerAttack * focusBonus) != 0)
 			{
 				list.Add(1060424, ((int)fprop).ToString()); // hit lower attack ~1_val~%
 			}
-			
+
 			if ((fprop = (double)m_AosWeaponAttributes.HitLowerDefend * focusBonus) != 0)
 			{
 				list.Add(1060425, ((int)fprop).ToString()); // hit lower defense ~1_val~%
 			}
-			
+
 			if ((prop = m_AosWeaponAttributes.BloodDrinker) != 0)
 			{
 				list.Add(1113591, prop.ToString()); // Blood Drinker
 			}
-			
+
 			if ((prop = m_AosWeaponAttributes.BattleLust) != 0)
 			{
 				list.Add(1113710, prop.ToString()); // Battle Lust
@@ -6200,7 +6210,7 @@ string aname = this.GetNameString();
 			{
 				list.Add(1060450, prop.ToString()); // self repair ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.NightSight) != 0)
 			{
 				list.Add(1060441); // night sight
@@ -6210,87 +6220,87 @@ string aname = this.GetNameString();
 			{
 				list.Add(1060482); // spell channeling
 			}
-			
+
 			if ((prop = m_AosWeaponAttributes.MageWeapon) != 0)
 			{
 				list.Add(1060438, (30 - prop).ToString()); // mage weapon -~1_val~ skill
 			}
-			
+
 			if (Core.ML && m_AosAttributes.BalancedWeapon > 0 && Layer == Layer.TwoHanded)
 			{
 				list.Add(1072792); // Balanced
 			}
-			
+
 			if ((prop = (GetLuckBonus() + m_AosAttributes.Luck)) != 0)
 			{
 				list.Add(1060436, prop.ToString()); // luck ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.EnhancePotions) != 0)
 			{
 				list.Add(1060411, prop.ToString()); // enhance potions ~1_val~%
 			}
-			
+
 			if ((prop = m_AosWeaponAttributes.ReactiveParalyze) != 0)
             {
                 list.Add(1112364); // reactive paralyze
             }
-			
+
 			if ((prop = m_AosAttributes.BonusStr) != 0)
 			{
 				list.Add(1060485, prop.ToString()); // strength bonus ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.BonusInt) != 0)
 			{
 				list.Add(1060432, prop.ToString()); // intelligence bonus ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.BonusDex) != 0)
 			{
 				list.Add(1060409, prop.ToString()); // dexterity bonus ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.BonusHits) != 0)
 			{
 				list.Add(1060431, prop.ToString()); // hit point increase ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.BonusStam) != 0)
 			{
 				list.Add(1060484, prop.ToString()); // stamina increase ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.BonusMana) != 0)
 			{
 				list.Add(1060439, prop.ToString()); // mana increase ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.RegenHits) != 0)
 			{
 				list.Add(1060444, prop.ToString()); // hit point regeneration ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.RegenStam) != 0)
 			{
 				list.Add(1060443, prop.ToString()); // stamina regeneration ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.RegenMana) != 0)
 			{
 				list.Add(1060440, prop.ToString()); // mana regeneration ~1_val~
 			}
-			
+
 			if ((prop = m_AosAttributes.ReflectPhysical) != 0)
 			{
 				list.Add(1060442, prop.ToString()); // reflect physical damage ~1_val~%
 			}
-			
+
 			if ((prop = m_AosAttributes.SpellDamage) != 0)
 			{
 				list.Add(1060483, prop.ToString()); // spell damage increase ~1_val~%
 			}
-			
+
 			if ((prop = m_AosAttributes.CastRecovery) != 0)
 			{
 				list.Add(1060412, prop.ToString()); // faster cast recovery ~1_val~
@@ -6300,22 +6310,22 @@ string aname = this.GetNameString();
 			{
 				list.Add(1060413, prop.ToString()); // faster casting ~1_val~
 			}
-			
+
 			if ((prop = (GetHitChanceBonus() + m_AosAttributes.AttackChance)) != 0)
 			{
 				list.Add(1060415, prop.ToString()); // hit chance increase ~1_val~%
 			}
-			
+
 			if ((prop = m_AosAttributes.DefendChance) != 0)
 			{
 				list.Add(1060408, prop.ToString()); // defense chance increase ~1_val~%
 			}
-			
+
 			if ((prop = m_AosAttributes.LowerManaCost) != 0)
 			{
 				list.Add(1060433, prop.ToString()); // lower mana cost ~1_val~%
 			}
-			
+
 			if ((prop = m_AosAttributes.LowerRegCost) != 0)
 			{
 				list.Add(1060434, prop.ToString()); // lower reagent cost ~1_val~%
@@ -6325,7 +6335,7 @@ string aname = this.GetNameString();
 			{
 				list.Add(1060486, prop.ToString()); // swing speed increase ~1_val~%
 			}
-			
+
 			if ((prop = (GetDamageBonus() + m_AosAttributes.WeaponDamage + damBonus)) != 0)
 			{
 				list.Add(1060401, prop.ToString()); // damage increase ~1_val~%
@@ -6397,14 +6407,14 @@ string aname = this.GetNameString();
 				list.Add(1113695, prop.ToString()); // Kinetic Resonance ~1_val~%
 			}
 			#endregion
-			
+
 			base.AddResistanceProperties(list);
-			
+
 			if ((prop = GetLowerStatReq()) != 0)
 			{
 				list.Add(1060435, prop.ToString()); // lower requirements ~1_val~%
 			}
-			
+
 			if ((prop = m_AosWeaponAttributes.UseBestSkill) != 0)
 			{
 				list.Add(1060400); // use best weapon skill
@@ -6514,7 +6524,7 @@ string aname = this.GetNameString();
                         break;
                 }
 			}
-			
+
 			XmlAttach.AddAttachmentProperties(this, list);
 
 			if (m_Hits >= 0 && m_MaxHits > 0)

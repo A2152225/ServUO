@@ -28,7 +28,7 @@ namespace Server.Engines.BulkOrders
 				{ 1062236, 14 }, // Spined
 				{ 1062237, 15 }, // Horned
 				{ 1062238, 16 }  // Barbed
-			};// 
+			};//
 private static TextDefinition[,] m_MaterialFilters = new TextDefinition[,]
 			{
 				{ 1044067,  1 }, // Blacksmithy
@@ -51,7 +51,7 @@ private static TextDefinition[,] m_MaterialFilters = new TextDefinition[,]
 				{ "Toxic", 14 }, // Toxic
 				{ "Electrum", 15 }, // Electrum
 				{       0,  0 }, // --Blank--
-				
+
 				{       0,  0 }, // --Blank--
 				{ "Platinum",  16 }, // Platinum
 				{ "Royalite",  17 }, // Royalite
@@ -381,23 +381,38 @@ namespace Server.Engines.BulkOrders
 				{ 1018338, 10 }, // Verite
 				{ 1018339, 11 }, // Valorite
 				{       0, 12 }, // Blaze
-				
+
 				{       0, 0 }, // --Blank--
-				{       0,  13 }, // --Blank--
-				{       0, 14 }, // --Blank--
-				{       0, 15 }, // Ice
-				{       0, 16 }, // Toxic
-				{       0, 17 }, // Electrum
-				
+                {       0, 13 }, // Ice
+                {       0, 14 }, // Toxic
+                {       0, 15 }, // Electrum
+                {       0, 16 }, // Platinum
+                {       0, 31 }, // Barite
+
 				{       0, 0 }, // --Blank--
-				{       0, 18 }, // Platinum
-				{       0, 0 }, // --Blank--
-				{       0, 0 }, // --Blank--
-				{       0, 0 }, // --Blank--
-				{       0, 0 }, // --Blank--
-				
-				
-				
+                {       0, 32 }, // Wulfenite
+                {       0, 33 }, // Dragonite
+                {       0, 34 }, // Bunterite
+                {       0, 35 }, // Pineite
+                {       0, 36 }, // Samite
+
+                {       0, 0 }, // --Blank--
+                {       0, 37 }, // Toberite
+                {       0, 40 }, // Teal
+                {       0, 38 }, // Lisite
+                {       0, 39 }, // Marite
+                {       0, 17 }, // Royalite
+                {       0, 18 }, // Danite
+
+                {       0, 0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+
+
+
 
 				{ 1044094,  2 }, // Tailoring
 				{ 1044286, 19 }, // Cloth
@@ -412,7 +427,7 @@ namespace Server.Engines.BulkOrders
 				{		0, 26 }, // BlazeL
 				{		0, 27 }, // Daemonic
 				{       0, 28 }, // Shadow
-				
+
 				{       0,  0 }, // --Blank--
 				{		0, 29 }, // Frost
 				{		0, 30 }, // Ethereal
@@ -463,114 +478,66 @@ namespace Server.Engines.BulkOrders
             for (int i = 0; i < filters.GetLength(0); ++i)
             {
                 int number = filters[i, 0];
+                int value = filters[i, 1];
 
-                bool isSelected = (filters[i, 1] == filterValue);
+                bool isSelected = (value == filterValue);
 
                 if (!isSelected && (i % xOffsets.Length) == 0)
                     isSelected = (filterValue == 0);
 
-                if (number == 0 && filters[i, 1] == 0)
+                if (number == 0 && value == 0)
                     continue;
-                else switch (filters[i, 1])
-                    {
-						 case 12:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Blaze" : "<basefont color=#FFFFFF>Blaze", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 13:
-						 {
-							 							  Console.WriteLine($"FilterIndex is (Ice): {4 + filterIndex + ((filters[i, 1]) * 4)}");
 
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Ice" : "<basefont color=#FFFFFF>Ice", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 14:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Toxic" : "<basefont color=#FFFFFF>Toxic", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 15:
-						 {
-							   Console.WriteLine($"FilterIndex is (elect): {4 + filterIndex + ((filters[i, 1]) * 4)}");
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Electrum" : "<basefont color=#FFFFFF>Electrum", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 16:
-						 {
-							   Console.WriteLine($"FilterIndex is (plat): {4 + filterIndex + ((filters[i, 1]) * 4)}");
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Platinum" : "<basefont color=#FFFFFF>Platinum", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 17:
-						 {
-							 Console.WriteLine($"FilterIndex is (roy): {20 + filterIndex + ((filters[i, 1]) * 4)}");
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Royalite" : "<basefont color=#FFFFFF>Royalite", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 );continue;	
-						 }
-						 	 case 18:
-						 {
-							 Console.WriteLine($"FilterIndex is (Dan): {24 + filterIndex + ((filters[i, 1]) * 4)}");
-							
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Danite" : "<basefont color=#FFFFFF>Danite", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 );continue;	
-							 
-						 }
-						case 19:
-						 {
-							 							  Console.WriteLine($"FilterIndex is (Cloth): {4 + filterIndex + ((filters[i, 1]) * 4)}");
+                string customLabel = GetCustomMaterialLabel(value);
 
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Cloth" : "<basefont color=#FFFFFF>Cloth", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						case 20:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Leather" : "<basefont color=#FFFFFF>Leather", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						case 24:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Polar" : "<basefont color=#FFFFFF>Polar", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 16 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 25:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Synthetic" : "<basefont color=#FFFFFF>Synthetic", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 16 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 26:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Blaze" : "<basefont color=#FFFFFF>Blaze", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 16 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 27:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Daemonic" : "<basefont color=#FFFFFF>Daemonic", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 16 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 28:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Shadow" : "<basefont color=#FFFFFF>Shadow", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 16 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 29:
-						 {
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Frost" : "<basefont color=#FFFFFF>Frost", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 20 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 ); continue;	
-						 }
-						 case 30:
-						 {
-							  Console.WriteLine($"FilterIndex is (Ethereal): {20 + filterIndex + ((filters[i, 1]) * 4)}");
-							 AddHtml( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, isSelected ? "<basefont color=#8484FF>Ethereal" : "<basefont color=#FFFFFF>Ethereal", false, false );
-							 AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 20 + filterIndex + ((filters[i, 1]) * 4), GumpButtonType.Reply, 0 );continue;	
-						 }
-
-					 }
-				
-				//daat99 OWLTR start - filter
+                if (customLabel != null)
+                {
+                    AddHtml(
+                        x + 35 + xOffsets[i % xOffsets.Length],
+                        y + ((i / xOffsets.Length) * yOffset),
+                        xWidths[i % xOffsets.Length],
+                        32,
+                        isSelected ? "<basefont color=#8484FF>" + customLabel : "<basefont color=#FFFFFF>" + customLabel,
+                        false,
+                        false);
+                    AddButton(x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + (i * 4), GumpButtonType.Reply, 0);
+                    continue;
+                }
 
 				AddHtmlLocalized( x + 35 + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), xWidths[i % xOffsets.Length], 32, number, isSelected ? 16927 : LabelColor, false, false );
 				AddButton( x + xOffsets[i % xOffsets.Length], y + ((i / xOffsets.Length) * yOffset), 4005, 4007, 4 + filterIndex + (i * 4), GumpButtonType.Reply, 0 );
+			}
+		}
+
+		private static string GetCustomMaterialLabel(int value)
+		{
+			switch (value)
+			{
+				case 12: return "Blaze";
+				case 13: return "Ice";
+				case 14: return "Toxic";
+				case 15: return "Electrum";
+				case 16: return "Platinum";
+				case 17: return "Royalite";
+				case 18: return "Danite";
+                    case 31: return "Barite";
+                    case 32: return "Wulfenite";
+                    case 33: return "Dragonite";
+                    case 34: return "Bunterite";
+                    case 35: return "Pineite";
+                    case 36: return "Samite";
+                    case 37: return "Toberite";
+                    case 38: return "Lisite";
+                    case 39: return "Marite";
+                    case 40: return "Teal";
+				case 24: return "Polar";
+				case 25: return "Synthetic";
+				case 26: return "Blaze";
+				case 27: return "Daemonic";
+				case 28: return "Shadow";
+				case 29: return "Frost";
+				case 30: return "Ethereal";
+				default: return null;
 			}
 		}
 
@@ -655,7 +622,7 @@ namespace Server.Engines.BulkOrders
 			BOBFilter f = ( from.UseOwnFilter ? from.BOBFilter : book.Filter );
 
 			AddPage( 0 );
-			
+
 			//daat99 OWLTR start - bigger gump
 		/*	AddBackground( 10, 10, 630, 590, 5054 );
 
@@ -675,7 +642,7 @@ namespace Server.Engines.BulkOrders
             AddImage(5, 5, 10460);
             AddImage(615, 5, 10460);
             AddImage(5, 424, 10460);
-            AddImage(615, 424, 10460); 
+            AddImage(615, 424, 10460);
 
 			AddHtmlLocalized( 270, 20, 200, 32, 1062223, LabelColor, false, false ); // Filter Preference
 
@@ -716,7 +683,7 @@ namespace Server.Engines.BulkOrders
             AddButton(370, 416, 4005, 4007, 3, GumpButtonType.Reply, 0);
 
             AddHtmlLocalized(540, 416, 50, 32, 1011046, LabelColor, false, false); // APPLY
-            AddButton(505, 416, 4017, 4018, 0, GumpButtonType.Reply, 0); 
+            AddButton(505, 416, 4017, 4018, 0, GumpButtonType.Reply, 0);
 		}
 	}
 }

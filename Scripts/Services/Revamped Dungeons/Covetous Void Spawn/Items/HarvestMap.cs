@@ -118,7 +118,12 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(1152598, String.Format("#{0}\t#{1}", CraftResources.GetLocalizationNumber(Resource), IsMinerMap ? "1152604" : "1152605")); // ~1_RES~ ~2_TYPE~ Map
+            int number = CraftResources.GetLocalizationNumber(Resource);
+
+            if (number > 0)
+                list.Add(1152598, String.Format("#{0}\t#{1}", number, IsMinerMap ? "1152604" : "1152605")); // ~1_RES~ ~2_TYPE~ Map
+            else
+                list.Add(String.Format("{0} {1} Map", CraftResources.GetName(Resource), IsMinerMap ? "Harvest" : "Lumber"));
         }
 
         public override void AddUsesRemainingProperties(ObjectPropertyList list)
@@ -208,7 +213,7 @@ namespace Server.Items
                 {
                     HarvestMap harvestmap = item as HarvestMap;
 
-                    if (harvestmap != null && harvestmap.TargetMap == map && harvestmap.UsesRemaining > 0 
+                    if (harvestmap != null && harvestmap.TargetMap == map && harvestmap.UsesRemaining > 0
                         && def.GetBank(map, p.X, p.Y) == def.GetBank(harvestmap.TargetMap, harvestmap.Target.X, harvestmap.Target.Y))
                     {
                         return harvestmap;

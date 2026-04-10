@@ -260,7 +260,7 @@ namespace Server.Engines.BulkOrders
                 switch (type)
                 {
                     case BODType.Smith:
-                        if (doLarge) return new LargeSmithBOD();
+                        if (doLarge) return LargeSmithBOD.CreateRandomFor(pm);
                         else return SmallSmithBOD.CreateRandomFor(pm);
                     case BODType.Tailor: if (doLarge) return new LargeTailorBOD();
                         else return SmallTailorBOD.CreateRandomFor(pm);
@@ -467,7 +467,7 @@ namespace Server.Engines.BulkOrders
 
             if (bod.AmountMax == 20 && (!CanBeExceptional(bod) || bod.RequireExceptional) &&
                      (!CanUseMaterial(bod) ||
-                     (bod.Material == BulkMaterialType.Valorite ||
+                     (BulkMaterialInfo.IsLastSmithMetal(bod.Material) ||
                       bod.Material == BulkMaterialType.Frostwood ||
                       bod.Material == BulkMaterialType.Barbed)))
             {
@@ -507,7 +507,7 @@ namespace Server.Engines.BulkOrders
                 default: return true;
                 case BODType.Alchemy:
                 case BODType.Inscription: return false;
-                case BODType.Tinkering: 
+                case BODType.Tinkering:
                 case BODType.Cooking:
                 case BODType.Fletching:
                     return !IsInExceptionalExcludeList(bod);
@@ -542,9 +542,9 @@ namespace Server.Engines.BulkOrders
         {
             typeof(Arrow), typeof(Bolt), typeof(Kindling), typeof(Shaft),
 
-            typeof(EnchantedApple), typeof(TribalPaint), typeof(GrapesOfWrath), 
+            typeof(EnchantedApple), typeof(TribalPaint), typeof(GrapesOfWrath),
             typeof(EggBomb), typeof(CookedBird), typeof(FishSteak), typeof(FriedEggs),
-            typeof(LambLeg), typeof(Ribs), 
+            typeof(LambLeg), typeof(Ribs),
 
             typeof(Gears), typeof(Axle), typeof(Springs), typeof(AxleGears), typeof(ClockParts),
             typeof(Clock), typeof(PotionKeg), typeof(ClockFrame), typeof(MetalContainerEngraver)
@@ -564,7 +564,7 @@ namespace Server.Engines.BulkOrders
                 picker.Add(1);
             }
 
-            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && bod.Material != BulkMaterialType.Valorite)
+            if (CanUseMaterial(bod) && bod.Material != BulkMaterialType.Frostwood && bod.Material != BulkMaterialType.Barbed && !BulkMaterialInfo.IsLastSmithMetal(bod.Material))
             {
                 picker.Add(2);
             }
@@ -579,15 +579,19 @@ namespace Server.Engines.BulkOrders
                 case 2:
                     if (bod.Material == BulkMaterialType.None)
                     {
-                        BulkGenericType type = BGTClassifier.Classify(bod.BODType, null);
+                        BulkGenericType type = BGTClassifier.Classify(bod.BODType, GetTypeFromBOD(bod));
 
                         switch (type)
                         {
-                            case BulkGenericType.Iron: bod.Material = BulkMaterialType.DullCopper; break;
+                            case BulkGenericType.Iron: bod.Material = BulkMaterialInfo.GetNextSmithMetal(BulkMaterialType.None); break;
                             case BulkGenericType.Cloth: break;
                             case BulkGenericType.Leather: bod.Material = BulkMaterialType.Spined; break;
                             case BulkGenericType.Wood: bod.Material = BulkMaterialType.OakWood; break;
                         }
+                    }
+                    else if (BulkMaterialInfo.IsSmithMetal(bod.Material))
+                    {
+                        bod.Material = BulkMaterialInfo.GetNextSmithMetal(bod.Material);
                     }
                     else
                     {
@@ -623,8 +627,20 @@ namespace Server.Engines.BulkOrders
 							         case BulkMaterialType.Toxic: worth += 900; break;
 									        case BulkMaterialType.Electrum: worth += 1000; break;
 											       case BulkMaterialType.Platinum: worth += 1200; break;
-												          case BulkMaterialType.Royalite: worth += 1250; break;
-														         case BulkMaterialType.Danite: worth += 1300; break;										
+                                                   case BulkMaterialType.Barite:
+                                                   case BulkMaterialType.Wulfenite:
+                                                   case BulkMaterialType.Dragonite:
+                                                   case BulkMaterialType.Bunterite:
+                                                   case BulkMaterialType.Pineite:
+                                                   case BulkMaterialType.Samite:
+                                                   case BulkMaterialType.Toberite:
+                                                   case BulkMaterialType.Teal:
+                                                       worth += 1250;
+                                                       break;
+                                                   case BulkMaterialType.Lisite:
+                                                   case BulkMaterialType.Marite:
+							          case BulkMaterialType.Royalite: worth += 1275; break;
+                                                                 case BulkMaterialType.Danite: worth += 1300; break;
                 case BulkMaterialType.Spined: worth += 100; break;
                 case BulkMaterialType.Horned: worth += 250; break;
                 case BulkMaterialType.Barbed: worth += 500; break;

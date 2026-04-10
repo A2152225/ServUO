@@ -1,13 +1,13 @@
 ﻿/*
  created by:
-     /\            888                   888     .d8888b.   .d8888b.  
-____/_ \____       888                   888    d88P  Y88b d88P  Y88b 
-\  ___\ \  /       888                   888    888    888 888    888 
- \/ /  \/ /    .d88888  8888b.   8888b.  888888 Y88b. d888 Y88b. d888 
- / /\__/_/\   d88" 888     "88b     "88b 888     "Y888P888  "Y888P888 
-/__\ \_____\  888  888 .d888888 .d888888 888           888        888 
-    \  /      Y88b 888 888  888 888  888 Y88b.  Y88b  d88P Y88b  d88P 
-     \/        "Y88888 "Y888888 "Y888888  "Y888  "Y8888P"   "Y8888P"  
+     /\            888                   888     .d8888b.   .d8888b.
+____/_ \____       888                   888    d88P  Y88b d88P  Y88b
+\  ___\ \  /       888                   888    888    888 888    888
+ \/ /  \/ /    .d88888  8888b.   8888b.  888888 Y88b. d888 Y88b. d888
+ / /\__/_/\   d88" 888     "88b     "88b 888     "Y888P888  "Y888P888
+/__\ \_____\  888  888 .d888888 .d888888 888           888        888
+    \  /      Y88b 888 888  888 888  888 Y88b.  Y88b  d88P Y88b  d88P
+     \/        "Y88888 "Y888888 "Y888888  "Y888  "Y8888P"   "Y8888P"
 */
 
 using System;
@@ -81,7 +81,7 @@ namespace daat99
 
 			AddOption(OPTIONS_ENUM.BLESSED_STORAGE, new OWLTROption("Blessed Master Storage", "Enabling Blessed Master Storage will make all new MasterStorage items start as blessed. This will NOT effect existing items.", true));
 			AddOption(OPTIONS_ENUM.GOLD_STORAGE, new OWLTROption("Gold Storage", "Enabling Gold Storage will allow all MasterStorage to act as Gold Storage (only if enabled in MasterStorage or after using a Gold Ledger deed).", true));
-			AddOption(OPTIONS_ENUM.TOKEN_STORAGE, new OWLTROption("Token Storage", "Enabling Token Storage will allow all MasterStorage to act as Token Storage (only if enabled in MasterStorage or after using a Token Ledger deed).", true)); 
+			AddOption(OPTIONS_ENUM.TOKEN_STORAGE, new OWLTROption("Token Storage", "Enabling Token Storage will allow all MasterStorage to act as Token Storage (only if enabled in MasterStorage or after using a Token Ledger deed).", true));
 			AddOption(OPTIONS_ENUM.STORAGE_KEEP_ITEMS_DEATH, new OWLTROption("Keep Items On Death", "Enabling Keep Items On Death will make the MasterStorage act like a blessed bag and keep all the stored items on players death. Disabling it will move all movable non-blessed/newbies items inside it to the players corpse.", true));
 
 			initSettingsArray();
@@ -109,9 +109,27 @@ namespace daat99
 		private void setRecipiesCommand()
 		{
 			if ((int)OPTIONS_ENUM.RECIPE_CRAFT >= 0 && (int)OPTIONS_ENUM.RECIPE_CRAFT < Settings.Length && Settings[(int)OPTIONS_ENUM.RECIPE_CRAFT])
-				CommandSystem.Register("MissingRecipes", AccessLevel.Player, new CommandEventHandler(Daat99OWLTR.MissingRecipes_OnCommand));
+				CommandSystem.Register("MissingRecipes", AccessLevel.Player, new CommandEventHandler(MissingRecipes_OnCommand));
 			else
 				CommandSystem.Entries.Remove("MissingRecipes");
+		}
+
+		private static void MissingRecipes_OnCommand(CommandEventArgs e)
+		{
+			Type controlCenterType = Type.GetType("daat99.Daat99OWLTR");
+
+			if (controlCenterType != null)
+			{
+				var handler = controlCenterType.GetMethod("MissingRecipes_OnCommand", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+
+				if (handler != null)
+				{
+					handler.Invoke(null, new object[] { e });
+					return;
+				}
+			}
+
+			e.Mobile.SendMessage("Missing recipes UI is not available in this build.");
 		}
 
 		public static void SwitchOption(OPTIONS_ENUM option)

@@ -200,48 +200,59 @@ namespace Server.Engines.BulkOrders
                 });
             }
         }
-		
+
         //daat99 OWLTR start - custom resource
         public static string GetMaterialStringFor(BulkMaterialType material)
         {
-            string result = "UNKNOWN";
-            switch ((int)material)
+            string result = "unknown material";
+            switch (material)
             {
-                case 1: result = "dull copper ingots"; break;
-                case 2: result = "shadow iron ingots"; break;
-                case 3: result = "copper ingots"; break;
-                case 4: result = "bronze ingots"; break;
-                case 5: result = "gold ingots"; break;
-                case 6: result = "agapite ingots"; break;
-                case 7: result = "verite ingots"; break;
-                case 8: result = "valorite ingots"; break;
-                case 9: result = "blaze ingots"; break;
-                case 10: result = "ice ingots"; break;
-                case 11: result = "toxic ingots"; break;
-                case 12: result = "electrum ingots"; break;
-                case 13: result = "platinum ingots"; break;
-                case 14: result = "spined leather"; break;
-                case 15: result = "horned leather"; break;
-                case 16: result = "barbed leather"; break;
-                case 17: result = "polar leather"; break;
-                case 18: result = "synthetic leather"; break;
-                case 19: result = "blaze leather"; break;
-                case 20: result = "daemonic leather"; break;
-                case 21: result = "shadow leather"; break;
-                case 22: result = "frost leather"; break;
-                case 23: result = "ethereal leather"; break;
-                //	case 24: result = "regular wood"; break;
-                case 24: result = "oak wood"; break;
-                case 25: result = "ash wood"; break;
-                case 26: result = "yew wood"; break;
-                case 27: result = "heartwood wood"; break;
-                case 28: result = "bloodwood wood"; break;
-                case 29: result = "frostwood wood"; break;
-                case 30: result = "ebony wood"; break;
-                case 31: result = "bamboo wood"; break;
-                case 32: result = "purpleheart wood"; break;
-                case 33: result = "redwood wood"; break;
-                case 34: result = "petrified wood"; break;
+                case BulkMaterialType.DullCopper: result = "dull copper ingots"; break;
+                case BulkMaterialType.ShadowIron: result = "shadow iron ingots"; break;
+                case BulkMaterialType.Copper: result = "copper ingots"; break;
+                case BulkMaterialType.Bronze: result = "bronze ingots"; break;
+                case BulkMaterialType.Gold: result = "gold ingots"; break;
+                case BulkMaterialType.Agapite: result = "agapite ingots"; break;
+                case BulkMaterialType.Verite: result = "verite ingots"; break;
+                case BulkMaterialType.Valorite: result = "valorite ingots"; break;
+                case BulkMaterialType.Blaze: result = "blaze ingots"; break;
+                case BulkMaterialType.Ice: result = "ice ingots"; break;
+                case BulkMaterialType.Toxic: result = "toxic ingots"; break;
+                case BulkMaterialType.Electrum: result = "electrum ingots"; break;
+                case BulkMaterialType.Platinum: result = "platinum ingots"; break;
+                case BulkMaterialType.Barite: result = "barite ingots"; break;
+                case BulkMaterialType.Wulfenite: result = "wulfenite ingots"; break;
+                case BulkMaterialType.Dragonite: result = "dragonite ingots"; break;
+                case BulkMaterialType.Bunterite: result = "bunterite ingots"; break;
+                case BulkMaterialType.Pineite: result = "pineite ingots"; break;
+                case BulkMaterialType.Samite: result = "samite ingots"; break;
+                case BulkMaterialType.Toberite: result = "toberite ingots"; break;
+                case BulkMaterialType.Lisite: result = "lisite ingots"; break;
+                case BulkMaterialType.Marite: result = "marite ingots"; break;
+                case BulkMaterialType.Royalite: result = "royalite ingots"; break;
+                case BulkMaterialType.Danite: result = "danite ingots"; break;
+                case BulkMaterialType.Teal: result = "teal ingots"; break;
+                case BulkMaterialType.Spined: result = "spined leather"; break;
+                case BulkMaterialType.Horned: result = "horned leather"; break;
+                case BulkMaterialType.Barbed: result = "barbed leather"; break;
+                case BulkMaterialType.Polar: result = "polar leather"; break;
+                case BulkMaterialType.Synthetic: result = "synthetic leather"; break;
+                case BulkMaterialType.BlazeL: result = "blaze leather"; break;
+                case BulkMaterialType.Daemonic: result = "daemonic leather"; break;
+                case BulkMaterialType.Shadow: result = "shadow leather"; break;
+                case BulkMaterialType.Frost: result = "frost leather"; break;
+                case BulkMaterialType.Ethereal: result = "ethereal leather"; break;
+                case BulkMaterialType.OakWood: result = "oak wood"; break;
+                case BulkMaterialType.AshWood: result = "ash wood"; break;
+                case BulkMaterialType.YewWood: result = "yew wood"; break;
+                case BulkMaterialType.Heartwood: result = "heartwood wood"; break;
+                case BulkMaterialType.Bloodwood: result = "bloodwood wood"; break;
+                case BulkMaterialType.Frostwood: result = "frostwood wood"; break;
+                case BulkMaterialType.Ebony: result = "ebony wood"; break;
+                case BulkMaterialType.Bamboo: result = "bamboo wood"; break;
+                case BulkMaterialType.PurpleHeart: result = "purpleheart wood"; break;
+                case BulkMaterialType.Redwood: result = "redwood wood"; break;
+                case BulkMaterialType.Petrified: result = "petrified wood"; break;
             }
             return result;
         }

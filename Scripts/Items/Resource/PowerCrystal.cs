@@ -6,7 +6,7 @@ namespace Server.Items
     public class PowerCrystal : Item
     {
 		public override int LabelNumber {get {return 1112811;} } // power crystal
-		
+
         [Constructable]
         public PowerCrystal()
             : base(0x1F1C)
@@ -14,11 +14,18 @@ namespace Server.Items
             Weight = 1.0;
         }
 
+        public PowerCrystal(string name, int hue)
+            : this()
+        {
+            Name = name;
+            Hue = hue;
+        }
+
         public PowerCrystal(Serial serial)
             : base(serial)
         {
         }
-       
+
         public override void OnDoubleClick(Mobile from)
         {
             if (!from.InRange(this.GetWorldLocation(), 3))

@@ -304,8 +304,8 @@ namespace Server.Engines.BulkOrders
                 return false;
             else if (f.Type == 2 && !isLarge)
                 return false;
-			
-			switch ( f.Material )
+
+            switch (f.Material)
             {
                 default:
                 case 0: return true;
@@ -326,150 +326,37 @@ namespace Server.Engines.BulkOrders
                 case 14: return (mat == BulkMaterialType.Toxic);
                 case 15: return (mat == BulkMaterialType.Electrum);
                 case 16: return (mat == BulkMaterialType.Platinum);
+                case 17: return (mat == BulkMaterialType.Royalite);
+                case 18: return (mat == BulkMaterialType.Danite);
+                case 31: return (mat == BulkMaterialType.Barite);
+                case 32: return (mat == BulkMaterialType.Wulfenite);
+                case 33: return (mat == BulkMaterialType.Dragonite);
+                case 34: return (mat == BulkMaterialType.Bunterite);
+                case 35: return (mat == BulkMaterialType.Pineite);
+                case 36: return (mat == BulkMaterialType.Samite);
+                case 37: return (mat == BulkMaterialType.Toberite);
+                case 38: return (mat == BulkMaterialType.Lisite);
+                case 39: return (mat == BulkMaterialType.Marite);
+                case 40: return (mat == BulkMaterialType.Teal);
 
-                case 17: return (mat == BulkMaterialType.None && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Cloth);
-                case 18: return (mat == BulkMaterialType.None && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Leather);
-                case 19: return (mat == BulkMaterialType.Spined);
-                case 20: return (mat == BulkMaterialType.Horned);
-                case 21: return (mat == BulkMaterialType.Barbed);
-                case 22: return (mat == BulkMaterialType.Polar);
-                case 23: return (mat == BulkMaterialType.Synthetic);
-                case 24: return (mat == BulkMaterialType.BlazeL);
-                case 25: return (mat == BulkMaterialType.Daemonic);
-                case 26: return (mat == BulkMaterialType.Shadow);
-                case 27: return (mat == BulkMaterialType.Frost);
-                case 28: return (mat == BulkMaterialType.Ethereal);
+                case 19: return (mat == BulkMaterialType.None && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Cloth);
+                case 20: return (mat == BulkMaterialType.None && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Leather);
+                case 21: return (mat == BulkMaterialType.Spined);
+                case 22: return (mat == BulkMaterialType.Horned);
+                case 23: return (mat == BulkMaterialType.Barbed);
+                case 24: return (mat == BulkMaterialType.Polar);
+                case 25: return (mat == BulkMaterialType.Synthetic);
+                case 26: return (mat == BulkMaterialType.BlazeL);
+                case 27: return (mat == BulkMaterialType.Daemonic);
+                case 28: return (mat == BulkMaterialType.Shadow);
+                case 29: return (mat == BulkMaterialType.Frost);
+                case 30: return (mat == BulkMaterialType.Ethereal);
             }
 
-            if (BulkOrderSystem.NewSystemEnabled)
-            {
-                switch (f.Material)
-                {
-                    default:
-                    case 0:
-                        return true;
-                    case 1:
-                        return deedType == BODType.Smith;
-                    case 2:
-                        return deedType == BODType.Tailor;
-                    case 3:
-                        return deedType == BODType.Tinkering;
-                    case 4:
-                        return deedType == BODType.Carpentry;
-                    case 5:
-                        return deedType == BODType.Fletching;
-                    case 6:
-                        return deedType == BODType.Alchemy;
-                    case 7:
-                        return deedType == BODType.Inscription;
-                    case 8:
-                        return deedType == BODType.Cooking;
-                    case 9:
-                        return (mat == BulkMaterialType.None && deedType == BODType.Smith);
-                    case 10:
-                        return (mat == BulkMaterialType.DullCopper && deedType == BODType.Smith);
-                    case 11:
-                        return (mat == BulkMaterialType.ShadowIron && deedType == BODType.Smith);
-                    case 12:
-                        return (mat == BulkMaterialType.Copper && deedType == BODType.Smith);
-                    case 13:
-                        return (mat == BulkMaterialType.Bronze && deedType == BODType.Smith);
-                    case 14:
-                        return (mat == BulkMaterialType.Gold && deedType == BODType.Smith);
-                    case 15:
-                        return (mat == BulkMaterialType.Agapite && deedType == BODType.Smith);
-                    case 16:
-                        return (mat == BulkMaterialType.Verite && deedType == BODType.Smith);
-                    case 17:
-                        return (mat == BulkMaterialType.Valorite && deedType == BODType.Smith);
 
-                    case 18:
-                        return (mat == BulkMaterialType.None && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Cloth);
-                    case 19:
-                        return (mat == BulkMaterialType.None && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Leather);
-                    case 20:
-                        return (mat == BulkMaterialType.Spined && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Leather);
-                    case 21:
-                        return (mat == BulkMaterialType.Horned && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Leather);
-                    case 22:
-                        return (mat == BulkMaterialType.Barbed && BGTClassifier.Classify(deedType, itemType) == BulkGenericType.Leather);
 
-                    case 23: // Tinkering
-                        return (mat == BulkMaterialType.None && deedType == BODType.Tinkering);
-                    case 24:
-                        return (mat == BulkMaterialType.DullCopper && deedType == BODType.Tinkering);
-                    case 25:
-                        return (mat == BulkMaterialType.ShadowIron && deedType == BODType.Tinkering);
-                    case 26:
-                        return (mat == BulkMaterialType.Copper && deedType == BODType.Tinkering);
-                    case 27:
-                        return (mat == BulkMaterialType.Bronze && deedType == BODType.Tinkering);
-                    case 28:
-                        return (mat == BulkMaterialType.Gold && deedType == BODType.Tinkering);
-                    case 29:
-                        return (mat == BulkMaterialType.Agapite && deedType == BODType.Tinkering);
-                    case 30:
-                        return (mat == BulkMaterialType.Verite && deedType == BODType.Tinkering);
-                    case 31:
-                        return (mat == BulkMaterialType.Valorite && deedType == BODType.Tinkering);
 
-                    case 32: // Carpentry
-                        return (mat == BulkMaterialType.None && deedType == BODType.Carpentry);
-                    case 33:
-                        return (mat == BulkMaterialType.OakWood && deedType == BODType.Carpentry);
-                    case 34:
-                        return (mat == BulkMaterialType.AshWood && deedType == BODType.Carpentry);
-                    case 35:
-                        return (mat == BulkMaterialType.YewWood && deedType == BODType.Carpentry);
-                    case 36:
-                        return (mat == BulkMaterialType.Bloodwood && deedType == BODType.Carpentry);
-                    case 37:
-                        return (mat == BulkMaterialType.Heartwood && deedType == BODType.Carpentry);
-                    case 38:
-                        return (mat == BulkMaterialType.Frostwood && deedType == BODType.Carpentry);
 
-                    case 39: // Fletching
-                        return (mat == BulkMaterialType.None && deedType == BODType.Fletching);
-                    case 40:
-                        return (mat == BulkMaterialType.OakWood && deedType == BODType.Fletching);
-                    case 41:
-                        return (mat == BulkMaterialType.AshWood && deedType == BODType.Fletching);
-                    case 42:
-                        return (mat == BulkMaterialType.YewWood && deedType == BODType.Fletching);
-                    case 43:
-                        return (mat == BulkMaterialType.Bloodwood && deedType == BODType.Fletching);
-                    case 44:
-                        return (mat == BulkMaterialType.Heartwood && deedType == BODType.Fletching);
-                    case 45:
-                        return (mat == BulkMaterialType.Frostwood && deedType == BODType.Fletching);
-                }
-            }
-				
-			 
-								   
-				 
-							
-										
-															   
-																
-
-																																		
-																		
-																		
-																	
-																	
-																  
-																	 
-																	 
-																	   
-
-																																		  
-																																			
-																	 
-																	 
-																	 
-				 
-			 
         }
 
         public int GetIndexForPage(int page)
@@ -609,7 +496,7 @@ namespace Server.Engines.BulkOrders
 								//daat9 OWLTR start - custom resources
                            		case BulkMaterialType.Blaze:
 									 return "Blaze";
-                            	case BulkMaterialType.Ice: 
+                            	case BulkMaterialType.Ice:
 									 return "Ice";
                             	case BulkMaterialType.Toxic:
 									 return "Toxic";
@@ -617,6 +504,30 @@ namespace Server.Engines.BulkOrders
 									 return "Electrum";
                             	case BulkMaterialType.Platinum:
 									 return "Platinum";
+                                case BulkMaterialType.Barite:
+                                     return "Barite";
+                                case BulkMaterialType.Wulfenite:
+                                     return "Wulfenite";
+                                case BulkMaterialType.Dragonite:
+                                     return "Dragonite";
+                                case BulkMaterialType.Bunterite:
+                                     return "Bunterite";
+                                case BulkMaterialType.Pineite:
+                                     return "Pineite";
+                                case BulkMaterialType.Samite:
+                                     return "Samite";
+                                case BulkMaterialType.Toberite:
+                                     return "Toberite";
+                                case BulkMaterialType.Lisite:
+                                     return "Lisite";
+                                case BulkMaterialType.Marite:
+                                     return "Marite";
+                                case BulkMaterialType.Royalite:
+                                     return "Royalite";
+                                case BulkMaterialType.Danite:
+                                     return "Danite";
+                                case BulkMaterialType.Teal:
+                                     return "Teal";
                             //daat9 OWLTR end - custom resources
                             }
                         }
@@ -645,15 +556,15 @@ namespace Server.Engines.BulkOrders
 								return "Polar";
                             case BulkMaterialType.Synthetic:
 								return "Synthetic";
-                            case BulkMaterialType.BlazeL: 				
+                            case BulkMaterialType.BlazeL:
 								return "Blaze";
-                            case BulkMaterialType.Daemonic: 
+                            case BulkMaterialType.Daemonic:
 								return "Daemonic";
-                            case BulkMaterialType.Shadow: 
+                            case BulkMaterialType.Shadow:
 								return "Shadow";
-                            case BulkMaterialType.Frost: 
+                            case BulkMaterialType.Frost:
 								return "Frost";
-                            case BulkMaterialType.Ethereal: 
+                            case BulkMaterialType.Ethereal:
 								return "Ethereal";
                             //daat9 OWLTR end - custom resources
                         }
@@ -675,6 +586,11 @@ namespace Server.Engines.BulkOrders
                             case BulkMaterialType.Heartwood: return 1071432;
                             case BulkMaterialType.Bloodwood: return 1071431;
                             case BulkMaterialType.Frostwood: return 1071433;
+                            case BulkMaterialType.Ebony: return "Ebony";
+                            case BulkMaterialType.Bamboo: return "Bamboo";
+                            case BulkMaterialType.PurpleHeart: return "PurpleHeart";
+                            case BulkMaterialType.Redwood: return "Redwood";
+                            case BulkMaterialType.Petrified: return "Petrified";
                         }
                     }
             }
@@ -771,13 +687,13 @@ namespace Server.Engines.BulkOrders
                                             m_From.SendLocalizedMessage(1045152); // The bulk order deed has been placed in your backpack.
                                             m_Book.Entries.Remove(obj);
                                             m_Book.InvalidateProperties();
-										
+
                                             if (m_Book.Entries.Count / 5 < m_Book.ItemCount)
                                             {
                                                 m_Book.ItemCount--;
                                                 m_Book.InvalidateItems();
                                             }
-										
+
                                             if (m_Book.Entries.Count > 0)
                                             {
                                                 m_Page = GetPageForIndex(index, sizeOfDroppedBod);
@@ -907,755 +823,755 @@ namespace Server.Engines.BulkOrders
                     if (from is PlayerMobile)
                         from.SendGump(new BOBGump((PlayerMobile)from, m_Book, m_Page, m_List));
                 }
-			 
-		 
-	 
-   
-			 
-						 
-			 
-				   
-				   
-					 
-					 
-
-								   
- 
-							   
-	 
-											  
-											 
-											  
-										  
-						   
-															 
-									   
-		 
-		 
-
-																					   
-						  
-		 
-											
-												  
-
-							   
-							   
-							   
-
-							 
-			 
-														 
-
-															
-				 
-												 
-
-											  
-									  
-				 
-			 
-
-							   
-
-												   
-													 
-
-							   
-
-															  
-
-														 
-									   
-												
-
-					   
-			 
-													   
-
-													   
-			 
-
-							
-
-						  
-							
-
-									   
-
-							
-
-														 
-															  
-
-						 
-			 
-														  
-														   
-			 
-
-						
-														  
-
-													 
-													   
-													  
-														
-													  
-
-																					 
-			 
-									 
-
-										   
-							 
-
-																							  
-
-										 
-																	  
-											  
-								 
-			 
-
-														 
-									   
-												
-										 
-												  
-
-																														   
-																							  
-																							   
-																								  
-																								   
-																								 
-
-																		   
-																									
-
-																			 
-
-							
-																														  
-									   
-																															
-				
-																															
-
-																			 
-																								
-
-						
-																								 
-
-						 
-			 
-																									
-
-						   
-				 
-																									  
-				 
-					
-				 
-																									  
-
-																					 
-																											  
-				 
-			 
-
-						   
-
-						 
-			 
-																				
-																											 
-			 
-
-															
-			 
-																				 
-																										 
-			 
-
-																					 
-			 
-									 
-
-										   
-							 
-
-										 
-				 
-														 
-
-												   
-
-								
-																									
-
-														   
-					 
-																									 
-																		
-					 
-
-																									 
-
-															  
-					 
-															
-
-																									 
-
-												 
-																													
-							
-																											   
-
-																								 
-
-										
-																										
-												
-																	  
-
-																											
-
-									 
-								
-					 
-				 
-											  
-				 
-														 
-
-													 
-
-								
-																									
-
-														   
-					 
-																									 
-																		
-					 
-
-																									 
-
-																							   
-
-											 
-																												
-						
-																										   
-
-																						   
-
-									
-																									
-											
-																  
-
-																									  
-				 
-			 
-		 
-
-										   
-		 
-							 
-
-									 
-														  
-										  
-														  
-
-						
-		 
-
-										   
-		 
-									 
-			 
-													 
-
-																																																					 
-			 
-										  
-			 
-													 
-
-																													  
-			 
-
-						 
-		 
-
-																																
-		 
-																								  
-
-							
-							
-
-										 
-							 
-											   
-							 
-
-												   
-							 
-														
-							 
-														
-							 
-
-									   
-							 
-											 
-							 
-
-								 
-			 
-						
-									
-														   
-															
-
-																																	
-																	
-																	
-																
-																
-															  
-																 
-																 
-																   
-																
-															  
-																
-																   
-																   
-													   
-													 
-																																	  
-																																		
-																 
-																 
-																 
-																
-																	
-																 
-																   
-																 
-																
-																   
-			 
-		 
-
-											
-		 
-						  
-
-							  
-													  
-
-						 
-		 
-
-											  
-		 
-						  
-						  
-
-										 
-
-															  
-			 
-									 
-
-										  
-				 
-							
-
-											 
-																  
-						
-								
-
-										   
-							  
-
-								 
-				 
-
-						
-			 
-
-						 
-		 
-
-															  
-		 
-						   
-						 
-
-						  
-						
-						 
-										 
-				  
-					   
-
-															 
-			 
-							  
-										  
-				 
-											 
-																  
-						
-								
-								 
-								   
-					 
-							   
-									
-					 
-				 
-			 
-																			
-																		 
-																				  
-													 
-				
-
-																				   
-																					 
-														   
-			  
-										 
-			 
-														 
-				 
-								  
-											  
-					 
-												 
-																		 
-							
-									   
-					 
-						
-				 
-							   
-						   
-			 
-						
-		 
-
-																						
-		 
-						   
-			 
-								   
-					 
-									  
-						 
-													   
-											   
-															 
-											   
-															 
-											   
-														 
-											   
-														 
-											   
-													   
-											   
-														  
-											   
-														 
-											   
-														   
-											   
-																  
-																		
-																	
-																		
-																			  
-																			  
-														 
-																		  
-	   
-																
-						 
-
-							  
-					 
-									
-					 
-									  
-						 
-													   
-								 
-																															 
-													   
-
-												   
-								 
-														 
-											   
-														 
-											   
-														 
-											   
-																  
-																		
-																				
-																		 
-																			  
-																		  
-																		
-																			  
-																
-						 
-
-							  
-					 
-			 
-
-							 
-		 
-
-																					   
-		 
-									  
-
-							
-			 
-							   
-					 
-							  
-					 
-									 
-					 
-																						  
-
-							  
-					 
-										
-					 
-											
-																													  
-
-							   
-					 
-									
-					 
-																					  
-																													  
-
-							  
-					 
-									
-					 
-																		
-						 
-																												 
-																								  
-						 
-
-							  
-					 
-						
-					 
-																				   
-																							
-
-								   
-
-											 
-								   
-
-																	
-								  
-
-														
-
-															   
-						 
-																											 
-								  
-						 
-
-											  
-						 
-																			
-							 
-																  
-
-												 
-								 
-																		  
-																																																							 
-									 
-																																   
-																													   
-									 
-										
-									 
-																						
-										 
-																 
-																	 
-																									   
-												
-																	 
-
-																			
-																																															  
-																			
-																			   
-		  
-																									  
-											 
-																		
-																			  
-											 
-		  
-																			  
-											 
-																											
-																															   
-											 
-												
-																												
-										 
-									 
-								 
-									
-								 
-																															   
-								 
-							 
-						 
-											   
-						 
-																			
-							 
-																													
-																										   
-							 
-																			
-							 
-																					   
-																			  
-
-																
-								 
-														 
-												  
-															 
-									 
-																		   
-																							   
-									 
-										
-									 
-																		   
-															 
-									 
-												   
-																														 
-										
-									 
-																		  
-										 
-																										
-																																	
-										 
-											
-																										   
-									 
-								 
-							 
-						 
-							  
-					 
-			 
-		 
-
-											 
-		 
-												  
-											 
-										
-											  
-																						   
-			 
-								   
-									
-								   
-								   
-			 
-
-																	 
-			 
-																						  
-				 
-																							  
-						   
-				 
-
-												  
-
-												   
-				 
-																								 
-				 
-											   
-				 
-															   
-					 
-													
-
-															   
-									 
-
-												 
-															   
-													  
-															   
-					 
-
-														 
-
-											 
-																											  
-				 
-														
-				 
-																 
-
-																		  
-
-											 
-																											  
-				 
-														
-				 
-																 
-
-																		  
-
-											 
-																											  
-				 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
         }
     }

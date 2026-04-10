@@ -29,18 +29,18 @@ namespace Server.Items
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int UsesRemaining 
+        public int UsesRemaining
         {
             get { return _UsesRemaining; }
-            set 
-            { 
+            set
+            {
                 _UsesRemaining = value;
 
                 if (_UsesRemaining <= 0 && this.RootParent is Mobile)
                     ((Mobile)RootParent).SendLocalizedMessage(1152621); // Your talisman's magic is exhausted.
 
                 InvalidateProperties();
-            } 
+            }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -106,7 +106,12 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(1152599, String.Format("#{0}\t#1152606", CraftResources.GetLocalizationNumber(_Resource))); // ~1_RES~ ~2_TYPE~ Talisman
+            int number = CraftResources.GetLocalizationNumber(_Resource);
+
+            if (number > 0)
+                list.Add(1152599, String.Format("#{0}\t#1152606", number)); // ~1_RES~ ~2_TYPE~ Talisman
+            else
+                list.Add(String.Format("{0} Smelter's Talisman", CraftResources.GetName(_Resource)));
         }
 
         public override void AddUsesRemainingProperties(ObjectPropertyList list)

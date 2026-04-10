@@ -45,8 +45,8 @@ namespace Server.Items
         private bool _VvVItem;
         private Mobile _Owner;
         private string _OwnerName;
-		
-		
+
+
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsVvVItem
         {
@@ -66,7 +66,7 @@ namespace Server.Items
             get { return _OwnerName; }
             set { _OwnerName = value; InvalidateProperties(); }
         }
-		
+
 		private int _ItemRank;
         [CommandProperty(AccessLevel.Administrator)]
         public int ItemRank
@@ -75,7 +75,7 @@ namespace Server.Items
             set { _ItemRank = value; InvalidateProperties(); }
         }
         /* Armor internals work differently now (Jun 19 2003)
-        * 
+        *
         * The attributes defined below default to -1.
         * If the value is -1, the corresponding virtual 'Aos/Old' property is used.
         * If not, the attribute value itself is used. Here's the list:
@@ -92,7 +92,7 @@ namespace Server.Items
         // Instance values. These values must are unique to each armor piece.
         private int m_MaxHitPoints;
         private int m_HitPoints;
-	
+
         private Mobile m_Crafter;
         private ItemQuality m_Quality;
         private ArmorDurabilityLevel m_Durability;
@@ -136,7 +136,7 @@ namespace Server.Items
         private int m_StrBonus = -1, m_DexBonus = -1, m_IntBonus = -1;
         private int m_StrReq = -1, m_DexReq = -1, m_IntReq = -1;
         private AMA m_Meditate = (AMA)(-1);
-		
+
         public virtual bool AllowMaleWearer
         {
             get
@@ -410,9 +410,9 @@ namespace Server.Items
                     return m_ArmorBase;
             }
             set
-            { 
+            {
                 m_ArmorBase = value;
-                Invalidate(); 
+                Invalidate();
             }
         }
 
@@ -462,31 +462,45 @@ namespace Server.Items
 				      case CraftResource.Blaze:
                         ar += 18;
                         break;
-					
+
                     case CraftResource.Ice:
                         ar += 20;
                         break;
-					
+
                     case CraftResource.Toxic:
                         ar += 22;
                         break;
-					
+
                     case CraftResource.Electrum:
                         ar += 24;
                         break;
-					
+
                     case CraftResource.Platinum:
                         ar += 26;
                         break;
-					
+                    case CraftResource.Barite:
+                    case CraftResource.Wulfenite:
+                    case CraftResource.Dragonite:
+                    case CraftResource.Bunterite:
+                    case CraftResource.Pineite:
+                    case CraftResource.Samite:
+                    case CraftResource.Toberite:
+                    case CraftResource.Lisite:
+                    case CraftResource.Marite:
+                        ar += 28;
+                        break;
+
                     case CraftResource.Royalite:
                         ar += 28;
                         break;
-					
+
                     case CraftResource.Danite:
                         ar += 30;
                         break;
-												 
+                    case CraftResource.Teal:
+                        ar += 32;
+                        break;
+
                     case CraftResource.SpinedLeather:
                         ar += 10;
                         break;
@@ -496,49 +510,49 @@ namespace Server.Items
                     case CraftResource.BarbedLeather:
                         ar += 16;
                         break;
-	
+
                 case CraftResource.PolarLeather:
                         ar += 19;
                         break;
-	
+
                 case CraftResource.SyntheticLeather:
                         ar += 22;
                         break;
-	  
-	  
-	
+
+
+
                 case CraftResource.BlazeLeather:
                         ar += 25;
                         break;
-	  
-	  
-	
+
+
+
                 case CraftResource.DaemonicLeather:
                         ar += 28;
                         break;
-	  
-	  
-	
+
+
+
                 case CraftResource.ShadowLeather:
                         ar += 31;
                         break;
-	  
-	  
-	
+
+
+
                 case CraftResource.FrostLeather:
                         ar += 34;
                         break;
-	  
-	  
-	
+
+
+
                 case CraftResource.EtherealLeather:
                         ar += 37;
                         break;
-	  
-	  
-	  
-	  
-	
+
+
+
+
+
                 }
 
                 ar += -8 + (8 * (int)m_Quality);
@@ -618,7 +632,7 @@ namespace Server.Items
                                                                armor.m_RefinedPoison > 0 ||
                                                                armor.m_RefinedEnergy > 0);
         }
-        
+
         public override void AddResistanceProperties(ObjectPropertyList list)
         {
             if (PhysicalResistance != 0 || m_RefinedPhysical != 0)
@@ -841,9 +855,9 @@ namespace Server.Items
 
         #region Runic Reforging
         [CommandProperty(AccessLevel.GameMaster)]
-        public ReforgedPrefix ReforgedPrefix 
-        { 
-            get { return m_ReforgedPrefix; } 
+        public ReforgedPrefix ReforgedPrefix
+        {
+            get { return m_ReforgedPrefix; }
             set { m_ReforgedPrefix = value; InvalidateProperties(); }
         }
 
@@ -856,9 +870,9 @@ namespace Server.Items
 
         [CommandProperty(AccessLevel.GameMaster)]
         public ItemPower ItemPower
-        { 
-            get { return m_ItemPower; } 
-            set { m_ItemPower = value; InvalidateProperties(); } 
+        {
+            get { return m_ItemPower; }
+            set { m_ItemPower = value; InvalidateProperties(); }
         }
         #endregion
 
@@ -1043,11 +1057,11 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public int HitPoints
         {
-            get 
+            get
             {
                 return m_HitPoints;
             }
-            set 
+            set
             {
                 if (value != m_HitPoints && MaxHitPoints > 0)
                 {
@@ -1559,15 +1573,15 @@ namespace Server.Items
 
                     if (m.Race == Race.Gargoyle && !armor.CanBeWornByGargoyles)
                     {
-                        m.SendLocalizedMessage(1111708); // Gargoyles can't wear 
+                        m.SendLocalizedMessage(1111708); // Gargoyles can't wear
                         m.AddToBackpack(armor);
                     }
                     if (armor.RequiredRace != null && m.Race != armor.RequiredRace)
                     {
                         if (armor.RequiredRace == Race.Elf)
-                            m.SendLocalizedMessage(1072203); // Only Elves may use 
+                            m.SendLocalizedMessage(1072203); // Only Elves may use
                         else if (armor.RequiredRace == Race.Gargoyle)
-                            m.SendLocalizedMessage(1111707); // Only gargoyles can wear 
+                            m.SendLocalizedMessage(1111707); // Only gargoyles can wear
                         else
                             m.SendMessage("Only {0} may use this.", armor.RequiredRace.PluralName);
 
@@ -1576,7 +1590,7 @@ namespace Server.Items
                     else if (!armor.AllowMaleWearer && !m.Female && m.AccessLevel < AccessLevel.GameMaster)
                     {
                         if (armor.AllowFemaleWearer)
-                            m.SendLocalizedMessage(1010388); // Only females can wear 
+                            m.SendLocalizedMessage(1010388); // Only females can wear
                         else
                             m.SendMessage("You may not wear this.");
 
@@ -1585,7 +1599,7 @@ namespace Server.Items
                     else if (!armor.AllowFemaleWearer && m.Female && m.AccessLevel < AccessLevel.GameMaster)
                     {
                         if (armor.AllowMaleWearer)
-                            m.SendLocalizedMessage(1063343); // Only males can wear 
+                            m.SendLocalizedMessage(1063343); // Only males can wear
                         else
                             m.SendMessage("You may not wear this.");
 
@@ -1711,9 +1725,9 @@ namespace Server.Items
             xAbsorptionAttributes = 0x02000000,
             xWeaponAttributes = 0x04000000,
             NegativeAttributes  = 0x08000000,
-            Altered = 0x10000000, 
+            Altered = 0x10000000,
             TalismanProtection = 0x20000000,
-            EngravedText = 0x40000000         
+            EngravedText = 0x40000000
         }
 
         #region Mondain's Legacy Sets
@@ -1802,7 +1816,7 @@ namespace Server.Items
 
             // Version 8
             writer.Write((int)m_TimesImbued);
-           
+
             #endregion
 
             writer.Write((Mobile)m_BlessedBy);
@@ -2048,12 +2062,12 @@ namespace Server.Items
                 case 8:
                     {
                         m_TimesImbued = reader.ReadInt();
-                        
+
                         #endregion
 
                         m_BlessedBy = reader.ReadMobile();
 
-                        SetFlag sflags = (SetFlag)reader.ReadEncodedInt();                        
+                        SetFlag sflags = (SetFlag)reader.ReadEncodedInt();
 
                         if (GetSaveFlag(sflags, SetFlag.Attributes))
                             m_SetAttributes = new AosAttributes(this, reader);
@@ -2682,7 +2696,7 @@ namespace Server.Items
 
             damageTaken -= Absorbed;
 
-            if (damageTaken < 0) 
+            if (damageTaken < 0)
                 damageTaken = 0;
 
             if (Absorbed < 2)
@@ -2802,6 +2816,16 @@ string aname = this.GetNameString();
 				case CraftResource.Platinum: rname = "Platinum"; break;
 				case CraftResource.Royalite: rname = "Royalite"; break;
 				case CraftResource.Danite: rname = "Danite"; break;
+                case CraftResource.Barite: rname = "Barite"; break;
+                case CraftResource.Wulfenite: rname = "Wulfenite"; break;
+                case CraftResource.Dragonite: rname = "Dragonite"; break;
+                case CraftResource.Bunterite: rname = "Bunterite"; break;
+                case CraftResource.Pineite: rname = "Pineite"; break;
+                case CraftResource.Samite: rname = "Samite"; break;
+                case CraftResource.Toberite: rname = "Toberite"; break;
+                case CraftResource.Lisite: rname = "Lisite"; break;
+                case CraftResource.Marite: rname = "Marite"; break;
+                case CraftResource.Teal: rname = "Teal"; break;
 				case CraftResource.PolarLeather: rname = "Polar"; break;
 				case CraftResource.SyntheticLeather: rname = "Synthetic"; break;
 				case CraftResource.BlazeLeather: rname = "BlazeL"; break;
@@ -2816,7 +2840,7 @@ string aname = this.GetNameString();
 				case CraftResource.Petrified: rname = "Petrified"; break;
                 default: oreType = 0; break;
             }
-			
+
             if (m_ReforgedPrefix != ReforgedPrefix.None || m_ReforgedSuffix != ReforgedSuffix.None)
             {
                 if (m_ReforgedPrefix != ReforgedPrefix.None)
@@ -2837,7 +2861,7 @@ string aname = this.GetNameString();
             {
                 if (oreType != 0)
                     list.Add(1053099, "#{0}\t{1}", oreType, GetNameString()); // ~1_oretype~ ~2_armortype~
-                else if (rname != "0") 
+                else if (rname != "0")
 			        list.Add(1053099, "{0}\t{1}", rname, GetNameString()); // ~1_oretype~ ~2_armortype~  1053099,
 				else if (Name == null)
                     list.Add(LabelNumber);
@@ -2904,13 +2928,13 @@ string aname = this.GetNameString();
         {
             base.AddNameProperties(list);
 			if (_ItemRank != null)
-			list.Add("Rank: {0}",ItemRank ); 
+			list.Add("Rank: {0}",ItemRank );
             #region Factions
             FactionEquipment.AddFactionProperties(this, list);
             #endregion
 
             if (m_GorgonLenseCharges > 0)
-                list.Add(1112590, m_GorgonLenseCharges.ToString()); //Gorgon Lens Charges: ~1_val~         
+                list.Add(1112590, m_GorgonLenseCharges.ToString()); //Gorgon Lens Charges: ~1_val~
 
             #region Mondain's Legacy Sets
             if (IsSetItem)
@@ -3006,13 +3030,13 @@ string aname = this.GetNameString();
 
             if (m_TalismanProtection != null && !m_TalismanProtection.IsEmpty && m_TalismanProtection.Amount > 0)
                 list.Add(1072387, "{0}\t{1}", m_TalismanProtection.Name != null ? m_TalismanProtection.Name.ToString() : "Unknown", m_TalismanProtection.Amount); // ~1_NAME~ Protection: +~2_val~%
-			
+
 			if ((prop = m_AosArmorAttributes.SoulCharge) != 0)
                 list.Add(1113630, prop.ToString()); // Soul Charge ~1_val~%
-			
+
 			if((prop = m_AosArmorAttributes.ReactiveParalyze) != 0)
                 list.Add(1112364); // reactive paralyze
-			
+
 			if ((prop = m_SAAbsorptionAttributes.EaterFire) != 0)
                 list.Add(1113593, prop.ToString()); // Fire Eater ~1_Val~%
 
@@ -3030,7 +3054,7 @@ string aname = this.GetNameString();
 
             if ((prop = m_SAAbsorptionAttributes.EaterDamage) != 0)
                 list.Add(1113598, prop.ToString()); // Damage Eater ~1_Val~%
-			
+
 			if ((prop = m_SAAbsorptionAttributes.ResonanceFire) != 0)
                 list.Add(1113691, prop.ToString()); // Fire Resonance ~1_val~%
 
@@ -3045,40 +3069,40 @@ string aname = this.GetNameString();
 
             if ((prop = m_SAAbsorptionAttributes.ResonanceKinetic) != 0)
                 list.Add(1113695, prop.ToString()); // Kinetic Resonance ~1_val~%
-			
+
 			if ((prop = m_SAAbsorptionAttributes.CastingFocus) != 0)
                 list.Add(1113696, prop.ToString()); // Casting Focus ~1_val~%
-			
+
 			if ((prop = m_AosAttributes.SpellChanneling) != 0)
                 list.Add(1060482); // spell channeling
-			
+
 			if ((prop = m_AosArmorAttributes.SelfRepair) != 0)
                 list.Add(1060450, prop.ToString()); // self repair ~1_val~
-			
+
 			if ((prop = m_AosAttributes.NightSight) != 0)
                 list.Add(1060441); // night sight
-			
+
 			if ((prop = m_AosAttributes.BonusStr) != 0)
                 list.Add(1060485, prop.ToString()); // strength bonus ~1_val~
-			
+
 			if ((prop = m_AosAttributes.BonusDex) != 0)
                 list.Add(1060409, prop.ToString()); // dexterity bonus ~1_val~
 
             if ((prop = m_AosAttributes.BonusInt) != 0)
                 list.Add(1060432, prop.ToString()); // intelligence bonus ~1_val~
-			
+
 			if ((prop = m_AosAttributes.BonusHits) != 0)
                 list.Add(1060431, prop.ToString()); // hit point increase ~1_val~
-			
+
 			if ((prop = m_AosAttributes.BonusStam) != 0)
                 list.Add(1060484, prop.ToString()); // stamina increase ~1_val~
-			
+
 			if ((prop = m_AosAttributes.BonusMana) != 0)
                 list.Add(1060439, prop.ToString()); // mana increase ~1_val~
-			
+
 			if ((prop = m_AosAttributes.RegenHits) != 0)
                 list.Add(1060444, prop.ToString()); // hit point regeneration ~1_val~
-			
+
 			if ((prop = m_AosAttributes.RegenStam) != 0)
                 list.Add(1060443, prop.ToString()); // stamina regeneration ~1_val~
 
@@ -3087,7 +3111,7 @@ string aname = this.GetNameString();
 
             if ((prop = (GetLuckBonus() + m_AosAttributes.Luck)) != 0)
                 list.Add(1060436, prop.ToString()); // luck ~1_val~
-			
+
 			if ((prop = m_AosAttributes.EnhancePotions) != 0)
                 list.Add(1060411, prop.ToString()); // enhance potions ~1_val~%
 
@@ -3096,45 +3120,45 @@ string aname = this.GetNameString();
 
             if (this is SurgeShield && ((SurgeShield)this).Surge > SurgeType.None)
                 list.Add(1153098, ((SurgeShield)this).Charges.ToString());
-			
+
 			if ((prop = m_AosAttributes.AttackChance) != 0)
                 list.Add(1060415, prop.ToString()); // hit chance increase ~1_val~%
-			
+
 			if ((prop = m_AosAttributes.WeaponSpeed) != 0)
                 list.Add(1060486, prop.ToString()); // swing speed increase ~1_val~%
-			
+
 			if ((prop = m_AosAttributes.WeaponDamage) != 0)
                 list.Add(1060401, prop.ToString()); // damage increase ~1_val~%
 
             if ((prop = m_AosAttributes.DefendChance) != 0)
                 list.Add(1060408, prop.ToString()); // defense chance increase ~1_val~%
-			
+
 			if ((prop = m_AosAttributes.CastRecovery) != 0)
                 list.Add(1060412, prop.ToString()); // faster cast recovery ~1_val~
-			
+
 			if ((prop = m_AosAttributes.CastSpeed) != 0)
                 list.Add(1060413, prop.ToString()); // faster casting ~1_val~
-			
+
 			if ((prop = m_AosAttributes.SpellDamage) != 0)
                 list.Add(1060483, prop.ToString()); // spell damage increase ~1_val~%
-			
+
 			if ((prop = m_AosAttributes.LowerManaCost) != 0)
                 list.Add(1060433, prop.ToString()); // lower mana cost ~1_val~%
 
             if ((prop = m_AosAttributes.LowerRegCost) != 0)
                 list.Add(1060434, prop.ToString()); // lower reagent cost ~1_val~%
-			
+
 			if (Core.ML && (prop = m_AosAttributes.IncreasedKarmaLoss) != 0)
                 list.Add(1075210, prop.ToString()); // Increased Karma Loss ~1val~%
 
             AddResistanceProperties(list);
-			
+
 			if ((prop = m_AosArmorAttributes.MageArmor) != 0)
                 list.Add(1060437); // mage armor
-			
+
 			if ((prop = GetLowerStatReq()) != 0)
                 list.Add(1060435, prop.ToString()); // lower requirements ~1_val~%
-            
+
             if ((prop = ComputeStatReq(StatType.Str)) > 0)
                 list.Add(1061170, prop.ToString()); // strength requirement ~1_val~
 
@@ -3145,7 +3169,7 @@ string aname = this.GetNameString();
 
             if (IsSetItem && !m_SetEquipped)
             {
-                list.Add(1072378); // <br>Only when full set is present:				
+                list.Add(1072378); // <br>Only when full set is present:
                 GetSetProperties(list);
             }
         }
@@ -3350,7 +3374,7 @@ string aname = this.GetNameString();
             }
 
             info = GetResourceAttrs(m_Resource);
-            
+
             // add new bonus
             m_PhysicalBonus += info.ArmorPhysicalResist;
             m_FireBonus += info.ArmorFireResist;
@@ -3629,9 +3653,9 @@ string aname = this.GetNameString();
 
         public virtual void GetSetProperties(ObjectPropertyList list)
         {
-			
+
             SetHelper.GetSetProperties(list, this);
-			
+
             if (!m_SetEquipped)
             {
                 if (m_SetPhysicalBonus != 0)
@@ -3647,7 +3671,7 @@ string aname = this.GetNameString();
                     list.Add(1072385, m_SetPoisonBonus.ToString()); // poison resist +~1_val~%
 
                 if (m_SetEnergyBonus != 0)
-                    list.Add(1072386, m_SetEnergyBonus.ToString()); // energy resist +~1_val~%		
+                    list.Add(1072386, m_SetEnergyBonus.ToString()); // energy resist +~1_val~%
             }
             else if (m_SetEquipped && SetHelper.ResistsBonusPerPiece(this) && RootParent is Mobile)
             {
@@ -3690,7 +3714,7 @@ string aname = this.GetNameString();
 
             if ((prop = m_SetSelfRepair) != 0 && m_AosArmorAttributes.SelfRepair == 0)
                 list.Add(1060450, prop.ToString()); // self repair ~1_val~
-			
+
 
         }
 

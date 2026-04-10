@@ -28,17 +28,65 @@ namespace Server.Engines.BulkOrders
             }
         }
 
-        public static double[] m_TinkerMaterialChances = new double[]
+        public static readonly BulkMaterialType[] m_TinkerMaterials = new BulkMaterialType[]
         {
-            0.501953125, // None
-            0.250000000, // Dull Copper
-            0.125000000, // Shadow Iron
-            0.062500000, // Copper
-            0.031250000, // Bronze
-            0.015625000, // Gold
-            0.007812500, // Agapite
-            0.003906250, // Verite
-            0.001953125  // Valorite
+            BulkMaterialType.None,
+            BulkMaterialType.DullCopper,
+            BulkMaterialType.ShadowIron,
+            BulkMaterialType.Copper,
+            BulkMaterialType.Bronze,
+            BulkMaterialType.Gold,
+            BulkMaterialType.Agapite,
+            BulkMaterialType.Verite,
+            BulkMaterialType.Valorite,
+            BulkMaterialType.Blaze,
+            BulkMaterialType.Ice,
+            BulkMaterialType.Toxic,
+            BulkMaterialType.Electrum,
+            BulkMaterialType.Platinum,
+            BulkMaterialType.Barite,
+            BulkMaterialType.Wulfenite,
+            BulkMaterialType.Dragonite,
+            BulkMaterialType.Bunterite,
+            BulkMaterialType.Pineite,
+            BulkMaterialType.Samite,
+            BulkMaterialType.Toberite,
+            BulkMaterialType.Teal,
+            BulkMaterialType.Lisite,
+            BulkMaterialType.Marite,
+            BulkMaterialType.Royalite,
+            BulkMaterialType.Danite
+        };
+
+        public static readonly double[] m_TinkerMaterialWeights = new double[]
+        {
+            512.0,
+            256.0,
+            128.0,
+            64.0,
+            32.0,
+            16.0,
+            8.0,
+            4.0,
+            2.0,
+            1.0,
+            0.9,
+            0.8,
+            0.7,
+            0.6,
+            0.5,
+            0.45,
+            0.4,
+            0.35,
+            0.3,
+            0.25,
+            0.2,
+            0.15,
+            0.12,
+            0.09,
+            0.06,
+            0.03,
+            0.015
         };
 
         [Constructable]
@@ -59,7 +107,7 @@ namespace Server.Engines.BulkOrders
                 BulkMaterialType material;
 
                 if (useMaterials)
-                    material = GetRandomMaterial(BulkMaterialType.DullCopper, m_TinkerMaterialChances);
+                    material = GetRandomMaterial(m_TinkerMaterials, m_TinkerMaterialWeights);
                 else
                     material = BulkMaterialType.None;
 
@@ -146,7 +194,7 @@ namespace Server.Engines.BulkOrders
                 {
                     for (int i = 0; i < 20; ++i)
                     {
-                        BulkMaterialType check = GetRandomMaterial(BulkMaterialType.DullCopper, m_TinkerMaterialChances);
+                        BulkMaterialType check = GetRandomMaterial(m_TinkerMaterials, m_TinkerMaterialWeights);
                         double skillReq = GetRequiredSkill(check);
 
                         if (theirSkill >= skillReq)
@@ -389,7 +437,7 @@ namespace Server.Engines.BulkOrders
                 case 2:
                     GemType = (GemType)reader.ReadInt();
                     break;
-                case 1: 
+                case 1:
                     break;
             }
 

@@ -51,7 +51,7 @@ namespace daat99
 			{
 				CraftResource check = GetLastCraftResourceFromType(originalCraftResource);
 				double diff = MAX_SKILL/((int)check - (int)firstCraftResource + 1);
-				
+
 				for ( ; check > firstCraftResource; check = (CraftResource)((int)check - 1) )
 				{
 					double minSkill = GetMinSkill(check);
@@ -82,10 +82,10 @@ namespace daat99
 					craftResourceDataList = new Dictionary<CraftResource, ResourceData>();
 					foreach (ResourceData data in Resources)
 					{
-						try 
+						try
 						{
 							if (!craftResourceDataList.ContainsKey(data.CraftResource))
-								craftResourceDataList.Add(data.CraftResource, data); 
+								craftResourceDataList.Add(data.CraftResource, data);
 						}
 						catch { }
 					}
@@ -123,7 +123,19 @@ namespace daat99
 					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Toxic, 			"Toxic", 			typeof(ToxicIngot), 		typeof(ToxicOre), 		110.0, CANT_CRAFT_METAL));
 					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Electrum, 		"Electrum", 		typeof(ElectrumIngot), 		typeof(ElectrumOre), 	115.0, CANT_CRAFT_METAL));
 					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Platinum, 		"Platinum", 		typeof(PlatinumIngot), 		typeof(PlatinumOre), 	119.0, CANT_CRAFT_METAL));
-					
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Barite, 			"Barite", 			typeof(BariteIngot), 		typeof(BariteOre), 		117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Wulfenite, 		"Wulfenite", 		typeof(WulfeniteIngot), 	typeof(WulfeniteOre), 	117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Dragonite, 		"Dragonite", 		typeof(DragoniteIngot), 	typeof(DragoniteOre), 	117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Bunterite, 		"Bunterite", 		typeof(BunteriteIngot), 	typeof(BunteriteOre), 	117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Pineite, 			"Pineite", 			typeof(PineiteIngot), 		typeof(PineiteOre), 		117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Samite, 			"Samite", 			typeof(SamiteIngot), 		typeof(SamiteOre), 		117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Toberite, 		"Toberite", 		typeof(ToberiteIngot), 	typeof(ToberiteOre), 	117.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Teal, 			"Teal", 			typeof(TealIngot), 			typeof(TealOre), 		118.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Lisite, 			"Lisite", 			typeof(LisiteIngot), 		typeof(LisiteOre), 		118.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Marite, 			"Marite", 			typeof(MariteIngot), 		typeof(MariteOre), 		118.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Royalite, 		"Royalite", 		typeof(RoyaliteIngot), 	typeof(RoyaliteOre), 	118.0, CANT_CRAFT_METAL));
+					resources.Add( new ResourceData(CraftResourceType.Metal, 	CraftResource.Danite, 			"Danite", 			typeof(DaniteIngot), 		typeof(DaniteOre), 		119.0, CANT_CRAFT_METAL));
+
 					resources.Add( new ResourceData(CraftResourceType.Wood, 	CraftResource.RegularWood, 		"Log", 				typeof(Board), 				typeof(Log), 		 	 00.0, CANT_CRAFT_WOOD));
 					resources.Add( new ResourceData(CraftResourceType.Wood, 	CraftResource.OakWood, 			"Oak", 				typeof(OakBoard), 			typeof(OakLog), 	 	 20.0, CANT_CRAFT_WOOD));
 					resources.Add( new ResourceData(CraftResourceType.Wood, 	CraftResource.AshWood, 			"Ash", 				typeof(AshBoard), 			typeof(AshLog), 		 30.0, CANT_CRAFT_WOOD));
@@ -136,7 +148,7 @@ namespace daat99
 					resources.Add( new ResourceData(CraftResourceType.Wood, 	CraftResource.PurpleHeart, 		"PurpleHeart", 		typeof(PurpleHeartBoard), 	typeof(PurpleHeartLog), 100.0, CANT_CRAFT_WOOD));
 					resources.Add( new ResourceData(CraftResourceType.Wood, 	CraftResource.Redwood, 			"Redwood", 			typeof(RedwoodBoard), 		typeof(RedwoodLog), 	110.0, CANT_CRAFT_WOOD));
 					resources.Add( new ResourceData(CraftResourceType.Wood, 	CraftResource.Petrified, 		"Petrified", 		typeof(PetrifiedBoard), 	typeof(PetrifiedLog), 	119.0, CANT_CRAFT_WOOD));
-					
+
 					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.RegularLeather,	"Regular Leather",	typeof(Leather), 			typeof(Hides), 		 	 00.0, CANT_CRAFT_LEATHER));
 					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.SpinedLeather, 	"Spined Leather", 	typeof(SpinedLeather), 		typeof(SpinedHides), 	 20.0, CANT_CRAFT_LEATHER));
 					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.HornedLeather, 	"Horned Leather", 	typeof(HornedLeather), 		typeof(HornedHides), 	 35.0, CANT_CRAFT_LEATHER));
@@ -147,8 +159,8 @@ namespace daat99
 					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.DaemonicLeather,	"Daemonic Leather",	typeof(DaemonicLeather), 	typeof(DaemonicHides), 	 90.0, CANT_CRAFT_LEATHER));
 					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.ShadowLeather, 	"Shadow Leather", 	typeof(ShadowLeather), 		typeof(ShadowHides), 	100.0, CANT_CRAFT_LEATHER));
 					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.FrostLeather,		"Frost Leather", 	typeof(FrostLeather), 		typeof(FrostHides), 	110.0, CANT_CRAFT_LEATHER));
-					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.EtherealLeather,	"Ethereal Leather", typeof(EtherealLeather), 	typeof(EtherealHides), 	119.0, CANT_CRAFT_LEATHER));					
-					
+					resources.Add( new ResourceData(CraftResourceType.Leather, 	CraftResource.EtherealLeather,	"Ethereal Leather", typeof(EtherealLeather), 	typeof(EtherealHides), 	119.0, CANT_CRAFT_LEATHER));
+
 					resources.Add( new ResourceData(CraftResourceType.Scales, 	CraftResource.RedScales,		"Red Scales",		typeof(RedScales), 			typeof(RedScales), 	 	 00.0, CANT_CRAFT_SCALE));
 					resources.Add( new ResourceData(CraftResourceType.Scales, 	CraftResource.YellowScales,		"Yellow Scales",	typeof(YellowScales), 		typeof(YellowScales),	 00.0, CANT_CRAFT_SCALE));
 					resources.Add( new ResourceData(CraftResourceType.Scales, 	CraftResource.BlackScales,		"Black Scales",		typeof(BlackScales), 		typeof(BlackScales),  	 00.0, CANT_CRAFT_SCALE));
@@ -158,7 +170,7 @@ namespace daat99
 					resources.Add( new ResourceData(CraftResourceType.Scales, 	CraftResource.CopperScales,		"Copper Scales",	typeof(CopperScales), 		typeof(CopperScales),  	 00.0, CANT_CRAFT_SCALE));
 					resources.Add( new ResourceData(CraftResourceType.Scales, 	CraftResource.SilverScales,		"Silver Scales",	typeof(SilverScales), 		typeof(SilverScales),  	 00.0, CANT_CRAFT_SCALE));
 					resources.Add( new ResourceData(CraftResourceType.Scales, 	CraftResource.GoldScales,		"Gold Scales",		typeof(GoldScales), 		typeof(GoldScales),  	 00.0, CANT_CRAFT_SCALE));
-					
+
 					resources.Add( new ResourceData(CraftResourceType.None, 	CraftResource.Iron, 			"Granite", 			typeof(Granite), 			typeof(Granite), 		 00.0, CANT_CRAFT_STONE_GRANITE));
 					resources.Add( new ResourceData(CraftResourceType.None, 	CraftResource.DullCopper, 		"Dull Copper", 		typeof(DullCopperGranite), 	typeof(DullCopperGranite),20.0, CANT_CRAFT_STONE_GRANITE));
 					resources.Add( new ResourceData(CraftResourceType.None, 	CraftResource.ShadowIron, 		"Shadow Iron", 		typeof(ShadowIronGranite), 	typeof(ShadowIronGranite),30.0, CANT_CRAFT_STONE_GRANITE));
@@ -196,10 +208,10 @@ namespace daat99
 				}
 			}
 		}
-		
+
 		//daat99.ResourceHelper.AddStoneResources(this);
 		public static void AddStoneResources(CraftSystem system)
-		{	
+		{
 			bool first = true;
 			foreach ( ResourceData data in Resources )
 			{
@@ -232,10 +244,10 @@ namespace daat99
 				}
 			}
 		}
-		
+
 		//daat99.ResourceHelper.AddScaleResources(this);
 		public static void AddScaleResources(CraftSystem system)
-		{	
+		{
 			bool first = true;
 			foreach ( ResourceData data in Resources )
 			{
@@ -250,7 +262,7 @@ namespace daat99
 				}
 			}
 		}
-		
+
 		//daat99.ResourceHelper.AddTailorResources(this);
 		public static void AddTailorResources(CraftSystem system)
 		{
@@ -281,7 +293,7 @@ namespace daat99
 			public Type ItemType;
 			public CraftResourceType ResourceType;
 			public int Level;
-			
+
 			public ResourceData( CraftResourceType resourceType, CraftResource craftResource, string name, Type itemType, Type raw, double minSkill, int cantCraftMessage)
 			{
 				this.ResourceType = resourceType;
@@ -331,41 +343,41 @@ namespace daat99
 		{
 			new Type[]{ typeof( Log ), typeof( Board ) },
 			new Type[]{ typeof( Board ), typeof( Log )  },
-			 
+
 			new Type[]{ typeof( HeartwoodLog ), typeof( HeartwoodBoard ) },
 			new Type[]{ typeof( HeartwoodBoard ), typeof( HeartwoodLog ) },
-			
+
 			new Type[]{ typeof( BloodwoodLog ), typeof( BloodwoodBoard ) },
 			new Type[]{ typeof( BloodwoodBoard ), typeof( BloodwoodLog ) },
-			
+
 			new Type[]{ typeof( FrostwoodLog ), typeof( FrostwoodBoard ) },
 			new Type[]{ typeof( FrostwoodBoard ), typeof( FrostwoodLog ) },
-			
+
 			new Type[]{ typeof( OakLog ), typeof( OakBoard ) },
 			new Type[]{ typeof( OakBoard ), typeof( OakLog ) },
-			
+
 			new Type[]{ typeof( AshLog ), typeof( AshBoard ) },
 			new Type[]{ typeof( AshBoard ), typeof( AshLog ) },
-			
+
 			new Type[]{ typeof( YewLog ), typeof( YewBoard ) },
 			new Type[]{ typeof( YewBoard ), typeof( YewLog ) },
-			
+
 			new Type[]{ typeof( EbonyLog ), typeof( EbonyBoard ) },
 			new Type[]{ typeof( EbonyBoard ), typeof( EbonyLog ) },
-			
+
 			new Type[]{ typeof( BambooLog ), typeof( BambooBoard ) },
 			new Type[]{ typeof( BambooBoard ), typeof( BambooLog ) },
-			
+
 			new Type[]{ typeof( PurpleHeartLog), typeof( PurpleHeartBoard ) },
 			new Type[]{ typeof( PurpleHeartBoard ), typeof( PurpleHeartLog ) },
-			
+
 			new Type[]{ typeof( RedwoodLog ), typeof( RedwoodBoard ) },
 			new Type[]{ typeof( RedwoodBoard ), typeof( RedwoodLog ) },
-			
+
 			new Type[]{ typeof( PetrifiedLog ), typeof( PetrifiedBoard ) },
 			new Type[]{ typeof( PetrifiedBoard ), typeof( PetrifiedLog ) },
 			*/
-			
+
 		public static Type[][] GetTypesTable()
 		{
 			return new Type[][]
@@ -401,7 +413,7 @@ namespace daat99
 				new Type[] { typeof(BlankMap), typeof(BlankScroll)},
 				new Type[] { typeof(Cloth), typeof(UncutCloth), typeof(AbyssalCloth)},
            		new Type[] { typeof(CheeseWheel), typeof(CheeseWedge)},
-				new Type[] { typeof(Pumpkin), typeof(SmallPumpkin)}, 
+				new Type[] { typeof(Pumpkin), typeof(SmallPumpkin)},
             	new Type[] { typeof(WoodenBowlOfPeas), typeof(PewterBowlOfPeas)},
            		new Type[] { typeof( CrystallineFragments ), typeof( BrokenCrystals ), typeof( ShatteredCrystals ), typeof( ScatteredCrystals ), typeof( CrushedCrystals ), typeof( JaggedCrystals ), typeof( AncientPotteryFragments ) },
             	new Type[] { typeof( MedusaDarkScales ), typeof( MedusaLightScales ), typeof( RedScales ), typeof( BlueScales ), typeof( BlackScales ), typeof( YellowScales ), typeof( GreenScales ), typeof( WhiteScales ) },
@@ -409,6 +421,6 @@ namespace daat99
             	new Type[] { typeof(Lettuce), typeof(FarmableLettuce) },
             	new Type[] { typeof(DarkYarn), typeof(LightYarn) }
     		};
-    	}	
+    	}
 	}
 }

@@ -118,7 +118,7 @@ namespace Server.Engines.Craft
             typeof(Key), typeof(Globe),
             typeof(Spyglass), typeof(Lantern),
             typeof(HeatingStand), typeof(BroadcastCrystal), typeof(TerMurStyleCandelabra),
-            typeof(GorgonLense), typeof(MedusaLightScales), typeof(MedusaDarkScales), typeof(RedScales), 
+            typeof(GorgonLense), typeof(MedusaLightScales), typeof(MedusaDarkScales), typeof(RedScales),
             typeof(BlueScales), typeof(BlackScales), typeof(GreenScales), typeof(YellowScales), typeof(WhiteScales),
             typeof(PlantPigment), typeof(SoftenedReeds), typeof(DryReeds), typeof(PlantClippings),
 
@@ -168,7 +168,7 @@ namespace Server.Engines.Craft
                     return 1044156; // You create an exceptional quality item and affix your maker's mark.
                 else if (quality == 2)
                     return 1044155; // You create an exceptional quality item.
-                else 
+                else
                     return 1044154; // You create the item.
             }
         }
@@ -207,8 +207,8 @@ namespace Server.Engines.Craft
             AddRes(index, itemType, 1044231 + offset, 1, 1044240);
 
             index = AddCraft(typeof(GoldBracelet), 1044049, 1044221 + offset, 40.0, 90.0, typeof(IronIngot), 1044036, 2, 1044037);
-            AddRes(index, itemType, 1044231 + offset, 1, 1044240);     
-             
+            AddRes(index, itemType, 1044231 + offset, 1, 1044240);
+
         }
 
         public override void InitCraftList()
@@ -257,7 +257,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(ClockFrame), 1044042, 1024173, 0.0, 50.0, typeof(Board), 1044041, 6, 1044351);
             AddCraft(typeof(Axle), 1044042, 1024187, -25.0, 25.0, typeof(Board), 1044041, 2, 1044351);
             AddCraft(typeof(RollingPin), 1044042, 1024163, 0.0, 50.0, typeof(Board), 1044041, 5, 1044351);
-            
+
             if (Core.HS)
             {
                 AddCraft(typeof(Ramrod), 1044042, 1095839, 0.0, 50.0, typeof(Board), 1044041, 8, 1044253);
@@ -268,7 +268,7 @@ namespace Server.Engines.Craft
                     AddRes(index, typeof(Board), 1044041, 4, 1044253);
                 }
             }
-            
+
             if (Core.SA)
             {
                 index = AddCraft(typeof(SoftenedReeds), 1044042, 1112249, 75.0, 100.0, typeof(DryReeds), 1112248, 1, 1112250);
@@ -356,7 +356,7 @@ namespace Server.Engines.Craft
             AddCraft(Core.AOS ? typeof(SmithyHammer) : typeof(SmithHammer), 1044046, 1025091, 40.0, 90.0, typeof(IronIngot), 1044036, 4, 1044037);
             AddCraft(Core.AOS ? typeof(SledgeHammerWeapon) : typeof(SledgeHammer), 1044046, 1024021, 40.0, 90.0, typeof(IronIngot), 1044036, 4, 1044037);
             AddCraft(typeof(Inshave), 1044046, 1024326, 30.0, 80.0, typeof(IronIngot), 1044036, 2, 1044037);
-            AddCraft(typeof(Pickaxe), 1044046, 1023718, 40.0, 90.0, typeof(IronIngot), 1044036, 4, 1044037);            
+            AddCraft(typeof(Pickaxe), 1044046, 1023718, 40.0, 90.0, typeof(IronIngot), 1044036, 4, 1044037);
             AddCraft(typeof(Lockpick), 1044046, 1025371, 45.0, 95.0, typeof(IronIngot), 1044036, 1, 1044037);
             AddCraft(typeof(Skillet), 1044046, 1044567, 30.0, 80.0, typeof(IronIngot), 1044036, 4, 1044037);
             AddCraft(typeof(FlourSifter), 1044046, 1024158, 50.0, 100.0, typeof(IronIngot), 1044036, 3, 1044037);
@@ -364,7 +364,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(MapmakersPen), 1044046, 1044167, 25.0, 75.0, typeof(IronIngot), 1044036, 1, 1044037);
             AddCraft(typeof(ScribesPen), 1044046, 1044168, 25.0, 75.0, typeof(IronIngot), 1044036, 1, 1044037);
             AddCraft(typeof(Clippers), 1044046, 1112117, 50.0, 50.0, typeof(IronIngot), 1044036, 4, 1044037);
-            
+
             if (Core.ML)
             {
                 index = AddCraft(typeof(MetalContainerEngraver), 1044046, 1072154, 75.0, 100.0, typeof(IronIngot), 1044036, 4, 1044037);
@@ -374,7 +374,7 @@ namespace Server.Engines.Craft
             }
 
             AddCraft(typeof(Pitchfork), 1044046, 1023719, 40.0, 90.0, typeof(IronIngot), 1044036, 4, 1044037);
-            //TODO: focus of theurgy - 20th Anniversary Event 
+            //TODO: focus of theurgy - 20th Anniversary Event
             #endregion
 
             #region Parts
@@ -386,13 +386,13 @@ namespace Server.Engines.Craft
             AddCraft(typeof(BarrelHoops), 1044047, 1024321, -15.0, 35.0, typeof(IronIngot), 1044036, 5, 1044037);
             AddCraft(typeof(Hinge), 1044047, 1024181, 5.0, 55.0, typeof(IronIngot), 1044036, 2, 1044037);
             AddCraft(typeof(BolaBall), 1044047, 1023699, 45.0, 95.0, typeof(IronIngot), 1044036, 10, 1044037);
-            
+
             if (Core.ML)
             {
                 index = AddCraft(typeof(JeweledFiligree), 1044047, 1072894, 70.0, 110.0, typeof(IronIngot), 1044036, 2, 1044037);
                 AddRes(index, typeof(StarSapphire), 1044231, 1, 1044253);
                 AddRes(index, typeof(Ruby), 1044234, 1, 1044253);
-            }            
+            }
             #endregion
 
             #region Utensils
@@ -408,7 +408,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(Goblet), 1044048, 1022458, 10.0, 60.0, typeof(IronIngot), 1044036, 2, 1044037);
             AddCraft(typeof(PewterMug), 1044048, 1024097, 10.0, 60.0, typeof(IronIngot), 1044036, 2, 1044037);
             AddCraft(typeof(SkinningKnife), 1044048, 1023781, 25.0, 75.0, typeof(IronIngot), 1044036, 2, 1044037);
-            
+
             if (Core.SA)
             {
                 index = AddCraft(typeof(GargishCleaver), 1044048, 1097478, 20.0, 70.0, typeof(IronIngot), 1044036, 3, 1044037);
@@ -459,7 +459,7 @@ namespace Server.Engines.Craft
             AddRes(index, typeof(Emerald), 1062601, 10, 1044240);
             AddRes(index, typeof(Ruby), 1062603, 10, 1044240);
             AddRes(index, typeof(CopperWire), 1026265, 1, 1150700);
-            
+
             if (Core.SA)
             {
                 index = AddCraft(typeof(GorgonLense), 1044050, 1112625, 90.0, 120.0, typeof(MedusaDarkScales), 1112626, 2, 1053097);
@@ -593,7 +593,7 @@ namespace Server.Engines.Craft
             AddRes(index, typeof(Bottle), 1044250, 10, 1044253);
             AddRes(index, typeof(BarrelLid), 1044251, 1, 1044253);
             AddRes(index, typeof(BarrelTap), 1044252, 1, 1044253);
-            
+
             if (Core.SA)
             {
                 index = AddCraft(typeof(ModifiedClockworkAssembly), 1044051, 1113031, 65.0, 115.0, typeof(ClockworkAssembly), 1073426, 1, 502910);
@@ -609,7 +609,7 @@ namespace Server.Engines.Craft
                 index = AddCraft(typeof(ModifiedClockworkAssembly), 1044051, 1113033, 65.0, 115.0, typeof(ClockworkAssembly), 1073426, 1, 502910);
                 AddRes(index, typeof(PowerCrystal), 1112811, 1, 502910);
                 AddRes(index, typeof(VoidEssence), 1112327, 3, 502910);
-                ForceNonExceptional(index);                
+                ForceNonExceptional(index);
             }
 
             if (Core.ML)
@@ -705,7 +705,7 @@ namespace Server.Engines.Craft
             AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
             AddRes(index, typeof(Gears), 1044254, 1, 1044253);
 
-            // Faction Spike Trap           
+            // Faction Spike Trap
             index = AddCraft(typeof(FactionSpikeTrapDeed), 1044052, 1044601, 65.0, 115.0, typeof(Silver), 1044572, Core.AOS ? 250 : 1000, 1044253);
             AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
             AddRes(index, typeof(Springs), 1044171, 1, 1044253);
@@ -809,6 +809,23 @@ namespace Server.Engines.Craft
             AddSubRes(typeof(AgapiteIngot), 1044028, 90.0, 1044036, 1044268);
             AddSubRes(typeof(VeriteIngot), 1044029, 95.0, 1044036, 1044268);
             AddSubRes(typeof(ValoriteIngot), 1044030, 99.0, 1044036, 1044268);
+            AddSubRes(typeof(BlazeIngot), "Blaze", 100.0, 1044036, 1044268);
+            AddSubRes(typeof(IceIngot), "Ice", 105.0, 1044036, 1044268);
+            AddSubRes(typeof(ToxicIngot), "Toxic", 110.0, 1044036, 1044268);
+            AddSubRes(typeof(ElectrumIngot), "Electrum", 112.0, 1044036, 1044268);
+            AddSubRes(typeof(PlatinumIngot), "Platinum", 115.0, 1044036, 1044268);
+            AddSubRes(typeof(BariteIngot), "Barite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(WulfeniteIngot), "Wulfenite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(DragoniteIngot), "Dragonite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(BunteriteIngot), "Bunterite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(PineiteIngot), "Pineite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(SamiteIngot), "Samite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(ToberiteIngot), "Toberite", 117.0, 1044036, 1044268);
+            AddSubRes(typeof(TealIngot), "Teal", 118.0, 1044036, 1044268);
+            AddSubRes(typeof(LisiteIngot), "Lisite", 118.0, 1044036, 1044268);
+            AddSubRes(typeof(MariteIngot), "Marite", 118.0, 1044036, 1044268);
+            AddSubRes(typeof(RoyaliteIngot), "Royalite", 118.0, 1044036, 1044268);
+            AddSubRes(typeof(DaniteIngot), "Danite", 119.0, 1044036, 1044268);
 
             MarkOption = true;
             Repair = true;
