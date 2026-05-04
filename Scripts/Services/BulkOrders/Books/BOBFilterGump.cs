@@ -373,66 +373,64 @@ namespace Server.Engines.BulkOrders
 				{ 1018332,  4 }, // Dull Copper
 				{ 1018333,  5 }, // Shadow Iron
 				{ 1018334,  6 }, // Copper
-				{ 1018335,  7 }, // Bronze
+                { 1018335,  7 }, // Bronze
+                { 1018336,  8 }, // Golden
 
-				{       0, 0 }, // --Blank--
-				{ 1018336, 8 }, // Golden
-				{ 1018337, 9 }, // Agapite
-				{ 1018338, 10 }, // Verite
-				{ 1018339, 11 }, // Valorite
-				{       0, 12 }, // Blaze
-
-				{       0, 0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                { 1018337,  9 }, // Agapite
+                { 1018338, 10 }, // Verite
+                { 1018339, 11 }, // Valorite
+                {       0, 12 }, // Blaze
                 {       0, 13 }, // Ice
                 {       0, 14 }, // Toxic
+
+                {       0,  0 }, // --Blank--
                 {       0, 15 }, // Electrum
                 {       0, 16 }, // Platinum
                 {       0, 31 }, // Barite
-
-				{       0, 0 }, // --Blank--
                 {       0, 32 }, // Wulfenite
                 {       0, 33 }, // Dragonite
                 {       0, 34 }, // Bunterite
+
+                {       0,  0 }, // --Blank--
                 {       0, 35 }, // Pineite
                 {       0, 36 }, // Samite
-
-                {       0, 0 }, // --Blank--
                 {       0, 37 }, // Toberite
                 {       0, 40 }, // Teal
                 {       0, 38 }, // Lisite
                 {       0, 39 }, // Marite
+
+                {       0,  0 }, // --Blank--
                 {       0, 17 }, // Royalite
                 {       0, 18 }, // Danite
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
 
-                {       0, 0 }, // --Blank--
                 {       0,  0 }, // --Blank--
                 {       0,  0 }, // --Blank--
                 {       0,  0 }, // --Blank--
                 {       0,  0 }, // --Blank--
                 {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0,  0 }, // --Blank--
 
+                { 1044094,  2 }, // Tailoring
+                { 1044286, 19 }, // Cloth
+                { 1062235, 20 }, // Leather
+                { 1062236, 21 }, // Spined
+                { 1062237, 22 }, // Horned
+                { 1062238, 23 }, // Barbed
+                {       0, 24 }, // Polar
 
-
-
-				{ 1044094,  2 }, // Tailoring
-				{ 1044286, 19 }, // Cloth
-				{ 1062235, 20 }, // Leather
-				{ 1062236, 21 }, // Spined
-				{ 1062237, 22 }, // Horned
-				{ 1062238, 23 }, // Barbed
-
-				{       0,  0 }, // --Blank--
-				{		0, 24 }, // Polar
-				{		0, 25 }, // Synthetic
-				{		0, 26 }, // BlazeL
-				{		0, 27 }, // Daemonic
-				{       0, 28 }, // Shadow
-
-				{       0,  0 }, // --Blank--
-				{		0, 29 }, // Frost
-				{		0, 30 }, // Ethereal
-				{       0,  0 }, // --Blank--
-				{       0,  0 }	 // --Blank--
+                {       0,  0 }, // --Blank--
+                {       0, 25 }, // Synthetic
+                {       0, 26 }, // BlazeL
+                {       0, 27 }, // Daemonic
+                {       0, 28 }, // Shadow
+                {       0, 29 }, // Frost
+                {       0, 30 }, // Ethereal
 			};
 
 		private static int[,] m_TypeFilters = new int[,]
@@ -468,10 +466,10 @@ namespace Server.Engines.BulkOrders
 		private static int[] m_XOffsets_Type = new int[]{ 0, 75, 170 };
 		private static int[] m_XOffsets_Quality = new int[]{ 0, 75, 170 };
 		private static int[] m_XOffsets_Amount = new int[]{ 0, 75, 180, 275 };
-        private static int[] m_XOffsets_Material = new int[] { 0, 105, 210, 305, 390, 485 };
+        private static int[] m_XOffsets_Material = new int[] { 0, 110, 220, 330, 440, 550, 660 };
 
 		private static int[] m_XWidths_Small = new int[]{ 50, 50, 70, 50 };
-        private static int[] m_XWidths_Large = new int[] { 80, 50, 50, 50, 50, 50 };
+        private static int[] m_XWidths_Large = new int[] { 90, 90, 90, 90, 90, 90, 90 };
 
 		private void AddFilterList( int x, int y, int[] xOffsets, int yOffset, int[,] filters, int[] xWidths, int filterValue, int filterIndex )
 		{
@@ -619,7 +617,7 @@ namespace Server.Engines.BulkOrders
 			m_From = from;
 			m_Book = book;
 
-			BOBFilter f = ( from.UseOwnFilter ? from.BOBFilter : book.Filter );
+            BOBFilter f = ( from.UseOwnFilter ? from.BOBFilter : book.Filter );
 
 			AddPage( 0 );
 
@@ -634,17 +632,17 @@ namespace Server.Engines.BulkOrders
 			AddImage( 5, 574, 10460 );
 			AddImage( 615, 574, 10460 ); */
 
-            AddBackground(10, 10, 680, 489, 5054); //10, 10, 630, 439, 5054
+            AddBackground(10, 10, 860, 650, 5054);
 
-            AddImageTiled(18, 20, 663, 470, 2624); // 18 20 613 420 2624
-            AddAlphaRegion(18, 20, 663, 470);
+            AddImageTiled(18, 20, 843, 631, 2624);
+            AddAlphaRegion(18, 20, 843, 631);
 
             AddImage(5, 5, 10460);
-            AddImage(615, 5, 10460);
-            AddImage(5, 424, 10460);
-            AddImage(615, 424, 10460);
+            AddImage(795, 5, 10460);
+            AddImage(5, 585, 10460);
+            AddImage(795, 585, 10460);
 
-			AddHtmlLocalized( 270, 20, 200, 32, 1062223, LabelColor, false, false ); // Filter Preference
+            AddHtmlLocalized( 360, 20, 200, 32, 1062223, LabelColor, false, false ); // Filter Preference
 
 			AddHtmlLocalized( 26, 35, 120, 32, 1062228, LabelColor, false, false ); // Bulk Order Type
 			AddFilterList( 25, 61, m_XOffsets_Type, 40, m_TypeFilters, m_XWidths_Small, f.Type, 0 );
@@ -656,9 +654,9 @@ namespace Server.Engines.BulkOrders
 			AddFilterList( 25, 132, m_XOffsets_Material, 40, m_MaterialFilters, m_XWidths_Large, f.Material, 2 );
 
 		//	AddHtmlLocalized( 26, 450, 120, 32, 1062217, LabelColor, false, false ); // Amount
-            AddHtmlLocalized(26, 350, 120, 32, 1062217, LabelColor, false, false); // Amount
+            AddHtmlLocalized(26, 500, 120, 32, 1062217, LabelColor, false, false); // Amount
 		//	AddFilterList( 25, 472, m_XOffsets_Amount, 40, m_AmountFilters, m_XWidths_Small, f.Quantity, 3 );
-            AddFilterList(25, 372, m_XOffsets_Amount, 40, m_AmountFilters, m_XWidths_Small, f.Quantity, 3);
+            AddFilterList(25, 522, m_XOffsets_Amount, 40, m_AmountFilters, m_XWidths_Small, f.Quantity, 3);
 			//daat99 OWLTR end - bigger gump
 
 		/*	AddHtmlLocalized( 75, 530, 120, 32, 1062477, ( from.UseOwnFilter ? LabelColor : 16927 ), false, false ); // Set Book Filter
@@ -673,17 +671,17 @@ namespace Server.Engines.BulkOrders
 			AddHtmlLocalized( 540, 530, 50, 32, 1011046, LabelColor, false, false ); // APPLY
 			AddButton( 505, 530, 4017, 4018, 0, GumpButtonType.Reply, 0 ); */
 
-            AddHtmlLocalized(75, 416, 120, 32, 1062477, (from.UseOwnFilter ? LabelColor : 16927), false, false); // Set Book Filter
-            AddButton(40, 416, 4005, 4007, 1, GumpButtonType.Reply, 0);
+            AddHtmlLocalized(95, 580, 120, 32, 1062477, (from.UseOwnFilter ? LabelColor : 16927), false, false); // Set Book Filter
+            AddButton(60, 580, 4005, 4007, 1, GumpButtonType.Reply, 0);
 
-            AddHtmlLocalized(235, 416, 120, 32, 1062478, (from.UseOwnFilter ? 16927 : LabelColor), false, false); // Set Your Filter
-            AddButton(200, 416, 4005, 4007, 2, GumpButtonType.Reply, 0);
+            AddHtmlLocalized(305, 580, 120, 32, 1062478, (from.UseOwnFilter ? 16927 : LabelColor), false, false); // Set Your Filter
+            AddButton(270, 580, 4005, 4007, 2, GumpButtonType.Reply, 0);
 
-            AddHtmlLocalized(405, 416, 120, 32, 1062231, LabelColor, false, false); // Clear Filter
-            AddButton(370, 416, 4005, 4007, 3, GumpButtonType.Reply, 0);
+            AddHtmlLocalized(515, 580, 120, 32, 1062231, LabelColor, false, false); // Clear Filter
+            AddButton(480, 580, 4005, 4007, 3, GumpButtonType.Reply, 0);
 
-            AddHtmlLocalized(540, 416, 50, 32, 1011046, LabelColor, false, false); // APPLY
-            AddButton(505, 416, 4017, 4018, 0, GumpButtonType.Reply, 0);
+            AddHtmlLocalized(740, 580, 50, 32, 1011046, LabelColor, false, false); // APPLY
+            AddButton(705, 580, 4017, 4018, 0, GumpButtonType.Reply, 0);
 		}
 	}
 }

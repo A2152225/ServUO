@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Spawns>
+  <!-- Adjust Map/X/Y/Z to your location -->
+  <Spawner Name="MrWeaver_Quest" Map="Trammel" X="1416" Y="1690" Z="0"
+           HomeRange="6" WalkingRange="4" Count="1"
+           SpawnTime="00:10:00" SpawnMin="00:10:00" SpawnMax="00:10:00"
+           RelativeHome="True" ProximityRange="0" SequentialSpawning="False"
+           KillReset="False" Group="False" Running="True" Inactive="False">
+    <Creatures>
+      <Entry Type="XmlQuestNPC" Name="Mr Weaver">
+        <Props>
+          <!-- XmlQuestNPC v4.00 typically uses ConfigFile for the conversation XML -->
+          <Prop Name="ConfigFile" Value="MrWeaver1.xml.npc" />
+          <Prop Name="ProximityRange" Value="5" />
+          <Prop Name="Running" Value="True" />
+        </Props>
+
+        <Attachments>
+          <Attachment Type="XmlQuest" Name="WeaverDNA" Repeatable="True">
+            <!-- Require and consume the five specific items -->
+            <Objective Type="Collect" ItemName="Jason Weaver's DNA" Amount="1" Consume="True" />
+            <Objective Type="Collect" ItemName="Maggie Weaver's DNA" Amount="1" Consume="True" />
+            <Objective Type="Collect" ItemName="Mike Weaver's DNA" Amount="1" Consume="True" />
+            <Objective Type="Collect" ItemName="Carol Weaver's DNA" Amount="1" Consume="True" />
+            <Objective Type="Collect" ItemName="Ben Weaver's DNA" Amount="1" Consume="True" />
+
+            <OnStart>Say;Bring me the five Weaver DNA samples.</OnStart>
+
+            <!-- Reward and post-processing in a single block for v4.00 parsing consistency -->
+            <OnComplete>
+              Say;Fine. Take this shroud and cover that mug.;
+              Give;HoodedShroudOfShadows;1;
+              propset;$lastcreated;Name;"Weaver's Shroud";
+              propset;$lastcreated;Hue;[rand 2 3000];
+
+              <!-- 10% chance for ONE bonus: either a non-weapon attribute OR a non-weapon skill bonus -->
+              IfChance=10;PickOne;
+                /* Non-weapon AOS attributes (3..10) */
+                PickOne;
+                  propset;$lastcreated;Attributes.BonusStr;[rand 3 10]|
+                  propset;$lastcreated;Attributes.BonusDex;[rand 3 10]|
+                  propset;$lastcreated;Attributes.BonusInt;[rand 3 10]|
+                  propset;$lastcreated;Attributes.BonusHits;[rand 3 10]|
+                  propset;$lastcreated;Attributes.BonusStam;[rand 3 10]|
+                  propset;$lastcreated;Attributes.BonusMana;[rand 3 10]|
+                  propset;$lastcreated;Attributes.RegenHits;[rand 3 10]|
+                  propset;$lastcreated;Attributes.RegenStam;[rand 3 10]|
+                  propset;$lastcreated;Attributes.RegenMana;[rand 3 10]|
+                  propset;$lastcreated;Attributes.Luck;[rand 30 100]|
+                  propset;$lastcreated;Attributes.LowerRegCost;[rand 3 10]|
+                  propset;$lastcreated;Attributes.LowerManaCost;[rand 3 10]|
+                  propset;$lastcreated;Attributes.EnhancePotions;[rand 3 10]|
+                  propset;$lastcreated;Attributes.SpellDamage;[rand 3 10]|
+                  propset;$lastcreated;Attributes.CastSpeed;[rand 1 2]|
+                  propset;$lastcreated;Attributes.CastRecovery;[rand 1 3]|
+                  propset;$lastcreated;Attributes.NightSight;1
+                |
+                /* Non-weapon skills (slot 0) (3..10) */
+                PickOne;
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Magery;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;EvalInt;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Meditation;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Focus;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Inscription;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Necromancy;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;SpiritSpeak;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Mysticism;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Spellweaving;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Chivalry;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Ninjitsu;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Bushido;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;AnimalTaming;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;AnimalLore;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Veterinary;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Musicianship;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Peacemaking;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Provocation;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Discordance;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Hiding;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Stealth;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;DetectHidden;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;MagicResist;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;RemoveTrap;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Alchemy;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Poisoning;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Tinkering;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Blacksmith;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Tailoring;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Carpentry;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Fletching;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Imbuing;[rand 3 10]|
+                  propset;$lastcreated;SkillBonuses.SetValues;0;Cooking;[rand 3 10]
+            </OnComplete>
+          </Attachment>
+        </Attachments>
+      </Entry>
+    </Creatures>
+  </Spawner>
+</Spawns> 

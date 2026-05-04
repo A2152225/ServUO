@@ -130,14 +130,15 @@ namespace Server.Engines.Harvest
 					new HarvestVein( 04.5, 0.5, res[6], res[0] ), // Agapite
 					new HarvestVein( 04.0, 0.5, res[7], res[0] ), // Verite
 					new HarvestVein( 03.5, 0.5, res[8], res[0] ),  // Valorite
+
                     new HarvestVein( 03.0, 0.5, res[9], res[0] ), // Blaze
                     new HarvestVein( 02.5, 0.5, res[10], res[0] ), // Ice
                     new HarvestVein( 02.0, 0.5, res[11], res[0] ), // Toxic
                     new HarvestVein( 01.5, 0.5, res[12], res[0] ), // Electrum
-                    new HarvestVein( 01.0, 0.5, res[13], res[0] ), // Platinum
+                    new HarvestVein( 01.25, 0.5, res[13], res[0] ), // Platinum
 
-                    new HarvestVein( 01.0, 0.5, res[14], res[0] ), // Barite
-                    new HarvestVein( 01, 0.5, res[15], res[0] ), // Wulfenite
+                    new HarvestVein( 01.2, 0.5, res[14], res[0] ), // Barite
+                    new HarvestVein( 01.1, 0.5, res[15], res[0] ), // Wulfenite
                     new HarvestVein( 01.0, 0.5, res[16], res[0] ), // Dragonite
                     new HarvestVein( 01, 0.5, res[17], res[0] ), // Bunterite
                     new HarvestVein( 01, 0.5, res[18], res[0] ), // Pineite
