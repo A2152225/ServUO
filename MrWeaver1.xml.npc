@@ -1,0 +1,51 @@
+<?xml version="1.0" standalone="yes"?>
+<XmlQuestNPC>
+  <NPC>
+    <Name>Mr Weaver</Name>
+    <Running>True</Running>
+    <ProximityRange>5</ProximityRange>
+    <ResetRange>16</ResetRange>
+    <AllowGhost>False</AllowGhost>
+    <SpeechPace>10</SpeechPace>
+    <ResetTime>0.25</ResetTime>
+    <SpeechEntries>3</SpeechEntries>
+  </NPC>
+  <SpeechEntry>
+    <EntryNumber>10</EntryNumber>
+    <ID>10</ID>
+    <Keywords>yes,ok</Keywords>
+    <DependsOn>-1</DependsOn>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+  </SpeechEntry>
+  <SpeechEntry>
+    <EntryNumber>30</EntryNumber>
+    <ID>30</ID>
+    <Text>Hey! You There! Ya, the one in the stupid looking getup.  Come here, now.</Text>
+    <DependsOn>10,20</DependsOn>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+    <Gump>What are you looking at?; Obviously not a mirror. But Worry Not, for I have the perfect solution and all you need is to bring me some items and I will craft you an exquisite shroud, that will cover that ugly getup and mug of yours.; What do you say?</Gump>
+  </SpeechEntry>
+  <SpeechEntry>
+    <EntryNumber>0</EntryNumber>
+    <ID>0</ID>
+    <Pause>1</Pause>
+    <PrePause>-1</PrePause>
+    <LockConversation>True</LockConversation>
+    <IgnoreCarried>False</IgnoreCarried>
+    <AllowNPCTrigger>False</AllowNPCTrigger>
+    <SpeechStyle>Regular</SpeechStyle>
+    <SpeechHue>-1</SpeechHue>
+  </SpeechEntry>
+</XmlQuestNPC>

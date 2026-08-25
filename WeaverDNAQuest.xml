@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Spawns>
+  <Spawner Name="MrWeaver_Quest" Map="Trammel" X="1416" Y="1690" Z="0" HomeRange="6" Team="0" WalkingRange="4" Count="1" SpawnTime="00:10:00" SpawnMin="00:10:00" SpawnMax="00:10:00" RelativeHome="True" ProximityRange="0" SequentialSpawning="False" KillReset="False" Group="False" Running="True" Inactive="False">
+    <Creatures>
+      <Entry Type="XmlQuestNPC" Name="Mr Weaver">
+        <Props>
+          <!-- Set the property name your XmlQuestNPC expects for the conversation file.
+               Common names: XmlFile, ConversationFile, ConfigFile. If unsure: [add XmlQuestNPC then [props to see it. -->
+          <Prop Name="XmlFile" Value="MrWeaver1.xml.npc" />
+          <Prop Name="ProximityRange" Value="5" />
+        </Props>
+        <Attachments>
+          <Attachment Type="XmlQuest" Name="WeaverDNA" Repeatable="True">
+            <Objective Type="Collect" ItemName="Jason Weaver's DNA" Amount="1" />
+            <Objective Type="Collect" ItemName="Maggie Weaver's DNA" Amount="1" />
+            <Objective Type="Collect" ItemName="Mike Weaver's DNA" Amount="1" />
+            <Objective Type="Collect" ItemName="Carol Weaver's DNA" Amount="1" />
+            <Objective Type="Collect" ItemName="Ben Weaver's DNA" Amount="1" />
+            <OnStart>Say;Bring me the five Weaver DNA samples.</OnStart>
+            <OnComplete>Say;Fine. Take this shroud and cover that mug.</OnComplete>
+            <!-- Always grant the shroud with random hue -->
+            <Reward Type="Give" Item="HoodedShroudOfShadows" Amount="1" Hue="[rand 2 3000]" />
+            <!-- 10% chance: add one random attribute (3..10) to the shroud we just gave ($lastcreated) -->
+            <OnComplete>
+              IfChance=10;PickOne;
+                propset;$lastcreated;Attributes.BonusStr;[rand 3 10]|
+                propset;$lastcreated;Attributes.BonusDex;[rand 3 10]|
+                propset;$lastcreated;Attributes.BonusInt;[rand 3 10]|
+                propset;$lastcreated;Attributes.AttackChance;[rand 3 10]|
+                propset;$lastcreated;Attributes.DefendChance;[rand 3 10]|
+                propset;$lastcreated;Attributes.RegenHits;[rand 3 10]|
+                propset;$lastcreated;Attributes.RegenStam;[rand 3 10]|
+                propset;$lastcreated;Attributes.RegenMana;[rand 3 10]|
+                propset;$lastcreated;Attributes.ReflectPhysical;[rand 3 10]|
+                propset;$lastcreated;Attributes.WeaponDamage;[rand 3 10]|
+                propset;$lastcreated;Attributes.SpellDamage;[rand 3 10]
+            </OnComplete>
+          </Attachment>
+        </Attachments>
+      </Entry>
+    </Creatures>
+  </Spawner>
+</Spawns>
